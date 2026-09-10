@@ -4,7 +4,7 @@ FreelanceOS is a web application for freelancer operations management.
 
 ## Status
 
-Release 0 — Foundation. EPIC-002 Phase 2 (Core Persistence Schema) is complete.
+Release 0 — Foundation. EPIC-002 Phase 3 (Constraints, Repositories & Seed) is complete.
 
 Planning and architecture documents are the source of truth. See [`MASTER_PLAN.md`](./MASTER_PLAN.md).
 
@@ -31,6 +31,7 @@ Start PostgreSQL, create the database if needed, then apply committed migrations
 brew services start postgresql@17
 createdb freelance_os
 pnpm db:migrate:deploy
+pnpm db:seed
 pnpm dev
 ```
 
@@ -53,6 +54,7 @@ pnpm dev
 | `pnpm db:migrate`        | Create and apply a development migration (`prisma migrate dev`)  |
 | `pnpm db:migrate:deploy` | Apply committed migrations (`prisma migrate deploy`)             |
 | `pnpm db:reset`          | Reset the local database and replay migrations. Development only |
+| `pnpm db:seed`           | Apply the deterministic development seed                         |
 
 ## Repository structure
 

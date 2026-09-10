@@ -32,21 +32,24 @@ details belong elsewhere.
 
 ## Implementation status
 
-EPIC-002 Phase 1 (Prisma & Database Bootstrap) and Phase 2
-(Core Persistence Schema) are implemented:
+EPIC-002 Phase 1–3 are implemented:
 
 - local PostgreSQL development database;
 - Prisma 6 configuration;
 - server-only Prisma Client lifecycle under Infrastructure;
 - Prisma Migrate pipeline;
-- empty baseline migration that establishes migration history;
 - application-owned models: Workspace, WorkspaceMember, Client,
   Contract, TimeEntry, WorkspaceSettings, Alert, Notification;
 - workspace-scoped foreign keys, uniqueness, and documented indexes;
-- integer-minute duration and NUMERIC(19,4) monetary rate.
+- integer-minute duration and NUMERIC(19,4) monetary rate;
+- CHECK constraints for duration, rate, and settings thresholds;
+- PostgreSQL exclusion constraint for contract validity overlap;
+- composite workspace FKs for optional Alert/Notification references;
+- workspace-scoped repository interfaces and Prisma implementations;
+- deterministic development seed (`pnpm db:seed`).
 
-Authentication tables remain outside this schema. Contract overlap
-exclusion, repositories, and seed belong to Phase 3.
+Authentication tables remain outside this schema. Integration tests
+and the CI database gate belong to Phase 4.
 
 ------------------------------------------------------------------------
 
@@ -410,6 +413,20 @@ user-facing error.
 
 Database enforcement remains the final integrity boundary.
 
+Phase 3 implements this as:
+
+``` text
+EXCLUDE USING gist (
+  workspaceId WITH =,
+  clientId WITH =,
+  daterange(validFrom, validTo, '[)') WITH &&
+)
+```
+
+`btree_gist` is required so UUID equality can participate in the GiST
+exclusion. `daterange(..., '[)')` preserves `[validFrom, validTo)`.
+`validTo = NULL` becomes an unbounded range (open-ended contract).
+
 ------------------------------------------------------------------------
 
 # 8. Entity: TimeEntry
@@ -439,6 +456,8 @@ Records work performed.
 ``` text
 durationMinutes > 0
 ```
+
+Phase 3 enforces this with a PostgreSQL CHECK constraint.
 
 and:
 
@@ -544,6 +563,10 @@ Threshold values should be validated:
 ``` text
 0 < threshold <= 100
 ```
+
+Phase 3 enforces this on `contractWarningPercent` and
+`monthlyCapacityWarningPercent`. There is no contract-level
+`warningThreshold` field in the current schema.
 
 The default contract warning threshold is intended to be **80%**,
 subject to product/business confirmation.
@@ -727,6 +750,21 @@ Notification
 
 This provides a database-level guard against records accidentally
 referencing entities from another workspace.
+
+Prisma cannot declare an optional composite FK that reuses a required
+`workspaceId`. Phase 3 therefore keeps the simple Prisma FKs for
+`Alert.clientId`, `Alert.contractId`, and `Notification.alertId`, and
+adds matching composite FKs in SQL:
+
+``` text
+Alert(workspaceId, clientId) → Client(workspaceId, id)
+Alert(workspaceId, contractId) → Contract(workspaceId, id)
+Notification(workspaceId, alertId) → Alert(workspaceId, id)
+```
+
+PostgreSQL `MATCH SIMPLE` skips the composite FK when the optional id
+is NULL. When the optional id is present, the referenced row must
+belong to the same workspace.
 
 ------------------------------------------------------------------------
 
@@ -1198,6 +1236,12 @@ Domain → Prisma models
 Instead, translate persistence representations at the infrastructure
 boundary.
 
+Phase 3 repository ports live in `src/domain/repositories.ts`. Prisma
+implementations live under `src/infrastructure/persistence/`. Writes
+that must be atomic use `runInTransaction` in Infrastructure. All
+application-facing reads/writes take an explicit `workspaceId` except
+workspace creation and `getWorkspaceById`.
+
 ------------------------------------------------------------------------
 
 # 25. Prisma Schema Organization
@@ -1292,6 +1336,12 @@ The seed should cover:
 -   empty/current periods
 
 Seed data must never be required for production correctness.
+
+The Phase 3 development seed is idempotent (fixed UUIDs + upsert),
+synthetic, and invoked with `pnpm db:seed`. It creates one workspace,
+two memberships with opaque auth user ids, three clients, four
+contracts, eight time entries, workspace settings, two alerts, and two
+notifications. It does not create Better Auth users or passwords.
 
 ------------------------------------------------------------------------
 
@@ -1595,6 +1645,8 @@ durationMinutes > 0
 rate > 0
 ```
 
+Phase 3 enforces this with a PostgreSQL CHECK constraint.
+
 ### Historical correctness
 
 ``` text
@@ -1691,17 +1743,17 @@ Before implementation is considered complete for storage:
 -   [x] Notification model implemented.
 -   [x] WorkspaceSettings implemented.
 -   [x] Workspace-scoped foreign keys reviewed.
--   [ ] Contract overlap constraint implemented.
--   [ ] Duration constraints implemented.
+-   [x] Contract overlap constraint implemented.
+-   [x] Duration constraints implemented.
 -   [x] Money precision confirmed.
 -   [x] Indexes reviewed against real queries.
 -   [x] Initial migration generated and reviewed.
--   [ ] Seed data created.
+-   [x] Seed data created.
 -   [x] Migration tested from clean database.
--   [ ] Migration tested against representative development data.
--   [ ] Repository interfaces remain independent from Prisma.
--   [ ] No UI code accesses Prisma directly.
--   [ ] No domain code imports Prisma.
+-   [x] Migration tested against representative development data.
+-   [x] Repository interfaces remain independent from Prisma.
+-   [x] No UI code accesses Prisma directly.
+-   [x] No domain code imports Prisma.
 -   [ ] Cross-workspace access tests exist.
 
 ------------------------------------------------------------------------

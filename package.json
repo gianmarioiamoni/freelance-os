@@ -17,7 +17,8 @@
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:migrate:deploy": "prisma migrate deploy",
-    "db:reset": "prisma migrate reset"
+    "db:reset": "prisma migrate reset",
+    "db:seed": "prisma db seed"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
@@ -54,6 +55,10 @@
     "prettier": "3.9.6",
     "prisma": "6.19.3",
     "typescript": "5.9.3",
+    "tsx": "4.20.6",
     "vitest": "4.1.11"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   }
 }

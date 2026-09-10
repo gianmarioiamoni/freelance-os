@@ -1,5 +1,7 @@
 // prisma/schema.prisma
-// EPIC-002 Phase 2: application-owned persistence models.
+// EPIC-002 Phase 3: application-owned persistence models.
+// CHECK, exclusion, and composite workspace FKs that Prisma cannot
+// express are added in the Phase 3 SQL migration.
 // Authentication tables are owned by Better Auth and are not declared here.
 
 generator client {
@@ -101,6 +103,7 @@ model Contract {
   validFrom                DateTime     @db.Date
   validTo                  DateTime?    @db.Date
   billingModel             BillingModel
+  /// Positive monetary rate. CHECK (rate > 0) is enforced in SQL.
   rate                     Decimal      @db.Decimal(19, 4)
   currency                 String       @db.Char(3)
   monthlyContractedMinutes Int?
@@ -114,6 +117,7 @@ model Contract {
   timeEntries TimeEntry[]
   alerts      Alert[]
 
+  @@unique([workspaceId, id])
   @@unique([workspaceId, clientId, id])
   @@index([workspaceId, clientId, validFrom])
   @@index([workspaceId, clientId, validTo])
@@ -126,6 +130,7 @@ model TimeEntry {
   clientId        String   @db.Uuid
   contractId      String   @db.Uuid
   workDate        DateTime @db.Date
+  /// Positive duration. CHECK (durationMinutes > 0) is enforced in SQL.
   durationMinutes Int
   description     String?  @db.Text
   billable        Boolean
@@ -147,7 +152,9 @@ model WorkspaceSettings {
   workspaceId                   String   @id @db.Uuid
   timezone                      String
   currency                      String   @db.Char(3)
+  /// 0 < value <= 100. CHECK is enforced in SQL.
   contractWarningPercent        Int
+  /// 0 < value <= 100. CHECK is enforced in SQL.
   monthlyCapacityWarningPercent Int
   createdAt                     DateTime @default(now()) @db.Timestamptz(6)
   updatedAt                     DateTime @updatedAt @db.Timestamptz(6)
@@ -173,6 +180,7 @@ model Alert {
   contract      Contract?      @relation(fields: [contractId], references: [id], onDelete: Restrict)
   notifications Notification[]
 
+  @@unique([workspaceId, id])
   @@unique([workspaceId, deduplicationKey])
   @@index([workspaceId, createdAt])
   @@index([workspaceId, resolvedAt])

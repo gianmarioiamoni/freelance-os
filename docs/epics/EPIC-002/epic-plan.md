@@ -5,7 +5,7 @@
 **Epic:** EPIC-002  
 **Release:** Release 0 — Foundation  
 **Objective:** Database & Persistence Foundation  
-**Status:** In Progress (Phase 2 complete)  
+**Status:** In Progress (Phase 3 complete)  
 **Depends on:** EPIC-001 — Foundation / Repository  
 **Next Epic:** EPIC-003 — Authentication
 
@@ -904,6 +904,13 @@ Establish database invariants and the Infrastructure repository boundary.
 ```text
 feat(storage): establish persistence repositories and invariants
 ```
+
+### Status
+
+Complete. CHECK constraints, contract overlap exclusion, composite
+workspace FKs for optional Alert/Notification references, repository
+ports/implementations, transaction helper, and deterministic
+development seed are in place.
 
 ---
 
