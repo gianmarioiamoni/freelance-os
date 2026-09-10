@@ -1,6 +1,6 @@
 // prisma/schema.prisma
-// Phase 1 baseline: PostgreSQL datasource and Prisma Client only.
-// Application-owned models belong to EPIC-002 Phase 2.
+// EPIC-002 Phase 2: application-owned persistence models.
+// Authentication tables are owned by Better Auth and are not declared here.
 
 generator client {
   provider = "prisma-client-js"
@@ -9,4 +9,191 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+enum WorkspaceMemberRole {
+  OWNER
+  MEMBER
+}
+
+enum ClientStatus {
+  ACTIVE
+  ARCHIVED
+}
+
+enum BillingModel {
+  HOURLY
+  DAILY
+}
+
+enum AlertType {
+  CONTRACT_WARNING
+  CONTRACT_EXCEEDED
+  CAPACITY_WARNING
+  CAPACITY_EXCEEDED
+}
+
+enum AlertSeverity {
+  INFO
+  WARNING
+  ERROR
+}
+
+model Workspace {
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String
+  timezone  String
+  currency  String   @db.Char(3)
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
+
+  members       WorkspaceMember[]
+  settings      WorkspaceSettings?
+  clients       Client[]
+  contracts     Contract[]
+  timeEntries   TimeEntry[]
+  alerts        Alert[]
+  notifications Notification[]
+}
+
+model WorkspaceMember {
+  workspaceId String              @db.Uuid
+  userId      String
+  role        WorkspaceMemberRole
+  createdAt   DateTime            @default(now()) @db.Timestamptz(6)
+
+  workspace     Workspace      @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  timeEntries   TimeEntry[]
+  notifications Notification[]
+
+  @@id([workspaceId, userId])
+}
+
+model Client {
+  id          String       @id @default(uuid()) @db.Uuid
+  workspaceId String       @db.Uuid
+  companyName String
+  vatNumber   String?
+  taxCode     String?
+  address     String?      @db.Text
+  contactName String?
+  email       String?
+  phone       String?
+  notes       String?      @db.Text
+  status      ClientStatus
+  createdAt   DateTime     @default(now()) @db.Timestamptz(6)
+  updatedAt   DateTime     @updatedAt @db.Timestamptz(6)
+
+  workspace   Workspace   @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  contracts   Contract[]
+  timeEntries TimeEntry[]
+  alerts      Alert[]
+
+  @@unique([workspaceId, id])
+  @@index([workspaceId, status])
+  @@index([workspaceId, companyName])
+}
+
+model Contract {
+  id                       String       @id @default(uuid()) @db.Uuid
+  workspaceId              String       @db.Uuid
+  clientId                 String       @db.Uuid
+  validFrom                DateTime     @db.Date
+  validTo                  DateTime?    @db.Date
+  billingModel             BillingModel
+  rate                     Decimal      @db.Decimal(19, 4)
+  currency                 String       @db.Char(3)
+  monthlyContractedMinutes Int?
+  paymentTermsDays         Int?
+  paymentTermsNote         String?      @db.Text
+  createdAt                DateTime     @default(now()) @db.Timestamptz(6)
+  updatedAt                DateTime     @updatedAt @db.Timestamptz(6)
+
+  workspace   Workspace   @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  client      Client      @relation(fields: [workspaceId, clientId], references: [workspaceId, id], onDelete: Restrict)
+  timeEntries TimeEntry[]
+  alerts      Alert[]
+
+  @@unique([workspaceId, clientId, id])
+  @@index([workspaceId, clientId, validFrom])
+  @@index([workspaceId, clientId, validTo])
+}
+
+model TimeEntry {
+  id              String   @id @default(uuid()) @db.Uuid
+  workspaceId     String   @db.Uuid
+  userId          String
+  clientId        String   @db.Uuid
+  contractId      String   @db.Uuid
+  workDate        DateTime @db.Date
+  durationMinutes Int
+  description     String?  @db.Text
+  billable        Boolean
+  createdAt       DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt       DateTime @updatedAt @db.Timestamptz(6)
+
+  workspace Workspace       @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  member    WorkspaceMember @relation(fields: [workspaceId, userId], references: [workspaceId, userId], onDelete: Restrict)
+  client    Client          @relation(fields: [workspaceId, clientId], references: [workspaceId, id], onDelete: Restrict)
+  contract  Contract        @relation(fields: [workspaceId, clientId, contractId], references: [workspaceId, clientId, id], onDelete: Restrict)
+
+  @@index([workspaceId, workDate])
+  @@index([workspaceId, clientId, workDate])
+  @@index([workspaceId, contractId, workDate])
+  @@index([workspaceId, userId, workDate])
+}
+
+model WorkspaceSettings {
+  workspaceId                   String   @id @db.Uuid
+  timezone                      String
+  currency                      String   @db.Char(3)
+  contractWarningPercent        Int
+  monthlyCapacityWarningPercent Int
+  createdAt                     DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt                     DateTime @updatedAt @db.Timestamptz(6)
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+}
+
+model Alert {
+  id               String        @id @default(uuid()) @db.Uuid
+  workspaceId      String        @db.Uuid
+  type             AlertType
+  severity         AlertSeverity
+  clientId         String?       @db.Uuid
+  contractId       String?       @db.Uuid
+  periodStart      DateTime?     @db.Date
+  periodEnd        DateTime?     @db.Date
+  deduplicationKey String
+  createdAt        DateTime      @default(now()) @db.Timestamptz(6)
+  resolvedAt       DateTime?     @db.Timestamptz(6)
+
+  workspace     Workspace      @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  client        Client?        @relation(fields: [clientId], references: [id], onDelete: Restrict)
+  contract      Contract?      @relation(fields: [contractId], references: [id], onDelete: Restrict)
+  notifications Notification[]
+
+  @@unique([workspaceId, deduplicationKey])
+  @@index([workspaceId, createdAt])
+  @@index([workspaceId, resolvedAt])
+  @@index([workspaceId, type])
+}
+
+model Notification {
+  id          String    @id @default(uuid()) @db.Uuid
+  workspaceId String    @db.Uuid
+  userId      String
+  alertId     String?   @db.Uuid
+  type        String
+  title       String
+  body        String    @db.Text
+  readAt      DateTime? @db.Timestamptz(6)
+  createdAt   DateTime  @default(now()) @db.Timestamptz(6)
+
+  workspace Workspace       @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  member    WorkspaceMember @relation(fields: [workspaceId, userId], references: [workspaceId, userId], onDelete: Restrict)
+  alert     Alert?          @relation(fields: [alertId], references: [id], onDelete: Restrict)
+
+  @@index([workspaceId, userId, createdAt])
+  @@index([workspaceId, userId, readAt])
 }

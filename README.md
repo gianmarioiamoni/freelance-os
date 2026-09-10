@@ -4,7 +4,7 @@ FreelanceOS is a web application for freelancer operations management.
 
 ## Status
 
-Release 0 — Foundation. EPIC-002 Phase 1 (Prisma & Database Bootstrap) is complete.
+Release 0 — Foundation. EPIC-002 Phase 2 (Core Persistence Schema) is complete.
 
 Planning and architecture documents are the source of truth. See [`MASTER_PLAN.md`](./MASTER_PLAN.md).
 
@@ -34,7 +34,7 @@ pnpm db:migrate:deploy
 pnpm dev
 ```
 
-`pnpm install` also runs `prisma generate`. The current schema has no application models; those arrive in EPIC-002 Phase 2.
+`pnpm install` also runs `prisma generate`. The Prisma schema now includes the application-owned persistence models.
 
 ## Commands
 

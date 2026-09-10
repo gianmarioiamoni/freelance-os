@@ -4,7 +4,7 @@
 **Document:** `MASTER_PLAN.md`\
 **Product:** FreelanceOS\
 **Canonical format:** Markdown\
-**Current phase:** EPIC-001 Engineering Review complete → EPIC-002
+**Current phase:** EPIC-002 Phase 2 complete → Phase 3
 
 ------------------------------------------------------------------------
 
@@ -136,7 +136,7 @@ context is recovered from repository documentation.
 
 ``` text
 STATUS: EPIC-002 IN PROGRESS
-NEXT: EPIC-002 Phase 2 — Core Persistence Schema
+NEXT: EPIC-002 Phase 3 — Constraints, Repositories & Seed
 ```
 
 ## Completed planning artifacts
@@ -154,7 +154,7 @@ docs/
 
 ``` text
 Application implementation: NOT STARTED
-Foundation implementation: EPIC-001 COMPLETE; EPIC-002 Phase 1 COMPLETE
+Foundation implementation: EPIC-001 COMPLETE; EPIC-002 Phase 1–2 COMPLETE
 MVP implementation: NOT STARTED
 Production deployment: NOT STARTED
 ```
@@ -1627,7 +1627,7 @@ Next actions:
 
 ``` text
 1. Open a new Cursor chat
-2. Execute EPIC-002 Phase 2
+2. Execute EPIC-002 Phase 3
 3. Review
 4. Commit
 ```
@@ -1679,9 +1679,9 @@ releases:
 
 next:
   epic: EPIC-002
-  phase: 2
-  objective: Core Persistence Schema
-  implementation: phase-1-complete
+  phase: 3
+  objective: Constraints, Repositories & Seed
+  implementation: phase-2-complete
 ```
 
 ------------------------------------------------------------------------

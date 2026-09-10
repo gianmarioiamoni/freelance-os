@@ -5,7 +5,7 @@
 **Epic:** EPIC-002  
 **Release:** Release 0 — Foundation  
 **Objective:** Database & Persistence Foundation  
-**Status:** In Progress (Phase 1 complete)  
+**Status:** In Progress (Phase 2 complete)  
 **Depends on:** EPIC-001 — Foundation / Repository  
 **Next Epic:** EPIC-003 — Authentication
 
@@ -866,6 +866,12 @@ Implement:
 ```text
 feat(storage): implement core persistence schema
 ```
+
+### Status
+
+Complete. Application-owned persistence models, relations, constraints
+expressible in Prisma, and the core schema migration are in place.
+Contract overlap exclusion, repositories, and seed remain Phase 3.
 
 ---
 

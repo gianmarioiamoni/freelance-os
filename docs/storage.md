@@ -32,18 +32,21 @@ details belong elsewhere.
 
 ## Implementation status
 
-EPIC-002 Phase 1 (Prisma & Database Bootstrap) is implemented:
+EPIC-002 Phase 1 (Prisma & Database Bootstrap) and Phase 2
+(Core Persistence Schema) are implemented:
 
 - local PostgreSQL development database;
 - Prisma 6 configuration;
 - server-only Prisma Client lifecycle under Infrastructure;
 - Prisma Migrate pipeline;
-- empty baseline migration that establishes migration history.
+- empty baseline migration that establishes migration history;
+- application-owned models: Workspace, WorkspaceMember, Client,
+  Contract, TimeEntry, WorkspaceSettings, Alert, Notification;
+- workspace-scoped foreign keys, uniqueness, and documented indexes;
+- integer-minute duration and NUMERIC(19,4) monetary rate.
 
-The initial migration is empty because Phase 1 does not introduce
-application-owned models. Prisma validates and generates without
-models; `prisma migrate diff --from-empty` produced the committed
-SQL. Domain entities remain Phase 2 work.
+Authentication tables remain outside this schema. Contract overlap
+exclusion, repositories, and seed belong to Phase 3.
 
 ------------------------------------------------------------------------
 
@@ -1676,25 +1679,25 @@ application-owned workspace membership.
 
 Before implementation is considered complete for storage:
 
--   [ ] PostgreSQL database configured.
--   [ ] Prisma configured.
--   [ ] Prisma schema created.
--   [ ] Workspace model implemented.
--   [ ] Workspace membership implemented.
--   [ ] Client model implemented.
--   [ ] Contract model implemented.
--   [ ] TimeEntry model implemented.
--   [ ] Alert model implemented.
--   [ ] Notification model implemented.
--   [ ] WorkspaceSettings implemented.
--   [ ] Workspace-scoped foreign keys reviewed.
+-   [x] PostgreSQL database configured.
+-   [x] Prisma configured.
+-   [x] Prisma schema created.
+-   [x] Workspace model implemented.
+-   [x] Workspace membership implemented.
+-   [x] Client model implemented.
+-   [x] Contract model implemented.
+-   [x] TimeEntry model implemented.
+-   [x] Alert model implemented.
+-   [x] Notification model implemented.
+-   [x] WorkspaceSettings implemented.
+-   [x] Workspace-scoped foreign keys reviewed.
 -   [ ] Contract overlap constraint implemented.
 -   [ ] Duration constraints implemented.
--   [ ] Money precision confirmed.
--   [ ] Indexes reviewed against real queries.
--   [ ] Initial migration generated and reviewed.
+-   [x] Money precision confirmed.
+-   [x] Indexes reviewed against real queries.
+-   [x] Initial migration generated and reviewed.
 -   [ ] Seed data created.
--   [ ] Migration tested from clean database.
+-   [x] Migration tested from clean database.
 -   [ ] Migration tested against representative development data.
 -   [ ] Repository interfaces remain independent from Prisma.
 -   [ ] No UI code accesses Prisma directly.
