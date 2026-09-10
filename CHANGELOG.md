@@ -10,3 +10,4 @@ All notable changes to FreelanceOS are documented in this file.
 - Application shell with Tailwind CSS, shadcn/ui, and placeholder navigation destinations.
 - Developer quality baseline with Vitest, a Playwright application smoke test, and CI quality gates.
 - EPIC-001 Engineering Review completed; foundation certified for EPIC-002.
+- PostgreSQL and Prisma persistence foundation with a server-only client and initial migration pipeline.

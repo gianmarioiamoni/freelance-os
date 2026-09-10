@@ -135,8 +135,8 @@ context is recovered from repository documentation.
 ## Overall
 
 ``` text
-STATUS: EPIC-001 FOUNDATION CERTIFIED
-NEXT: EPIC-002 — Database & Persistence
+STATUS: EPIC-002 IN PROGRESS
+NEXT: EPIC-002 Phase 2 — Core Persistence Schema
 ```
 
 ## Completed planning artifacts
@@ -154,7 +154,7 @@ docs/
 
 ``` text
 Application implementation: NOT STARTED
-Foundation implementation: EPIC-001 COMPLETE
+Foundation implementation: EPIC-001 COMPLETE; EPIC-002 Phase 1 COMPLETE
 MVP implementation: NOT STARTED
 Production deployment: NOT STARTED
 ```
@@ -1626,11 +1626,10 @@ The project should **not jump directly into feature implementation**.
 Next actions:
 
 ``` text
-1. Create docs/epics/EPIC-002/epic-plan.md
-2. Open a new Cursor chat
-3. Execute EPIC-002 Phase 1
-4. Review
-5. Commit
+1. Open a new Cursor chat
+2. Execute EPIC-002 Phase 2
+3. Review
+4. Commit
 ```
 
 This follows the methodology's rule that each Phase gets a focused
@@ -1680,8 +1679,9 @@ releases:
 
 next:
   epic: EPIC-002
-  objective: Database & Persistence
-  implementation: not-started
+  phase: 2
+  objective: Core Persistence Schema
+  implementation: phase-1-complete
 ```
 
 ------------------------------------------------------------------------

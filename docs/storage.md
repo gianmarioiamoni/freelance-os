@@ -30,6 +30,21 @@ This document is intentionally focused on **storage concerns**. UI
 behavior, complete API contracts, and implementation-level component
 details belong elsewhere.
 
+## Implementation status
+
+EPIC-002 Phase 1 (Prisma & Database Bootstrap) is implemented:
+
+- local PostgreSQL development database;
+- Prisma 6 configuration;
+- server-only Prisma Client lifecycle under Infrastructure;
+- Prisma Migrate pipeline;
+- empty baseline migration that establishes migration history.
+
+The initial migration is empty because Phase 1 does not introduce
+application-owned models. Prisma validates and generates without
+models; `prisma migrate diff --from-empty` produced the committed
+SQL. Domain entities remain Phase 2 work.
+
 ------------------------------------------------------------------------
 
 # 2. Storage Principles
