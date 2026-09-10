@@ -4,7 +4,7 @@ FreelanceOS is a web application for freelancer operations management.
 
 ## Status
 
-Release 0 — Foundation. EPIC-001 Phase 2 (Application Shell) is complete.
+Release 0 — Foundation. EPIC-001 Phase 3 (Developer Quality Baseline) is complete.
 
 Planning and architecture documents are the source of truth. See [`MASTER_PLAN.md`](./MASTER_PLAN.md).
 
@@ -23,14 +23,17 @@ No application environment variables are required for the current bootstrap. Cop
 
 ## Commands
 
-| Command          | Description                        |
-| ---------------- | ---------------------------------- |
-| `pnpm dev`       | Start the development server       |
-| `pnpm build`     | Create a production build          |
-| `pnpm start`     | Start the production server        |
-| `pnpm lint`      | Run ESLint                         |
-| `pnpm typecheck` | Run TypeScript type checking       |
-| `pnpm format`    | Format project files with Prettier |
+| Command           | Description                        |
+| ----------------- | ---------------------------------- |
+| `pnpm dev`        | Start the development server       |
+| `pnpm build`      | Create a production build          |
+| `pnpm start`      | Start the production server        |
+| `pnpm lint`       | Run ESLint                         |
+| `pnpm typecheck`  | Run TypeScript type checking       |
+| `pnpm test`       | Run unit tests                     |
+| `pnpm test:watch` | Run unit tests in watch mode       |
+| `pnpm test:e2e`   | Run the application smoke test     |
+| `pnpm format`     | Format project files with Prettier |
 
 ## Repository structure
 
