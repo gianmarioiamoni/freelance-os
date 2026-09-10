@@ -4,7 +4,7 @@
 **Document:** `MASTER_PLAN.md`\
 **Product:** FreelanceOS\
 **Canonical format:** Markdown\
-**Current phase:** Architecture complete → Planning
+**Current phase:** EPIC-001 Engineering Review complete → EPIC-002
 
 ------------------------------------------------------------------------
 
@@ -135,8 +135,8 @@ context is recovered from repository documentation.
 ## Overall
 
 ``` text
-STATUS: ARCHITECTURE BASELINE COMPLETE
-NEXT: MASTER PLAN → EPIC PLANNING → FOUNDATION IMPLEMENTATION
+STATUS: EPIC-001 FOUNDATION CERTIFIED
+NEXT: EPIC-002 — Database & Persistence
 ```
 
 ## Completed planning artifacts
@@ -154,7 +154,7 @@ docs/
 
 ``` text
 Application implementation: NOT STARTED
-Foundation implementation: IN PROGRESS
+Foundation implementation: EPIC-001 COMPLETE
 MVP implementation: NOT STARTED
 Production deployment: NOT STARTED
 ```
@@ -1626,14 +1626,11 @@ The project should **not jump directly into feature implementation**.
 Next actions:
 
 ``` text
-1. Review MASTER_PLAN
-2. Resolve any blocking architecture/business questions
-3. Create EPIC-001 epic-plan.md
-4. Open a new Cursor chat
-5. Execute one Phase
-6. Review
-7. Commit
-8. Continue to next Phase
+1. Create docs/epics/EPIC-002/epic-plan.md
+2. Open a new Cursor chat
+3. Execute EPIC-002 Phase 1
+4. Review
+5. Commit
 ```
 
 This follows the methodology's rule that each Phase gets a focused
@@ -1647,7 +1644,7 @@ progression to the next Phase. fileciteturn1file0L59-L87
 ``` yaml
 project:
   name: FreelanceOS
-  phase: planning
+  phase: foundation
   implementation_started: true
 
 architecture:
@@ -1667,7 +1664,7 @@ documents:
 releases:
   R0:
     name: Foundation
-    status: planned
+    status: in-progress
   R1:
     name: MVP
     status: planned
@@ -1682,9 +1679,9 @@ releases:
     status: future
 
 next:
-  epic: EPIC-001
-  objective: Foundation / Repository
-  implementation: in-progress
+  epic: EPIC-002
+  objective: Database & Persistence
+  implementation: not-started
 ```
 
 ------------------------------------------------------------------------
@@ -1767,14 +1764,13 @@ The planning stage is considered complete when:
 -   [x] Dependencies are identified.
 -   [x] Release gates are defined.
 -   [x] Current project status is explicit.
--   [ ] EPIC-001 detailed plan exists.
--   [ ] Foundation implementation begins.
+-   [x] EPIC-001 detailed plan exists.
+-   [x] Foundation implementation begins.
 
 The next artifact is therefore:
 
 ``` text
-docs/epics/EPIC-001/epic-plan.md
+docs/epics/EPIC-002/epic-plan.md
 ```
 
-No production feature implementation should begin before that Epic plan
-is created.
+Do not start EPIC-002 implementation before that Epic plan is created.
