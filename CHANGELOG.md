@@ -1,0 +1,9 @@
+# Changelog
+
+All notable changes to FreelanceOS are documented in this file.
+
+## Unreleased
+
+### Added
+
+- Application repository bootstrap with Next.js App Router, TypeScript, pnpm, ESLint, and Prettier.

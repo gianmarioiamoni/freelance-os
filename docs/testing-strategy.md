@@ -1,0 +1,1799 @@
+# FreelanceOS --- Testing Strategy
+
+**Status:** Draft for implementation\
+**Document:** `docs/testing-strategy.md`\
+**Scope:** Release 0 Foundation + Release 1 MVP\
+**Canonical format:** Markdown
+
+------------------------------------------------------------------------
+
+## 1. Purpose
+
+This document defines the testing architecture and quality strategy for
+FreelanceOS.
+
+The objective is not to maximize test count. The objective is to provide
+**high confidence in business correctness, workspace isolation,
+historical correctness, and end-to-end usability** while keeping the
+feedback loop fast enough for small implementation increments.
+
+Testing follows the project methodology:
+
+``` text
+Architecture
+    ↓
+Planning
+    ↓
+Implementation
+    ↓
+Engineering Review
+    ↓
+QA
+    ↓
+Documentation
+    ↓
+UX Review
+    ↓
+Production Validation
+    ↓
+Certification
+    ↓
+Release
+```
+
+Tests are therefore part of the engineering lifecycle, not a final
+activity performed after implementation.
+
+------------------------------------------------------------------------
+
+# 2. Testing Principles
+
+## 2.1 Test behavior, not implementation details
+
+Tests should verify externally meaningful behavior and domain
+invariants.
+
+Prefer:
+
+``` text
+"contract utilization reaches 80% and creates a warning"
+```
+
+over:
+
+``` text
+"private function calculateThreshold() was called once"
+```
+
+Avoid tests that become invalid merely because internal code is
+refactored without changing behavior.
+
+------------------------------------------------------------------------
+
+## 2.2 Deterministic business logic
+
+Core business calculations must be deterministic and independently
+testable.
+
+This includes:
+
+-   duration calculations
+-   contract validity
+-   contract utilization
+-   billing calculations
+-   reporting periods
+-   alert thresholds
+-   historical contract association
+
+The same input must produce the same result.
+
+------------------------------------------------------------------------
+
+## 2.3 Test boundaries explicitly
+
+FreelanceOS has several important architectural boundaries:
+
+``` text
+UI
+ ↓
+Application
+ ↓
+Domain
+ ↓
+Repository interfaces
+ ↓
+Infrastructure
+ ↓
+PostgreSQL
+```
+
+Each boundary needs the appropriate test type.
+
+Do not attempt to prove the entire architecture with E2E tests alone.
+
+------------------------------------------------------------------------
+
+## 2.4 Security is a functional requirement
+
+Authorization and tenant isolation are not optional quality attributes.
+
+Tests must prove that:
+
+``` text
+User A in Workspace A
+```
+
+cannot read or mutate:
+
+``` text
+Workspace B
+```
+
+even if the user manipulates identifiers in a request.
+
+Workspace isolation must therefore have dedicated integration tests.
+
+------------------------------------------------------------------------
+
+## 2.5 Historical correctness is a first-class invariant
+
+Contract changes must not alter historical time-entry meaning.
+
+A test must explicitly prove scenarios such as:
+
+``` text
+Contract A
+€500/day
+January–June
+
+Contract B
+€550/day
+July onward
+
+TimeEntry
+June 20
+→ remains associated with Contract A
+```
+
+This is more important than testing only the happy path of creating a
+contract.
+
+------------------------------------------------------------------------
+
+# 3. Test Pyramid
+
+The preferred distribution is:
+
+``` text
+                 ┌───────────────┐
+                 │     E2E       │
+                 │ few, critical │
+                 └───────┬───────┘
+                         │
+                 ┌───────▼───────┐
+                 │ Integration   │
+                 │ DB + services │
+                 └───────┬───────┘
+                         │
+             ┌───────────▼───────────┐
+             │      Unit tests       │
+             │ many, fast, focused   │
+             └────────────────────────┘
+```
+
+Guideline:
+
+-   many unit tests
+-   a substantial integration suite
+-   a smaller number of high-value E2E tests
+
+Do not optimize for an arbitrary percentage split.
+
+Risk and business criticality determine coverage.
+
+------------------------------------------------------------------------
+
+# 4. Test Levels
+
+## 4.1 Unit tests
+
+Unit tests run isolated business logic without PostgreSQL, Next.js, or
+browser dependencies.
+
+Primary targets:
+
+``` text
+Domain entities
+Value objects
+Domain services
+Billing calculations
+Utilization calculations
+Period calculations
+Alert rules
+Validation logic
+```
+
+Unit tests should be fast and deterministic.
+
+------------------------------------------------------------------------
+
+## 4.2 Integration tests
+
+Integration tests verify collaboration between application code and real
+infrastructure boundaries.
+
+Primary targets:
+
+``` text
+Application services
+Repository implementations
+Prisma
+PostgreSQL
+Authorization
+Workspace isolation
+Transactions
+Migrations
+```
+
+These tests should use a real PostgreSQL-compatible test database rather
+than replacing all persistence with mocks.
+
+------------------------------------------------------------------------
+
+## 4.3 End-to-end tests
+
+E2E tests exercise the system from the browser through the application
+stack.
+
+They should focus on critical user journeys rather than every possible
+UI state.
+
+Primary targets:
+
+``` text
+Authentication
+Workspace onboarding
+Client creation
+Contract creation
+Time registration
+Dashboard
+Reporting
+Alerts
+Notification center
+```
+
+------------------------------------------------------------------------
+
+# 5. Unit Test Strategy
+
+## 5.1 Domain entities
+
+Domain entities should be tested for their invariants.
+
+Examples:
+
+### Contract
+
+Test:
+
+-   valid contract creation
+-   invalid rate
+-   invalid validity range
+-   valid adjacent contracts
+-   overlapping contracts rejected
+-   contract validity on boundary dates
+
+### TimeEntry
+
+Test:
+
+-   positive duration accepted
+-   zero duration rejected
+-   negative duration rejected
+-   valid work date
+-   billable state
+-   non-billable state
+
+------------------------------------------------------------------------
+
+# 6. Contract Validity Tests
+
+Contract validity uses:
+
+``` text
+[validFrom, validTo)
+```
+
+Tests must explicitly cover boundaries.
+
+Example:
+
+``` text
+Contract A:
+[2026-01-01, 2026-07-01)
+
+Contract B:
+[2026-07-01, ∞)
+```
+
+Expected:
+
+``` text
+2026-06-30 → A
+2026-07-01 → B
+```
+
+Also test:
+
+``` text
+2026-01-01 → A
+```
+
+and:
+
+``` text
+validTo itself is not included in A
+```
+
+------------------------------------------------------------------------
+
+## 6.1 Overlap tests
+
+The test suite must reject:
+
+``` text
+A: [Jan 1, Jul 1)
+B: [Jun 15, Aug 1)
+```
+
+and:
+
+``` text
+A: [Jan 1, ∞)
+B: [Jul 1, ∞)
+```
+
+while accepting:
+
+``` text
+A: [Jan 1, Jul 1)
+B: [Jul 1, ∞)
+```
+
+These tests must exist at both:
+
+``` text
+domain/application validation
+```
+
+and:
+
+``` text
+database integrity
+```
+
+where the PostgreSQL exclusion constraint is used.
+
+------------------------------------------------------------------------
+
+# 7. Time and Duration Tests
+
+Durations are stored in integer minutes.
+
+Minimum test matrix:
+
+  Input        Expected
+  ---------- ----------
+  30 min             30
+  60 min             60
+  90 min             90
+  8h                480
+  1h 45m            105
+  0 min        rejected
+  negative     rejected
+
+Calculations converting minutes to display hours must not introduce
+floating-point persistence.
+
+Example:
+
+``` text
+90 minutes
+→ 1h 30m
+```
+
+The underlying stored value remains:
+
+``` text
+90
+```
+
+------------------------------------------------------------------------
+
+# 8. Billing Calculation Tests
+
+Billing is a high-risk area and requires dedicated domain tests.
+
+## 8.1 Hourly billing
+
+Given:
+
+``` text
+duration = 120 minutes
+rate = €100/hour
+```
+
+expected:
+
+``` text
+€200
+```
+
+Test additional cases:
+
+``` text
+30 minutes
+60 minutes
+90 minutes
+135 minutes
+```
+
+------------------------------------------------------------------------
+
+## 8.2 Daily billing
+
+Daily billing semantics are currently an open business decision.
+
+Therefore, tests must not silently invent a partial-day rule.
+
+Once OBD-001 is decided, the test suite must include:
+
+-   full day
+-   partial day
+-   multiple days
+-   rounding behavior
+-   billable/non-billable combinations
+
+Until that decision is finalized, only the agreed daily-rate behavior
+should be implemented and tested.
+
+------------------------------------------------------------------------
+
+## 8.3 Monetary precision
+
+Tests must verify that monetary calculations do not depend on binary
+floating-point arithmetic.
+
+Examples should include rates such as:
+
+``` text
+€80.10
+€125.50
+€333.3333
+```
+
+where supported by the finalized precision rules.
+
+The final expected result must follow the approved rounding policy.
+
+------------------------------------------------------------------------
+
+# 9. Contract Utilization Tests
+
+Contract utilization is one of the core product behaviors.
+
+Given:
+
+``` text
+monthly contracted minutes = 6000
+consumed minutes = 4800
+```
+
+expected:
+
+``` text
+80%
+```
+
+Test:
+
+``` text
+0%
+1%
+79%
+80%
+99%
+100%
+101%
+```
+
+The exact interpretation of billable vs non-billable time for contract
+consumption must follow the finalized business rule.
+
+------------------------------------------------------------------------
+
+# 10. Alert Rule Tests
+
+Alert generation must be deterministic.
+
+Minimum MVP test cases:
+
+### Warning
+
+``` text
+utilization < threshold
+```
+
+→ no warning
+
+``` text
+utilization = 80%
+```
+
+→ warning
+
+### Exceeded
+
+``` text
+utilization < 100%
+```
+
+→ no exceeded alert
+
+``` text
+utilization = 100%
+```
+
+→ exceeded
+
+``` text
+utilization > 100%
+```
+
+→ exceeded
+
+The exact threshold remains configurable through workspace settings.
+
+------------------------------------------------------------------------
+
+## 10.1 Alert deduplication
+
+Given the same:
+
+``` text
+workspace
+alert type
+contract
+period
+```
+
+the system must not create duplicate logical alerts.
+
+Test:
+
+``` text
+evaluate condition
+→ alert created
+
+evaluate same condition again
+→ existing logical alert reused / no duplicate
+```
+
+The precise lifecycle implementation may vary, but duplicate alert
+creation must be prevented.
+
+------------------------------------------------------------------------
+
+# 11. Reporting Tests
+
+Reports are derived from source data.
+
+Tests should verify:
+
+-   date range filtering
+-   client grouping
+-   contract grouping
+-   total minutes
+-   billable minutes
+-   non-billable minutes
+-   estimated revenue
+-   monthly boundaries
+-   yearly boundaries
+-   empty periods
+-   multiple clients
+-   multiple contracts
+-   historical contracts
+
+Example:
+
+``` text
+Client A
+100 billable minutes
+
+Client B
+200 billable minutes
+```
+
+Expected total:
+
+``` text
+300 minutes
+```
+
+Client-level breakdown must remain:
+
+``` text
+A → 100
+B → 200
+```
+
+------------------------------------------------------------------------
+
+# 12. Reporting Period Tests
+
+Date boundaries are a common source of defects.
+
+Test:
+
+``` text
+today
+week
+month
+year
+custom range
+```
+
+For each period verify:
+
+-   first date included
+-   last date included
+-   day immediately before excluded
+-   day immediately after excluded
+
+Special attention is required around:
+
+``` text
+month → month
+December → January
+year → year
+```
+
+The workspace timezone must be respected for timestamp-derived
+operations.
+
+------------------------------------------------------------------------
+
+# 13. Application Service Tests
+
+Application services orchestrate domain behavior and persistence.
+
+Typical use cases:
+
+``` text
+CreateClient
+ArchiveClient
+CreateContract
+UpdateContract
+RecordTimeEntry
+UpdateTimeEntry
+DeleteTimeEntry
+GetDashboard
+GetReport
+EvaluateAlerts
+ListNotifications
+MarkNotificationRead
+```
+
+Tests should verify:
+
+1.  authorization context is required;
+2.  input is validated;
+3.  required repositories are called through interfaces;
+4.  domain rules are applied;
+5.  transactions are used where necessary;
+6.  expected result is returned;
+7.  invalid operations produce controlled errors.
+
+Avoid asserting internal call counts unless the interaction itself is a
+meaningful contract.
+
+------------------------------------------------------------------------
+
+# 14. Authorization Tests
+
+Authorization requires explicit test coverage.
+
+Minimum cases:
+
+### Workspace access
+
+``` text
+member of workspace
+→ access allowed
+```
+
+``` text
+non-member
+→ access denied
+```
+
+### Client access
+
+``` text
+client belongs to current workspace
+→ allowed
+```
+
+``` text
+client belongs to another workspace
+→ denied
+```
+
+### Contract access
+
+Same principle.
+
+### TimeEntry access
+
+Same principle.
+
+### Notifications
+
+A user must only see notifications intended for them and their
+workspace.
+
+------------------------------------------------------------------------
+
+# 15. Cross-Workspace Isolation Tests
+
+These are mandatory.
+
+Test setup:
+
+``` text
+Workspace A
+  User A
+  Client A
+  Contract A
+  TimeEntry A
+
+Workspace B
+  User B
+  Client B
+  Contract B
+  TimeEntry B
+```
+
+Then attempt from User A:
+
+``` text
+read Client B
+read Contract B
+read TimeEntry B
+update Client B
+update Contract B
+delete TimeEntry B
+read Notification B
+```
+
+Expected:
+
+``` text
+DENIED
+```
+
+Also test identifier substitution:
+
+``` text
+request contains Workspace B resource ID
+```
+
+The operation must still be rejected.
+
+This verifies that authorization does not rely on the client-controlled
+workspace identifier.
+
+------------------------------------------------------------------------
+
+# 16. Repository Integration Tests
+
+Repository tests use a real PostgreSQL database.
+
+Test:
+
+-   insert
+-   update
+-   delete
+-   query
+-   relations
+-   unique constraints
+-   foreign keys
+-   indexes through representative query behavior
+-   transaction behavior
+-   contract overlap constraint
+
+Repository tests should verify persistence semantics, not duplicate all
+domain tests.
+
+------------------------------------------------------------------------
+
+# 17. Database Constraint Tests
+
+The following database invariants require explicit integration coverage:
+
+### Foreign keys
+
+Invalid references must fail.
+
+### Composite workspace relationships
+
+Cross-workspace relationships must fail.
+
+### Unique constraints
+
+Duplicate membership must fail.
+
+### Duration constraint
+
+Invalid duration must fail.
+
+### Contract overlap
+
+Overlapping contracts must fail at database level.
+
+### Nullability
+
+Required fields must reject null values.
+
+The database is the final integrity boundary.
+
+------------------------------------------------------------------------
+
+# 18. Migration Tests
+
+Every migration must be executable against a clean database.
+
+CI should validate:
+
+``` text
+empty database
+    ↓
+all migrations
+    ↓
+current schema
+```
+
+The migration chain must produce the expected schema without manual
+intervention.
+
+Where destructive migrations are introduced, they require explicit
+review.
+
+------------------------------------------------------------------------
+
+# 19. Seed Tests
+
+Development seed data should be executable against a clean database.
+
+The seed must create a coherent graph:
+
+``` text
+Workspace
+ → Members
+ → Clients
+ → Contracts
+ → TimeEntries
+ → Alerts
+ → Notifications
+```
+
+The seed must not rely on manually created records.
+
+Running the seed repeatedly should either be safely repeatable or
+clearly documented as reset-only behavior.
+
+------------------------------------------------------------------------
+
+# 20. Transaction Tests
+
+Transactions are required for operations where partial persistence would
+create inconsistent state.
+
+Tests should simulate failures at intermediate steps.
+
+Example:
+
+``` text
+create time entry
+→ alert processing fails
+```
+
+The intended transactional behavior must be verified.
+
+If alert generation is deliberately decoupled from the time-entry
+transaction, the test should instead verify the documented
+eventual-consistency behavior.
+
+The implementation must not accidentally produce an undocumented hybrid
+state.
+
+------------------------------------------------------------------------
+
+# 21. E2E Critical Journeys
+
+The E2E suite should cover the MVP's primary end-to-end workflow:
+
+``` text
+Register
+→ Login
+→ Create workspace
+→ Create client
+→ Create contract
+→ Register work
+→ View weekly timesheet
+→ View monthly dashboard
+→ View contract utilization
+→ Trigger threshold warning
+→ View monthly revenue
+→ Generate report
+→ View notification
+```
+
+This is the primary acceptance journey.
+
+------------------------------------------------------------------------
+
+# 22. E2E Authentication
+
+Minimum scenarios:
+
+### Email/password
+
+``` text
+register
+→ login
+→ authenticated session
+→ logout
+```
+
+### Google
+
+Test the configured OAuth flow in an environment where the provider can
+be safely exercised.
+
+The exact provider mechanics belong to the authentication
+infrastructure.
+
+### Password recovery
+
+Test:
+
+``` text
+request recovery
+→ receive recovery mechanism in test environment
+→ set new password
+→ login with new password
+```
+
+Secrets and real production email delivery must not be required for
+normal CI.
+
+------------------------------------------------------------------------
+
+# 23. E2E Client Management
+
+Test:
+
+``` text
+create client
+→ appears in list
+→ open detail
+→ edit
+→ updated data visible
+→ archive
+→ client no longer appears in active list
+```
+
+Also verify that archived clients remain available where historical
+reporting requires them.
+
+------------------------------------------------------------------------
+
+# 24. E2E Contract Management
+
+Test:
+
+``` text
+create hourly contract
+→ visible on client
+```
+
+and:
+
+``` text
+create historical contract
+→ create newer contract
+→ verify validity timeline
+```
+
+Attempt to create overlapping contracts and verify that the UI exposes a
+useful validation error.
+
+------------------------------------------------------------------------
+
+# 25. E2E Time Tracking
+
+Minimum scenarios:
+
+``` text
+create time entry
+edit time entry
+delete time entry
+```
+
+Verify:
+
+-   client selection
+-   contract selection
+-   date
+-   duration
+-   description
+-   billable state
+
+Also verify that the weekly view totals correctly.
+
+------------------------------------------------------------------------
+
+# 26. Dashboard E2E Tests
+
+The dashboard should show consistent figures derived from the same
+source data.
+
+Given known seed/test data, verify:
+
+``` text
+total hours
+billable hours
+non-billable hours
+estimated revenue
+client allocation
+contract utilization
+alerts
+```
+
+Dashboard values must agree with report calculations.
+
+A critical invariant is:
+
+``` text
+Dashboard
+    ↕
+Analytics service
+    ↕
+Reports
+```
+
+They must not implement separate versions of the same business
+calculation.
+
+------------------------------------------------------------------------
+
+# 27. Notification E2E Tests
+
+Test:
+
+``` text
+alert condition triggered
+→ notification appears
+→ unread state visible
+→ mark as read
+→ unread count changes
+```
+
+The underlying alert and notification should remain distinguishable.
+
+------------------------------------------------------------------------
+
+# 28. UI Validation vs Business Validation
+
+Browser tests should not become the only validation for business logic.
+
+For example, the rule:
+
+``` text
+contract utilization >= 80%
+```
+
+must have unit/domain coverage.
+
+The E2E test should additionally prove:
+
+``` text
+real user workflow
+→ real data
+→ real application
+→ visible warning
+```
+
+This gives two complementary guarantees:
+
+``` text
+domain correctness
++
+product integration
+```
+
+------------------------------------------------------------------------
+
+# 29. Test Data Strategy
+
+Avoid large uncontrolled fixtures.
+
+Prefer small, explicit factories/builders.
+
+Conceptual examples:
+
+``` text
+createWorkspace()
+createMember()
+createClient()
+createContract()
+createTimeEntry()
+```
+
+Factories should make the relevant scenario obvious.
+
+Bad:
+
+``` text
+createEverything()
+```
+
+Preferred:
+
+``` text
+workspace = createWorkspace()
+client = createClient(workspace)
+contract = createContract(client)
+entry = createTimeEntry(contract)
+```
+
+This keeps tests readable and reduces hidden coupling.
+
+------------------------------------------------------------------------
+
+# 30. Test Isolation
+
+Each integration/E2E test should start from a known state.
+
+Preferred strategies:
+
+``` text
+transaction rollback
+```
+
+or:
+
+``` text
+dedicated test database reset
+```
+
+depending on the test runner and architecture.
+
+Do not allow test order to determine correctness.
+
+A test that passes only after another test has run is defective.
+
+------------------------------------------------------------------------
+
+# 31. Mocking Strategy
+
+Mock external systems, not the domain.
+
+Appropriate mocks/stubs:
+
+``` text
+OAuth provider
+email provider
+future LLM provider
+external e-invoicing provider
+clock, where deterministic time is required
+```
+
+Use real implementations for:
+
+``` text
+domain calculations
+application services
+PostgreSQL repository behavior
+workspace authorization
+```
+
+Avoid mocking Prisma so heavily that repository integration defects
+become invisible.
+
+------------------------------------------------------------------------
+
+# 32. Time Control
+
+Tests involving dates and periods must be deterministic.
+
+Where current time is relevant, use an injectable/test-controlled clock
+rather than directly depending on the machine clock.
+
+This is particularly important for:
+
+-   monthly reports
+-   current-day dashboard
+-   alert periods
+-   notification timestamps
+-   contract validity
+-   password/session expiration
+
+Example:
+
+``` text
+Test clock:
+2026-07-15 10:00 Europe/Rome
+```
+
+Then all expected results are calculated relative to that controlled
+value.
+
+------------------------------------------------------------------------
+
+# 33. Property-Based Testing Candidates
+
+Property-based testing is not required for the first implementation
+increment but may be valuable for calculation-heavy logic.
+
+Good candidates:
+
+### Duration arithmetic
+
+For non-negative integer minutes:
+
+``` text
+sum(entries) is independent of grouping/order
+```
+
+### Reporting
+
+``` text
+sum(client totals) = global total
+```
+
+### Utilization
+
+For a fixed positive contract capacity:
+
+``` text
+more consumed minutes cannot reduce utilization
+```
+
+### Contract boundaries
+
+Adjacent intervals should not overlap.
+
+These tests can expose edge cases that example-based tests miss.
+
+------------------------------------------------------------------------
+
+# 34. Accessibility Testing
+
+UX quality is part of the release lifecycle.
+
+Automated accessibility checks should be introduced for critical
+screens.
+
+Minimum targets:
+
+``` text
+login
+dashboard
+client form
+contract form
+time-entry form
+weekly timesheet
+reports
+notification center
+```
+
+Checks should include:
+
+-   semantic controls
+-   keyboard accessibility
+-   form labels
+-   focus behavior
+-   dialog accessibility
+-   validation error association
+-   sufficient interaction clarity
+
+Automated accessibility testing does not replace manual UX review.
+
+------------------------------------------------------------------------
+
+# 35. Error-State Testing
+
+Each critical workflow needs tests for failure states.
+
+Examples:
+
+``` text
+network/server failure
+invalid form input
+expired session
+unauthorized resource
+contract overlap
+missing active contract
+database conflict
+```
+
+The UI must show a controlled, understandable result.
+
+Do not expose:
+
+``` text
+Prisma error
+SQL error
+stack trace
+internal identifier
+```
+
+to normal users.
+
+------------------------------------------------------------------------
+
+# 36. Loading and Empty States
+
+Critical screens must have explicit tests or visual checks for:
+
+``` text
+loading
+empty
+success
+error
+```
+
+Examples:
+
+### Client list
+
+``` text
+loading → empty → populated → error
+```
+
+### Reports
+
+``` text
+loading → no data → populated → error
+```
+
+### Notifications
+
+``` text
+loading → no notifications → unread notifications
+```
+
+These states are part of product behavior.
+
+------------------------------------------------------------------------
+
+# 37. Performance Smoke Tests
+
+Full performance engineering is outside MVP scope, but obvious
+regressions should be detected.
+
+Representative checks:
+
+-   dashboard with realistic number of time entries
+-   monthly report over a realistic period
+-   client report
+-   weekly timesheet
+-   notification center
+
+Watch for:
+
+``` text
+N+1 queries
+```
+
+and:
+
+``` text
+loading entire TimeEntry history into application memory
+```
+
+Reporting should aggregate at the database/query layer where
+appropriate.
+
+------------------------------------------------------------------------
+
+# 38. Security Test Baseline
+
+The MVP security test suite should cover:
+
+-   authentication required for protected routes/actions
+-   authorization required for mutations
+-   workspace isolation
+-   server-side validation
+-   CSRF protections provided by the selected framework/mechanism
+-   safe session handling
+-   no secrets exposed to browser code
+-   no direct browser access to Prisma/database
+-   safe error responses
+-   input validation with Zod/application boundaries
+
+Security testing must verify architecture, not merely UI behavior.
+
+------------------------------------------------------------------------
+
+# 39. CI Quality Gates
+
+A normal pull request should run, at minimum:
+
+``` text
+format/lint
+typecheck
+unit tests
+integration tests
+build
+```
+
+E2E tests should run according to the CI strategy and environment cost.
+
+A release candidate should additionally run:
+
+``` text
+full integration suite
+full critical E2E suite
+migration validation
+production-like build
+```
+
+The exact CI provider is an implementation decision.
+
+------------------------------------------------------------------------
+
+# 40. Test Naming
+
+Test names should describe business behavior.
+
+Preferred:
+
+``` text
+should reject overlapping contracts for the same client
+```
+
+``` text
+should preserve the historical contract of a time entry
+```
+
+``` text
+should deny access to a client belonging to another workspace
+```
+
+Avoid:
+
+``` text
+test1
+works
+should call repository
+```
+
+unless the call itself is the behavior being verified.
+
+------------------------------------------------------------------------
+
+# 41. Coverage Policy
+
+Code coverage is a signal, not the definition of quality.
+
+The most important areas should have strong behavioral coverage:
+
+### Highest priority
+
+``` text
+authorization
+workspace isolation
+contract validity
+historical correctness
+billing calculations
+utilization
+alerts
+report totals
+```
+
+### Medium priority
+
+``` text
+CRUD orchestration
+notification state
+settings
+UI helpers
+```
+
+### Lower priority
+
+``` text
+simple rendering wrappers
+pure presentational components
+generated/infrastructure boilerplate
+```
+
+A high coverage percentage with missing business scenarios is not
+considered sufficient.
+
+------------------------------------------------------------------------
+
+# 42. Definition of Done --- Feature
+
+A feature is not complete merely because it works manually.
+
+Minimum feature DoD:
+
+-   [ ] acceptance criteria implemented
+-   [ ] domain rules tested
+-   [ ] application behavior tested
+-   [ ] persistence behavior tested where relevant
+-   [ ] authorization tested
+-   [ ] error states handled
+-   [ ] loading/empty states handled where relevant
+-   [ ] critical UI path tested
+-   [ ] no known regression introduced
+-   [ ] documentation updated where architecture/behavior changed
+
+------------------------------------------------------------------------
+
+# 43. Definition of Done --- Epic
+
+An Epic is ready for Engineering Review when:
+
+-   [ ] all planned use cases implemented
+-   [ ] unit suite passes
+-   [ ] integration suite passes
+-   [ ] critical E2E flows pass
+-   [ ] workspace isolation tests pass
+-   [ ] migration state is clean
+-   [ ] typecheck/lint/build pass
+-   [ ] documented business decisions are respected
+-   [ ] no unresolved critical defects
+-   [ ] architecture deviations are documented
+-   [ ] UX review can begin
+
+------------------------------------------------------------------------
+
+# 44. Release Gate
+
+A release candidate must satisfy:
+
+``` text
+Architecture compliant
+        ↓
+Tests green
+        ↓
+Security baseline green
+        ↓
+Migration validated
+        ↓
+Critical E2E green
+        ↓
+UX review complete
+        ↓
+Production validation
+        ↓
+Certification
+```
+
+A failed critical gate blocks release.
+
+------------------------------------------------------------------------
+
+# 45. MVP Test Matrix
+
+  Area                     Unit   Integration   E2E
+  ----------------------- ------ ------------- -----
+  Authentication           ---         ✓         ✓
+  Workspace                 ✓          ✓         ✓
+  Authorization             ✓          ✓         ✓
+  Client CRUD               ✓          ✓         ✓
+  Contract validity         ✓          ✓         ✓
+  Contract overlap          ✓          ✓         ✓
+  Time entries              ✓          ✓         ✓
+  Duration calculations     ✓          ✓        ---
+  Billing                   ✓          ✓         ✓
+  Utilization               ✓          ✓         ✓
+  Alerts                    ✓          ✓         ✓
+  Notifications             ✓          ✓         ✓
+  Dashboard                 ✓          ✓         ✓
+  Reports                   ✓          ✓         ✓
+  Migrations               ---         ✓        ---
+  Seed data                ---         ✓        ---
+  Accessibility            ---        ---        ✓
+  Error states              ✓          ✓         ✓
+
+------------------------------------------------------------------------
+
+# 46. Suggested Tooling Baseline
+
+The architecture baseline proposes:
+
+``` text
+Vitest
+```
+
+for unit/domain/application tests and:
+
+``` text
+Playwright
+```
+
+for browser-level E2E testing.
+
+Integration tests should run against PostgreSQL rather than a fake
+relational implementation.
+
+The exact package versions will be pinned during Foundation
+implementation.
+
+------------------------------------------------------------------------
+
+# 47. Repository Structure
+
+Recommended structure:
+
+``` text
+tests/
+├── unit/
+│   ├── domain/
+│   ├── application/
+│   └── lib/
+├── integration/
+│   ├── repositories/
+│   ├── authorization/
+│   ├── database/
+│   └── use-cases/
+├── e2e/
+│   ├── auth/
+│   ├── clients/
+│   ├── contracts/
+│   ├── time-tracking/
+│   ├── dashboard/
+│   ├── reporting/
+│   └── notifications/
+├── fixtures/
+└── factories/
+```
+
+The exact folder structure may evolve with the implementation, but the
+conceptual separation should remain.
+
+------------------------------------------------------------------------
+
+# 48. First Test Suite to Implement
+
+Before building the full UI, establish a small high-value test
+foundation.
+
+Recommended first tests:
+
+1.  Workspace membership authorization.
+2.  Cross-workspace client isolation.
+3.  Contract validity boundaries.
+4.  Contract overlap rejection.
+5.  TimeEntry duration validation.
+6.  Historical `contractId` preservation.
+7.  Hourly billing calculation.
+8.  Contract utilization calculation.
+9.  80% alert threshold.
+10. 100% exceeded threshold.
+11. Monthly report aggregation.
+12. Database migration from clean state.
+
+This gives the project an executable safety net before the UI becomes
+large.
+
+------------------------------------------------------------------------
+
+# 49. Test Execution Philosophy
+
+Tests should support small implementation increments.
+
+For each change:
+
+``` text
+Make one focused change
+        ↓
+Run targeted tests
+        ↓
+Run broader suite
+        ↓
+Review result
+        ↓
+Commit
+```
+
+Do not accumulate dozens of unrelated changes and run the full suite
+only at the end.
+
+The faster the feedback loop, the easier it is to identify the source of
+a regression.
+
+------------------------------------------------------------------------
+
+# 50. Open Testing Decisions
+
+The following remain implementation/product decisions rather than
+assumptions:
+
+  ID       Decision
+  -------- --------------------------------------------------
+  TD-001   Exact daily-rate billing semantics
+  TD-002   Final monetary rounding policy
+  TD-003   Contract-capacity treatment of non-billable time
+  TD-004   Closed-period edit/delete rules
+  TD-005   Audit requirements
+  TD-006   Final workspace role/permission matrix
+  TD-007   Email notification behavior
+  TD-008   Production E2E environment strategy
+  TD-009   CI provider and execution parallelism
+  TD-010   Performance thresholds
+
+Tests should be added or refined when these decisions are finalized.
+
+------------------------------------------------------------------------
+
+# 51. Definition of Done for Testing Strategy
+
+The testing architecture is ready when:
+
+1.  Every architectural layer has a defined test responsibility.
+2.  Domain invariants have explicit test targets.
+3.  Workspace isolation has mandatory integration coverage.
+4.  Historical contract correctness has mandatory coverage.
+5.  Billing and utilization calculations have deterministic tests.
+6.  Database constraints are tested against real PostgreSQL.
+7.  Critical user journeys have E2E coverage.
+8.  Authentication and authorization have explicit coverage.
+9.  Migration execution is tested.
+10. CI quality gates are defined.
+11. Open business decisions are not silently encoded as test
+    assumptions.
+12. The strategy can be implemented incrementally alongside the Epics.
+
+------------------------------------------------------------------------
+
+# 52. Next Step
+
+With:
+
+``` text
+docs/product-vision.md
+docs/domain-model.md
+docs/architecture.md
+docs/storage.md
+docs/testing-strategy.md
+```
+
+the architectural baseline is sufficiently defined to move to planning.
+
+The next canonical artifact should be:
+
+``` text
+MASTER_PLAN.md
+```
+
+It should translate the architecture into:
+
+-   Foundation work
+-   Epics
+-   dependencies
+-   implementation order
+-   release gates
+-   documentation deliverables
+-   engineering-review checkpoints
+-   QA checkpoints
+-   certification criteria
+
+The first implementation Epic should remain small and establish the
+project foundation before business functionality is expanded.
