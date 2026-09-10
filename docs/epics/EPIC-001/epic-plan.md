@@ -1026,7 +1026,7 @@ epic: EPIC-001
 name: Foundation / Repository
 release: R0
 status: planned
-implementation_started: false
+implementation_started: true
 engineering_review: not-started
 qa: not-started
 ux_review: not-started
