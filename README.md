@@ -4,7 +4,7 @@ FreelanceOS is a web application for freelancer operations management.
 
 ## Status
 
-Release 0 — Foundation. EPIC-002 Phase 3 (Constraints, Repositories & Seed) is complete.
+Release 0 — Foundation. EPIC-002 Phase 4 (Integration Testing & CI Database Gate) is complete.
 
 Planning and architecture documents are the source of truth. See [`MASTER_PLAN.md`](./MASTER_PLAN.md).
 
@@ -23,17 +23,31 @@ pnpm install
 cp .env.example .env
 ```
 
-Set `DATABASE_URL` in `.env`. Prisma reads this file from the project root. Do not commit `.env`. Do not prefix the variable with `NEXT_PUBLIC_`.
+Set `DATABASE_URL` and `TEST_DATABASE_URL` in `.env`. Prisma reads `.env` from the project root. Do not commit `.env`. Do not prefix either variable with `NEXT_PUBLIC_`.
 
-Start PostgreSQL, create the database if needed, then apply committed migrations:
+`DATABASE_URL` is the development database (`freelance_os`). `TEST_DATABASE_URL` must be a separate disposable database whose name ends in `_test` (documented default: `freelanceos_test`). Integration tests refuse the development database.
+
+Start PostgreSQL, create the databases if needed, then apply committed migrations:
 
 ```bash
 brew services start postgresql@17
 createdb freelance_os
+createdb freelanceos_test
 pnpm db:migrate:deploy
 pnpm db:seed
+pnpm test:db:migrate
 pnpm dev
 ```
+
+`pnpm db:migrate:deploy` applies the committed Prisma migration chain to `DATABASE_URL`. `pnpm test:db:migrate` applies the same chain to `TEST_DATABASE_URL`. Do not use `prisma db push` for either database.
+
+Persistence integration tests run against real PostgreSQL:
+
+```bash
+pnpm test:integration
+```
+
+The GitHub Actions quality workflow starts PostgreSQL 17, sets isolated test credentials, applies migrations, then runs unit and integration tests.
 
 `pnpm install` also runs `prisma generate`. The Prisma schema now includes the application-owned persistence models.
 
@@ -48,6 +62,8 @@ pnpm dev
 | `pnpm typecheck`         | Run TypeScript type checking                                     |
 | `pnpm test`              | Run unit tests                                                   |
 | `pnpm test:watch`        | Run unit tests in watch mode                                     |
+| `pnpm test:integration`  | Run persistence integration tests against `TEST_DATABASE_URL`    |
+| `pnpm test:db:migrate`   | Apply committed migrations to the isolated test database         |
 | `pnpm test:e2e`          | Run the application smoke test                                   |
 | `pnpm format`            | Format project files with Prettier                               |
 | `pnpm db:generate`       | Generate the Prisma Client                                       |

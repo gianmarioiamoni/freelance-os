@@ -32,7 +32,7 @@ details belong elsewhere.
 
 ## Implementation status
 
-EPIC-002 Phase 1–3 are implemented:
+EPIC-002 Phase 1–4 are implemented:
 
 - local PostgreSQL development database;
 - Prisma 6 configuration;
@@ -48,8 +48,19 @@ EPIC-002 Phase 1–3 are implemented:
 - workspace-scoped repository interfaces and Prisma implementations;
 - deterministic development seed (`pnpm db:seed`).
 
-Authentication tables remain outside this schema. Integration tests
-and the CI database gate belong to Phase 4.
+Authentication tables remain outside this schema.
+
+Phase 4 adds persistence integration tests against an isolated
+PostgreSQL database (`TEST_DATABASE_URL`, default name
+`freelanceos_test`) created from committed Prisma migrations
+(`pnpm test:db:migrate`, never `db push`). Run them with
+`pnpm test:integration`. CI starts PostgreSQL 17, applies the
+migration chain, and fails if migrations or persistence tests fail.
+
+`Alert.clientId` and `Alert.contractId` are independently optional
+workspace-scoped FKs. The database does not prove they refer to the
+same client; that remains an application/domain responsibility
+(F-P3-002).
 
 ------------------------------------------------------------------------
 
@@ -1754,7 +1765,7 @@ Before implementation is considered complete for storage:
 -   [x] Repository interfaces remain independent from Prisma.
 -   [x] No UI code accesses Prisma directly.
 -   [x] No domain code imports Prisma.
--   [ ] Cross-workspace access tests exist.
+-   [x] Cross-workspace access tests exist.
 
 ------------------------------------------------------------------------
 

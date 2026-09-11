@@ -5,7 +5,7 @@
 **Epic:** EPIC-002  
 **Release:** Release 0 — Foundation  
 **Objective:** Database & Persistence Foundation  
-**Status:** In Progress (Phase 3 complete)  
+**Status:** In Progress (Phase 4 complete)  
 **Depends on:** EPIC-001 — Foundation / Repository  
 **Next Epic:** EPIC-003 — Authentication
 
@@ -946,6 +946,11 @@ At minimum:
 ```text
 test(storage): verify persistence invariants
 ```
+
+### Status
+
+Complete. Isolated PostgreSQL test database, migration-based setup,
+persistence integration tests, and the CI PostgreSQL gate are in place.
 
 ---
 

@@ -5,6 +5,20 @@
 **Scope:** Release 0 Foundation + Release 1 MVP\
 **Canonical format:** Markdown
 
+## Implementation status
+
+EPIC-002 Phase 4 implements persistence integration tests against a
+real, isolated PostgreSQL database.
+
+- Create `freelanceos_test` (or another database whose name ends in
+  `_test`).
+- Set `TEST_DATABASE_URL`. Never reuse `freelance_os`.
+- Apply committed migrations with `pnpm test:db:migrate`.
+- Run `pnpm test:integration`.
+- `pnpm test` remains unit-only. Playwright stays in `pnpm test:e2e`.
+- CI provides PostgreSQL 17 and fails if migrations or persistence
+  tests fail.
+
 ------------------------------------------------------------------------
 
 ## 1. Purpose
