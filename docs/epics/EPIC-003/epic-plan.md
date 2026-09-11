@@ -695,6 +695,8 @@ Corrections stay in the same phase chat.
 
 Pin Better Auth and persist its schema on the existing PostgreSQL/Prisma foundation.
 
+**Pinned version:** Better Auth `1.7.4` with `@better-auth/prisma-adapter` `1.7.4`. Verified compatible with Next.js 15.5.25, React 19.1.0, TypeScript 5.9.3, Prisma 6.19.3, and PostgreSQL 17. Prisma remains on 6.19.3.
+
 #### Scope
 
 - Verify a stable Better Auth version compatible with Next.js 15.5, React 19, TypeScript 5.9, Prisma 6.19, and PostgreSQL 17.

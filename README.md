@@ -23,7 +23,7 @@ pnpm install
 cp .env.example .env
 ```
 
-Set `DATABASE_URL` and `TEST_DATABASE_URL` in `.env`. Prisma reads `.env` from the project root. Do not commit `.env`. Do not prefix either variable with `NEXT_PUBLIC_`.
+Set `DATABASE_URL`, `TEST_DATABASE_URL`, `BETTER_AUTH_SECRET`, and `BETTER_AUTH_URL` in `.env`. Prisma reads `.env` from the project root. Do not commit `.env`. Do not prefix secrets with `NEXT_PUBLIC_`. Authentication product flows are not implemented yet.
 
 `DATABASE_URL` is the development database (`freelance_os`). `TEST_DATABASE_URL` must be a separate disposable database whose name ends in `_test` (documented default: `freelanceos_test`). Integration tests refuse the development database.
 
@@ -49,7 +49,7 @@ pnpm test:integration
 
 The GitHub Actions quality workflow starts PostgreSQL 17, sets isolated test credentials, applies migrations, then runs unit and integration tests.
 
-`pnpm install` also runs `prisma generate`. The Prisma schema now includes the application-owned persistence models.
+`pnpm install` also runs `prisma generate`. The Prisma schema includes the application-owned persistence models and Better Auth 1.7.4 tables.
 
 ## Commands
 

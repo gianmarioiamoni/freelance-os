@@ -46,7 +46,10 @@ EPIC-002 is complete (Phases 1–5). Implemented:
 - PostgreSQL exclusion constraint for contract validity overlap;
 - composite workspace FKs for optional Alert/Notification references;
 - workspace-scoped repository interfaces and Prisma implementations;
-- deterministic development seed (`pnpm db:seed`).
+- deterministic development seed (`pnpm db:seed`);
+- Better Auth 1.7.4 persistence models (`user`, `session`, `account`,
+  `verification`) via Prisma Migrate. Application-owned models are
+  unchanged. `WorkspaceMember.userId` remains a logical user id.
 
 Authentication tables remain outside this schema.
 
@@ -691,7 +694,7 @@ the underlying business condition represented by an alert.
 
 Authentication is an infrastructure concern.
 
-The selected authentication system is expected to manage records for:
+Better Auth 1.7.4 owns these persistence records:
 
 ``` text
 User
@@ -700,8 +703,12 @@ Account
 Verification
 ```
 
-The exact schema is intentionally not duplicated in this document
-because it is coupled to the pinned Better Auth implementation/version.
+They live in the application Prisma schema and are applied through
+Prisma Migrate. Column-level details stay coupled to the pinned
+library version and are not duplicated here.
+
+There is no Prisma foreign key from `WorkspaceMember.userId` to
+Better Auth `User.id`. The reference remains logical.
 
 Application-owned records reference the authentication user identifier.
 

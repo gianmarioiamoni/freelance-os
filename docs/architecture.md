@@ -602,7 +602,7 @@ The MVP will use:
 - email/password;
 - Google OAuth.
 
-Better Auth is the current candidate for authentication. Its current documentation supports Google as a social provider and provides Next.js integration patterns.
+Better Auth 1.7.4 is the pinned authentication adapter. Persistence and a server-only Infrastructure instance exist. Email/password, Google OAuth, and route protection are not implemented yet.
 
 ## Authorization
 
@@ -1328,7 +1328,7 @@ ADRs should record:
 | Validation | Zod |
 | Database | PostgreSQL |
 | ORM / data access | Prisma |
-| Authentication | Better Auth candidate |
+| Authentication | Better Auth 1.7.4 |
 | OAuth | Google |
 | Unit testing | Vitest candidate |
 | E2E testing | Playwright candidate |
