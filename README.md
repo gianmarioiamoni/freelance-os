@@ -4,7 +4,7 @@ FreelanceOS is a web application for freelancer operations management.
 
 ## Status
 
-Release 0 — Foundation. EPIC-002 Phase 4 (Integration Testing & CI Database Gate) is complete.
+Release 0 — Foundation. EPIC-002 (Database & Persistence) is complete. Next: EPIC-003 — Authentication.
 
 Planning and architecture documents are the source of truth. See [`MASTER_PLAN.md`](./MASTER_PLAN.md).
 

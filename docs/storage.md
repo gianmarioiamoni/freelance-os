@@ -1,6 +1,6 @@
 # FreelanceOS --- Storage Architecture
 
-**Status:** Draft for implementation\
+**Status:** Implemented — EPIC-002 complete\
 **Document:** `docs/storage.md`\
 **Scope:** Release 0 Foundation + Release 1 MVP\
 **Canonical format:** Markdown
@@ -32,7 +32,7 @@ details belong elsewhere.
 
 ## Implementation status
 
-EPIC-002 Phase 1–4 are implemented:
+EPIC-002 is complete (Phases 1–5). Implemented:
 
 - local PostgreSQL development database;
 - Prisma 6 configuration;
@@ -56,6 +56,9 @@ PostgreSQL database (`TEST_DATABASE_URL`, default name
 (`pnpm test:db:migrate`, never `db push`). Run them with
 `pnpm test:integration`. CI starts PostgreSQL 17, applies the
 migration chain, and fails if migrations or persistence tests fail.
+
+Phase 5 certified this document against the implemented storage
+layer. Review: `docs/epics/EPIC-002/engineering-review.md`.
 
 `Alert.clientId` and `Alert.contractId` are independently optional
 workspace-scoped FKs. The database does not prove they refer to the

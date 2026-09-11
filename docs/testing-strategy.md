@@ -7,8 +7,8 @@
 
 ## Implementation status
 
-EPIC-002 Phase 4 implements persistence integration tests against a
-real, isolated PostgreSQL database.
+EPIC-002 is complete. Phase 4 implements persistence integration tests
+against a real, isolated PostgreSQL database.
 
 - Create `freelanceos_test` (or another database whose name ends in
   `_test`).

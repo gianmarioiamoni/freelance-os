@@ -14,3 +14,4 @@ All notable changes to FreelanceOS are documented in this file.
 - Core application persistence schema for workspace, client, contract, time entry, settings, alert, and notification models.
 - Persistence invariants, workspace-scoped repositories, and a deterministic development seed.
 - Persistence integration tests against isolated PostgreSQL and a CI database gate.
+- EPIC-002 Engineering Review completed; persistence foundation certified for EPIC-003.

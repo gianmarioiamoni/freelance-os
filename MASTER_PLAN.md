@@ -4,7 +4,7 @@
 **Document:** `MASTER_PLAN.md`\
 **Product:** FreelanceOS\
 **Canonical format:** Markdown\
-**Current phase:** EPIC-002 Phase 4 complete → Phase 5
+**Current phase:** EPIC-002 complete → EPIC-003
 
 ------------------------------------------------------------------------
 
@@ -135,8 +135,8 @@ context is recovered from repository documentation.
 ## Overall
 
 ``` text
-STATUS: EPIC-002 IN PROGRESS
-NEXT: EPIC-002 Phase 5 — Documentation & Storage Engineering Review
+STATUS: EPIC-002 COMPLETE
+NEXT: EPIC-003 — Authentication
 ```
 
 ## Completed planning artifacts
@@ -154,7 +154,7 @@ docs/
 
 ``` text
 Application implementation: NOT STARTED
-Foundation implementation: EPIC-001 COMPLETE; EPIC-002 Phase 1–4 COMPLETE
+Foundation implementation: EPIC-001 COMPLETE; EPIC-002 COMPLETE
 MVP implementation: NOT STARTED
 Production deployment: NOT STARTED
 ```
@@ -1627,9 +1627,8 @@ Next actions:
 
 ``` text
 1. Open a new Cursor chat
-2. Execute EPIC-002 Phase 5
-3. Review
-4. Commit
+2. Create docs/epics/EPIC-003/epic-plan.md before implementation
+3. Execute EPIC-003 — Authentication
 ```
 
 This follows the methodology's rule that each Phase gets a focused
@@ -1678,10 +1677,10 @@ releases:
     status: future
 
 next:
-  epic: EPIC-002
-  phase: 5
-  objective: Documentation & Storage Engineering Review
-  implementation: phase-4-complete
+  epic: EPIC-003
+  phase: planning
+  objective: Authentication Foundation
+  implementation: epic-002-complete
 ```
 
 ------------------------------------------------------------------------
