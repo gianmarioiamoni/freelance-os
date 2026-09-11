@@ -23,7 +23,9 @@ pnpm install
 cp .env.example .env
 ```
 
-Set `DATABASE_URL`, `TEST_DATABASE_URL`, `BETTER_AUTH_SECRET`, and `BETTER_AUTH_URL` in `.env`. Prisma reads `.env` from the project root. Do not commit `.env`. Do not prefix secrets with `NEXT_PUBLIC_`. Authentication product flows are not implemented yet.
+Set `DATABASE_URL`, `TEST_DATABASE_URL`, `BETTER_AUTH_SECRET`, and `BETTER_AUTH_URL` in `.env`. Prisma reads `.env` from the project root. Do not commit `.env`. Do not prefix secrets with `NEXT_PUBLIC_`.
+
+Email/password registration, sign-in, and sign-out are available at `/sign-up` and `/sign-in`. Application routes require a Better Auth server session. Google OAuth and password recovery are not implemented yet.
 
 `DATABASE_URL` is the development database (`freelance_os`). `TEST_DATABASE_URL` must be a separate disposable database whose name ends in `_test` (documented default: `freelanceos_test`). Integration tests refuse the development database.
 

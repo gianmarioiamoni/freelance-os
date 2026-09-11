@@ -1,4 +1,4 @@
-// src/app/page.tsx
+// src/app/(app)/page.tsx
 import { PlaceholderPage } from "@/components/placeholder/PlaceholderPage";
 import type { JSX } from "react";
 

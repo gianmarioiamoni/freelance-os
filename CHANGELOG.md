@@ -6,6 +6,7 @@ All notable changes to FreelanceOS are documented in this file.
 
 ### Added
 
+- Email/password authentication, Better Auth sessions, and a protected App Router server boundary.
 - Better Auth 1.7.4 persistence foundation with Prisma adapter, server-only auth instance, and reviewed migration.
 
 - Application repository bootstrap with Next.js App Router, TypeScript, pnpm, ESLint, and Prettier.

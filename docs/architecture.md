@@ -602,7 +602,11 @@ The MVP will use:
 - email/password;
 - Google OAuth.
 
-Better Auth 1.7.4 is the pinned authentication adapter. Persistence and a server-only Infrastructure instance exist. Email/password, Google OAuth, and route protection are not implemented yet.
+Better Auth 1.7.4 is the pinned authentication adapter. Persistence, a server-only Infrastructure instance, email/password registration/sign-in/sign-out, server-side session retrieval, and a protected App Router boundary are implemented. Google OAuth and password recovery are not implemented yet.
+
+Protected application routes live in the `(app)` route group. The authenticated layout reads the Better Auth server session and redirects unauthenticated requests to `/sign-in`. Authenticated visitors to `/sign-in` and `/sign-up` are redirected to `/`.
+
+Next.js 15.5.25 does not provide the `proxy.ts` request-interception convention. `middleware.ts` is deprecated by project convention and is not used. Server-side session validation in the authenticated layout is the authoritative boundary. Client auth state is a projection of that session.
 
 ## Authorization
 

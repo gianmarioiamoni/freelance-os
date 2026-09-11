@@ -5,7 +5,7 @@
 **Epic:** EPIC-003  
 **Release:** Release 0 — Foundation  
 **Objective:** Authentication Foundation  
-**Status:** Planned  
+**Status:** In progress — Phase 2 complete  
 **Depends on:** EPIC-001 — Foundation / Repository; EPIC-002 — Database & Persistence  
 **Next Epic:** EPIC-004 — Workspace
 
@@ -89,9 +89,9 @@ Current stack relevant to this Epic:
 | Vitest | 4.1.11 |
 | Playwright | 1.63.0 |
 
-Better Auth is not installed. No auth tables, auth routes, or route-protection layer exist.
+Phase 1 pinned Better Auth 1.7.4 and migrated `user`, `session`, `account`, and `verification`.
 
-`src/application/` is empty. Existing `src/app/*` pages are unauthenticated placeholders.
+Phase 2 implemented email/password registration, sign-in, sign-out, server-side session retrieval, the Better Auth App Router handler at `/api/auth/[...all]`, and an authenticated `(app)` layout boundary. Google OAuth, password recovery, and workspace authorization are not implemented.
 
 `WorkspaceMember.userId`, `TimeEntry.userId`, and `Notification.userId` are logical auth-user identifiers. The development seed uses opaque ids (`seed-user-owner`, `seed-user-member`) and does not create authentication users.
 
@@ -101,7 +101,7 @@ Better Auth is not installed. No auth tables, auth routes, or route-protection l
 
 ```text
 Application implementation: NOT STARTED
-Authentication: NOT STARTED
+Authentication: EMAIL/PASSWORD + SESSIONS IMPLEMENTED
 Authorization: NOT STARTED
 Workspace onboarding: NOT STARTED
 MVP implementation: NOT STARTED
@@ -806,6 +806,10 @@ feat(auth): implement email password sessions and route protection
 - Protected routes require a server-side session.
 - Client Components do not import server auth.
 - Quality gate passes.
+
+#### Phase 2 finding
+
+Next.js 15.5.25 does not provide `proxy.ts`. Better Auth still documents `middleware.ts` for this version. Project convention deprecates `middleware`. Phase 2 therefore uses server-side session checks in the authenticated App Router layout as the authoritative boundary. No `middleware.ts` or invented `proxy` shim was added.
 
 ---
 

@@ -1,5 +1,4 @@
 // src/app/layout.tsx
-import { AppShell } from "@/components/app-shell/AppShell";
 import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
@@ -24,9 +23,7 @@ type RootLayoutProps = {
 export default function RootLayout({ children }: RootLayoutProps): JSX.Element {
   return (
     <html lang="en" className={cn("font-sans", geist.variable)}>
-      <body className="min-h-svh antialiased">
-        <AppShell>{children}</AppShell>
-      </body>
+      <body className="min-h-svh antialiased">{children}</body>
     </html>
   );
 }

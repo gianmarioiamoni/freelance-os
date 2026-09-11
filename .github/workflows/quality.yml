@@ -12,6 +12,8 @@ jobs:
     env:
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/freelanceos_test
       TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/freelanceos_test
+      BETTER_AUTH_SECRET: test-better-auth-secret-32-characters-min
+      BETTER_AUTH_URL: http://localhost:3000
     services:
       postgres:
         image: postgres:17

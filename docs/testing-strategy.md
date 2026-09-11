@@ -10,6 +10,10 @@
 EPIC-002 is complete. Phase 4 implements persistence integration tests
 against a real, isolated PostgreSQL database.
 
+EPIC-003 Phase 2 adds authentication integration tests against the same
+isolated PostgreSQL database (`pnpm test:integration`) and a targeted
+email/password Playwright journey (`pnpm test:e2e`).
+
 - Create `freelanceos_test` (or another database whose name ends in
   `_test`).
 - Set `TEST_DATABASE_URL`. Never reuse `freelance_os`.

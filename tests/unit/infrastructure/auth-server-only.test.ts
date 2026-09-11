@@ -1,15 +1,48 @@
 // tests/unit/infrastructure/auth-server-only.test.ts
-import { readFileSync } from "node:fs";
+import { readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 
-describe("Better Auth server instance", () => {
-  it("declares the server-only boundary", () => {
-    const source = readFileSync(
-      path.join(process.cwd(), "src/infrastructure/auth/auth.ts"),
-      "utf8",
-    );
+const root = process.cwd();
 
-    expect(source).toMatch(/import ["']server-only["']/);
+function source(relativePath: string): string {
+  return readFileSync(path.join(root, relativePath), "utf8");
+}
+
+function listFiles(directory: string): string[] {
+  return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
+    const entryPath = path.join(directory, entry.name);
+    return entry.isDirectory() ? listFiles(entryPath) : [entryPath];
+  });
+}
+
+describe("Better Auth server/client boundary", () => {
+  it("keeps the server auth instance and session helper server-only", () => {
+    expect(source("src/infrastructure/auth/auth.ts")).toMatch(
+      /import ["']server-only["']/,
+    );
+    expect(source("src/infrastructure/auth/session.ts")).toMatch(
+      /import ["']server-only["']/,
+    );
+  });
+
+  it("does not import server auth into client modules", () => {
+    const clientFiles = [
+      path.join(root, "src/infrastructure/auth/auth-client.ts"),
+      ...listFiles(path.join(root, "src/features/auth")),
+    ];
+
+    for (const filePath of clientFiles) {
+      const contents = readFileSync(filePath, "utf8");
+      expect(contents).not.toMatch(/from ["']@\/infrastructure\/auth\/auth["']/);
+      expect(contents).not.toMatch(/from ["']@\/infrastructure\/auth\/session["']/);
+      expect(contents).not.toMatch(/from ["']better-auth\/next-js["']/);
+    }
+  });
+
+  it("does not commit authentication secrets", () => {
+    const example = source(".env.example");
+    expect(example).toMatch(/BETTER_AUTH_SECRET=""/);
+    expect(example).not.toMatch(/BETTER_AUTH_SECRET=".{8,}"/);
   });
 });

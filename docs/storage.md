@@ -51,7 +51,9 @@ EPIC-002 is complete (Phases 1–5). Implemented:
   `verification`) via Prisma Migrate. Application-owned models are
   unchanged. `WorkspaceMember.userId` remains a logical user id.
 
-Authentication tables remain outside this schema.
+EPIC-003 Phase 2 uses those same authentication tables for
+email/password registration, sign-in, and session lifecycle. No
+schema change was required.
 
 Phase 4 adds persistence integration tests against an isolated
 PostgreSQL database (`TEST_DATABASE_URL`, default name
