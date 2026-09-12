@@ -55,6 +55,11 @@ EPIC-003 Phase 2 uses those same authentication tables for
 email/password registration, sign-in, and session lifecycle. No
 schema change was required.
 
+EPIC-003 Phase 3 stores Google OAuth identities in the existing
+Better Auth `account` table (`providerId = google`). No schema
+change or migration was required. Application-owned models and
+EPIC-002 composite foreign keys are unchanged.
+
 Phase 4 adds persistence integration tests against an isolated
 PostgreSQL database (`TEST_DATABASE_URL`, default name
 `freelanceos_test`) created from committed Prisma migrations

@@ -602,7 +602,11 @@ The MVP will use:
 - email/password;
 - Google OAuth.
 
-Better Auth 1.7.4 is the pinned authentication adapter. Persistence, a server-only Infrastructure instance, email/password registration/sign-in/sign-out, server-side session retrieval, and a protected App Router boundary are implemented. Google OAuth and password recovery are not implemented yet.
+Better Auth 1.7.4 is the pinned authentication adapter. Persistence, a server-only Infrastructure instance, email/password registration/sign-in/sign-out, Google OAuth through Better Auth's Google provider, server-side session retrieval, and a protected App Router boundary are implemented. Password recovery is not implemented yet.
+
+Google OAuth uses `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`. The provider is registered only when both values are present. The callback is Better Auth's catch-all handler at `/api/auth/callback/google`, derived from `BETTER_AUTH_URL` and the default `/api/auth` base path. Client code never receives the client secret.
+
+Account linking uses Better Auth 1.7.4 defaults. Implicit linking stays enabled, but the library requires the existing local user to have `emailVerified: true` before linking a Google identity to an email/password user. Phase 2 registration does not verify email, so an existing unverified email/password account is not silently merged with a later Google sign-in for the same email. FreelanceOS does not override that library security default.
 
 Protected application routes live in the `(app)` route group. The authenticated layout reads the Better Auth server session and redirects unauthenticated requests to `/sign-in`. Authenticated visitors to `/sign-in` and `/sign-up` are redirected to `/`.
 

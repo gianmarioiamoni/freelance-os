@@ -14,6 +14,14 @@ EPIC-003 Phase 2 adds authentication integration tests against the same
 isolated PostgreSQL database (`pnpm test:integration`) and a targeted
 email/password Playwright journey (`pnpm test:e2e`).
 
+EPIC-003 Phase 3 adds Google OAuth configuration and authorization-URL
+tests. Integration tests use placeholder `GOOGLE_CLIENT_ID` /
+`GOOGLE_CLIENT_SECRET` values so CI never needs real Google
+credentials. The full Google consent/callback exchange is not
+automated: it requires a real Google account and cannot be safely
+run in CI. E2E asserts the Google sign-in control is present and
+continues to cover email/password.
+
 - Create `freelanceos_test` (or another database whose name ends in
   `_test`).
 - Set `TEST_DATABASE_URL`. Never reuse `freelance_os`.

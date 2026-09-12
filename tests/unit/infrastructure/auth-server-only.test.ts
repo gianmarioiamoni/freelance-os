@@ -36,7 +36,12 @@ describe("Better Auth server/client boundary", () => {
       const contents = readFileSync(filePath, "utf8");
       expect(contents).not.toMatch(/from ["']@\/infrastructure\/auth\/auth["']/);
       expect(contents).not.toMatch(/from ["']@\/infrastructure\/auth\/session["']/);
+      expect(contents).not.toMatch(
+        /from ["']@\/infrastructure\/auth\/google-provider["']/,
+      );
       expect(contents).not.toMatch(/from ["']better-auth\/next-js["']/);
+      expect(contents).not.toMatch(/GOOGLE_CLIENT_SECRET/);
+      expect(contents).not.toMatch(/process\.env\.GOOGLE_/);
     }
   });
 
@@ -44,5 +49,17 @@ describe("Better Auth server/client boundary", () => {
     const example = source(".env.example");
     expect(example).toMatch(/BETTER_AUTH_SECRET=""/);
     expect(example).not.toMatch(/BETTER_AUTH_SECRET=".{8,}"/);
+    expect(example).toMatch(/GOOGLE_CLIENT_ID=""/);
+    expect(example).toMatch(/GOOGLE_CLIENT_SECRET=""/);
+    expect(example).not.toMatch(/GOOGLE_CLIENT_ID=".{8,}"/);
+    expect(example).not.toMatch(/GOOGLE_CLIENT_SECRET=".{8,}"/);
+  });
+
+  it("does not override Better Auth account-linking defaults", () => {
+    const authSource = source("src/infrastructure/auth/auth.ts");
+    expect(authSource).not.toMatch(/accountLinking/);
+    expect(authSource).not.toMatch(/requireLocalEmailVerified/);
+    expect(authSource).not.toMatch(/trustedProviders/);
+    expect(authSource).not.toMatch(/disableImplicitLinking/);
   });
 });

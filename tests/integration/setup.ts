@@ -9,6 +9,8 @@ process.env.BETTER_AUTH_SECRET =
   process.env.BETTER_AUTH_SECRET ?? "test-better-auth-secret-32-characters-min";
 process.env.BETTER_AUTH_URL =
   process.env.BETTER_AUTH_URL ?? "http://localhost:3000";
+process.env.GOOGLE_CLIENT_ID = "test-google-client-id";
+process.env.GOOGLE_CLIENT_SECRET = "test-google-client-secret";
 
 const { prisma } = await import("@/infrastructure/prisma/client");
 

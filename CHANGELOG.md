@@ -6,6 +6,7 @@ All notable changes to FreelanceOS are documented in this file.
 
 ### Added
 
+- Google OAuth sign-in through Better Auth, using environment-based credentials and the existing `/api/auth/[...all]` callback route.
 - Email/password authentication, Better Auth sessions, and a protected App Router server boundary.
 - Better Auth 1.7.4 persistence foundation with Prisma adapter, server-only auth instance, and reviewed migration.
 

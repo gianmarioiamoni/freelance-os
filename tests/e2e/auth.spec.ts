@@ -12,6 +12,20 @@ test("should redirect unauthenticated users to sign-in", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Sign in" })).toBeVisible();
 });
 
+test("should expose Google sign-in without requiring Google credentials", async ({
+  page,
+}) => {
+  await page.goto("/sign-in");
+  await expect(
+    page.getByRole("button", { name: "Continue with Google" }),
+  ).toBeVisible();
+
+  await page.goto("/sign-up");
+  await expect(
+    page.getByRole("button", { name: "Continue with Google" }),
+  ).toBeVisible();
+});
+
 test("should reject invalid credentials", async ({ page }) => {
   await page.goto("/sign-in");
   await page.getByLabel("Email").fill("nobody@example.com");

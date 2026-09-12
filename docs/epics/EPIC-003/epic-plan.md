@@ -5,7 +5,7 @@
 **Epic:** EPIC-003  
 **Release:** Release 0 — Foundation  
 **Objective:** Authentication Foundation  
-**Status:** In progress — Phase 2 complete  
+**Status:** In progress — Phase 3 complete  
 **Depends on:** EPIC-001 — Foundation / Repository; EPIC-002 — Database & Persistence  
 **Next Epic:** EPIC-004 — Workspace
 
@@ -91,7 +91,9 @@ Current stack relevant to this Epic:
 
 Phase 1 pinned Better Auth 1.7.4 and migrated `user`, `session`, `account`, and `verification`.
 
-Phase 2 implemented email/password registration, sign-in, sign-out, server-side session retrieval, the Better Auth App Router handler at `/api/auth/[...all]`, and an authenticated `(app)` layout boundary. Google OAuth, password recovery, and workspace authorization are not implemented.
+Phase 2 implemented email/password registration, sign-in, sign-out, server-side session retrieval, the Better Auth App Router handler at `/api/auth/[...all]`, and an authenticated `(app)` layout boundary.
+
+Phase 3 configured Google OAuth through Better Auth's Google provider. The callback remains `/api/auth/callback/google` on the existing catch-all handler. Account linking uses Better Auth defaults (`requireLocalEmailVerified: true`). Password recovery and workspace authorization are not implemented.
 
 `WorkspaceMember.userId`, `TimeEntry.userId`, and `Notification.userId` are logical auth-user identifiers. The development seed uses opaque ids (`seed-user-owner`, `seed-user-member`) and does not create authentication users.
 
@@ -101,7 +103,7 @@ Phase 2 implemented email/password registration, sign-in, sign-out, server-side 
 
 ```text
 Application implementation: NOT STARTED
-Authentication: EMAIL/PASSWORD + SESSIONS IMPLEMENTED
+Authentication: EMAIL/PASSWORD + GOOGLE OAUTH + SESSIONS IMPLEMENTED
 Authorization: NOT STARTED
 Workspace onboarding: NOT STARTED
 MVP implementation: NOT STARTED
@@ -868,6 +870,10 @@ feat(auth): add google oauth
 - Required account linking is the library behavior, not a custom linker.
 - CI passes without Google credentials.
 - Email/password still works.
+
+#### Phase 3 finding
+
+Better Auth 1.7.4 implicit account linking requires the existing local user to have `emailVerified: true`. Email/password registration does not verify email. A later Google sign-in for that same email is therefore rejected (`account not linked`) rather than merged. FreelanceOS does not override `requireLocalEmailVerified`. Full Google consent/callback is not automated in CI.
 
 ---
 

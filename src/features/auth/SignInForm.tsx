@@ -2,6 +2,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { GoogleSignInButton } from "@/features/auth/GoogleSignInButton";
 import { authClient } from "@/infrastructure/auth/auth-client";
 import Link from "next/link";
 import { useState, type FormEvent, type JSX } from "react";
@@ -68,6 +69,7 @@ export function SignInForm(): JSX.Element {
       <Button type="submit" disabled={isSubmitting}>
         {isSubmitting ? "Signing in…" : "Sign in"}
       </Button>
+      <GoogleSignInButton disabled={isSubmitting} onError={setErrorMessage} />
       <p className="text-sm text-muted-foreground">
         Need an account?{" "}
         <Link className="underline" href="/sign-up">
