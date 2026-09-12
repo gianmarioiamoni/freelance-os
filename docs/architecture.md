@@ -1,6 +1,6 @@
 # FreelanceOS — System Architecture
 
-**Status:** Architecture Baseline — Authentication and workspace implemented (EPIC-003, EPIC-004)  
+**Status:** Architecture Baseline — Authentication, workspace, and testing/CI foundation implemented (EPIC-003, EPIC-004, EPIC-005)  
 **Scope:** MVP  
 **Architectural style:** Modular Monolith  
 **Primary runtime:** Next.js / TypeScript  
@@ -626,6 +626,8 @@ Protected application routes live in the `(app)` route group. The authenticated 
 
 Authentication integration tests run against the isolated PostgreSQL test database. Deterministic Playwright coverage exercises email/password, protected routes, logout, and password recovery. CI applies the migration chain and runs those suites without Google credentials or a production email provider. Playwright CI uses the Next.js development server so Better Auth production rate limits do not make auth journeys flaky. Full Google consent/callback is a documented non-CI limitation.
 
+EPIC-005 does not change this runtime architecture. Playwright E2E requires `TEST_DATABASE_URL`, refuses `freelance_os`, and injects the isolated `*_test` URL only into the E2E process. An existing `pnpm dev` server is not reused. Review: `docs/epics/EPIC-005/engineering-review.md`.
+
 Next.js 15.5.25 does not provide the `proxy.ts` request-interception convention. `middleware.ts` is deprecated by project convention and is not used. Server-side session validation in the authenticated layout is the authoritative boundary. Client auth state is a projection of that session.
 
 ## Authorization
@@ -1180,6 +1182,8 @@ Register
 → Trigger Alert
 → View Report
 ```
+
+Foundation E2E currently covers authentication, first-workspace onboarding, and the authenticated shell gate. Those journeys require `TEST_DATABASE_URL`. The remaining MVP steps above are later product work, not a missing Foundation suite.
 
 ## Principle
 

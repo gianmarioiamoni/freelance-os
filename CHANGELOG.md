@@ -6,6 +6,9 @@ All notable changes to FreelanceOS are documented in this file.
 
 ### Added
 
+- EPIC-005 Testing & CI Foundation Engineering Review completed; isolated E2E database contract, CI Playwright lock (`pnpm dev`, one worker), and workspace isolation/authorization regression baseline certified. Not production-ready.
+- Playwright E2E requires `TEST_DATABASE_URL`, refuses `freelance_os`, and injects the isolated `*_test` database only into the E2E process.
+- Isolation/authorization regression baseline locked for member access, non-member denial, identifier substitution, membership fail-closed behavior, and persistence tenant isolation.
 - EPIC-004 Workspace Engineering Review completed; workspace foundation certified for later product Epics with documented non-blocking findings.
 - Workspace authorization and isolation tests covering member access, non-member denial, identifier substitution, cross-workspace reads, fail-closed multiple memberships, and zero-membership onboarding.
 - First-workspace onboarding at `/onboarding` and a workspace-aware authenticated application boundary. Zero memberships require onboarding, one membership enters the application, and more than one membership fails closed.

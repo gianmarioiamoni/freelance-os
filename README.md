@@ -4,7 +4,7 @@ FreelanceOS is a web application for freelancer operations management.
 
 ## Status
 
-Release 0 — Foundation. EPIC-004 complete: first-workspace onboarding, server-side workspace resolution, and membership authorization. Authentication remains Better Auth. Role permissions (OBD-009) and production password-reset email are not decided.
+Release 0 — Foundation. EPIC-005 complete: isolated E2E database contract, CI quality gates, and workspace isolation/authorization regression baseline. Authentication remains Better Auth. Role permissions (OBD-009) and production password-reset email are not decided. This is not production readiness.
 
 Planning and architecture documents are the source of truth. See [`MASTER_PLAN.md`](./MASTER_PLAN.md).
 

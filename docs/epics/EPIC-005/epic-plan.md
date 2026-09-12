@@ -5,7 +5,7 @@
 **Epic:** EPIC-005  
 **Release:** Release 0 — Foundation  
 **Objective:** Testing & CI Foundation  
-**Status:** Planning complete — implementation not started  
+**Status:** COMPLETE — PASS  
 **Depends on:** EPIC-001 — Foundation / Repository; EPIC-002 — Database & Persistence; EPIC-003 — Authentication; EPIC-004 — Workspace  
 **Next Epic:** EPIC-006 — UI Foundation  
 **Canonical source:** `MASTER_PLAN.md` R0-E05 — Testing & CI Foundation
@@ -17,11 +17,24 @@ MASTER_PLAN naming variants exist (`Testing & CI` vs `Testing & CI Foundation`).
 ## 2. Status
 
 ```text
-PLANNING COMPLETE
-IMPLEMENTATION NOT STARTED
-CERTIFICATION: NOT STARTED
+IMPLEMENTATION COMPLETE
+CERTIFICATION: PASS
 PRODUCTION READINESS: NO
+READY FOR EPIC-006
 ```
+
+Reviewed commits:
+
+```text
+71b8e2ee6078a45c6b48cb66c5cb4868d851211b
+test(ci): align e2e with isolated database and lock quality gates
+
+0ba1aa888b28bcb2a1cc61dfe6038a2009adef97
+test(ci): lock workspace isolation and authorization regressions
+```
+
+Phase 3 is documentation and certification only. Review:
+`docs/epics/EPIC-005/engineering-review.md`.
 
 Prior Epic engineering status (do not reopen as EPIC-005 product work):
 
@@ -242,12 +255,12 @@ These are the only foundation gaps this Epic may close.
 
 | ID | Gap | Evidence |
 | --- | --- | --- |
-| G-001 | Local Playwright can write to the development database | `playwright.config.ts` starts `pnpm dev` with process env. Local `.env` sets `DATABASE_URL=freelance_os`. CI overrides both URLs to `freelanceos_test`. The password-reset helper reads `DATABASE_URL`, not `TEST_DATABASE_URL`. Integration tests refuse `freelance_os`; E2E does not. |
-| G-002 | E2E has no reset; leftover users accumulate | E2E relies on unique emails. Integration truncates. CI is disposable so residue is discarded. Local repeated E2E against a shared DB leaves rows. |
-| G-003 | CI contract does not lock F-004 | `tests/unit/ci/quality-workflow.test.ts` asserts gates and isolated Postgres. It does not assert `pnpm dev` or one Playwright worker. The constraint lives in `playwright.config.ts` and reviews only. |
-| G-004 | Fail-closed `/workspace-unavailable` has no Playwright coverage | Covered by unit + integration. Creating >1 membership has no product UI; E2E would need a test-only write. Not a missing primitive. |
-| G-005 | Documentation still describes Foundation testing as not-yet-established | `MASTER_PLAN.md` Foundation Completion Gate still unchecked for tests/CI/build; §51 still points at EPIC-002 planning; `docs/testing-strategy.md` “first suite” and tooling-pin notes are stale relative to the repo. |
-| G-006 | `docs/testing-strategy.md` §39 mentions format/lint | CI runs `pnpm lint` (ESLint + `eslint-config-prettier`). There is no `format:check` script and no Prettier check in CI. `pnpm format` is write-only. |
+| G-001 | Local Playwright can write to the development database | Closed in Phase 1. E2E requires `TEST_DATABASE_URL` and refuses `freelance_os`. |
+| G-002 | E2E has no reset; leftover users accumulate | Accepted. E2E uses unique emails on the isolated `*_test` database. |
+| G-003 | CI contract does not lock F-004 | Closed in Phase 1. `quality-workflow.test.ts` asserts `pnpm dev` and CI `workers: 1`. |
+| G-004 | Fail-closed `/workspace-unavailable` has no Playwright coverage | Accepted. Covered by unit + integration. Creating >1 membership has no product UI; E2E would need a test-only write. Not a missing primitive. |
+| G-005 | Documentation still describes Foundation testing as not-yet-established | Closed in Phase 3. Canonical docs describe the implemented Foundation. |
+| G-006 | `docs/testing-strategy.md` §39 mentions format/lint | Accepted. Lint is the CI style gate. |
 
 G-004 and G-006 are accepted unless a phase explicitly chooses a minimal lock. Do not invent a formatter gate or a fail-closed E2E that requires a product path.
 
@@ -454,9 +467,9 @@ Local E2E after Phase 1 must use the isolated test database and the same auth te
 Three phases. Justified by G-001–G-003 and G-005. No rename-only phase.
 
 ```text
-Phase 1 — Test/CI reliability and foundation contract
-Phase 2 — Isolation/security regression lock
-Phase 3 — Documentation and Engineering Review
+Phase 1 — COMPLETE
+Phase 2 — COMPLETE
+Phase 3 — COMPLETE
 ```
 
 Each implementation chat is a new Cursor chat. One phase = one commit.
@@ -465,8 +478,8 @@ Each implementation chat is a new Cursor chat. One phase = one commit.
 
 ## 15. Phase 1 — Test/CI reliability and foundation contract
 
-**Cursor chat:** NEW CHAT  
-**Commit expected:** YES  
+**Status:** COMPLETE  
+**Commit:** `71b8e2ee6078a45c6b48cb66c5cb4868d851211b`  
 **Entry conditions:** this plan exists; no EPIC-005 implementation yet.
 
 ### Objective
@@ -526,8 +539,8 @@ test(ci): align e2e with isolated database and lock quality gates
 
 ## 16. Phase 2 — Isolation/security regression lock
 
-**Cursor chat:** NEW CHAT  
-**Commit expected:** YES  
+**Status:** COMPLETE  
+**Commit:** `0ba1aa888b28bcb2a1cc61dfe6038a2009adef97`  
 **Entry conditions:** Phase 1 complete.
 
 ### Objective
@@ -582,8 +595,8 @@ test(security): lock workspace isolation regression baseline
 
 ## 17. Phase 3 — Documentation and Engineering Review
 
-**Cursor chat:** NEW CHAT  
-**Commit expected:** YES  
+**Status:** COMPLETE  
+**Commit expected:** `docs(ci): complete EPIC-005 engineering review`  
 **Entry conditions:** Phase 1 and Phase 2 complete.
 
 ### Objective
@@ -638,9 +651,9 @@ Verified only. Do not invent extras during implementation.
 | --- | --- | --- |
 | EPIC-003 F-004 | Playwright CI = `pnpm dev` + 1 worker because `next start` rate limits collide | Preserve. Lock in Phase 1. |
 | EPIC-003 F-002 | Full Google consent/callback not in CI | Preserve. Out of scope. |
-| G-001 | Local E2E can use `freelance_os` | Close in Phase 1. |
-| G-002 | E2E residue via unique emails | Accepted if Phase 1 isolates E2E to `*_test`. Optional truncate only on that DB. |
-| G-003 | F-004 not in CI contract tests | Close in Phase 1. |
+| G-001 | Local E2E can use `freelance_os` | Closed in Phase 1. |
+| G-002 | E2E residue via unique emails | Accepted. Phase 1 isolated E2E to `*_test`. No truncate framework added. |
+| G-003 | F-004 not in CI contract tests | Closed in Phase 1. |
 | G-004 | No fail-closed Playwright | Accepted. Unit/integration baseline. |
 | G-006 | No Prettier check in CI | Accepted. Lint is the CI style gate. |
 | Parallelization | Integration and CI E2E are single-worker | Keep. Shared DB truncate + F-004. |
@@ -686,15 +699,15 @@ EPIC-005 is engineering-complete when:
 
 ## 21. Definition of Done
 
-- [ ] Tests reliable under the documented commands
-- [ ] CI gates deterministic (including F-004)
-- [ ] Test database strategy documented as implemented
-- [ ] E2E strategy documented as implemented (`pnpm dev`, one CI worker, isolated DB)
-- [ ] Isolation/security baseline verified and locked
-- [ ] No unrelated product behavior changed
-- [ ] Documentation synchronized
-- [ ] Engineering Review complete
-- [ ] Production readiness not claimed
+- [x] Tests reliable under the documented commands
+- [x] CI gates deterministic (including F-004)
+- [x] Test database strategy documented as implemented
+- [x] E2E strategy documented as implemented (`pnpm dev`, one CI worker, isolated DB)
+- [x] Isolation/security baseline verified and locked
+- [x] No unrelated product behavior changed
+- [x] Documentation synchronized
+- [x] Engineering Review complete
+- [x] Production readiness not claimed
 
 ---
 
@@ -776,4 +789,13 @@ This planning document is complete when:
 
 ```text
 READY FOR EPIC-005 IMPLEMENTATION
+```
+
+Implementation status after Phases 1–3:
+
+```text
+EPIC-005 COMPLETE
+VERDICT: PASS
+PRODUCTION READINESS: NO
+READY FOR EPIC-006
 ```

@@ -4,7 +4,7 @@
 **Document:** `MASTER_PLAN.md`\
 **Product:** FreelanceOS\
 **Canonical format:** Markdown\
-**Current phase:** EPIC-004 complete → EPIC-005
+**Current phase:** EPIC-005 complete → EPIC-006
 
 ------------------------------------------------------------------------
 
@@ -135,8 +135,8 @@ context is recovered from repository documentation.
 ## Overall
 
 ``` text
-STATUS: EPIC-004 COMPLETE (PASS WITH FINDINGS)
-NEXT: EPIC-005 — Testing & CI Foundation
+STATUS: EPIC-005 COMPLETE (PASS)
+NEXT: EPIC-006 — UI Foundation
 ```
 
 ## Completed planning artifacts
@@ -154,12 +154,35 @@ docs/
 
 ``` text
 Application implementation: NOT STARTED
-Foundation implementation: EPIC-001 COMPLETE; EPIC-002 COMPLETE; EPIC-003 COMPLETE; EPIC-004 COMPLETE
+Foundation implementation: EPIC-001 COMPLETE; EPIC-002 COMPLETE; EPIC-003 COMPLETE; EPIC-004 COMPLETE; EPIC-005 COMPLETE
 MVP implementation: NOT STARTED
 Production deployment: NOT STARTED
 Authentication: IMPLEMENTED — see docs/epics/EPIC-003/engineering-review.md
 Workspace / authorization: IMPLEMENTED — see docs/epics/EPIC-004/engineering-review.md
+Testing / CI foundation: IMPLEMENTED — see docs/epics/EPIC-005/engineering-review.md
 ```
+
+EPIC-005 formalized the existing Vitest, Playwright, isolated PostgreSQL,
+and GitHub Actions quality stack. It did not rebuild those tools.
+
+``` text
+Phase 1: 71b8e2ee6078a45c6b48cb66c5cb4868d851211b
+Phase 2: 0ba1aa888b28bcb2a1cc61dfe6038a2009adef97
+Verdict: PASS
+```
+
+Present after EPIC-005:
+
+-   unit tests (`pnpm test`) and integration tests (`pnpm test:integration`)
+-   Playwright E2E (`pnpm test:e2e`) against `TEST_DATABASE_URL` only
+-   database safety guard: `TEST_DATABASE_URL` required; `freelance_os`
+    rejected; name must end in `_test`
+-   CI: PostgreSQL 17, `freelanceos_test`, `pnpm dev`, one Playwright
+    worker, no `prisma db push`, no `next start`
+-   workspace isolation/authorization regression baseline locked
+
+This is not production readiness. Release 0 still requires EPIC-006 and
+later validation/certification.
 
 This distinction is deliberate: planning documents describe what has
 been designed; future documentation updates must describe what has
@@ -1144,9 +1167,9 @@ Release 0 cannot proceed to MVP feature development until:
 -   [x] authentication foundation works
 -   [ ] workspace membership works
 -   [ ] cross-workspace access is rejected
--   [ ] test suite runs
--   [ ] CI passes
--   [ ] production build passes
+-   [x] test suite runs
+-   [x] CI passes
+-   [x] production build passes
 -   [ ] initial UI shell works
 -   [ ] architecture has not been violated
 
@@ -1629,8 +1652,8 @@ Next actions:
 
 ``` text
 1. Open a new Cursor chat
-2. Create docs/epics/EPIC-005/epic-plan.md before implementation
-3. Execute EPIC-005 — Testing & CI Foundation
+2. Create docs/epics/EPIC-006/epic-plan.md before implementation
+3. Execute EPIC-006 — UI Foundation
 ```
 
 This follows the methodology's rule that each Phase gets a focused
@@ -1679,10 +1702,10 @@ releases:
     status: future
 
 next:
-  epic: EPIC-005
+  epic: EPIC-006
   phase: planning
-  objective: Testing & CI Foundation
-  implementation: epic-004-complete
+  objective: UI Foundation
+  implementation: epic-005-complete
 ```
 
 ------------------------------------------------------------------------
@@ -1771,7 +1794,7 @@ The planning stage is considered complete when:
 The next artifact is therefore:
 
 ``` text
-docs/epics/EPIC-002/epic-plan.md
+docs/epics/EPIC-006/epic-plan.md
 ```
 
-Do not start EPIC-002 implementation before that Epic plan is created.
+Do not start EPIC-006 implementation before that Epic plan is created.

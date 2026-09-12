@@ -1,6 +1,6 @@
 # FreelanceOS --- Testing Strategy
 
-**Status:** Authentication and workspace foundation implemented — EPIC-004 complete\
+**Status:** Testing and CI foundation implemented — EPIC-005 complete\
 **Document:** `docs/testing-strategy.md`\
 **Scope:** Release 0 Foundation + Release 1 MVP\
 **Canonical format:** Markdown
@@ -61,14 +61,76 @@ untested by design. Playwright CI still uses `pnpm dev` with
 one worker (F-004). Review:
 `docs/epics/EPIC-004/engineering-review.md`.
 
+EPIC-005 formalizes this stack as the Testing & CI Foundation.
+It does not rebuild Vitest, Playwright, the isolated PostgreSQL
+test database, or `.github/workflows/quality.yml`. Review:
+`docs/epics/EPIC-005/engineering-review.md`.
+
+Isolated E2E database contract:
+
+- Playwright requires `TEST_DATABASE_URL` through
+  `tests/integration/test-database-url.ts`.
+- Missing `TEST_DATABASE_URL` fails before E2E starts.
+- `freelance_os` is rejected. The database name must end in `_test`.
+- `playwright.config.ts` injects that isolated URL as `DATABASE_URL`
+  only into the E2E `webServer` process. An existing `pnpm dev`
+  server is not reused (`reuseExistingServer: false`).
+- The password-reset helper reads `TEST_DATABASE_URL`, not the
+  development `DATABASE_URL`.
+
+Database safety guard:
+
+- Shared by integration migrate/setup and E2E.
+- Required env: `TEST_DATABASE_URL`.
+- Forbidden target: `freelance_os` or any name that does not end
+  in `_test`.
+- Schema apply: `pnpm test:db:migrate` (`prisma migrate deploy`).
+- `prisma db push` is not used.
+
+CI E2E contract (locked by `tests/unit/ci/quality-workflow.test.ts`):
+
+- GitHub Actions `.github/workflows/quality.yml`
+- PostgreSQL 17 service, database `freelanceos_test`
+- `DATABASE_URL` and `TEST_DATABASE_URL` both point at that database
+- `pnpm dev` (not `next start`)
+- one Playwright worker when `CI` is set
+- no `prisma db push`
+- lint, typecheck, unit, integration, build, then Playwright E2E
+- no Google credentials, production mailer, or production secrets
+
+Workspace isolation/security regression baseline
+(`tests/unit/ci/isolation-baseline.test.ts`) locks the existing
+EPIC-004 coverage:
+
+- member access
+- non-member denial
+- identifier substitution
+- zero memberships / onboarding
+- exactly one membership / `WorkspaceContext`
+- multiple memberships fail closed
+- browser `workspaceId` is not authorization
+- persistence tenant isolation
+
+Accepted limitations that remain:
+
+- G-004: no Playwright `/workspace-unavailable` journey; unit and
+  integration remain the Foundation coverage
+- G-006: CI style gate is lint; there is no `format:check`
+- G-002: E2E uses unique emails on the isolated `*_test` database;
+  no E2E truncate framework
+- EPIC-003 F-004: one CI worker is the formalized contract, not a
+  new defect
+- EPIC-003 F-002: full Google consent/callback is not automated in CI
+
 - Create `freelanceos_test` (or another database whose name ends in
   `_test`).
 - Set `TEST_DATABASE_URL`. Never reuse `freelance_os`.
 - Apply committed migrations with `pnpm test:db:migrate`.
 - Run `pnpm test:integration`.
-- `pnpm test` remains unit-only. Playwright stays in `pnpm test:e2e`.
+- `pnpm test` remains unit-only. Playwright stays in `pnpm test:e2e`
+  and also requires `TEST_DATABASE_URL`.
 - CI provides PostgreSQL 17 and fails if migrations, persistence
-  tests, or deterministic auth E2E fail.
+  tests, or deterministic auth/onboarding E2E fail.
 
 ------------------------------------------------------------------------
 
@@ -1006,6 +1068,10 @@ Register
 
 This is the primary acceptance journey.
 
+Foundation E2E currently covers Register / Login / Create workspace
+and the authenticated shell gate against `TEST_DATABASE_URL`. The
+remaining MVP steps are later product work.
+
 ------------------------------------------------------------------------
 
 # 22. E2E Authentication
@@ -1516,7 +1582,11 @@ migration validation
 production-like build
 ```
 
-The exact CI provider is an implementation decision.
+Implemented Foundation CI (EPIC-005) uses GitHub Actions
+`.github/workflows/quality.yml`. The style gate is `pnpm lint`
+(G-006: no `format:check`). Playwright E2E runs in the same
+workflow with `pnpm dev` and one worker. The exact production E2E
+environment and future parallelism remain open (TD-008 / TD-009).
 
 ------------------------------------------------------------------------
 
@@ -1698,8 +1768,9 @@ for browser-level E2E testing.
 Integration tests should run against PostgreSQL rather than a fake
 relational implementation.
 
-The exact package versions will be pinned during Foundation
-implementation.
+Foundation pins currently in use: Vitest 4.1.11 and Playwright
+1.63.0. Integration tests run against isolated PostgreSQL 17 via
+`TEST_DATABASE_URL`.
 
 ------------------------------------------------------------------------
 
@@ -1733,6 +1804,14 @@ tests/
 The exact folder structure may evolve with the implementation, but the
 conceptual separation should remain.
 
+Implemented Foundation tree (do not relocate to match the sketch):
+
+``` text
+tests/unit/application|infrastructure|lib|ci
+tests/integration/persistence|auth|workspace
+tests/e2e/   (flat: auth, onboarding, app-shell)
+```
+
 ------------------------------------------------------------------------
 
 # 48. First Test Suite to Implement
@@ -1757,6 +1836,11 @@ Recommended first tests:
 
 This gives the project an executable safety net before the UI becomes
 large.
+
+Foundation coverage already present: workspace membership
+authorization, persistence tenant isolation, and clean-database
+migration. Items 2–11 remain later MVP/product work. Do not treat
+them as missing EPIC-005 E2E.
 
 ------------------------------------------------------------------------
 

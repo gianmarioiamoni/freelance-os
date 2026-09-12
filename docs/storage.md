@@ -99,6 +99,11 @@ constraint would conflict with the multi-membership model
 application-level limitation, not a database unique-user
 invariant. Review: `docs/epics/EPIC-004/engineering-review.md`.
 
+EPIC-005 added no schema or migration. Playwright E2E now uses the
+same `TEST_DATABASE_URL` guard as integration tests: the value is
+required, `freelance_os` is rejected, and the database name must
+end in `_test`. Review: `docs/epics/EPIC-005/engineering-review.md`.
+
 `Alert.clientId` and `Alert.contractId` are independently optional
 workspace-scoped FKs. The database does not prove they refer to the
 same client; that remains an application/domain responsibility
