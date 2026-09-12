@@ -34,3 +34,19 @@ describe("CI quality workflow", () => {
     expect(workflow).not.toMatch(/SMTP_/);
   });
 });
+
+const playwrightConfig = readFileSync(
+  path.join(process.cwd(), "playwright.config.ts"),
+  "utf8",
+);
+
+describe("Playwright CI contract", () => {
+  it("locks F-004 to pnpm dev with one CI worker", () => {
+    expect(playwrightConfig).toMatch(/command:\s*"pnpm dev"/);
+    expect(playwrightConfig).toContain("workers: process.env.CI ? 1 : undefined");
+    expect(playwrightConfig).toContain("reuseExistingServer: false");
+    expect(playwrightConfig).not.toMatch(/command:\s*"pnpm start"/);
+    expect(playwrightConfig).not.toMatch(/command:\s*"next start"/);
+  });
+});
+

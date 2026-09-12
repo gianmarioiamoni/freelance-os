@@ -1,6 +1,19 @@
 // playwright.config.ts
 import { defineConfig, devices } from "@playwright/test";
 
+import { requireTestDatabaseUrl } from "./tests/integration/test-database-url";
+
+const testDatabaseUrl = requireTestDatabaseUrl();
+const betterAuthUrl = process.env.BETTER_AUTH_URL ?? "http://localhost:3000";
+const betterAuthSecret =
+  process.env.BETTER_AUTH_SECRET ?? "test-better-auth-secret-32-characters-min";
+
+process.env.DATABASE_URL = testDatabaseUrl;
+process.env.TEST_DATABASE_URL = testDatabaseUrl;
+process.env.AUTH_EMAIL_DELIVERY = "test";
+process.env.BETTER_AUTH_URL = betterAuthUrl;
+process.env.BETTER_AUTH_SECRET = betterAuthSecret;
+
 export default defineConfig({
   testDir: "tests/e2e",
   fullyParallel: !process.env.CI,
@@ -21,7 +34,19 @@ export default defineConfig({
   webServer: {
     command: "pnpm dev",
     url: "http://localhost:3000",
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: false,
     timeout: 120_000,
+    env: {
+      ...Object.fromEntries(
+        Object.entries(process.env).filter(
+          (entry): entry is [string, string] => typeof entry[1] === "string",
+        ),
+      ),
+      DATABASE_URL: testDatabaseUrl,
+      TEST_DATABASE_URL: testDatabaseUrl,
+      AUTH_EMAIL_DELIVERY: "test",
+      BETTER_AUTH_URL: betterAuthUrl,
+      BETTER_AUTH_SECRET: betterAuthSecret,
+    },
   },
 });

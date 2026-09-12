@@ -28,7 +28,7 @@ export function requireTestDatabaseUrl(): string {
 
   if (!url) {
     throw new Error(
-      "TEST_DATABASE_URL is required for persistence integration tests. Use an isolated database such as freelanceos_test, not the development database.",
+      "TEST_DATABASE_URL is required for isolated tests. Use an isolated database such as freelanceos_test, not the development database.",
     );
   }
 
