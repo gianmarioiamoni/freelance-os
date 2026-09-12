@@ -24,6 +24,12 @@ describe("Better Auth server/client boundary", () => {
     expect(source("src/infrastructure/auth/session.ts")).toMatch(
       /import ["']server-only["']/,
     );
+    expect(
+      source("src/infrastructure/email/password-reset-delivery.ts"),
+    ).toMatch(/import ["']server-only["']/);
+    expect(
+      source("src/infrastructure/email/password-reset-capture.ts"),
+    ).toMatch(/import ["']server-only["']/);
   });
 
   it("does not import server auth into client modules", () => {
@@ -42,6 +48,7 @@ describe("Better Auth server/client boundary", () => {
       expect(contents).not.toMatch(/from ["']better-auth\/next-js["']/);
       expect(contents).not.toMatch(/GOOGLE_CLIENT_SECRET/);
       expect(contents).not.toMatch(/process\.env\.GOOGLE_/);
+      expect(contents).not.toMatch(/from ["']@\/infrastructure\/email\//);
     }
   });
 
@@ -53,6 +60,7 @@ describe("Better Auth server/client boundary", () => {
     expect(example).toMatch(/GOOGLE_CLIENT_SECRET=""/);
     expect(example).not.toMatch(/GOOGLE_CLIENT_ID=".{8,}"/);
     expect(example).not.toMatch(/GOOGLE_CLIENT_SECRET=".{8,}"/);
+    expect(example).toMatch(/AUTH_EMAIL_DELIVERY=""/);
   });
 
   it("does not override Better Auth account-linking defaults", () => {

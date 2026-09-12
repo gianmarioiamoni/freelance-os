@@ -2,8 +2,10 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  FORGOT_PASSWORD_PATH,
   getAuthenticatedAuthPageRedirectPath,
   getUnauthenticatedRedirectPath,
+  RESET_PASSWORD_PATH,
   SIGN_IN_PATH,
 } from "@/application/auth/route-access";
 import { getAuthSessionFromHeaders } from "@/infrastructure/auth/session";
@@ -15,6 +17,8 @@ describe("protected server boundary", () => {
     expect(getUnauthenticatedRedirectPath("/")).toBe(SIGN_IN_PATH);
     expect(getUnauthenticatedRedirectPath("/clients")).toBe(SIGN_IN_PATH);
     expect(getUnauthenticatedRedirectPath(SIGN_IN_PATH)).toBeNull();
+    expect(getUnauthenticatedRedirectPath(FORGOT_PASSWORD_PATH)).toBeNull();
+    expect(getUnauthenticatedRedirectPath(RESET_PASSWORD_PATH)).toBeNull();
   });
 
   it("allows authenticated access and reads identity from Better Auth", async () => {

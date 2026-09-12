@@ -1,0 +1,60 @@
+// src/infrastructure/email/password-reset-delivery.ts
+import "server-only";
+
+import { resolveAuthEmailDeliveryMode } from "@/infrastructure/email/auth-email-delivery-mode";
+import {
+  capturePasswordResetEmail,
+  type CapturedPasswordResetEmail,
+} from "@/infrastructure/email/password-reset-capture";
+
+export type PasswordResetEmailUser = {
+  id: string;
+  email: string;
+};
+
+export type PasswordResetEmailPayload = {
+  user: PasswordResetEmailUser;
+  url: string;
+  token: string;
+};
+
+const DEVELOPMENT_DELIVERY_MESSAGE =
+  "Password reset email accepted by the development delivery adapter. No production email provider is configured.";
+
+const PRODUCTION_DELIVERY_MESSAGE =
+  "Password reset email was not delivered: no production email provider is configured.";
+
+function toCapturedMessage(
+  data: PasswordResetEmailPayload,
+): CapturedPasswordResetEmail {
+  return {
+    recipientEmail: data.user.email,
+    userId: data.user.id,
+    url: data.url,
+    token: data.token,
+  };
+}
+
+export async function sendPasswordResetEmail(
+  data: PasswordResetEmailPayload,
+): Promise<void> {
+  const mode = resolveAuthEmailDeliveryMode();
+  const message = toCapturedMessage(data);
+
+  if (mode === "test") {
+    capturePasswordResetEmail(message);
+    return;
+  }
+
+  if (mode === "production") {
+    console.warn(PRODUCTION_DELIVERY_MESSAGE);
+    return;
+  }
+
+  console.info(DEVELOPMENT_DELIVERY_MESSAGE);
+}
+
+export const PASSWORD_RESET_DELIVERY_LOG_MESSAGES = {
+  development: DEVELOPMENT_DELIVERY_MESSAGE,
+  production: PRODUCTION_DELIVERY_MESSAGE,
+} as const;

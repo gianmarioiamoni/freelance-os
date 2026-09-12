@@ -5,7 +5,7 @@
 **Epic:** EPIC-003  
 **Release:** Release 0 — Foundation  
 **Objective:** Authentication Foundation  
-**Status:** In progress — Phase 3 complete  
+**Status:** In progress — Phase 4 complete  
 **Depends on:** EPIC-001 — Foundation / Repository; EPIC-002 — Database & Persistence  
 **Next Epic:** EPIC-004 — Workspace
 
@@ -93,7 +93,9 @@ Phase 1 pinned Better Auth 1.7.4 and migrated `user`, `session`, `account`, and 
 
 Phase 2 implemented email/password registration, sign-in, sign-out, server-side session retrieval, the Better Auth App Router handler at `/api/auth/[...all]`, and an authenticated `(app)` layout boundary.
 
-Phase 3 configured Google OAuth through Better Auth's Google provider. The callback remains `/api/auth/callback/google` on the existing catch-all handler. Account linking uses Better Auth defaults (`requireLocalEmailVerified: true`). Password recovery and workspace authorization are not implemented.
+Phase 3 configured Google OAuth through Better Auth's Google provider. The callback remains `/api/auth/callback/google` on the existing catch-all handler. Account linking uses Better Auth defaults (`requireLocalEmailVerified: true`). Workspace authorization is not implemented.
+
+Phase 4 implemented password recovery through Better Auth's `requestPasswordReset` / `resetPassword` API. Recovery tokens are stored in the existing `verification` table. `revokeSessionsOnPasswordReset` is enabled. Email delivery is an Infrastructure boundary with development/test/production modes; no production email provider is selected. Google/email implicit linking remains unchanged (`requireLocalEmailVerified: true`).
 
 `WorkspaceMember.userId`, `TimeEntry.userId`, and `Notification.userId` are logical auth-user identifiers. The development seed uses opaque ids (`seed-user-owner`, `seed-user-member`) and does not create authentication users.
 
@@ -103,7 +105,7 @@ Phase 3 configured Google OAuth through Better Auth's Google provider. The callb
 
 ```text
 Application implementation: NOT STARTED
-Authentication: EMAIL/PASSWORD + GOOGLE OAUTH + SESSIONS IMPLEMENTED
+Authentication: EMAIL/PASSWORD + GOOGLE OAUTH + PASSWORD RECOVERY + SESSIONS IMPLEMENTED
 Authorization: NOT STARTED
 Workspace onboarding: NOT STARTED
 MVP implementation: NOT STARTED
@@ -933,6 +935,15 @@ feat(auth): implement password recovery
 - The user can sign in with the new password.
 - CI does not send real email.
 - Quality gate passes.
+
+#### Phase 4 notes
+
+- Better Auth 1.7.4 APIs: `requestPasswordReset`, `resetPassword`, `emailAndPassword.sendResetPassword`.
+- Token persistence: existing `verification` rows, identifier `reset-password:${token}`. No migration.
+- Session behavior: `revokeSessionsOnPasswordReset: true` (library default is `false`).
+- Email: `AUTH_EMAIL_DELIVERY` = development | test | production. Production provider remains TBD. Tokens and reset URLs are never logged.
+- Account enumeration: Better Auth returns the same status/message for known and unknown emails. The UI uses a single acknowledgement.
+- Preserved Phase 3 finding: implicit Google/email linking still requires `emailVerified: true`. Not changed.
 
 ---
 

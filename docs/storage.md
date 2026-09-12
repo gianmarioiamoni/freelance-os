@@ -60,6 +60,12 @@ Better Auth `account` table (`providerId = google`). No schema
 change or migration was required. Application-owned models and
 EPIC-002 composite foreign keys are unchanged.
 
+EPIC-003 Phase 4 reuses the existing Better Auth `verification`
+table for password-recovery tokens (`identifier` =
+`reset-password:${token}`, `value` = user id). No schema change
+or second reset-token table was added. Application-owned models
+and EPIC-002 composite foreign keys are unchanged.
+
 Phase 4 adds persistence integration tests against an isolated
 PostgreSQL database (`TEST_DATABASE_URL`, default name
 `freelanceos_test`) created from committed Prisma migrations

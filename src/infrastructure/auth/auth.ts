@@ -5,6 +5,7 @@ import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 
 import { getGoogleSocialProvider } from "@/infrastructure/auth/google-provider";
+import { sendPasswordResetEmail } from "@/infrastructure/email/password-reset-delivery";
 import { prisma } from "@/infrastructure/prisma/client";
 
 const google = getGoogleSocialProvider();
@@ -16,6 +17,8 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: false,
+    sendResetPassword: sendPasswordResetEmail,
+    revokeSessionsOnPasswordReset: true,
   },
   socialProviders: google
     ? {

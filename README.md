@@ -23,9 +23,11 @@ pnpm install
 cp .env.example .env
 ```
 
-Set `DATABASE_URL`, `TEST_DATABASE_URL`, `BETTER_AUTH_SECRET`, and `BETTER_AUTH_URL` in `.env`. Prisma reads `.env` from the project root. Do not commit `.env`. Do not prefix secrets with `NEXT_PUBLIC_`.
+Set `DATABASE_URL`, `TEST_DATABASE_URL`, `BETTER_AUTH_SECRET`, and `BETTER_AUTH_URL` in `.env`. Optional: `AUTH_EMAIL_DELIVERY` (`development` | `test` | `production`). Prisma reads `.env` from the project root. Do not commit `.env`. Do not prefix secrets with `NEXT_PUBLIC_`.
 
-Email/password registration, sign-in, and sign-out are available at `/sign-up` and `/sign-in`. Google sign-in is available on those pages when `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` are set. Configure the Google authorized redirect URI as `${BETTER_AUTH_URL}/api/auth/callback/google` (local example: `http://localhost:3000/api/auth/callback/google`). Email/password remains usable when Google credentials are absent. Application routes require a Better Auth server session. Password recovery is not implemented yet.
+Email/password registration, sign-in, and sign-out are available at `/sign-up` and `/sign-in`. Password recovery is available at `/forgot-password` and `/reset-password`. Google sign-in is available on the sign-in and sign-up pages when `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` are set. Configure the Google authorized redirect URI as `${BETTER_AUTH_URL}/api/auth/callback/google` (local example: `http://localhost:3000/api/auth/callback/google`). Email/password remains usable when Google credentials are absent. Application routes require a Better Auth server session.
+
+Password-reset email delivery is an application boundary, not a production mailer. Set `AUTH_EMAIL_DELIVERY` to `development`, `test`, or `production`. No production email provider is selected yet; production mode acknowledges the request and does not send mail. Development mode also does not send mail and never logs reset tokens or URLs. Inspect local recovery tokens through the Better Auth `verification` table when needed.
 
 `DATABASE_URL` is the development database (`freelance_os`). `TEST_DATABASE_URL` must be a separate disposable database whose name ends in `_test` (documented default: `freelanceos_test`). Integration tests refuse the development database.
 

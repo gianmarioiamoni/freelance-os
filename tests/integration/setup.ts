@@ -11,6 +11,7 @@ process.env.BETTER_AUTH_URL =
   process.env.BETTER_AUTH_URL ?? "http://localhost:3000";
 process.env.GOOGLE_CLIENT_ID = "test-google-client-id";
 process.env.GOOGLE_CLIENT_SECRET = "test-google-client-secret";
+process.env.AUTH_EMAIL_DELIVERY = "test";
 
 const { prisma } = await import("@/infrastructure/prisma/client");
 

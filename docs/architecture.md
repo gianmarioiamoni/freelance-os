@@ -602,13 +602,17 @@ The MVP will use:
 - email/password;
 - Google OAuth.
 
-Better Auth 1.7.4 is the pinned authentication adapter. Persistence, a server-only Infrastructure instance, email/password registration/sign-in/sign-out, Google OAuth through Better Auth's Google provider, server-side session retrieval, and a protected App Router boundary are implemented. Password recovery is not implemented yet.
+Better Auth 1.7.4 is the pinned authentication adapter. Persistence, a server-only Infrastructure instance, email/password registration/sign-in/sign-out, Google OAuth through Better Auth's Google provider, password recovery, server-side session retrieval, and a protected App Router boundary are implemented.
+
+Password recovery uses Better Auth's `requestPasswordReset` / `resetPassword` API and the existing `verification` table (`reset-password:${token}`). Recovery tokens expire after the library default of one hour and are consumed on use. `emailAndPassword.revokeSessionsOnPasswordReset` is enabled, so a successful reset deletes the user's Better Auth sessions. Public recovery pages are `/forgot-password` and `/reset-password`. Authenticated visitors are redirected away from `/forgot-password` but may remain on `/reset-password` so a valid token can be used.
+
+Email delivery is an Infrastructure boundary (`sendPasswordResetEmail`). No production email provider is selected. `AUTH_EMAIL_DELIVERY` selects `development` (acknowledge only), `test` (in-process capture for automated tests), or `production` (warn that no provider is configured and do not send). Reset tokens, reset URLs, passwords, and session tokens are never written to application logs. This is not production email delivery.
 
 Google OAuth uses `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`. The provider is registered only when both values are present. The callback is Better Auth's catch-all handler at `/api/auth/callback/google`, derived from `BETTER_AUTH_URL` and the default `/api/auth` base path. Client code never receives the client secret.
 
 Account linking uses Better Auth 1.7.4 defaults. Implicit linking stays enabled, but the library requires the existing local user to have `emailVerified: true` before linking a Google identity to an email/password user. Phase 2 registration does not verify email, so an existing unverified email/password account is not silently merged with a later Google sign-in for the same email. FreelanceOS does not override that library security default.
 
-Protected application routes live in the `(app)` route group. The authenticated layout reads the Better Auth server session and redirects unauthenticated requests to `/sign-in`. Authenticated visitors to `/sign-in` and `/sign-up` are redirected to `/`.
+Protected application routes live in the `(app)` route group. The authenticated layout reads the Better Auth server session and redirects unauthenticated requests to `/sign-in`. Authenticated visitors to `/sign-in`, `/sign-up`, and `/forgot-password` are redirected to `/`. `/reset-password` remains reachable while authenticated so a recovery token can be completed.
 
 Next.js 15.5.25 does not provide the `proxy.ts` request-interception convention. `middleware.ts` is deprecated by project convention and is not used. Server-side session validation in the authenticated layout is the authoritative boundary. Client auth state is a projection of that session.
 
@@ -1342,7 +1346,7 @@ ADRs should record:
 | E2E testing | Playwright candidate |
 | Package manager | pnpm candidate |
 | Deployment | Vercel candidate |
-| Email | External provider, TBD |
+| Email | Delivery boundary implemented for password recovery; production provider TBD |
 | AI | External LLM provider, future release |
 
 Technology versions must be pinned during Foundation.

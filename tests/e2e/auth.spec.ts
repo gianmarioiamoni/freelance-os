@@ -1,6 +1,8 @@
 // tests/e2e/auth.spec.ts
 import { expect, test } from "@playwright/test";
 
+import { findPasswordResetTokenForEmail } from "./helpers/password-reset";
+
 function uniqueEmail(): string {
   return `e2e-${Date.now()}-${Math.random().toString(36).slice(2)}@example.com`;
 }
@@ -57,4 +59,58 @@ test("should register, stay authenticated, and sign out", async ({ page }) => {
 
   await page.goto("/");
   await expect(page).toHaveURL(/\/sign-in$/);
+});
+
+test("should recover a password from the email/password flow", async ({
+  page,
+}) => {
+  const email = uniqueEmail();
+  const originalPassword = "ValidPass1!";
+  const nextPassword = "NewValidPass1!";
+
+  await page.goto("/sign-up");
+  await page.getByLabel("Name").fill("Recovery User");
+  await page.getByLabel("Email").fill(email);
+  await page.getByLabel("Password").fill(originalPassword);
+  await page.getByRole("button", { name: "Create account" }).click();
+  await expect(page).toHaveURL("/");
+
+  await page.context().clearCookies();
+  await page.goto("/sign-in");
+  await page.getByRole("link", { name: "Forgot password?" }).click();
+  await expect(page).toHaveURL(/\/forgot-password$/);
+  await page.getByLabel("Email").fill(email);
+  await page.getByRole("button", { name: "Send reset link" }).click();
+  await expect(
+    page.getByText(
+      "If an account exists for that email, you will receive a password reset link.",
+    ),
+  ).toBeVisible();
+
+  const token = await findPasswordResetTokenForEmail(email);
+  expect(token).toBeTruthy();
+
+  await page.goto(`/reset-password?token=${token}`);
+  await page.getByLabel("New password").fill(nextPassword);
+  await page.getByRole("button", { name: "Update password" }).click();
+  await expect(page).toHaveURL(/\/sign-in$/);
+
+  await page.getByLabel("Email").fill(email);
+  await page.getByLabel("Password").fill(originalPassword);
+  await page.getByRole("button", { name: "Sign in" }).click();
+  await expect(page.getByText("Invalid email or password.")).toBeVisible();
+
+  await page.getByLabel("Password").fill(nextPassword);
+  await page.getByRole("button", { name: "Sign in" }).click();
+  await expect(page).toHaveURL("/");
+});
+
+test("should reject an invalid password reset token", async ({ page }) => {
+  await page.goto("/reset-password?token=invalid-token");
+  await page.getByLabel("New password").fill("NewValidPass1!");
+  await page.getByRole("button", { name: "Update password" }).click();
+  await expect(
+    page.getByText("This reset link is invalid or has expired."),
+  ).toBeVisible();
+  await expect(page).toHaveURL(/\/reset-password/);
 });

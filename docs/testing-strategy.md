@@ -22,6 +22,15 @@ automated: it requires a real Google account and cannot be safely
 run in CI. E2E asserts the Google sign-in control is present and
 continues to cover email/password.
 
+EPIC-003 Phase 4 adds password-recovery integration tests against
+the same isolated PostgreSQL database. The email boundary uses a
+process-local capture store (`AUTH_EMAIL_DELIVERY=test`). Tests
+never require a production mailer and must not print reset tokens
+or passwords. Targeted Playwright coverage exercises
+request → reset → sign-in with the new password. The Playwright
+helper reads the Better Auth verification row; it does not enable
+a production inbox.
+
 - Create `freelanceos_test` (or another database whose name ends in
   `_test`).
 - Set `TEST_DATABASE_URL`. Never reuse `freelance_os`.
