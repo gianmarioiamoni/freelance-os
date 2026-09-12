@@ -1,6 +1,6 @@
 # FreelanceOS --- Testing Strategy
 
-**Status:** Testing and CI foundation implemented — EPIC-005 complete\
+**Status:** Testing and CI foundation implemented — EPIC-005 complete; UI test baseline added by EPIC-006\
 **Document:** `docs/testing-strategy.md`\
 **Scope:** Release 0 Foundation + Release 1 MVP\
 **Canonical format:** Markdown
@@ -66,6 +66,17 @@ It does not rebuild Vitest, Playwright, the isolated PostgreSQL
 test database, or `.github/workflows/quality.yml`. Review:
 `docs/epics/EPIC-005/engineering-review.md`.
 
+EPIC-006 adds the UI testing baseline. Unit tests cover Field
+association helpers and the account-label display helper. Playwright
+covers the unauthenticated shell gate and one authenticated journey:
+register → first workspace → workspace name, account label,
+Application nav, Dashboard placeholder, skip link, one other
+placeholder route, `aria-current`, and mobile navigation. This is an
+accessibility baseline, not WCAG certification. Vitest remains Node;
+jsdom/RTL and `@axe-core/playwright` were not added. The EPIC-005
+isolated E2E / CI contract is unchanged. Review:
+`docs/epics/EPIC-006/engineering-review.md`.
+
 Isolated E2E database contract:
 
 - Playwright requires `TEST_DATABASE_URL` through
@@ -130,7 +141,7 @@ Accepted limitations that remain:
 - `pnpm test` remains unit-only. Playwright stays in `pnpm test:e2e`
   and also requires `TEST_DATABASE_URL`.
 - CI provides PostgreSQL 17 and fails if migrations, persistence
-  tests, or deterministic auth/onboarding E2E fail.
+  tests, or deterministic auth/onboarding/shell E2E fail.
 
 ------------------------------------------------------------------------
 
@@ -1414,14 +1425,19 @@ These tests can expose edge cases that example-based tests miss.
 
 UX quality is part of the release lifecycle.
 
-Automated accessibility checks should be introduced for critical
-screens.
+EPIC-006 established an accessibility baseline for the authenticated
+shell. Playwright asserts semantic Application nav, skip link to
+`#main-content`, `aria-current`, Sign out, heading structure, and
+mobile menu keyboard/role access. Field helpers associate label,
+hint, and error (`aria-invalid` / `aria-describedby`).
 
-Minimum targets:
+This is an accessibility baseline, not WCAG certification. Formal UX
+Review remains a later lifecycle activity.
+
+Later product screens still need accessibility coverage when they
+exist:
 
 ``` text
-login
-dashboard
 client form
 contract form
 time-entry form
@@ -1807,7 +1823,7 @@ conceptual separation should remain.
 Implemented Foundation tree (do not relocate to match the sketch):
 
 ``` text
-tests/unit/application|infrastructure|lib|ci
+tests/unit/application|infrastructure|lib|ci|components
 tests/integration/persistence|auth|workspace
 tests/e2e/   (flat: auth, onboarding, app-shell)
 ```

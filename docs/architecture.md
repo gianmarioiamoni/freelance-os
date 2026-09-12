@@ -1,6 +1,6 @@
 # FreelanceOS — System Architecture
 
-**Status:** Architecture Baseline — Authentication, workspace, and testing/CI foundation implemented (EPIC-003, EPIC-004, EPIC-005)  
+**Status:** Architecture Baseline — Authentication, workspace, testing/CI, and UI foundation implemented (EPIC-003, EPIC-004, EPIC-005, EPIC-006)  
 **Scope:** MVP  
 **Architectural style:** Modular Monolith  
 **Primary runtime:** Next.js / TypeScript  
@@ -628,6 +628,8 @@ Authentication integration tests run against the isolated PostgreSQL test databa
 
 EPIC-005 does not change this runtime architecture. Playwright E2E requires `TEST_DATABASE_URL`, refuses `freelance_os`, and injects the isolated `*_test` URL only into the E2E process. An existing `pnpm dev` server is not reused. Review: `docs/epics/EPIC-005/engineering-review.md`.
 
+EPIC-006 does not change this runtime architecture. The authenticated `(app)` layout reads the Better Auth session and `WorkspaceContext`, then uses `getAuthorizedWorkspace` to pass display-only `workspaceName` and account label into `AppShell`. `workspaceId` and `role` are not rendered. There is no client `WorkspaceProvider`, no workspace client store, and no workspace switcher. Review: `docs/epics/EPIC-006/engineering-review.md`.
+
 Next.js 15.5.25 does not provide the `proxy.ts` request-interception convention. `middleware.ts` is deprecated by project convention and is not used. Server-side session validation in the authenticated layout is the authoritative boundary. Client auth state is a projection of that session.
 
 ## Authorization
@@ -748,38 +750,48 @@ Current Next.js tooling supports the App Router and `src` directory setup. Next.
 
 React provides UI composition.
 
-The UI should be organized around product features rather than a single global component hierarchy.
-
-Suggested structure:
+The Modular Monolith presentation split is implemented as:
 
 ```text
-src/
-├── app/
-├── features/
-│   ├── clients/
-│   ├── contracts/
-│   ├── time-tracking/
-│   ├── dashboard/
-│   ├── reporting/
-│   ├── alerts/
-│   └── billing/
-├── components/
-│   └── ui/
-├── domain/
-├── application/
-├── infrastructure/
-└── lib/
+src/app/                    route groups and App Router boundaries
+src/components/ui/          reusable primitives only
+src/components/forms/       Field composition
+src/components/app-shell/   authenticated chrome
+src/components/page/        PageHeader / PageContent
+src/components/states/      LoadingState / ErrorState / EmptyState
+src/components/placeholder/ structural placeholder pages
+src/features/               existing auth and workspace surfaces only
+src/lib/                    navigation helper, cn
 ```
+
+Product feature folders (`src/features/clients`, `contracts`, `time-tracking`, `dashboard`, `reporting`, `alerts`, `billing`) remain future EPIC-101+ work. They are not implemented.
 
 ## 14.3 UI system
 
-shadcn/ui is the preferred UI foundation.
+shadcn/ui (`radix-nova`, CSS variables, base color `neutral`) and Tailwind CSS 4 are the Foundation styling system. Light `:root` tokens are the runtime theme. `.dark` tokens remain unused; there is no theme switcher.
 
-It is particularly suitable because its components are open code and can be customized rather than forcing the product into a closed component-library design.
+Implemented primitives:
 
-The visual system should be defined explicitly rather than relying on default component appearance.
+- `Button`, `Sheet`, `Input`, `Label`, `Card`, `Alert`
+- `Field` (label + control + optional hint/error association)
+- `LoadingState`, `ErrorState`, `EmptyState`
+- `PageHeader`, `PageContent`
 
-## 14.4 Responsive design
+Typography baseline: Geist, `h1`–`h3`, body, muted. This is a Foundation default, not a product brand system.
+
+UI primitives contain no domain or authorization logic. They do not import Prisma or the Better Auth server instance.
+
+## 14.4 Application shell
+
+`(app)/layout.tsx` remains the authenticated workspace gate. After `getCurrentWorkspaceContext()` and `getAuthorizedWorkspace()`, the server layout passes display-only props to `AppShell`.
+
+Desktop: skip link, header (product mark, workspace name, account label, Sign out), `md` sidebar, `main#main-content`.
+
+Mobile: header menu button opens a Sheet with Application nav.
+
+Placeholder destinations remain structural placeholders with stable `h1` titles. `(app)/loading.tsx`, `error.tsx`, and `not-found.tsx` render the shared state primitives.
+
+## 14.5 Responsive design
 
 The primary target is desktop/laptop use, but core workflows must remain usable on tablet and mobile browser sizes.
 
@@ -815,13 +827,7 @@ features/time-tracking/
 └── types/
 ```
 
-Generic UI primitives remain under:
-
-```text
-components/ui/
-```
-
-Business-specific components do not belong there.
+Generic UI primitives remain under `components/ui/`. Shared form, page, state, and shell composition live beside that folder. Business-specific components do not belong there. Product feature folders remain future work.
 
 ---
 

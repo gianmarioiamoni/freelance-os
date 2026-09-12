@@ -4,7 +4,7 @@ FreelanceOS is a web application for freelancer operations management.
 
 ## Status
 
-Release 0 — Foundation. EPIC-005 complete: isolated E2E database contract, CI quality gates, and workspace isolation/authorization regression baseline. Authentication remains Better Auth. Role permissions (OBD-009) and production password-reset email are not decided. This is not production readiness.
+Release 0 — Foundation. EPIC-006 complete: authenticated UI foundation (Tailwind 4, shadcn primitives, AppShell identity, page/state primitives, accessibility baseline). EPIC-005 isolated E2E / CI contract remains. Authentication remains Better Auth. Role permissions (OBD-009) and production password-reset email are not decided. This is not production readiness.
 
 Planning and architecture documents are the source of truth. See [`MASTER_PLAN.md`](./MASTER_PLAN.md).
 
@@ -53,7 +53,7 @@ pnpm test:integration
 
 Playwright E2E (`pnpm test:e2e`) uses `TEST_DATABASE_URL` only. It refuses `freelance_os`. Apply `pnpm test:db:migrate` first. The command starts its own `pnpm dev` against the isolated database and does not use the development `DATABASE_URL`.
 
-The GitHub Actions quality workflow starts PostgreSQL 17, validates and generates the Prisma client, applies migrations, then runs lint, typecheck, unit tests, integration tests, build, and deterministic Playwright auth and onboarding E2E. CI uses `pnpm dev` with one Playwright worker. It does not require Google credentials or a production mailer.
+The GitHub Actions quality workflow starts PostgreSQL 17, validates and generates the Prisma client, applies migrations, then runs lint, typecheck, unit tests, integration tests, build, and deterministic Playwright auth, onboarding, and authenticated-shell E2E. CI uses `pnpm dev` with one Playwright worker. It does not require Google credentials or a production mailer.
 
 `pnpm install` also runs `prisma generate`. The Prisma schema includes the application-owned persistence models and Better Auth 1.7.4 tables.
 

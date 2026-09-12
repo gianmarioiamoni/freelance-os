@@ -6,6 +6,11 @@ All notable changes to FreelanceOS are documented in this file.
 
 ### Added
 
+- EPIC-006 UI Foundation Engineering Review completed; authenticated AppShell, design-system primitives, page/state boundaries, and accessibility baseline certified. Not production-ready.
+- Authenticated application shell displays server-resolved workspace name and session account label. Placeholder destinations remain structural placeholders.
+- Foundation UI primitives: Input, Label, Card, Alert, Field, LoadingState, ErrorState, EmptyState, PageHeader, PageContent.
+- Playwright authenticated shell journey covering workspace identity, Application nav, skip link, placeholder route, and mobile navigation.
+
 - EPIC-005 Testing & CI Foundation Engineering Review completed; isolated E2E database contract, CI Playwright lock (`pnpm dev`, one worker), and workspace isolation/authorization regression baseline certified. Not production-ready.
 - Playwright E2E requires `TEST_DATABASE_URL`, refuses `freelance_os`, and injects the isolated `*_test` database only into the E2E process.
 - Isolation/authorization regression baseline locked for member access, non-member denial, identifier substitution, membership fail-closed behavior, and persistence tenant isolation.

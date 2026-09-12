@@ -5,10 +5,33 @@
 **Epic:** EPIC-006  
 **Release:** Release 0 — Foundation  
 **Objective:** UI Foundation  
-**Status:** PLANNING COMPLETE — READY FOR IMPLEMENTATION  
+**Status:** COMPLETE — PASS  
 **Depends on:** EPIC-001 — Foundation / Repository; EPIC-003 — Authentication; EPIC-004 — Workspace; EPIC-005 — Testing & CI Foundation  
 **Next Epic:** EPIC-101 — Clients (`MASTER_PLAN.md` §11 R1-E01 / §43)  
 **Canonical source:** `MASTER_PLAN.md` R0-E06 — UI Foundation
+
+```text
+IMPLEMENTATION COMPLETE
+CERTIFICATION: PASS
+PRODUCTION READINESS: NO
+READY FOR EPIC-101
+```
+
+Reviewed commits:
+
+```text
+f94e1873936d2935bc0ba330716ac94ed4ce730f
+feat(ui): establish design tokens and foundation primitives
+
+16922dd8d1f13ec560fcf7bac926bf1dc4b1ee24
+feat(ui): complete authenticated application shell
+
+06e5df6a743926a06e278320e2ed8e1f39607602
+test(ui): cover authenticated shell and accessibility baseline
+```
+
+Phase 4 is documentation and certification only. Review:
+`docs/epics/EPIC-006/engineering-review.md`.
 
 MASTER_PLAN naming is consistent (`UI Foundation`). Do not invent EPIC-007. After this Epic, the next planned product Epic is Client Management.
 
@@ -865,7 +888,8 @@ This planning document is complete when:
 - [x] Production readiness is not claimed
 
 ```text
-READY FOR EPIC-006 IMPLEMENTATION
+EPIC-006 IMPLEMENTATION COMPLETE
+READY FOR EPIC-101
 ```
 
-Do not start Phase 1 in the planning chat.
+Do not start EPIC-101 in this chat.
