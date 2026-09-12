@@ -36,6 +36,7 @@ export type WorkspaceMemberRepository = {
     userId: string,
   ): Promise<WorkspaceMemberRecord | null>;
   listMembers(workspaceId: string): Promise<WorkspaceMemberRecord[]>;
+  listMembershipsByUserId(userId: string): Promise<WorkspaceMemberRecord[]>;
 };
 
 export type WorkspaceSettingsRepository = {

@@ -17,6 +17,7 @@ describe("migration-based test schema", () => {
       "20260910231638_implement_core_persistence_schema",
       "20260911011900_establish_persistence_invariants",
       "20260911224009_establish_better_auth_persistence",
+      "20260912180000_index_workspace_member_user_id",
     ]);
   });
 
@@ -53,6 +54,21 @@ describe("migration-based test schema", () => {
       "Alert_workspaceId_clientId_fkey",
       "Alert_workspaceId_contractId_fkey",
       "Notification_workspaceId_alertId_fkey",
+    ]);
+  });
+
+  it("indexes WorkspaceMember lookups by userId", async () => {
+    const indexes = await prisma.$queryRaw<Array<{ indexname: string }>>`
+      SELECT indexname
+      FROM pg_indexes
+      WHERE schemaname = 'public'
+        AND tablename = 'WorkspaceMember'
+      ORDER BY indexname
+    `;
+
+    expect(indexes.map((row) => row.indexname)).toEqual([
+      "WorkspaceMember_pkey",
+      "WorkspaceMember_userId_idx",
     ]);
   });
 });

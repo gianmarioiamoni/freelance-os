@@ -111,6 +111,16 @@ export function createWorkspaceMemberRepository(
         return rows.map(mapWorkspaceMember);
       });
     },
+
+    listMembershipsByUserId(userId: string) {
+      return withPersistenceErrors(async () => {
+        const rows = await db.workspaceMember.findMany({
+          where: { userId },
+          orderBy: { createdAt: "asc" },
+        });
+        return rows.map(mapWorkspaceMember);
+      });
+    },
   };
 }
 

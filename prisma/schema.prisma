@@ -71,6 +71,7 @@ model WorkspaceMember {
   notifications Notification[]
 
   @@id([workspaceId, userId])
+  @@index([userId])
 }
 
 model Client {
