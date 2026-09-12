@@ -14,6 +14,7 @@ jobs:
       TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/freelanceos_test
       BETTER_AUTH_SECRET: test-better-auth-secret-32-characters-min
       BETTER_AUTH_URL: http://localhost:3000
+      AUTH_EMAIL_DELIVERY: test
     services:
       postgres:
         image: postgres:17
@@ -46,6 +47,12 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Validate Prisma schema
+        run: pnpm exec prisma validate
+
+      - name: Generate Prisma client
+        run: pnpm exec prisma generate
+
       - name: Lint
         run: pnpm lint
 
@@ -58,8 +65,14 @@ jobs:
       - name: Unit tests
         run: pnpm test
 
-      - name: Persistence integration tests
+      - name: Integration tests
         run: pnpm test:integration
 
       - name: Build
         run: pnpm build
+
+      - name: Install Playwright Chromium
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: End-to-end tests
+        run: pnpm test:e2e

@@ -70,4 +70,10 @@ describe("Better Auth server/client boundary", () => {
     expect(authSource).not.toMatch(/trustedProviders/);
     expect(authSource).not.toMatch(/disableImplicitLinking/);
   });
+
+  it("keeps password-reset session revocation enabled", () => {
+    expect(source("src/infrastructure/auth/auth.ts")).toMatch(
+      /revokeSessionsOnPasswordReset:\s*true/,
+    );
+  });
 });

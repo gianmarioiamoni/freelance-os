@@ -31,14 +31,26 @@ request → reset → sign-in with the new password. The Playwright
 helper reads the Better Auth verification row; it does not enable
 a production inbox.
 
+EPIC-003 Phase 5 hardens authentication CI. The quality workflow
+validates and generates the Prisma client, applies the committed
+migration chain to disposable PostgreSQL 17 (`freelanceos_test`),
+then runs lint, typecheck, unit tests, integration tests, build,
+and deterministic Playwright auth E2E. CI sets a test auth secret
+and `AUTH_EMAIL_DELIVERY=test`. Playwright CI uses `pnpm dev` with
+one worker; `next start` enables Better Auth production rate limits
+that collide across auth journeys on a shared CI IP. It does not
+require Google credentials, a production mailer, or production
+secrets. Full Google consent/callback remains a non-CI/manual
+limitation.
+
 - Create `freelanceos_test` (or another database whose name ends in
   `_test`).
 - Set `TEST_DATABASE_URL`. Never reuse `freelance_os`.
 - Apply committed migrations with `pnpm test:db:migrate`.
 - Run `pnpm test:integration`.
 - `pnpm test` remains unit-only. Playwright stays in `pnpm test:e2e`.
-- CI provides PostgreSQL 17 and fails if migrations or persistence
-  tests fail.
+- CI provides PostgreSQL 17 and fails if migrations, persistence
+  tests, or deterministic auth E2E fail.
 
 ------------------------------------------------------------------------
 

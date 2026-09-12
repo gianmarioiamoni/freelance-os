@@ -59,6 +59,12 @@ test("should register, stay authenticated, and sign out", async ({ page }) => {
 
   await page.goto("/");
   await expect(page).toHaveURL(/\/sign-in$/);
+
+  await page.getByLabel("Email").fill(email);
+  await page.getByLabel("Password").fill("ValidPass1!");
+  await page.getByRole("button", { name: "Sign in" }).click();
+  await expect(page).toHaveURL("/");
+  await expect(page.getByRole("heading", { level: 1, name: "Dashboard" })).toBeVisible();
 });
 
 test("should recover a password from the email/password flow", async ({
@@ -100,9 +106,25 @@ test("should recover a password from the email/password flow", async ({
   await page.getByRole("button", { name: "Sign in" }).click();
   await expect(page.getByText("Invalid email or password.")).toBeVisible();
 
+  await page.goto("/sign-in");
+  await page.getByLabel("Email").fill(email);
   await page.getByLabel("Password").fill(nextPassword);
   await page.getByRole("button", { name: "Sign in" }).click();
   await expect(page).toHaveURL("/");
+});
+
+test("should acknowledge password recovery for an unknown email", async ({
+  page,
+}) => {
+  await page.goto("/forgot-password");
+  await page.getByLabel("Email").fill(`missing-${Date.now()}@example.com`);
+  await page.getByRole("button", { name: "Send reset link" }).click();
+  await expect(
+    page.getByText(
+      "If an account exists for that email, you will receive a password reset link.",
+    ),
+  ).toBeVisible();
+  await expect(page).toHaveURL(/\/forgot-password$/);
 });
 
 test("should reject an invalid password reset token", async ({ page }) => {

@@ -614,6 +614,8 @@ Account linking uses Better Auth 1.7.4 defaults. Implicit linking stays enabled,
 
 Protected application routes live in the `(app)` route group. The authenticated layout reads the Better Auth server session and redirects unauthenticated requests to `/sign-in`. Authenticated visitors to `/sign-in`, `/sign-up`, and `/forgot-password` are redirected to `/`. `/reset-password` remains reachable while authenticated so a recovery token can be completed.
 
+Authentication integration tests run against the isolated PostgreSQL test database. Deterministic Playwright coverage exercises email/password, protected routes, logout, and password recovery. CI applies the migration chain and runs those suites without Google credentials or a production email provider. Playwright CI uses the Next.js development server so Better Auth production rate limits do not make auth journeys flaky. Full Google consent/callback is a documented non-CI limitation.
+
 Next.js 15.5.25 does not provide the `proxy.ts` request-interception convention. `middleware.ts` is deprecated by project convention and is not used. Server-side session validation in the authenticated layout is the authoritative boundary. Client auth state is a projection of that session.
 
 ## Authorization

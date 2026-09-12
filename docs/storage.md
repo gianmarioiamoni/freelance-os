@@ -70,8 +70,10 @@ Phase 4 adds persistence integration tests against an isolated
 PostgreSQL database (`TEST_DATABASE_URL`, default name
 `freelanceos_test`) created from committed Prisma migrations
 (`pnpm test:db:migrate`, never `db push`). Run them with
-`pnpm test:integration`. CI starts PostgreSQL 17, applies the
-migration chain, and fails if migrations or persistence tests fail.
+`pnpm test:integration`. CI starts PostgreSQL 17, validates and
+generates the Prisma client, applies the migration chain, and fails
+if migrations, persistence tests, or deterministic auth E2E fail.
+CI does not require Google credentials or a production mailer.
 
 Phase 5 certified this document against the implemented storage
 layer. Review: `docs/epics/EPIC-002/engineering-review.md`.

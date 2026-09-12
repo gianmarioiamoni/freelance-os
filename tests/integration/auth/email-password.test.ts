@@ -84,4 +84,17 @@ describe("email/password authentication", () => {
 
     expect(await countSessionsForUser(userId)).toBe(sessionCountBefore);
   });
+
+  it("rejects sign-in for an unknown email without creating a session", async () => {
+    await expect(
+      auth.api.signInEmail({
+        body: {
+          email: uniqueEmail("unknown-signin"),
+          password: TEST_PASSWORD,
+        },
+      }),
+    ).rejects.toBeDefined();
+
+    expect(await prisma.session.count()).toBe(0);
+  });
 });

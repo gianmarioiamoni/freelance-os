@@ -5,7 +5,7 @@
 **Epic:** EPIC-003  
 **Release:** Release 0 — Foundation  
 **Objective:** Authentication Foundation  
-**Status:** In progress — Phase 4 complete  
+**Status:** In progress — Phase 5 complete  
 **Depends on:** EPIC-001 — Foundation / Repository; EPIC-002 — Database & Persistence  
 **Next Epic:** EPIC-004 — Workspace
 
@@ -1006,6 +1006,14 @@ test(auth): verify authentication persistence and flows
 - CI is green without Google credentials.
 - Auth tables are created by migrations in CI.
 - No flaky dependency on wall-clock email providers.
+
+#### Phase 5 notes
+
+- Integration coverage remains on the isolated `TEST_DATABASE_URL` database with per-test truncation. No second test framework.
+- CI now runs `prisma validate`, `prisma generate`, lint, typecheck, `test:db:migrate`, unit tests, integration tests, build, and deterministic Playwright auth E2E.
+- CI env: disposable PostgreSQL 17 (`freelanceos_test`), test `BETTER_AUTH_SECRET`, `AUTH_EMAIL_DELIVERY=test`. No `GOOGLE_CLIENT_*`, no production mailer.
+- Playwright in CI uses `pnpm dev` with a single worker. `next start` enables Better Auth production rate limits that collide across auth journeys on one CI IP. Google consent/callback stays a documented non-CI/manual limitation.
+- Preserved findings: Google/email implicit linking (`emailVerified=true`); production reset email provider TBD; `revokeSessionsOnPasswordReset: true` remains an intentional security setting.
 
 ---
 
