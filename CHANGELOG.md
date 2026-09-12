@@ -6,6 +6,9 @@ All notable changes to FreelanceOS are documented in this file.
 
 ### Added
 
+- EPIC-101 Clients Engineering Review completed; workspace-scoped client master-data management (create, list ACTIVE, archived view, detail, edit, archive) implemented. No schema change. Not production-ready.
+- Authenticated `/clients` product surface with Server Actions, application services, isolation tests, and a Playwright create/edit/archive journey.
+
 - EPIC-006 UI Foundation Engineering Review completed; authenticated AppShell, design-system primitives, page/state boundaries, and accessibility baseline certified. Not production-ready.
 - Authenticated application shell displays server-resolved workspace name and session account label. Placeholder destinations remain structural placeholders.
 - Foundation UI primitives: Input, Label, Card, Alert, Field, LoadingState, ErrorState, EmptyState, PageHeader, PageContent.

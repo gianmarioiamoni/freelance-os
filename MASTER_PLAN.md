@@ -1,10 +1,10 @@
 # FreelanceOS --- MASTER PLAN
 
-**Status:** Foundation in progress\
+**Status:** MVP in progress\
 **Document:** `MASTER_PLAN.md`\
 **Product:** FreelanceOS\
 **Canonical format:** Markdown\
-**Current phase:** EPIC-006 complete → EPIC-101
+**Current phase:** EPIC-101 complete → R1-E02 Contract Management
 
 ------------------------------------------------------------------------
 
@@ -135,8 +135,8 @@ context is recovered from repository documentation.
 ## Overall
 
 ``` text
-STATUS: EPIC-006 COMPLETE (PASS)
-NEXT: EPIC-101 — Clients
+STATUS: EPIC-101 COMPLETE (PASS)
+NEXT: R1-E02 — Contract Management
 ```
 
 ## Completed planning artifacts
@@ -153,41 +153,39 @@ docs/
 ## Current implementation status
 
 ``` text
-Application implementation: NOT STARTED
+Application implementation: STARTED
 Foundation implementation: EPIC-001 COMPLETE; EPIC-002 COMPLETE; EPIC-003 COMPLETE; EPIC-004 COMPLETE; EPIC-005 COMPLETE; EPIC-006 COMPLETE
-MVP implementation: NOT STARTED
+MVP implementation: EPIC-101 COMPLETE
 Production deployment: NOT STARTED
 Authentication: IMPLEMENTED — see docs/epics/EPIC-003/engineering-review.md
 Workspace / authorization: IMPLEMENTED — see docs/epics/EPIC-004/engineering-review.md
 Testing / CI foundation: IMPLEMENTED — see docs/epics/EPIC-005/engineering-review.md
 UI foundation: IMPLEMENTED — see docs/epics/EPIC-006/engineering-review.md
+Client management: IMPLEMENTED — see docs/epics/EPIC-101/engineering-review.md
 ```
 
-EPIC-006 completed the authenticated UI foundation. It did not start
-client, contract, or other product modules.
+EPIC-101 completed workspace-scoped client master-data management. It
+did not start contract management or other product modules.
 
 ``` text
-Phase 1: f94e1873936d2935bc0ba330716ac94ed4ce730f
-Phase 2: 16922dd8d1f13ec560fcf7bac926bf1dc4b1ee24
-Phase 3: 06e5df6a743926a06e278320e2ed8e1f39607602
+Phase 1: d54b353f6ae55e0b122720f38bb98fe8c317f557
+Phase 2: 3206d5245f6766cec5027b8da5ed4e446beb1275
+Phase 3: bd181de83e2c9d496ec67d7d891c58ee78f1e6dc
 Verdict: PASS
 ```
 
-Present after EPIC-006:
+Present after EPIC-101:
 
--   Tailwind 4 + shadcn (`radix-nova`) primitives: Button, Sheet,
-    Input, Label, Card, Alert, Field
--   LoadingState, ErrorState, EmptyState
--   PageHeader / PageContent
--   authenticated AppShell with server-resolved workspace name and
-    account label
--   `(app)` loading / error / not-found boundaries
--   UI helper unit tests and authenticated Playwright shell coverage
--   EPIC-005 isolated E2E / CI contract unchanged
+-   workspace-scoped create, list ACTIVE, archived view, detail, edit,
+    and archive
+-   Server Actions for mutations; RSC / application-service reads
+-   `ClientRepository.updateClient` without schema or migration change
+-   isolation integration tests and Playwright client journey
+-   `/clients` is a product surface; `/contracts` remains a placeholder
 
-This is not production readiness. Release 0 Foundation engineering is
-complete. MVP starts at EPIC-101. Later validation/certification remain
-required.
+This is not production readiness. Release 0 Foundation engineering
+remains complete. MVP implementation has started. Later
+validation/certification remain required.
 
 This distinction is deliberate: planning documents describe what has
 been designed; future documentation updates must describe what has
@@ -534,6 +532,12 @@ Register
 # 11. MVP Epic Map
 
 ## R1-E01 --- Client Management
+
+### Status
+
+IMPLEMENTED — engineering complete (PASS). Review:
+`docs/epics/EPIC-101/engineering-review.md`. Contract management is
+not included.
 
 ### Objective
 
@@ -1651,15 +1655,16 @@ The exact parallelization will be determined during each Epic plan.
 
 # 47. Current Next Action
 
-Release 0 Foundation engineering is complete. The next planned product
-Epic is Client Management. Do not start it without an Epic plan.
+Release 0 Foundation engineering is complete. EPIC-101 Client
+Management is engineering-complete. The next planned product Epic is
+Contract Management. Do not start it without an Epic plan.
 
 Next actions:
 
 ``` text
 1. Open a new Cursor chat
-2. Create docs/epics/EPIC-101/epic-plan.md before implementation
-3. Execute EPIC-101 — Clients
+2. Create docs/epics/EPIC-102/epic-plan.md before implementation
+3. Execute EPIC-102 — Contracts
 ```
 
 This follows the methodology's rule that each Phase gets a focused
@@ -1673,7 +1678,7 @@ progression to the next Phase. fileciteturn1file0L59-L87
 ``` yaml
 project:
   name: FreelanceOS
-  phase: foundation
+  phase: mvp
   implementation_started: true
 
 architecture:
@@ -1696,7 +1701,7 @@ releases:
     status: in-progress
   R1:
     name: MVP
-    status: planned
+    status: in-progress
   R2:
     name: Billing & Intelligence
     status: future
@@ -1708,10 +1713,10 @@ releases:
     status: future
 
 next:
-  epic: EPIC-101
+  epic: EPIC-102
   phase: planning
-  objective: Clients
-  implementation: epic-006-complete
+  objective: Contracts
+  implementation: epic-101-complete
 ```
 
 ------------------------------------------------------------------------
@@ -1800,7 +1805,7 @@ The planning stage is considered complete when:
 The next artifact is therefore:
 
 ``` text
-docs/epics/EPIC-101/epic-plan.md
+docs/epics/EPIC-102/epic-plan.md
 ```
 
-Do not start EPIC-101 implementation before that Epic plan is created.
+Do not start EPIC-102 implementation before that Epic plan is created.

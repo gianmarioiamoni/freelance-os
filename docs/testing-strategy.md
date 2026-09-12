@@ -1,6 +1,6 @@
 # FreelanceOS --- Testing Strategy
 
-**Status:** Testing and CI foundation implemented — EPIC-005 complete; UI test baseline added by EPIC-006\
+**Status:** Testing and CI foundation implemented — EPIC-005 complete; UI test baseline added by EPIC-006; client coverage added by EPIC-101\
 **Document:** `docs/testing-strategy.md`\
 **Scope:** Release 0 Foundation + Release 1 MVP\
 **Canonical format:** Markdown
@@ -77,6 +77,14 @@ jsdom/RTL and `@axe-core/playwright` were not added. The EPIC-005
 isolated E2E / CI contract is unchanged. Review:
 `docs/epics/EPIC-006/engineering-review.md`.
 
+EPIC-101 adds client application-service unit tests, workspace-isolation
+integration tests, and one Playwright client journey: empty ACTIVE list
+→ create → list → detail → edit → archive → absent from ACTIVE →
+visible in archived view. P101-01 closed at 82 unit / 60 integration.
+P101-02 added no unit or integration tests. P101-03 closed at 82 unit /
+62 integration / 14 E2E. The EPIC-005 isolated E2E / CI contract is
+unchanged. Review: `docs/epics/EPIC-101/engineering-review.md`.
+
 Isolated E2E database contract:
 
 - Playwright requires `TEST_DATABASE_URL` through
@@ -141,7 +149,7 @@ Accepted limitations that remain:
 - `pnpm test` remains unit-only. Playwright stays in `pnpm test:e2e`
   and also requires `TEST_DATABASE_URL`.
 - CI provides PostgreSQL 17 and fails if migrations, persistence
-  tests, or deterministic auth/onboarding/shell E2E fail.
+  tests, or deterministic auth/onboarding/shell/client E2E fail.
 
 ------------------------------------------------------------------------
 
@@ -1079,9 +1087,10 @@ Register
 
 This is the primary acceptance journey.
 
-Foundation E2E currently covers Register / Login / Create workspace
-and the authenticated shell gate against `TEST_DATABASE_URL`. The
-remaining MVP steps are later product work.
+Foundation E2E covers Register / Login / Create workspace and the
+authenticated shell gate against `TEST_DATABASE_URL`. EPIC-101 adds
+the client create / edit / archive journey. The remaining MVP steps
+are later product work.
 
 ------------------------------------------------------------------------
 
@@ -1138,6 +1147,10 @@ create client
 
 Also verify that archived clients remain available where historical
 reporting requires them.
+
+Implemented by EPIC-101 (`tests/e2e/clients.spec.ts`): create, list,
+detail, edit, archive, ACTIVE exclusion, archived-view visibility.
+Historical reporting attachment remains later product work.
 
 ------------------------------------------------------------------------
 

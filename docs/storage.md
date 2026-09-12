@@ -104,6 +104,12 @@ same `TEST_DATABASE_URL` guard as integration tests: the value is
 required, `freelance_os` is rejected, and the database name must
 end in `_test`. Review: `docs/epics/EPIC-005/engineering-review.md`.
 
+EPIC-101 added no schema or migration. `ClientRepository.updateClient`
+is TypeScript/repository only and updates existing master-data columns
+scoped by `{ id, workspaceId }`. Application-owned models, Better Auth
+tables, and EPIC-002 composite foreign keys are unchanged. Review:
+`docs/epics/EPIC-101/engineering-review.md`.
+
 `Alert.clientId` and `Alert.contractId` are independently optional
 workspace-scoped FKs. The database does not prove they refer to the
 same client; that remains an application/domain responsibility
