@@ -46,6 +46,14 @@ limitation.
 EPIC-003 Phase 6 certified this authentication coverage. Review:
 `docs/epics/EPIC-003/engineering-review.md`.
 
+EPIC-004 Phase 4 adds workspace authorization and isolation tests.
+Membership access, non-member denial, identifier substitution, and
+cross-workspace isolation are verified against application
+authorization primitives and the isolated PostgreSQL test database.
+Playwright covers onboarding and route-boundary journeys, including
+that a browser-supplied `workspaceId` query is not authorization.
+Role permission semantics (OBD-009) remain untested by design.
+
 - Create `freelanceos_test` (or another database whose name ends in
   `_test`).
 - Set `TEST_DATABASE_URL`. Never reuse `freelance_os`.

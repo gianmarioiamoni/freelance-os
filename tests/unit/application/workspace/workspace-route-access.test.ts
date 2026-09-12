@@ -68,4 +68,25 @@ describe("workspace route access", () => {
       getWorkspaceBoundaryRedirect(WORKSPACE_UNAVAILABLE_PATH, ambiguous),
     ).toBeNull();
   });
+
+  it("does not treat route or query workspace identifiers as authorization", () => {
+    expect(
+      getWorkspaceBoundaryRedirect("/workspaces/workspace-b", onboarding),
+    ).toBe(ONBOARDING_PATH);
+    expect(
+      getWorkspaceBoundaryRedirect("/?workspaceId=workspace-b", onboarding),
+    ).toBe(ONBOARDING_PATH);
+    expect(
+      getWorkspaceBoundaryRedirect(
+        "/clients?workspaceId=workspace-b",
+        onboarding,
+      ),
+    ).toBe(ONBOARDING_PATH);
+    expect(
+      getWorkspaceBoundaryRedirect("/workspaces/workspace-b", resolved),
+    ).toBeNull();
+    expect(
+      getWorkspaceBoundaryRedirect("/?workspaceId=workspace-b", resolved),
+    ).toBeNull();
+  });
 });
