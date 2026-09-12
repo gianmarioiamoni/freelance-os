@@ -1,4 +1,7 @@
 // src/components/placeholder/PlaceholderPage.tsx
+import { PageContent } from "@/components/page/PageContent";
+import { PageHeader } from "@/components/page/PageHeader";
+import { EmptyState } from "@/components/states/EmptyState";
 import type { JSX } from "react";
 
 type PlaceholderPageProps = {
@@ -8,10 +11,10 @@ type PlaceholderPageProps = {
 export function PlaceholderPage({ title }: PlaceholderPageProps): JSX.Element {
   return (
     <section className="max-w-2xl">
-      <h1>{title}</h1>
-      <p className="mt-2 text-sm text-muted-foreground">
-        {title} is not implemented yet.
-      </p>
+      <PageHeader title={title} />
+      <PageContent>
+        <EmptyState title={`${title} is not implemented yet.`} />
+      </PageContent>
     </section>
   );
 }

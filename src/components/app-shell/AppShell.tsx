@@ -4,10 +4,16 @@ import { AppSidebar } from "@/components/app-shell/AppSidebar";
 import type { JSX, ReactNode } from "react";
 
 type AppShellProps = {
+  accountLabel: string;
   children: ReactNode;
+  workspaceName: string;
 };
 
-export function AppShell({ children }: AppShellProps): JSX.Element {
+export function AppShell({
+  accountLabel,
+  children,
+  workspaceName,
+}: AppShellProps): JSX.Element {
   return (
     <div className="flex min-h-svh flex-col">
       <a
@@ -16,7 +22,7 @@ export function AppShell({ children }: AppShellProps): JSX.Element {
       >
         Skip to content
       </a>
-      <AppHeader />
+      <AppHeader accountLabel={accountLabel} workspaceName={workspaceName} />
       <div className="flex min-w-0 flex-1">
         <AppSidebar />
         <main id="main-content" className="min-w-0 flex-1 px-4 py-6 md:px-8">
