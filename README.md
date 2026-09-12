@@ -4,7 +4,7 @@ FreelanceOS is a web application for freelancer operations management.
 
 ## Status
 
-Release 0 — Foundation. EPIC-003 (Authentication) is complete with findings. Next: EPIC-004 — Workspace. Authentication is implemented; workspace authorization is not. Production password-reset email is not operational.
+Release 0 — Foundation. EPIC-004 Phase 3 adds first-workspace onboarding and a workspace-aware application boundary. Authentication remains Better Auth. Role permissions (OBD-009) and production password-reset email are not decided.
 
 Planning and architecture documents are the source of truth. See [`MASTER_PLAN.md`](./MASTER_PLAN.md).
 
@@ -25,7 +25,7 @@ cp .env.example .env
 
 Set `DATABASE_URL`, `TEST_DATABASE_URL`, `BETTER_AUTH_SECRET`, and `BETTER_AUTH_URL` in `.env`. Optional: `AUTH_EMAIL_DELIVERY` (`development` | `test` | `production`). Prisma reads `.env` from the project root. Do not commit `.env`. Do not prefix secrets with `NEXT_PUBLIC_`.
 
-Email/password registration, sign-in, and sign-out are available at `/sign-up` and `/sign-in`. Password recovery is available at `/forgot-password` and `/reset-password`. Google sign-in is available on the sign-in and sign-up pages when `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` are set. Configure the Google authorized redirect URI as `${BETTER_AUTH_URL}/api/auth/callback/google` (local example: `http://localhost:3000/api/auth/callback/google`). Email/password remains usable when Google credentials are absent. Application routes require a Better Auth server session.
+Email/password registration, sign-in, and sign-out are available at `/sign-up` and `/sign-in`. Password recovery is available at `/forgot-password` and `/reset-password`. Google sign-in is available on the sign-in and sign-up pages when `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` are set. Configure the Google authorized redirect URI as `${BETTER_AUTH_URL}/api/auth/callback/google` (local example: `http://localhost:3000/api/auth/callback/google`). Email/password remains usable when Google credentials are absent. Registration does not create a workspace. Authenticated users with no membership are sent to `/onboarding` to create their first workspace. Application routes require a Better Auth server session and exactly one workspace membership.
 
 Password-reset email delivery is an application boundary, not a production mailer. Set `AUTH_EMAIL_DELIVERY` to `development`, `test`, or `production`. No production email provider is selected yet; production mode acknowledges the request and does not send mail. Development mode also does not send mail and never logs reset tokens or URLs. Inspect local recovery tokens through the Better Auth `verification` table when needed.
 
@@ -68,7 +68,7 @@ The GitHub Actions quality workflow starts PostgreSQL 17, validates and generate
 | `pnpm test:watch`        | Run unit tests in watch mode                                     |
 | `pnpm test:integration`  | Run persistence integration tests against `TEST_DATABASE_URL`    |
 | `pnpm test:db:migrate`   | Apply committed migrations to the isolated test database         |
-| `pnpm test:e2e`          | Run Playwright auth and shell E2E tests                          |
+| `pnpm test:e2e`          | Run Playwright auth, onboarding, and shell E2E tests             |
 | `pnpm format`            | Format project files with Prettier                               |
 | `pnpm db:generate`       | Generate the Prisma Client                                       |
 | `pnpm db:migrate`        | Create and apply a development migration (`prisma migrate dev`)  |

@@ -1,8 +1,6 @@
 // src/app/(app)/layout.tsx
-import { SIGN_IN_PATH } from "@/application/auth/route-access";
 import { AppShell } from "@/components/app-shell/AppShell";
-import { getServerAuthSession } from "@/infrastructure/auth/session";
-import { redirect } from "next/navigation";
+import { getCurrentWorkspaceContext } from "@/infrastructure/workspace/current-workspace";
 import type { JSX, ReactNode } from "react";
 
 type AppLayoutProps = {
@@ -12,11 +10,7 @@ type AppLayoutProps = {
 export default async function AppLayout({
   children,
 }: AppLayoutProps): Promise<JSX.Element> {
-  const session = await getServerAuthSession();
-
-  if (!session) {
-    redirect(SIGN_IN_PATH);
-  }
+  await getCurrentWorkspaceContext();
 
   return <AppShell>{children}</AppShell>;
 }

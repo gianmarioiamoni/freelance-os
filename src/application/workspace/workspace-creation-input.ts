@@ -18,6 +18,16 @@ export type ValidatedWorkspaceCreationInput = {
 const IANA_TIME_ZONES = new Set(Intl.supportedValuesOf("timeZone"));
 const ISO_4217_CURRENCIES = new Set(Intl.supportedValuesOf("currency"));
 
+export function listSupportedTimeZones(): string[] {
+  return [...IANA_TIME_ZONES].sort((left, right) => left.localeCompare(right));
+}
+
+export function listSupportedCurrencies(): string[] {
+  return [...ISO_4217_CURRENCIES].sort((left, right) =>
+    left.localeCompare(right),
+  );
+}
+
 export function parseWorkspaceCreationInput(
   input: WorkspaceCreationInput,
 ): ValidatedWorkspaceCreationInput {

@@ -1,6 +1,6 @@
 // src/app/(auth)/layout.tsx
-import { DEFAULT_AUTHENTICATED_PATH } from "@/application/auth/route-access";
-import { getServerAuthSession } from "@/infrastructure/auth/session";
+import { getWorkspaceResolutionPath } from "@/application/workspace/workspace-route-access";
+import { resolveSessionWorkspace } from "@/infrastructure/workspace/current-workspace";
 import { redirect } from "next/navigation";
 import type { JSX, ReactNode } from "react";
 
@@ -11,10 +11,10 @@ type AuthLayoutProps = {
 export default async function AuthLayout({
   children,
 }: AuthLayoutProps): Promise<JSX.Element> {
-  const session = await getServerAuthSession();
+  const sessionWorkspace = await resolveSessionWorkspace();
 
-  if (session) {
-    redirect(DEFAULT_AUTHENTICATED_PATH);
+  if (sessionWorkspace.status === "authenticated") {
+    redirect(getWorkspaceResolutionPath(sessionWorkspace.resolution));
   }
 
   return (

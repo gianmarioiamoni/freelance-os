@@ -47,11 +47,13 @@ test("should register, stay authenticated, and sign out", async ({ page }) => {
   await page.getByLabel("Password").fill("ValidPass1!");
   await page.getByRole("button", { name: "Create account" }).click();
 
-  await expect(page).toHaveURL("/");
-  await expect(page.getByRole("heading", { level: 1, name: "Dashboard" })).toBeVisible();
+  await expect(page).toHaveURL(/\/onboarding$/);
+  await expect(
+    page.getByRole("heading", { name: "Create your workspace" }),
+  ).toBeVisible();
   await expect(
     page.getByRole("navigation", { name: "Application" }),
-  ).toBeVisible();
+  ).toHaveCount(0);
 
   await page.getByRole("button", { name: "Sign out" }).click();
   await expect(page).toHaveURL(/\/sign-in$/);
@@ -63,8 +65,10 @@ test("should register, stay authenticated, and sign out", async ({ page }) => {
   await page.getByLabel("Email").fill(email);
   await page.getByLabel("Password").fill("ValidPass1!");
   await page.getByRole("button", { name: "Sign in" }).click();
-  await expect(page).toHaveURL("/");
-  await expect(page.getByRole("heading", { level: 1, name: "Dashboard" })).toBeVisible();
+  await expect(page).toHaveURL(/\/onboarding$/);
+  await expect(
+    page.getByRole("heading", { name: "Create your workspace" }),
+  ).toBeVisible();
 });
 
 test("should recover a password from the email/password flow", async ({
@@ -79,7 +83,7 @@ test("should recover a password from the email/password flow", async ({
   await page.getByLabel("Email").fill(email);
   await page.getByLabel("Password").fill(originalPassword);
   await page.getByRole("button", { name: "Create account" }).click();
-  await expect(page).toHaveURL("/");
+  await expect(page).toHaveURL(/\/onboarding$/);
 
   await page.context().clearCookies();
   await page.goto("/sign-in");
@@ -110,7 +114,7 @@ test("should recover a password from the email/password flow", async ({
   await page.getByLabel("Email").fill(email);
   await page.getByLabel("Password").fill(nextPassword);
   await page.getByRole("button", { name: "Sign in" }).click();
-  await expect(page).toHaveURL("/");
+  await expect(page).toHaveURL(/\/onboarding$/);
 });
 
 test("should acknowledge password recovery for an unknown email", async ({

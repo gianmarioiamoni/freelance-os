@@ -19,10 +19,12 @@ describe("auth route access", () => {
     expect(isAuthPagePath(FORGOT_PASSWORD_PATH)).toBe(true);
     expect(isAuthPagePath(RESET_PASSWORD_PATH)).toBe(true);
     expect(isAuthPagePath("/")).toBe(false);
+    expect(isAuthPagePath("/onboarding")).toBe(false);
     expect(getUnauthenticatedRedirectPath(SIGN_IN_PATH)).toBeNull();
     expect(getUnauthenticatedRedirectPath(FORGOT_PASSWORD_PATH)).toBeNull();
     expect(getUnauthenticatedRedirectPath(RESET_PASSWORD_PATH)).toBeNull();
     expect(getUnauthenticatedRedirectPath("/settings")).toBe(SIGN_IN_PATH);
+    expect(getUnauthenticatedRedirectPath("/onboarding")).toBe(SIGN_IN_PATH);
   });
 
   it("redirects authenticated users away from auth pages except reset", () => {

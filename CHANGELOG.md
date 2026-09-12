@@ -6,6 +6,7 @@ All notable changes to FreelanceOS are documented in this file.
 
 ### Added
 
+- First-workspace onboarding at `/onboarding` and a workspace-aware authenticated application boundary. Zero memberships require onboarding, one membership enters the application, and more than one membership fails closed.
 - First-workspace creation use case: atomically persists Workspace, OWNER membership, and WorkspaceSettings for an authenticated user with no existing membership.
 - EPIC-003 Authentication Engineering Review completed; authentication foundation certified for EPIC-004 with documented non-blocking findings.
 - Password recovery through Better Auth, using the existing verification table, a non-production email delivery boundary, and `/forgot-password` plus `/reset-password`.

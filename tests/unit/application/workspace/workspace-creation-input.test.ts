@@ -2,6 +2,8 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  listSupportedCurrencies,
+  listSupportedTimeZones,
   parseWorkspaceCreationInput,
   WORKSPACE_NAME_MAX_LENGTH,
 } from "@/application/workspace/workspace-creation-input";
@@ -61,6 +63,11 @@ describe("parseWorkspaceCreationInput", () => {
 
   it("rejects an invalid ISO-4217 currency", () => {
     expectInvalidField({ ...validInput, currency: "EURO" }, "currency");
+  });
+
+  it("exposes the same timezone and currency catalogs used for validation", () => {
+    expect(listSupportedTimeZones()).toContain("Europe/Rome");
+    expect(listSupportedCurrencies()).toContain("EUR");
   });
 
   it("normalizes a valid currency to uppercase", () => {
