@@ -1,6 +1,10 @@
 // src/infrastructure/persistence/client-repository.ts
 import { RecordNotFoundError } from "@/domain/persistence-errors";
-import type { ClientStatus, CreateClientInput } from "@/domain/persistence-types";
+import type {
+  ClientStatus,
+  CreateClientInput,
+  UpdateClientInput,
+} from "@/domain/persistence-types";
 import type { ClientRepository } from "@/domain/repositories";
 import { withPersistenceErrors } from "@/infrastructure/persistence/map-prisma-error";
 import { mapClient } from "@/infrastructure/persistence/mappers";
@@ -48,6 +52,38 @@ export function createClientRepository(db: PrismaExecutor): ClientRepository {
           orderBy: { companyName: "asc" },
         });
         return rows.map(mapClient);
+      });
+    },
+
+    updateClient(workspaceId: string, clientId: string, input: UpdateClientInput) {
+      return withPersistenceErrors(async () => {
+        const result = await db.client.updateMany({
+          where: { id: clientId, workspaceId },
+          data: {
+            companyName: input.companyName,
+            vatNumber: input.vatNumber ?? null,
+            taxCode: input.taxCode ?? null,
+            address: input.address ?? null,
+            contactName: input.contactName ?? null,
+            email: input.email ?? null,
+            phone: input.phone ?? null,
+            notes: input.notes ?? null,
+          },
+        });
+
+        if (result.count === 0) {
+          throw new RecordNotFoundError("Client", clientId);
+        }
+
+        const row = await db.client.findFirst({
+          where: { id: clientId, workspaceId },
+        });
+
+        if (!row) {
+          throw new RecordNotFoundError("Client", clientId);
+        }
+
+        return mapClient(row);
       });
     },
 

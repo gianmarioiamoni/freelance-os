@@ -145,6 +145,17 @@ export type CreateClientInput = {
   status?: ClientStatus;
 };
 
+export type UpdateClientInput = {
+  companyName: string;
+  vatNumber?: string | null;
+  taxCode?: string | null;
+  address?: string | null;
+  contactName?: string | null;
+  email?: string | null;
+  phone?: string | null;
+  notes?: string | null;
+};
+
 export type CreateContractInput = {
   clientId: string;
   validFrom: Date;

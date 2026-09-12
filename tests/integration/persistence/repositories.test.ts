@@ -1,6 +1,8 @@
 // tests/integration/persistence/repositories.test.ts
 import { describe, expect, it } from "vitest";
 
+import { RecordNotFoundError } from "@/domain/persistence-errors";
+
 import { createWorkspaceGraph } from "./fixtures";
 import { date, repositories } from "./helpers";
 
@@ -151,5 +153,83 @@ describe("repository persistence", () => {
       readAt,
     });
     expect(await repositories.notifications.listNotificationsForUser(graph.workspaceId, graph.userId)).toHaveLength(1);
+  });
+
+  it("updates client master data without changing workspace or status", async () => {
+    const workspaceA = await createWorkspaceGraph(repositories, "update-a");
+    const workspaceB = await createWorkspaceGraph(repositories, "update-b");
+
+    const created = await repositories.clients.createClient(workspaceA.workspaceId, {
+      companyName: "Original Studio",
+      vatNumber: "IT111",
+      email: "old@studio.test",
+      notes: "before",
+    });
+
+    const updated = await repositories.clients.updateClient(
+      workspaceA.workspaceId,
+      created.id,
+      {
+        companyName: "Updated Studio",
+        vatNumber: "IT222",
+        taxCode: "TAX222",
+        address: "Via Update 1",
+        contactName: "Updated Contact",
+        email: "new@studio.test",
+        phone: "011222",
+        notes: "after",
+      },
+    );
+
+    expect(updated).toMatchObject({
+      id: created.id,
+      workspaceId: workspaceA.workspaceId,
+      companyName: "Updated Studio",
+      vatNumber: "IT222",
+      taxCode: "TAX222",
+      address: "Via Update 1",
+      contactName: "Updated Contact",
+      email: "new@studio.test",
+      phone: "011222",
+      notes: "after",
+      status: "ACTIVE",
+    });
+    expect(updated.workspaceId).toBe(created.workspaceId);
+    expect(updated.status).toBe(created.status);
+
+    const archived = await repositories.clients.archiveClient(
+      workspaceA.workspaceId,
+      created.id,
+    );
+    const archivedUpdate = await repositories.clients.updateClient(
+      workspaceA.workspaceId,
+      created.id,
+      {
+        companyName: "Archived Edit",
+        notes: "identity correction",
+      },
+    );
+
+    expect(archived.status).toBe("ARCHIVED");
+    expect(archivedUpdate.status).toBe("ARCHIVED");
+    expect(archivedUpdate.workspaceId).toBe(workspaceA.workspaceId);
+    expect(archivedUpdate.companyName).toBe("Archived Edit");
+
+    await expect(
+      repositories.clients.updateClient(workspaceB.workspaceId, created.id, {
+        companyName: "Foreign Edit",
+      }),
+    ).rejects.toBeInstanceOf(RecordNotFoundError);
+
+    expect(
+      await repositories.clients.getClient(workspaceA.workspaceId, created.id),
+    ).toMatchObject({
+      companyName: "Archived Edit",
+      workspaceId: workspaceA.workspaceId,
+      status: "ARCHIVED",
+    });
+    expect(
+      await repositories.clients.getClient(workspaceB.workspaceId, created.id),
+    ).toBeNull();
   });
 });

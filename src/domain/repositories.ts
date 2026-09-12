@@ -14,6 +14,7 @@ import type {
   PutWorkspaceSettingsInput,
   RecordTimeEntryInput,
   TimeEntryRecord,
+  UpdateClientInput,
   UpdateWorkspaceInput,
   WorkspaceMemberRecord,
   WorkspaceRecord,
@@ -60,6 +61,11 @@ export type ClientRepository = {
     workspaceId: string,
     status?: ClientStatus,
   ): Promise<ClientRecord[]>;
+  updateClient(
+    workspaceId: string,
+    clientId: string,
+    input: UpdateClientInput,
+  ): Promise<ClientRecord>;
   archiveClient(workspaceId: string, clientId: string): Promise<ClientRecord>;
 };
 
