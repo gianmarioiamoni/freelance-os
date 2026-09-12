@@ -4,7 +4,7 @@ FreelanceOS is a web application for freelancer operations management.
 
 ## Status
 
-Release 0 — Foundation. EPIC-004 Phase 3 adds first-workspace onboarding and a workspace-aware application boundary. Authentication remains Better Auth. Role permissions (OBD-009) and production password-reset email are not decided.
+Release 0 — Foundation. EPIC-004 complete: first-workspace onboarding, server-side workspace resolution, and membership authorization. Authentication remains Better Auth. Role permissions (OBD-009) and production password-reset email are not decided.
 
 Planning and architecture documents are the source of truth. See [`MASTER_PLAN.md`](./MASTER_PLAN.md).
 
@@ -51,7 +51,7 @@ Persistence integration tests run against real PostgreSQL:
 pnpm test:integration
 ```
 
-The GitHub Actions quality workflow starts PostgreSQL 17, validates and generates the Prisma client, applies migrations, then runs lint, typecheck, unit tests, integration tests, build, and deterministic Playwright auth E2E. CI uses `pnpm dev` with one Playwright worker. It does not require Google credentials or a production mailer.
+The GitHub Actions quality workflow starts PostgreSQL 17, validates and generates the Prisma client, applies migrations, then runs lint, typecheck, unit tests, integration tests, build, and deterministic Playwright auth and onboarding E2E. CI uses `pnpm dev` with one Playwright worker. It does not require Google credentials or a production mailer.
 
 `pnpm install` also runs `prisma generate`. The Prisma schema includes the application-owned persistence models and Better Auth 1.7.4 tables.
 

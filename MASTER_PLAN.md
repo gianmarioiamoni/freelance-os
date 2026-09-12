@@ -4,7 +4,7 @@
 **Document:** `MASTER_PLAN.md`\
 **Product:** FreelanceOS\
 **Canonical format:** Markdown\
-**Current phase:** EPIC-003 complete → EPIC-004
+**Current phase:** EPIC-004 complete → EPIC-005
 
 ------------------------------------------------------------------------
 
@@ -135,8 +135,8 @@ context is recovered from repository documentation.
 ## Overall
 
 ``` text
-STATUS: EPIC-003 COMPLETE (PASS WITH FINDINGS)
-NEXT: EPIC-004 — Workspace
+STATUS: EPIC-004 COMPLETE (PASS WITH FINDINGS)
+NEXT: EPIC-005 — Testing & CI Foundation
 ```
 
 ## Completed planning artifacts
@@ -154,11 +154,11 @@ docs/
 
 ``` text
 Application implementation: NOT STARTED
-Foundation implementation: EPIC-001 COMPLETE; EPIC-002 COMPLETE; EPIC-003 COMPLETE
+Foundation implementation: EPIC-001 COMPLETE; EPIC-002 COMPLETE; EPIC-003 COMPLETE; EPIC-004 COMPLETE
 MVP implementation: NOT STARTED
 Production deployment: NOT STARTED
 Authentication: IMPLEMENTED — see docs/epics/EPIC-003/engineering-review.md
-Authorization / workspace onboarding: NOT STARTED
+Workspace / authorization: IMPLEMENTED — see docs/epics/EPIC-004/engineering-review.md
 ```
 
 This distinction is deliberate: planning documents describe what has
@@ -1629,8 +1629,8 @@ Next actions:
 
 ``` text
 1. Open a new Cursor chat
-2. Create docs/epics/EPIC-004/epic-plan.md before implementation
-3. Execute EPIC-004 — Workspace
+2. Create docs/epics/EPIC-005/epic-plan.md before implementation
+3. Execute EPIC-005 — Testing & CI Foundation
 ```
 
 This follows the methodology's rule that each Phase gets a focused
@@ -1679,10 +1679,10 @@ releases:
     status: future
 
 next:
-  epic: EPIC-004
+  epic: EPIC-005
   phase: planning
-  objective: Workspace Foundation
-  implementation: epic-003-complete
+  objective: Testing & CI Foundation
+  implementation: epic-004-complete
 ```
 
 ------------------------------------------------------------------------

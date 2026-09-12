@@ -1,6 +1,6 @@
 # FreelanceOS — System Architecture
 
-**Status:** Architecture Baseline — Authentication implemented (EPIC-003)  
+**Status:** Architecture Baseline — Authentication and workspace implemented (EPIC-003, EPIC-004)  
 **Scope:** MVP  
 **Architectural style:** Modular Monolith  
 **Primary runtime:** Next.js / TypeScript  
@@ -241,6 +241,16 @@ Workspace
 ```
 
 The current user/workspace context is established server-side.
+
+Implemented `WorkspaceContext`:
+
+```text
+workspaceId
+userId
+role            ← attached from WorkspaceMember; not a permission matrix
+```
+
+Resolution uses the Better Auth session user id and `listMembershipsByUserId`. Zero memberships require onboarding. Exactly one membership becomes the current context. More than one membership fails closed. The browser cannot select an arbitrary workspace.
 
 ---
 
@@ -612,7 +622,7 @@ Google OAuth uses `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`. The provider is
 
 Account linking uses Better Auth 1.7.4 defaults. Implicit linking stays enabled, but the library requires the existing local user to have `emailVerified: true` before linking a Google identity to an email/password user. Phase 2 registration does not verify email, so an existing unverified email/password account is not silently merged with a later Google sign-in for the same email. FreelanceOS does not override that library security default.
 
-Protected application routes live in the `(app)` route group. The authenticated layout reads the Better Auth server session and redirects unauthenticated requests to `/sign-in`. Authenticated visitors to `/sign-in`, `/sign-up`, and `/forgot-password` are redirected to `/`. `/reset-password` remains reachable while authenticated so a recovery token can be completed.
+Protected application routes live in the `(app)` route group. The authenticated layout reads the Better Auth server session and the server-resolved workspace membership. Unauthenticated requests redirect to `/sign-in`. Authenticated visitors with no membership are sent to `/onboarding`. Authenticated visitors with exactly one membership enter `(app)`. Authenticated visitors with more than one membership are sent to `/workspace-unavailable`. Authenticated visitors to `/sign-in`, `/sign-up`, and `/forgot-password` follow that same workspace resolution. `/reset-password` remains reachable while authenticated so a recovery token can be completed.
 
 Authentication integration tests run against the isolated PostgreSQL test database. Deterministic Playwright coverage exercises email/password, protected routes, logout, and password recovery. CI applies the migration chain and runs those suites without Google credentials or a production email provider. Playwright CI uses the Next.js development server so Better Auth production rate limits do not make auth journeys flaky. Full Google consent/callback is a documented non-CI limitation.
 
@@ -622,23 +632,36 @@ Next.js 15.5.25 does not provide the `proxy.ts` request-interception convention.
 
 Authorization is implemented in the application/server layer.
 
-Conceptually:
-
 ```text
-Request
+Browser
   ↓
-Authenticated session
+Better Auth session
   ↓
-Resolve workspace membership
+Workspace membership resolution
   ↓
-Authorize operation
+Authorization
   ↓
-Application use case
+WorkspaceContext
+  ↓
+Workspace-scoped application operation
   ↓
 Persistence
 ```
 
-Authentication and authorization must not be treated as the same concern.
+Authentication and authorization are separate. A valid session is not a workspace grant.
+
+Membership is the authorization source. `WorkspaceMember.userId` is a logical Better Auth user id. There is no application User model.
+
+Implemented primitives:
+
+- `resolveWorkspaceContext(userId)` — 0 memberships → onboarding; 1 → `WorkspaceContext`; >1 → fail closed
+- `requireWorkspaceAccess(userId, workspaceId)` — membership check; non-members receive `UnauthorizedWorkspaceAccessError`
+- `getAuthorizedWorkspace(userId, requestedWorkspaceId)` — authorized read after membership; `getWorkspaceById` is not an authorization API
+- `createFirstWorkspace(userId, input)` — atomic first-workspace create for a user with zero memberships
+
+`role` is stored and returned. OWNER versus MEMBER permission semantics are not implemented (OBD-009).
+
+Path or query `workspaceId` cannot establish authorization. No workspace switcher exists.
 
 ---
 
@@ -1314,8 +1337,8 @@ ADR-001 Modular Monolith
 ADR-002 PostgreSQL
 ADR-003 Prisma as persistence adapter
 ADR-004 Next.js App Router
-ADR-005 Workspace-based multi-tenancy
-ADR-006 Authentication strategy
+ADR-005 Workspace-based multi-tenancy (canonical in §5.2, §11, §12)
+ADR-006 Authentication strategy (canonical in §11 and docs/storage.md §12)
 ADR-007 Analytics as shared application capability
 ADR-008 AI as external application adapter
 ```

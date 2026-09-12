@@ -5,7 +5,7 @@
 **Epic:** EPIC-004  
 **Release:** Release 0 — Foundation  
 **Objective:** Workspace Foundation  
-**Status:** Planned  
+**Status:** Complete — PASS WITH FINDINGS  
 **Depends on:** EPIC-001 — Foundation / Repository; EPIC-002 — Database & Persistence; EPIC-003 — Authentication  
 **Next Epic:** EPIC-005 — Testing & CI Foundation *(naming only; see §7.1)*  
 **Canonical source:** `MASTER_PLAN.md` R0-E04 — Workspace Foundation
@@ -16,20 +16,22 @@
 
 ```text
 PLANNING COMPLETE
-IMPLEMENTATION: NOT STARTED
+IMPLEMENTATION COMPLETE
+CERTIFICATION: PASS WITH FINDINGS
 ```
 
-EPIC-003 certified:
+Review: `docs/epics/EPIC-004/engineering-review.md`
+
+Implemented phases:
 
 ```text
-PASS WITH FINDINGS
-READY FOR EPIC-004
+800c30e feat(workspace): establish membership resolution
+6fbe21d feat(workspace): implement workspace creation
+4f73c9f feat(workspace): add onboarding and workspace boundary
+cd9904e test(workspace): verify authorization and isolation
 ```
 
-Review: `docs/epics/EPIC-003/engineering-review.md`  
-Review commit: `fd10374574e58ff21cadc5b5fe089cc8fb6d66a6`
-
-This document is the implementation plan. It does not implement workspace behavior.
+Onboarding path: `/onboarding`. Fail-closed path: `/workspace-unavailable`.
 
 ---
 
@@ -305,7 +307,7 @@ Authenticated, more than one membership
 
 Onboarding must be reachable while authenticated and **without** a workspace. Workspace-bound `(app)` routes must not be.
 
-Exact onboarding path is an implementation decision. Record the chosen path. Do not invent a workspace-administration area.
+Chosen paths: `/onboarding` for zero memberships; `/workspace-unavailable` when memberships are ambiguous. Do not invent a workspace-administration area.
 
 Next.js 15.5.25 still has no `proxy.ts` convention. Do not add `middleware.ts`. Server-side checks in layouts / Server Components remain authoritative.
 
@@ -1078,25 +1080,25 @@ Each criterion is verifiable.
 
 EPIC-004 is complete only when:
 
-- [ ] First-workspace onboarding is implemented.
-- [ ] Server-side workspace resolution is implemented.
-- [ ] Membership authorization is enforced for workspace-bound operations.
-- [ ] Role baseline is persist-and-attach only; OBD-009 remains open.
-- [ ] Workspace + OWNER membership + settings are created atomically.
-- [ ] Any schema change is a reviewed Prisma migration (or no schema change occurred).
-- [ ] Composite FKs and workspace isolation columns are preserved.
-- [ ] Authorization / isolation tests pass.
-- [ ] Unit tests pass.
-- [ ] Integration tests pass against PostgreSQL.
-- [ ] Planned E2E onboarding journey passes.
-- [ ] Lint, typecheck, and build pass.
-- [ ] Existing EPIC-002 and EPIC-003 suites still pass.
-- [ ] Documentation is synchronized.
-- [ ] Engineering Review exists.
-- [ ] Findings are classified.
-- [ ] Open decisions remain documented.
-- [ ] Epic verdict is recorded.
-- [ ] Production readiness is not claimed automatically.
+- [x] First-workspace onboarding is implemented.
+- [x] Server-side workspace resolution is implemented.
+- [x] Membership authorization is enforced for workspace-bound operations.
+- [x] Role baseline is persist-and-attach only; OBD-009 remains open.
+- [x] Workspace + OWNER membership + settings are created atomically.
+- [x] Any schema change is a reviewed Prisma migration (or no schema change occurred).
+- [x] Composite FKs and workspace isolation columns are preserved.
+- [x] Authorization / isolation tests pass.
+- [x] Unit tests pass.
+- [x] Integration tests pass against PostgreSQL.
+- [x] Planned E2E onboarding journey passes.
+- [x] Lint, typecheck, and build pass.
+- [x] Existing EPIC-002 and EPIC-003 suites still pass.
+- [x] Documentation is synchronized.
+- [x] Engineering Review exists.
+- [x] Findings are classified.
+- [x] Open decisions remain documented.
+- [x] Epic verdict is recorded.
+- [x] Production readiness is not claimed automatically.
 
 ---
 

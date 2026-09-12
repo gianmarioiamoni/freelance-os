@@ -1,6 +1,6 @@
 # FreelanceOS --- Storage Architecture
 
-**Status:** Implemented — EPIC-002 complete; EPIC-003 auth persistence reviewed\
+**Status:** Implemented — EPIC-002 complete; EPIC-003 auth persistence reviewed; EPIC-004 workspace index reviewed\
 **Document:** `docs/storage.md`\
 **Scope:** Release 0 Foundation + Release 1 MVP\
 **Canonical format:** Markdown
@@ -82,6 +82,22 @@ EPIC-003 Phase 6 reviewed authentication persistence against this
 document. No further schema change was required after
 `20260911224009_establish_better_auth_persistence`. Review:
 `docs/epics/EPIC-003/engineering-review.md`.
+
+EPIC-004 Phase 1 added `WorkspaceMember(userId)`
+(`20260912180000_index_workspace_member_user_id`) to support
+`listMembershipsByUserId`. That index is justified by this
+document's query-pattern rule. Application-owned tables,
+Better Auth tables, and EPIC-002 composite foreign keys are
+unchanged. Phases 2–4 required no schema change.
+
+First-workspace creation writes `Workspace`, an `OWNER`
+`WorkspaceMember`, and `WorkspaceSettings` in one
+`runInTransaction` call. `WorkspaceMember` remains keyed by
+`(workspaceId, userId)`. There is no `UNIQUE(userId)`: that
+constraint would conflict with the multi-membership model
+(F-012). Concurrent first-workspace creation is therefore an
+application-level limitation, not a database unique-user
+invariant. Review: `docs/epics/EPIC-004/engineering-review.md`.
 
 `Alert.clientId` and `Alert.contractId` are independently optional
 workspace-scoped FKs. The database does not prove they refer to the
@@ -286,7 +302,9 @@ by the authentication infrastructure.
 PRIMARY KEY (workspaceId, userId)
 ```
 
-This prevents duplicate membership.
+This prevents duplicate membership of the same user in the same
+workspace. There is no `UNIQUE(userId)`. A user may have more
+than one membership in the persistence model.
 
 The role model should remain intentionally small in MVP. A likely
 initial role set is:
@@ -851,6 +869,16 @@ workspaceId
 ```
 
 where useful.
+
+User-scoped membership lookup uses:
+
+``` text
+WorkspaceMember(userId)
+```
+
+Added by `20260912180000_index_workspace_member_user_id` for
+`listMembershipsByUserId`. The composite primary key starts with
+`workspaceId`, so that index is required for resolution by user.
 
 ------------------------------------------------------------------------
 

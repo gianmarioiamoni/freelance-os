@@ -6,6 +6,7 @@ All notable changes to FreelanceOS are documented in this file.
 
 ### Added
 
+- EPIC-004 Workspace Engineering Review completed; workspace foundation certified for later product Epics with documented non-blocking findings.
 - Workspace authorization and isolation tests covering member access, non-member denial, identifier substitution, cross-workspace reads, fail-closed multiple memberships, and zero-membership onboarding.
 - First-workspace onboarding at `/onboarding` and a workspace-aware authenticated application boundary. Zero memberships require onboarding, one membership enters the application, and more than one membership fails closed.
 - First-workspace creation use case: atomically persists Workspace, OWNER membership, and WorkspaceSettings for an authenticated user with no existing membership.

@@ -1,6 +1,6 @@
 # FreelanceOS --- Testing Strategy
 
-**Status:** Authentication foundation implemented — EPIC-003 complete\
+**Status:** Authentication and workspace foundation implemented — EPIC-004 complete\
 **Document:** `docs/testing-strategy.md`\
 **Scope:** Release 0 Foundation + Release 1 MVP\
 **Canonical format:** Markdown
@@ -46,13 +46,20 @@ limitation.
 EPIC-003 Phase 6 certified this authentication coverage. Review:
 `docs/epics/EPIC-003/engineering-review.md`.
 
-EPIC-004 Phase 4 adds workspace authorization and isolation tests.
-Membership access, non-member denial, identifier substitution, and
-cross-workspace isolation are verified against application
-authorization primitives and the isolated PostgreSQL test database.
-Playwright covers onboarding and route-boundary journeys, including
-that a browser-supplied `workspaceId` query is not authorization.
-Role permission semantics (OBD-009) remain untested by design.
+EPIC-004 adds workspace authorization and isolation tests.
+Membership resolution (0 / 1 / >1), first-workspace creation,
+onboarding route access, member access, non-member denial,
+identifier substitution, and cross-workspace isolation are
+verified against application authorization primitives and the
+isolated PostgreSQL test database. `getAuthorizedWorkspace` is
+the authorized read probe; `getWorkspaceById` is not treated as
+authorization. Playwright covers register → create workspace →
+application, invalid onboarding input, unauthenticated denial,
+and that a browser-supplied `workspaceId` query is not
+authorization. Role permission semantics (OBD-009) remain
+untested by design. Playwright CI still uses `pnpm dev` with
+one worker (F-004). Review:
+`docs/epics/EPIC-004/engineering-review.md`.
 
 - Create `freelanceos_test` (or another database whose name ends in
   `_test`).
