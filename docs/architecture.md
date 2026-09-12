@@ -1,6 +1,6 @@
 # FreelanceOS — System Architecture
 
-**Status:** Architecture Baseline — Draft  
+**Status:** Architecture Baseline — Authentication implemented (EPIC-003)  
 **Scope:** MVP  
 **Architectural style:** Modular Monolith  
 **Primary runtime:** Next.js / TypeScript  
@@ -534,7 +534,7 @@ PostgreSQL
 
 Prisma must not leak into the domain layer.
 
-The current Prisma documentation supports PostgreSQL and Next.js integration, including migrations and typed database access. The current Prisma 8 documentation also introduces a newer contract-first workflow; the exact Prisma version and project setup will be frozen during the Foundation phase. 
+The current Prisma documentation supports PostgreSQL and Next.js integration, including migrations and typed database access. This repository uses Prisma 6.19.3. Prisma 8's contract-first workflow is not in use. 
 
 ## 8.3 Repository boundary
 
@@ -717,7 +717,7 @@ Next.js is the web application framework.
 
 Use the App Router.
 
-Current Next.js tooling supports the App Router and `src` directory setup. The exact framework version will be pinned during Foundation rather than relying on an unbounded latest version.
+Current Next.js tooling supports the App Router and `src` directory setup. Next.js 15.5.25 is pinned.
 
 ## 14.2 React
 
@@ -1344,14 +1344,14 @@ ADRs should record:
 | ORM / data access | Prisma |
 | Authentication | Better Auth 1.7.4 |
 | OAuth | Google |
-| Unit testing | Vitest candidate |
-| E2E testing | Playwright candidate |
-| Package manager | pnpm candidate |
+| Unit testing | Vitest 4.1.11 |
+| E2E testing | Playwright 1.63.0 |
+| Package manager | pnpm 10.22.0 |
 | Deployment | Vercel candidate |
 | Email | Delivery boundary implemented for password recovery; production provider TBD |
 | AI | External LLM provider, future release |
 
-Technology versions must be pinned during Foundation.
+Foundation pins currently in use: Next.js 15.5.25, React 19.1.0, TypeScript 5.9.3, Prisma 6.19.3, Better Auth 1.7.4, PostgreSQL 17.
 
 ---
 
@@ -1426,8 +1426,6 @@ The architecture baseline is accepted when:
 The following are intentionally not frozen yet:
 
 - exact PostgreSQL hosting provider;
-- exact Prisma major/minor version and configuration;
-- exact Better Auth configuration;
 - exact email provider;
 - exact deployment configuration;
 - database schema/index design;

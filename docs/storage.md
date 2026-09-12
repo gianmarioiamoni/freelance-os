@@ -1,6 +1,6 @@
 # FreelanceOS --- Storage Architecture
 
-**Status:** Implemented — EPIC-002 complete\
+**Status:** Implemented — EPIC-002 complete; EPIC-003 auth persistence reviewed\
 **Document:** `docs/storage.md`\
 **Scope:** Release 0 Foundation + Release 1 MVP\
 **Canonical format:** Markdown
@@ -77,6 +77,11 @@ CI does not require Google credentials or a production mailer.
 
 Phase 5 certified this document against the implemented storage
 layer. Review: `docs/epics/EPIC-002/engineering-review.md`.
+
+EPIC-003 Phase 6 reviewed authentication persistence against this
+document. No further schema change was required after
+`20260911224009_establish_better_auth_persistence`. Review:
+`docs/epics/EPIC-003/engineering-review.md`.
 
 `Alert.clientId` and `Alert.contractId` are independently optional
 workspace-scoped FKs. The database does not prove they refer to the

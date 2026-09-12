@@ -5,7 +5,7 @@
 **Epic:** EPIC-003  
 **Release:** Release 0 — Foundation  
 **Objective:** Authentication Foundation  
-**Status:** In progress — Phase 5 complete  
+**Status:** Complete — PASS WITH FINDINGS  
 **Depends on:** EPIC-001 — Foundation / Repository; EPIC-002 — Database & Persistence  
 **Next Epic:** EPIC-004 — Workspace
 
@@ -105,7 +105,7 @@ Phase 4 implemented password recovery through Better Auth's `requestPasswordRese
 
 ```text
 Application implementation: NOT STARTED
-Authentication: EMAIL/PASSWORD + GOOGLE OAUTH + PASSWORD RECOVERY + SESSIONS IMPLEMENTED
+Authentication: IMPLEMENTED — certified PASS WITH FINDINGS
 Authorization: NOT STARTED
 Workspace onboarding: NOT STARTED
 MVP implementation: NOT STARTED
@@ -1209,27 +1209,27 @@ Certification requires:
 
 EPIC-003 is complete only when:
 
-- [ ] Better Auth is pinned to a verified compatible version.
-- [ ] Auth tables exist via committed Prisma migrations.
-- [ ] Email/password registration, sign-in, and sign-out work.
-- [ ] Sessions persist and can be invalidated.
-- [ ] Google OAuth is configured without blocking CI.
-- [ ] Password recovery works with secure expiring tokens.
-- [ ] Server-side session is the auth source of truth.
-- [ ] Protected application routes require authentication.
-- [ ] Server/client auth modules are separated.
-- [ ] Secrets are not in the repository or client bundle.
-- [ ] No application-owned User table was added.
-- [ ] `WorkspaceMember.role` / OBD-009 remain unresolved.
-- [ ] Authorization was not implemented.
-- [ ] Integration tests cover auth persistence and session flows.
-- [ ] Planned E2E auth flows pass.
-- [ ] CI passes, including migrations and auth tests.
-- [ ] EPIC-002 persistence tests still pass.
-- [ ] Documentation is synchronized.
-- [ ] Engineering Review exists.
-- [ ] No unresolved Blocker/High findings.
-- [ ] Repository is ready for EPIC-004.
+- [x] Better Auth is pinned to a verified compatible version.
+- [x] Auth tables exist via committed Prisma migrations.
+- [x] Email/password registration, sign-in, and sign-out work.
+- [x] Sessions persist and can be invalidated.
+- [x] Google OAuth is configured without blocking CI.
+- [x] Password recovery works with secure expiring tokens.
+- [x] Server-side session is the auth source of truth.
+- [x] Protected application routes require authentication.
+- [x] Server/client auth modules are separated.
+- [x] Secrets are not in the repository or client bundle.
+- [x] No application-owned User table was added.
+- [x] `WorkspaceMember.role` / OBD-009 remain unresolved.
+- [x] Authorization was not implemented.
+- [x] Integration tests cover auth persistence and session flows.
+- [x] Planned E2E auth flows pass.
+- [x] CI passes, including migrations and auth tests.
+- [x] EPIC-002 persistence tests still pass.
+- [x] Documentation is synchronized.
+- [x] Engineering Review exists.
+- [x] No unresolved Blocker/High findings.
+- [x] Repository is ready for EPIC-004.
 
 ---
 

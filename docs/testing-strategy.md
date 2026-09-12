@@ -1,6 +1,6 @@
 # FreelanceOS --- Testing Strategy
 
-**Status:** Draft for implementation\
+**Status:** Authentication foundation implemented — EPIC-003 complete\
 **Document:** `docs/testing-strategy.md`\
 **Scope:** Release 0 Foundation + Release 1 MVP\
 **Canonical format:** Markdown
@@ -42,6 +42,9 @@ that collide across auth journeys on a shared CI IP. It does not
 require Google credentials, a production mailer, or production
 secrets. Full Google consent/callback remains a non-CI/manual
 limitation.
+
+EPIC-003 Phase 6 certified this authentication coverage. Review:
+`docs/epics/EPIC-003/engineering-review.md`.
 
 - Create `freelanceos_test` (or another database whose name ends in
   `_test`).

@@ -1,10 +1,10 @@
 # FreelanceOS --- MASTER PLAN
 
-**Status:** Planning baseline\
+**Status:** Foundation in progress\
 **Document:** `MASTER_PLAN.md`\
 **Product:** FreelanceOS\
 **Canonical format:** Markdown\
-**Current phase:** EPIC-002 complete → EPIC-003
+**Current phase:** EPIC-003 complete → EPIC-004
 
 ------------------------------------------------------------------------
 
@@ -135,8 +135,8 @@ context is recovered from repository documentation.
 ## Overall
 
 ``` text
-STATUS: EPIC-002 COMPLETE
-NEXT: EPIC-003 — Authentication
+STATUS: EPIC-003 COMPLETE (PASS WITH FINDINGS)
+NEXT: EPIC-004 — Workspace
 ```
 
 ## Completed planning artifacts
@@ -154,9 +154,11 @@ docs/
 
 ``` text
 Application implementation: NOT STARTED
-Foundation implementation: EPIC-001 COMPLETE; EPIC-002 COMPLETE
+Foundation implementation: EPIC-001 COMPLETE; EPIC-002 COMPLETE; EPIC-003 COMPLETE
 MVP implementation: NOT STARTED
 Production deployment: NOT STARTED
+Authentication: IMPLEMENTED — see docs/epics/EPIC-003/engineering-review.md
+Authorization / workspace onboarding: NOT STARTED
 ```
 
 This distinction is deliberate: planning documents describe what has
@@ -1139,7 +1141,7 @@ Release 0 cannot proceed to MVP feature development until:
 -   [ ] environment configuration exists
 -   [ ] PostgreSQL is connected
 -   [ ] Prisma schema/migrations work
--   [ ] authentication foundation works
+-   [x] authentication foundation works
 -   [ ] workspace membership works
 -   [ ] cross-workspace access is rejected
 -   [ ] test suite runs
@@ -1627,8 +1629,8 @@ Next actions:
 
 ``` text
 1. Open a new Cursor chat
-2. Create docs/epics/EPIC-003/epic-plan.md before implementation
-3. Execute EPIC-003 — Authentication
+2. Create docs/epics/EPIC-004/epic-plan.md before implementation
+3. Execute EPIC-004 — Workspace
 ```
 
 This follows the methodology's rule that each Phase gets a focused
@@ -1677,10 +1679,10 @@ releases:
     status: future
 
 next:
-  epic: EPIC-003
+  epic: EPIC-004
   phase: planning
-  objective: Authentication Foundation
-  implementation: epic-002-complete
+  objective: Workspace Foundation
+  implementation: epic-003-complete
 ```
 
 ------------------------------------------------------------------------

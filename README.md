@@ -4,7 +4,7 @@ FreelanceOS is a web application for freelancer operations management.
 
 ## Status
 
-Release 0 — Foundation. EPIC-002 (Database & Persistence) is complete. Next: EPIC-003 — Authentication.
+Release 0 — Foundation. EPIC-003 (Authentication) is complete with findings. Next: EPIC-004 — Workspace. Authentication is implemented; workspace authorization is not. Production password-reset email is not operational.
 
 Planning and architecture documents are the source of truth. See [`MASTER_PLAN.md`](./MASTER_PLAN.md).
 
@@ -51,7 +51,7 @@ Persistence integration tests run against real PostgreSQL:
 pnpm test:integration
 ```
 
-The GitHub Actions quality workflow starts PostgreSQL 17, sets isolated test credentials, applies migrations, then runs unit and integration tests.
+The GitHub Actions quality workflow starts PostgreSQL 17, validates and generates the Prisma client, applies migrations, then runs lint, typecheck, unit tests, integration tests, build, and deterministic Playwright auth E2E. CI uses `pnpm dev` with one Playwright worker. It does not require Google credentials or a production mailer.
 
 `pnpm install` also runs `prisma generate`. The Prisma schema includes the application-owned persistence models and Better Auth 1.7.4 tables.
 
@@ -68,7 +68,7 @@ The GitHub Actions quality workflow starts PostgreSQL 17, sets isolated test cre
 | `pnpm test:watch`        | Run unit tests in watch mode                                     |
 | `pnpm test:integration`  | Run persistence integration tests against `TEST_DATABASE_URL`    |
 | `pnpm test:db:migrate`   | Apply committed migrations to the isolated test database         |
-| `pnpm test:e2e`          | Run the application smoke test                                   |
+| `pnpm test:e2e`          | Run Playwright auth and shell E2E tests                          |
 | `pnpm format`            | Format project files with Prettier                               |
 | `pnpm db:generate`       | Generate the Prisma Client                                       |
 | `pnpm db:migrate`        | Create and apply a development migration (`prisma migrate dev`)  |
