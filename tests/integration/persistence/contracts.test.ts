@@ -176,4 +176,65 @@ describe("contract temporal integrity", () => {
       }),
     ).rejects.toBeInstanceOf(ConstraintViolationError);
   });
+
+  it("rejects concurrent overlapping inserts through the exclusion constraint", async () => {
+    const graph = await createWorkspaceGraph(repositories, "concurrent");
+
+    const results = await Promise.allSettled([
+      repositories.contracts.createContract(graph.workspaceId, {
+        clientId: graph.clientId,
+        validFrom: date("2026-07-01"),
+        validTo: date("2027-01-01"),
+        billingModel: "HOURLY",
+        rate: "90.0000",
+        currency: "EUR",
+      }),
+      repositories.contracts.createContract(graph.workspaceId, {
+        clientId: graph.clientId,
+        validFrom: date("2026-08-01"),
+        validTo: date("2027-02-01"),
+        billingModel: "DAILY",
+        rate: "500.0000",
+        currency: "EUR",
+      }),
+    ]);
+
+    const fulfilled = results.filter((result) => result.status === "fulfilled");
+    const rejected = results.filter((result) => result.status === "rejected");
+
+    expect(fulfilled).toHaveLength(1);
+    expect(rejected).toHaveLength(1);
+    expect(rejected[0]?.status === "rejected" ? rejected[0].reason : null).toBeInstanceOf(
+      ConstraintViolationError,
+    );
+  });
+
+  it("does not rewrite TimeEntry.contractId when a contract is updated", async () => {
+    const graph = await createWorkspaceGraph(repositories, "te-update");
+    const timeEntry = await repositories.timeEntries.recordTimeEntry(graph.workspaceId, {
+      userId: graph.userId,
+      clientId: graph.clientId,
+      contractId: graph.contractId,
+      workDate: date("2026-03-01"),
+      durationMinutes: 60,
+      billable: true,
+    });
+
+    const updated = await repositories.contracts.updateContract(graph.workspaceId, graph.contractId, {
+      validFrom: date("2026-01-01"),
+      validTo: date("2026-07-01"),
+      billingModel: "DAILY",
+      rate: "99.0000",
+      currency: "USD",
+    });
+    const persisted = await repositories.timeEntries.getTimeEntry(graph.workspaceId, timeEntry.id);
+
+    expect(updated.rate).toBe("99.0000");
+    expect(persisted).toMatchObject({
+      id: timeEntry.id,
+      contractId: graph.contractId,
+      clientId: graph.clientId,
+    });
+  });
 });
+
