@@ -4,6 +4,12 @@ import { PageHeader } from "@/components/page/PageHeader";
 import { Button } from "@/components/ui/button";
 import { ClientDetail } from "@/features/clients/ClientDetail";
 import { loadWorkspaceClient } from "@/features/clients/load-clients";
+import { ClientContractHistory } from "@/features/contracts/ClientContractHistory";
+import { getWorkspaceCalendarDate } from "@/features/contracts/contract-display";
+import {
+  loadContractWorkspace,
+  loadWorkspaceContractsForClient,
+} from "@/features/contracts/load-contracts";
 import Link from "next/link";
 import type { JSX } from "react";
 
@@ -22,7 +28,11 @@ export default async function ClientDetailPage({
 }: ClientDetailPageProps): Promise<JSX.Element> {
   const { clientId } = await params;
   const { confirm } = await searchParams;
-  const client = await loadWorkspaceClient(clientId);
+  const [client, contracts, workspace] = await Promise.all([
+    loadWorkspaceClient(clientId),
+    loadWorkspaceContractsForClient(clientId),
+    loadContractWorkspace(),
+  ]);
 
   return (
     <section className="max-w-2xl">
@@ -41,10 +51,17 @@ export default async function ClientDetailPage({
             </Link>
           </Button>
         </div>
-        <ClientDetail
-          client={client}
-          isConfirmingArchive={confirm === "archive"}
-        />
+        <div className="grid gap-8">
+          <ClientDetail
+            client={client}
+            isConfirmingArchive={confirm === "archive"}
+          />
+          <ClientContractHistory
+            client={client}
+            contracts={contracts}
+            today={getWorkspaceCalendarDate(workspace.timezone)}
+          />
+        </div>
       </PageContent>
     </section>
   );
