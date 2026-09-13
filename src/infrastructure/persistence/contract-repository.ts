@@ -1,5 +1,9 @@
 // src/infrastructure/persistence/contract-repository.ts
-import type { CreateContractInput } from "@/domain/persistence-types";
+import { RecordNotFoundError } from "@/domain/persistence-errors";
+import type {
+  CreateContractInput,
+  UpdateContractInput,
+} from "@/domain/persistence-types";
 import type { ContractRepository } from "@/domain/repositories";
 import { withPersistenceErrors } from "@/infrastructure/persistence/map-prisma-error";
 import { mapContract } from "@/infrastructure/persistence/mappers";
@@ -37,6 +41,16 @@ export function createContractRepository(db: PrismaExecutor): ContractRepository
       });
     },
 
+    listContracts(workspaceId: string) {
+      return withPersistenceErrors(async () => {
+        const rows = await db.contract.findMany({
+          where: { workspaceId },
+          orderBy: [{ validFrom: "desc" }, { createdAt: "desc" }],
+        });
+        return rows.map(mapContract);
+      });
+    },
+
     listContractsForClient(workspaceId: string, clientId: string) {
       return withPersistenceErrors(async () => {
         const rows = await db.contract.findMany({
@@ -44,6 +58,42 @@ export function createContractRepository(db: PrismaExecutor): ContractRepository
           orderBy: { validFrom: "asc" },
         });
         return rows.map(mapContract);
+      });
+    },
+
+    updateContract(
+      workspaceId: string,
+      contractId: string,
+      input: UpdateContractInput,
+    ) {
+      return withPersistenceErrors(async () => {
+        const result = await db.contract.updateMany({
+          where: { id: contractId, workspaceId },
+          data: {
+            validFrom: input.validFrom,
+            validTo: input.validTo ?? null,
+            billingModel: input.billingModel,
+            rate: input.rate,
+            currency: input.currency,
+            monthlyContractedMinutes: input.monthlyContractedMinutes ?? null,
+            paymentTermsDays: input.paymentTermsDays ?? null,
+            paymentTermsNote: input.paymentTermsNote ?? null,
+          },
+        });
+
+        if (result.count === 0) {
+          throw new RecordNotFoundError("Contract", contractId);
+        }
+
+        const row = await db.contract.findFirst({
+          where: { id: contractId, workspaceId },
+        });
+
+        if (!row) {
+          throw new RecordNotFoundError("Contract", contractId);
+        }
+
+        return mapContract(row);
       });
     },
 

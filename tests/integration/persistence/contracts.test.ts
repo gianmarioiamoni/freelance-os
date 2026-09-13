@@ -1,7 +1,10 @@
 // tests/integration/persistence/contracts.test.ts
 import { describe, expect, it } from "vitest";
 
-import { ConstraintViolationError } from "@/domain/persistence-errors";
+import {
+  ConstraintViolationError,
+  RecordNotFoundError,
+} from "@/domain/persistence-errors";
 
 import { createWorkspaceGraph } from "./fixtures";
 import { date, repositories } from "./helpers";
@@ -95,5 +98,82 @@ describe("contract temporal integrity", () => {
     expect(
       await repositories.contracts.listContractsForClient(workspaceA.workspaceId, otherClient.id),
     ).toHaveLength(1);
+  });
+
+  it("updates allowed contract fields without changing workspace or client", async () => {
+    const graph = await createWorkspaceGraph(repositories, "update");
+
+    const updated = await repositories.contracts.updateContract(graph.workspaceId, graph.contractId, {
+      validFrom: date("2026-01-01"),
+      validTo: date("2026-08-01"),
+      billingModel: "DAILY",
+      rate: "500.0000",
+      currency: "USD",
+      monthlyContractedMinutes: 1200,
+      paymentTermsDays: 15,
+      paymentTermsNote: "Net 15",
+    });
+
+    expect(updated).toMatchObject({
+      id: graph.contractId,
+      workspaceId: graph.workspaceId,
+      clientId: graph.clientId,
+      billingModel: "DAILY",
+      rate: "500.0000",
+      currency: "USD",
+      monthlyContractedMinutes: 1200,
+      paymentTermsDays: 15,
+      paymentTermsNote: "Net 15",
+    });
+  });
+
+  it("scopes list and update by workspace", async () => {
+    const workspaceA = await createWorkspaceGraph(repositories, "list-a");
+    const workspaceB = await createWorkspaceGraph(repositories, "list-b");
+
+    const listedB = await repositories.contracts.listContracts(workspaceB.workspaceId);
+
+    expect(listedB.every((row) => row.workspaceId === workspaceB.workspaceId)).toBe(true);
+    expect(listedB.some((row) => row.id === workspaceA.contractId)).toBe(false);
+
+    await expect(
+      repositories.contracts.updateContract(workspaceB.workspaceId, workspaceA.contractId, {
+        validFrom: date("2026-01-01"),
+        validTo: date("2026-07-01"),
+        billingModel: "HOURLY",
+        rate: "1.0000",
+        currency: "EUR",
+      }),
+    ).rejects.toBeInstanceOf(RecordNotFoundError);
+
+    expect(
+      await repositories.contracts.getContract(workspaceA.workspaceId, workspaceA.contractId),
+    ).toMatchObject({
+      id: workspaceA.contractId,
+      rate: "80.0000",
+    });
+  });
+
+  it("rejects an overlapping update at the database boundary", async () => {
+    const graph = await createWorkspaceGraph(repositories, "update-overlap");
+
+    const later = await repositories.contracts.createContract(graph.workspaceId, {
+      clientId: graph.clientId,
+      validFrom: date("2026-07-01"),
+      validTo: null,
+      billingModel: "HOURLY",
+      rate: "90.0000",
+      currency: "EUR",
+    });
+
+    await expect(
+      repositories.contracts.updateContract(graph.workspaceId, later.id, {
+        validFrom: date("2026-06-15"),
+        validTo: null,
+        billingModel: "HOURLY",
+        rate: "90.0000",
+        currency: "EUR",
+      }),
+    ).rejects.toBeInstanceOf(ConstraintViolationError);
   });
 });

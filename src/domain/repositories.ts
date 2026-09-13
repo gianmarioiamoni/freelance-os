@@ -15,6 +15,7 @@ import type {
   RecordTimeEntryInput,
   TimeEntryRecord,
   UpdateClientInput,
+  UpdateContractInput,
   UpdateWorkspaceInput,
   WorkspaceMemberRecord,
   WorkspaceRecord,
@@ -78,10 +79,16 @@ export type ContractRepository = {
     workspaceId: string,
     contractId: string,
   ): Promise<ContractRecord | null>;
+  listContracts(workspaceId: string): Promise<ContractRecord[]>;
   listContractsForClient(
     workspaceId: string,
     clientId: string,
   ): Promise<ContractRecord[]>;
+  updateContract(
+    workspaceId: string,
+    contractId: string,
+    input: UpdateContractInput,
+  ): Promise<ContractRecord>;
   findContractCoveringDate(
     workspaceId: string,
     clientId: string,

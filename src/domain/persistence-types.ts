@@ -168,6 +168,17 @@ export type CreateContractInput = {
   paymentTermsNote?: string | null;
 };
 
+export type UpdateContractInput = {
+  validFrom: Date;
+  validTo?: Date | null;
+  billingModel: BillingModel;
+  rate: string;
+  currency: string;
+  monthlyContractedMinutes?: number | null;
+  paymentTermsDays?: number | null;
+  paymentTermsNote?: string | null;
+};
+
 export type RecordTimeEntryInput = {
   userId: string;
   clientId: string;
