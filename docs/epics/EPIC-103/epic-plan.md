@@ -6,15 +6,15 @@
 **Release:** Release 1 — MVP  
 **MASTER_PLAN identifier:** R1-E03 — Time Tracking  
 **Objective:** Time Tracking  
-**Status:** BLOCKED PENDING PRODUCT DECISIONS  
+**Status:** PLANNING COMPLETE  
 **Depends on:** EPIC-002 — Database & Persistence; EPIC-003 — Authentication; EPIC-004 — Workspace; EPIC-005 — Testing & CI Foundation; EPIC-006 — UI Foundation; EPIC-101 — Clients; EPIC-102 — Contracts  
 **Next Epic:** Analytics & Dashboard (`MASTER_PLAN.md` §14 R1-E04)  
 **Canonical sources:** `MASTER_PLAN.md` §13 R1-E03; `docs/product-vision.md`; `docs/domain-model.md` §3.5 / §4.2 / §8 / BR-002 / BR-003 / BR-004; `docs/storage.md`; `docs/architecture.md`; `docs/testing-strategy.md`
 
 ```text
-PLANNING: BLOCKED - PRODUCT DECISIONS REQUIRED
-IMPLEMENTATION: BLOCKED
-ENGINEERING REVIEW: BLOCKED
+PLANNING COMPLETE - PRODUCT DECISIONS FINALIZED
+IMPLEMENTATION: READY
+ENGINEERING REVIEW: NOT STARTED
 PRODUCTION READINESS: NO
 ```
 
@@ -32,11 +32,11 @@ IMPLEMENTATION: NOT STARTED
 Phase statuses:
 
 ```text
-P103-01 BLOCKED
-P103-02 BLOCKED  
-P103-03 BLOCKED
-P103-04 BLOCKED
-FINAL VERDICT: BLOCKED - PRODUCT DECISIONS REQUIRED
+P103-01 READY
+P103-02 PENDING  
+P103-03 PENDING
+P103-04 PENDING
+FINAL VERDICT: READY FOR IMPLEMENTATION
 ```
 
 ---
@@ -183,24 +183,29 @@ Current `TimeEntryRepository` provides foundation operations but requires expans
 - Not-found behavior for foreign entries
 
 **Update TimeEntry:**  
-- **BLOCKED:** Edit operations require Product Owner decisions on field editability (see BLOCKER 2 & 3)
-- Must establish which fields are mutable: workDate, clientId, contractId, other fields
-- Must define validation for contract relationship changes
-- Must preserve workspace isolation and historical correctness
+- Edit mutable fields only: durationMinutes, description, billable (PD-103-002, PD-103-003)
+- Immutable after creation: workDate, clientId, contractId
+- Preserve workspace/ownership validation
+- Historical correctness maintained via immutable associations
+- Validation same as create for mutable fields
 
 **Delete TimeEntry:**
-- **BLOCKED:** Deletion mechanism requires Product Owner decision (see BLOCKER 1)
-- Repository evidence shows no existing archive support for TimeEntry
-- Must choose between: schema change for archive, hard delete, or alternative approach
+- Hard delete (PD-103-001)
+- No archive state or soft delete in MVP
+- Preserve workspace/ownership authorization
+- Future audit requirements may introduce different lifecycle
 
 ### 7.2 Time Entry Lifecycle
 
-**BLOCKED:** Lifecycle policy requires Product Owner decisions on archive mechanism and field editability (see PLANNING BLOCKERS above).
+Based on finalized Product Owner decisions:
 
-**Repository Evidence:** 
-- No existing TimeEntry archive support
-- Current TimeEntry model supports create/read operations only
-- Client uses status-based archive; Contract has no archive mechanism
+**Create → Edit Mutable Fields → Hard Delete**
+
+- Create: all fields including workDate, clientId, contractId
+- Edit: mutable fields only (durationMinutes, description, billable)  
+- Delete: hard delete, no archive state in MVP
+- Immutable after creation: workDate, clientId, contractId
+- Correcting immutable fields requires delete and recreate
 
 ### 7.3 Contract Relationship 
 
@@ -239,78 +244,44 @@ Current `TimeEntryRepository` provides foundation operations but requires expans
 - Preserve existing `/time-tracking` navigation item
 - Match Client/Contract surface patterns
 
-## PLANNING BLOCKERS
+## PRODUCT DECISIONS FINALIZED
 
-**STATUS:** IMPLEMENTATION BLOCKED PENDING PRODUCT OWNER DECISIONS
+**STATUS:** All blocking decisions resolved by Product Owner.
 
-Three contradictions in the current plan must be resolved before P103-01 can proceed:
+### PD-103-001 — TimeEntry Deletion Mechanism
 
-### BLOCKER 1: TimeEntry Archive Mechanism
+**DECISION:** HARD DELETE
 
-**Problem:** The plan references archive/soft-delete semantics but no schema support exists.
+TimeEntry deletion uses hard delete in Release 1 MVP.
+- No persisted TimeEntry archive state
+- No `archivedAt` field  
+- No TimeEntry status field
+- No Prisma migration required for deletion semantics
+- Future audit/reporting requirements may introduce dedicated lifecycle through later schema change
 
-**Repository Evidence:**
-- `Client` uses `status: ACTIVE/ARCHIVED` pattern
-- `TimeEntry` has NO `archivedAt` field, NO `status` field  
-- `TimeEntryRepository` has NO `archiveTimeEntry` method
-- Adding persisted archive state requires schema change/migration
+### PD-103-002 — workDate Editability
 
-**PRODUCT DECISION REQUIRED - Choose one:**
+**DECISION:** IMMUTABLE
 
-**Option A:** Add persisted TimeEntry archive state
-- Requires schema migration (add `archivedAt` timestamp or `status` enum)
-- Maintains historical data for reporting integrity
-- Consistent with Client archive pattern
+`TimeEntry.workDate` is immutable after creation.
+- Create accepts workDate
+- Update does NOT accept workDate
+- `UpdateTimeEntryInput` excludes `workDate`
+- Application service rejects workDate mutation
+- UI edit does not expose workDate as editable
+- Correcting work date requires delete and recreate
 
-**Option B:** Change MVP requirement to hard delete  
-- No schema change required
-- Simpler implementation
-- Loses historical entries permanently
+### PD-103-003 — clientId/contractId Editability
 
-**Option C:** Alternative mechanism (if repository evidence supports one)
-- None identified in canonical documentation
+**DECISION:** IMMUTABLE
 
-**Current Plan Action:** Remove archive references until decision made.
-
-### BLOCKER 2: workDate Editability
-
-**Problem:** Plan contains contradictory statements about workDate mutability.
-
-**Repository Evidence:**
-- EPIC-103 plan states: "TimeEntry.workDate immutable after creation" (line 380)  
-- EPIC-103 plan includes `workDate` in `UpdateTimeEntryInput` (line 436)
-- No canonical documentation outside EPIC-103 establishes this constraint
-
-**PRODUCT DECISION REQUIRED - Choose one:**
-
-**Option A:** workDate immutable after creation
-- Consequence: Simpler validation, clearer historical integrity
-- Consequence: Less flexible UX if users need to correct entry date
-- Consequence: `UpdateTimeEntryInput` excludes `workDate`
-
-**Option B:** workDate editable after creation
-- Consequence: More complex validation (contract validity recheck on edit)
-- Consequence: More flexible UX for error correction
-- Consequence: Historical integrity maintained via preserved `contractId`
-
-### BLOCKER 3: clientId/contractId Editability  
-
-**Problem:** Domain integrity requirements conflict with UpdateTimeEntryInput design.
-
-**Repository Evidence:**
-- BR-002: TimeEntry must resolve to applicable commercial conditions
-- BR-003: Historical integrity requires stable contract association
-- Current Contract model shows `clientId` immutable after creation (EPIC-102)
-- TimeEntry requires explicit `contractId` for historical correctness
-
-**PRODUCT DECISION REQUIRED:**
-
-The plan must establish invariant enforcement:
-- Are `clientId`/`contractId` immutable after creation? 
-- If editable, what validation ensures workspace/client/contract/date integrity?
-- How does editing preserve BR-003 historical correctness?
-
-**Canonical Rule (established):** TimeEntry.clientId and TimeEntry.contractId must refer to resources in the same workspace, and the Contract must belong to the selected Client and be valid for TimeEntry.workDate.
+`TimeEntry.clientId` and `TimeEntry.contractId` are immutable after creation.
+- Create accepts clientId and contractId with validation
+- Update does NOT accept clientId or contractId
+- `UpdateTimeEntryInput` excludes clientId and contractId
+- UI edit does not expose client/contract selection
+- Changing commercial association requires delete and recreate
+- Historical integrity preserved via immutable associations
 
 ---
 
@@ -450,28 +421,27 @@ Commercial Contract edits can change interpretation of historical TimeEntries be
 
 ### 10.2 TimeEntry Historical Guarantees
 
-**What Time Tracking DOES preserve (established by canonical documentation):**
-- TimeEntry.contractId explicit relationship (BR-003, storage.md §18)
+**What Time Tracking DOES preserve:**
+- TimeEntry.contractId explicit relationship (BR-003, immutable per PD-103-003)
+- TimeEntry.clientId explicit relationship (immutable per PD-103-003)
+- TimeEntry.workDate preserved (immutable per PD-103-002)
 - Client and Contract identity preserved via foreign keys
 - Integer duration storage without floating-point corruption
+- Historical associations cannot be accidentally changed via edit
 
 **What Time Tracking CANNOT guarantee (due to P102-F-001):**
 - Billing rate consistency if Contract.rate changes
 - Billing model consistency if Contract.billingModel changes  
 - Commercial terms consistency if Contract terms change
 
-**PENDING PRODUCT DECISION:**
-- Which TimeEntry fields are immutable after creation
-- Edit validation requirements for historical correctness
-
 ### 10.3 Edit Policy
 
-**BLOCKED:** TimeEntry edit policy requires Product Owner decision on editability scope.
-
-**Canonical Requirements (established):**
-- Edit must preserve workspace isolation  
-- Edit must validate Contract relationship belongs to same workspace
-- Edit must maintain BR-002 (contract applicable to work date) and BR-003 (historical integrity)
+**TimeEntry Edit Policy (finalized per Product Owner decisions):**
+- Edit affects mutable fields only: durationMinutes, description, billable
+- Immutable fields preserved: workDate, clientId, contractId, userId, workspaceId
+- Edit preserves workspace isolation and authorization context
+- Historical associations cannot be changed (BR-003 compliance)
+- No contract revalidation needed since workDate/clientId/contractId are immutable
 - Future audit/period closure requirements deferred to later releases (OBD-008)
 
 ---
@@ -486,10 +456,20 @@ Existing `TimeEntry` model satisfies all requirements. No migration needed.
 
 ### 11.2 Repository Expansion
 
-**BLOCKED:** Repository interface depends on Product Owner decisions about editability and archive mechanism.
+**Required Updates to `TimeEntryRepository`:**
 
-**Required (regardless of decisions):**
 ```typescript
+updateTimeEntry(
+  workspaceId: string, 
+  timeEntryId: string, 
+  input: UpdateTimeEntryInput
+): Promise<TimeEntryRecord>;
+
+deleteTimeEntry(
+  workspaceId: string,
+  timeEntryId: string  
+): Promise<void>;
+
 listTimeEntriesForPeriod(
   workspaceId: string,
   startDate: Date,
@@ -497,32 +477,21 @@ listTimeEntriesForPeriod(
 ): Promise<TimeEntryRecord[]>;
 ```
 
-**Conditional on BLOCKER 2 & 3 resolution:**
-```typescript
-updateTimeEntry(
-  workspaceId: string, 
-  timeEntryId: string, 
-  input: UpdateTimeEntryInput // TBD: which fields are mutable
-): Promise<TimeEntryRecord>;
-```
-
-**Conditional on BLOCKER 1 resolution:**
-```typescript
-// Option A: Archive mechanism (if Product Owner chooses archive + schema change)
-archiveTimeEntry(workspaceId: string, timeEntryId: string): Promise<void>;
-
-// Option B: Hard delete (if Product Owner chooses hard delete)  
-deleteTimeEntry(workspaceId: string, timeEntryId: string): Promise<void>;
-```
-
 ### 11.3 New Domain Types
 
-**BLOCKED:** `UpdateTimeEntryInput` design depends on field editability decisions.
+```typescript
+export type UpdateTimeEntryInput = {
+  durationMinutes?: number;
+  description?: string | null;
+  billable?: boolean;
+};
+```
 
-**Pending decisions:**
-- Is `workDate` mutable? (BLOCKER 2)
-- Are `clientId`/`contractId` mutable? (BLOCKER 3)  
-- Other field mutability constraints?
+**Excluded from UpdateTimeEntryInput (immutable per Product Owner decisions):**
+- workDate (PD-103-002)
+- clientId (PD-103-003)
+- contractId (PD-103-003)
+- workspaceId, userId, id, createdAt (system fields)
 
 ---
 
@@ -537,10 +506,8 @@ Following established Server Action → Application Service → Repository patte
 - `getTimeEntry(workspaceContext, timeEntryId)` - read with authorization  
 - `listTimeEntriesForDate(workspaceContext, date)` - daily view
 - `listTimeEntriesForPeriod(workspaceContext, start, end)` - weekly view
-
-**BLOCKED Application Services (pending Product Decisions):**
-- `updateTimeEntry(workspaceContext, timeEntryId, input)` - BLOCKED on field editability decisions
-- Archive/delete service - BLOCKED on deletion mechanism decision
+- `updateTimeEntry(workspaceContext, timeEntryId, input)` - edit mutable fields with validation
+- `deleteTimeEntry(workspaceContext, timeEntryId)` - hard delete
 
 ### 12.2 Validation Services
 
@@ -622,10 +589,10 @@ Follow established error mapping pattern from Client/Contract management.
 
 **Edit TimeEntry:**
 1. Load existing entry (with workspace validation)
-2. Pre-populate form
-3. Allow all field changes
-4. Re-validate Contract/date relationship
-5. Server-side validation  
+2. Pre-populate form with mutable fields only
+3. Allow changes to: duration, description, billable
+4. Do NOT expose: workDate, client, contract selection
+5. Server-side validation for mutable fields
 6. Redirect to daily view
 
 ---
@@ -902,17 +869,17 @@ Each phase = one commit; each phase = NEW CURSOR CHAT
 **Objective:** Complete TimeEntry business logic, application services, and server-side validation
 
 **Scope:**
-- Expand `TimeEntryRepository` with update/archive operations
-- Implement application services (`createTimeEntry`, `updateTimeEntry`, etc.)
+- Expand `TimeEntryRepository` with update (mutable fields only) and delete operations
+- Implement application services (`createTimeEntry`, `updateTimeEntry`, `deleteTimeEntry`, etc.)
 - Contract eligibility and validation services
 - Domain error classes and mapping
 - Server Actions for all TimeEntry operations
-- Input validation and business rule enforcement
+- Input validation and business rule enforcement (immutability constraints)
 - Unit tests for all services and validation logic
 
 **Files/Modules:**
 - `src/domain/repositories.ts` - expand TimeEntryRepository interface
-- `src/domain/persistence-types.ts` - add UpdateTimeEntryInput
+- `src/domain/persistence-types.ts` - add UpdateTimeEntryInput (mutable fields only)
 - `src/infrastructure/persistence/time-entry-repository.ts` - implement new operations
 - `src/application/services/time-entry.ts` - NEW application services
 - `src/application/actions/time-entry.ts` - NEW Server Actions  
@@ -1020,9 +987,10 @@ npm run dev # manual verification
 - [ ] `/time-tracking` shows daily time entries for current date
 - [ ] Weekly timesheet view accessible and functional
 - [ ] Create form successfully creates TimeEntry with Client/Contract selection
-- [ ] Edit form pre-populates and updates existing TimeEntry
+- [ ] Edit form pre-populates and updates mutable fields only (duration, description, billable)
+- [ ] Edit form does NOT expose workDate, client, or contract selection
 - [ ] Duration input accepts hours:minutes format and validates bounds
-- [ ] Client/Contract selector shows only eligible options
+- [ ] Client/Contract selector shows only eligible options (create only)
 - [ ] Form validation displays helpful error messages
 - [ ] Loading states display during operations
 - [ ] Empty states guide user to create first entry
@@ -1317,25 +1285,22 @@ All OBDs from MASTER_PLAN remain open and are NOT resolved by EPIC-103:
 **OBD-015:** Archived Client interaction policy  
 **OBD-016:** TimeEntry commercial snapshot requirements
 
-### 22.4 PRODUCT DECISIONS REQUIRED (BLOCKING IMPLEMENTATION)
+### 22.4 Product Decisions Finalized
 
 **PD-103-001 - TimeEntry Deletion Mechanism:**
-- **Status:** OPEN - BLOCKS P103-01
-- **Question:** How should TimeEntry removal be implemented?
-- **Options:** A) Add schema change for archive state, B) Hard delete, C) Alternative approach
-- **Impact:** Determines repository interface, application services, and UI design
+- **Status:** RESOLVED
+- **Decision:** Hard delete
+- **Impact:** No schema change required; simple repository interface; no archive state
 
 **PD-103-002 - workDate Editability:**
-- **Status:** OPEN - BLOCKS P103-01  
-- **Question:** Should workDate be editable after TimeEntry creation?
-- **Options:** A) Immutable after creation, B) Editable with revalidation
-- **Impact:** Affects UpdateTimeEntryInput design and validation complexity
+- **Status:** RESOLVED
+- **Decision:** Immutable after creation  
+- **Impact:** Simplified validation; excluded from UpdateTimeEntryInput; UI edit excludes workDate
 
 **PD-103-003 - clientId/contractId Editability:**
-- **Status:** OPEN - BLOCKS P103-01
-- **Question:** Should clientId and contractId be editable after creation?
-- **Options:** A) Immutable (preserve historical integrity), B) Editable with validation
-- **Impact:** Historical correctness, validation complexity, and UX flexibility
+- **Status:** RESOLVED
+- **Decision:** Immutable after creation
+- **Impact:** Historical integrity preserved; excluded from UpdateTimeEntryInput; UI edit excludes client/contract
 
 ### 22.5 Non-Blocking Planning Decisions (Resolved)
 
@@ -1569,21 +1534,21 @@ EPIC-103 planning is complete and implementation-ready.
 
 ## Implementation Status
 
-**BLOCKED - Product Owner Decisions Required**
+**READY FOR IMPLEMENTATION**
 
-P103-01 cannot proceed until the three blocking product decisions are resolved:
+All Product Owner decisions have been finalized:
 
-1. **TimeEntry deletion mechanism** (archive vs hard delete vs alternative)
-2. **workDate editability** (immutable vs editable after creation)  
-3. **clientId/contractId editability** (immutable vs editable with validation)
+1. **TimeEntry deletion mechanism** → Hard delete (PD-103-001)
+2. **workDate editability** → Immutable after creation (PD-103-002)  
+3. **clientId/contractId editability** → Immutable after creation (PD-103-003)
 
-These decisions determine:
-- Repository interface design
-- Application service signatures
-- Domain validation rules
-- UI form capabilities
-- Database schema changes (if any)
+These decisions establish:
+- Repository interface: create, get, list, update (mutable fields), delete (hard)
+- Application services: full CRUD with immutability constraints
+- Domain validation: workspace isolation, contract validity at create, mutable-field validation on update
+- UI forms: full create form, restricted edit form (duration/description/billable only)
+- Database schema: no changes required for EPIC-103
 
-**Next Action:** Product Owner must resolve PD-103-001, PD-103-002, and PD-103-003 before implementation can begin.
+**Next Action:** Begin P103-01 implementation in NEW CURSOR CHAT.
 
-**Planning Status:** BLOCKED - NOT READY FOR IMPLEMENTATION
+**Planning Status:** COMPLETE - READY FOR IMPLEMENTATION
