@@ -47,9 +47,6 @@ export async function createTimeEntryAction(
       contracts,
       timeEntries,
     );
-
-    // Redirect to the time tracking page with the date
-    redirect(`/time-tracking?date=${values.workDate}`);
   } catch (error) {
     if (error instanceof InvalidTimeEntryInputError) {
       return {
@@ -96,4 +93,8 @@ export async function createTimeEntryAction(
       values,
     };
   }
+
+  // Redirect outside the try block: redirect() signals via a thrown
+  // NEXT_REDIRECT error that must not be caught by the handler above.
+  redirect(`/time-tracking?date=${values.workDate}`);
 }

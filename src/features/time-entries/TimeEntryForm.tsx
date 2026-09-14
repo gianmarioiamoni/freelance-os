@@ -85,9 +85,17 @@ export function TimeEntryForm({
         error={fieldError("workDate")}
       >
         {isEdit ? (
-          <div className="flex h-9 w-full items-center rounded-md border border-input bg-muted px-3 py-2 text-sm">
-            {new Date(values.workDate + "T00:00:00.000Z").toLocaleDateString()}
-          </div>
+          <>
+            <div
+              id="workDate"
+              className="flex h-9 w-full items-center rounded-md border border-input bg-muted px-3 py-2 text-sm"
+            >
+              {new Date(values.workDate + "T00:00:00.000Z").toLocaleDateString()}
+            </div>
+            {/* Carries the immutable work date for post-save redirect only;
+                the server ignores it when applying the update. */}
+            <input type="hidden" name="workDate" value={values.workDate} />
+          </>
         ) : (
           <Input
             id="workDate"

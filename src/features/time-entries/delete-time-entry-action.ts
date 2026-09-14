@@ -11,18 +11,16 @@ export async function deleteTimeEntryAction(timeEntryId: string, workDate?: stri
 
   try {
     await deleteTimeEntry(context, timeEntryId, timeEntries);
-    
-    // Redirect back to the time tracking page
-    const dateParam = workDate ? `?date=${workDate}` : "";
-    redirect(`/time-tracking${dateParam}`);
   } catch (error) {
-    if (error instanceof TimeEntryNotFoundError) {
-      // Redirect back even if not found (prevents error loops)
-      const dateParam = workDate ? `?date=${workDate}` : "";
-      redirect(`/time-tracking${dateParam}`);
+    // Deleting an already-missing entry is treated as success to prevent
+    // error loops; any other failure bubbles up.
+    if (!(error instanceof TimeEntryNotFoundError)) {
+      throw error;
     }
-
-    // For other errors, let them bubble up
-    throw error;
   }
+
+  // Redirect outside the try block: redirect() signals via a thrown
+  // NEXT_REDIRECT error that must not be caught by the handler above.
+  const dateParam = workDate ? `?date=${workDate}` : "";
+  redirect(`/time-tracking${dateParam}`);
 }
