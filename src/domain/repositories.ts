@@ -16,6 +16,7 @@ import type {
   TimeEntryRecord,
   UpdateClientInput,
   UpdateContractInput,
+  UpdateTimeEntryInput,
   UpdateWorkspaceInput,
   WorkspaceMemberRecord,
   WorkspaceRecord,
@@ -109,6 +110,20 @@ export type TimeEntryRepository = {
     workspaceId: string,
     workDate: Date,
   ): Promise<TimeEntryRecord[]>;
+  listTimeEntriesForPeriod(
+    workspaceId: string,
+    startDate: Date,
+    endDate: Date,
+  ): Promise<TimeEntryRecord[]>;
+  updateTimeEntry(
+    workspaceId: string,
+    timeEntryId: string,
+    input: UpdateTimeEntryInput,
+  ): Promise<TimeEntryRecord>;
+  deleteTimeEntry(
+    workspaceId: string,
+    timeEntryId: string,
+  ): Promise<void>;
 };
 
 export type AlertRepository = {

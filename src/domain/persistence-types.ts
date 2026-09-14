@@ -189,6 +189,12 @@ export type RecordTimeEntryInput = {
   billable: boolean;
 };
 
+export type UpdateTimeEntryInput = {
+  durationMinutes?: number;
+  description?: string | null;
+  billable?: boolean;
+};
+
 export type CreateAlertInput = {
   type: AlertType;
   severity: AlertSeverity;

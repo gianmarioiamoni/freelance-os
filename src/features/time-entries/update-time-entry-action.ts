@@ -1,0 +1,73 @@
+// src/features/time-entries/update-time-entry-action.ts
+"use server";
+
+import { updateTimeEntry } from "@/application/time-entries/update-time-entry";
+import {
+  InvalidDurationError,
+  InvalidTimeEntryInputError,
+  TimeEntryNotFoundError,
+} from "@/domain/time-entry-errors";
+import { getAuthenticatedTimeEntryContext } from "@/features/time-entries/authenticated-time-entry-context";
+import {
+  TIME_ENTRY_FIELD_ERROR_MESSAGES,
+  TIME_ENTRY_NOT_FOUND_ERROR,
+  readTimeEntryFormValues,
+  parseDurationFromForm,
+  type TimeEntryFormActionState,
+} from "@/features/time-entries/time-entry-form-state";
+import { redirect } from "next/navigation";
+
+export async function updateTimeEntryAction(
+  timeEntryId: string,
+  _previousState: TimeEntryFormActionState,
+  formData: FormData,
+): Promise<TimeEntryFormActionState> {
+  const { context, timeEntries } = await getAuthenticatedTimeEntryContext();
+  const values = readTimeEntryFormValues(formData);
+
+  try {
+    const durationMinutes = parseDurationFromForm(values.durationHours, values.durationMinutes);
+
+    await updateTimeEntry(
+      context,
+      timeEntryId,
+      {
+        durationMinutes,
+        description: values.description || null,
+        billable: values.billable,
+      },
+      timeEntries,
+    );
+
+    // Redirect back to the time tracking page
+    redirect(`/time-tracking?date=${values.workDate}`);
+  } catch (error) {
+    if (error instanceof InvalidTimeEntryInputError) {
+      return {
+        error: TIME_ENTRY_FIELD_ERROR_MESSAGES[error.field],
+        field: error.field,
+        values,
+      };
+    }
+
+    if (error instanceof InvalidDurationError) {
+      return {
+        error: TIME_ENTRY_FIELD_ERROR_MESSAGES["durationMinutes"],
+        field: "durationMinutes",
+        values,
+      };
+    }
+
+    if (error instanceof TimeEntryNotFoundError) {
+      return {
+        error: TIME_ENTRY_NOT_FOUND_ERROR,
+        values,
+      };
+    }
+
+    return {
+      error: "Unable to update the time entry.",
+      values,
+    };
+  }
+}

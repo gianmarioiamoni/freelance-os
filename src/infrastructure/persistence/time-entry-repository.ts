@@ -1,5 +1,5 @@
 // src/infrastructure/persistence/time-entry-repository.ts
-import type { RecordTimeEntryInput } from "@/domain/persistence-types";
+import type { RecordTimeEntryInput, UpdateTimeEntryInput } from "@/domain/persistence-types";
 import type { TimeEntryRepository } from "@/domain/repositories";
 import { withPersistenceErrors } from "@/infrastructure/persistence/map-prisma-error";
 import { mapTimeEntry } from "@/infrastructure/persistence/mappers";
@@ -42,6 +42,45 @@ export function createTimeEntryRepository(db: PrismaExecutor): TimeEntryReposito
           orderBy: { createdAt: "asc" },
         });
         return rows.map(mapTimeEntry);
+      });
+    },
+
+    listTimeEntriesForPeriod(workspaceId: string, startDate: Date, endDate: Date) {
+      return withPersistenceErrors(async () => {
+        const rows = await db.timeEntry.findMany({
+          where: {
+            workspaceId,
+            workDate: {
+              gte: startDate,
+              lte: endDate,
+            },
+          },
+          orderBy: [{ workDate: "asc" }, { createdAt: "asc" }],
+        });
+        return rows.map(mapTimeEntry);
+      });
+    },
+
+    async updateTimeEntry(workspaceId: string, timeEntryId: string, input: UpdateTimeEntryInput) {
+      return withPersistenceErrors(async () =>
+        mapTimeEntry(
+          await db.timeEntry.update({
+            where: { id: timeEntryId, workspaceId },
+            data: {
+              ...(input.durationMinutes !== undefined && { durationMinutes: input.durationMinutes }),
+              ...(input.description !== undefined && { description: input.description }),
+              ...(input.billable !== undefined && { billable: input.billable }),
+            },
+          }),
+        ),
+      );
+    },
+
+    async deleteTimeEntry(workspaceId: string, timeEntryId: string) {
+      return withPersistenceErrors(async () => {
+        await db.timeEntry.delete({
+          where: { id: timeEntryId, workspaceId },
+        });
       });
     },
   };

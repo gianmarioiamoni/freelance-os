@@ -86,6 +86,9 @@ function createMemoryDependencies(
       recordTimeEntry: unused,
       getTimeEntry: unused,
       listTimeEntriesForDate: unused,
+      listTimeEntriesForPeriod: unused,
+      updateTimeEntry: unused,
+      deleteTimeEntry: unused,
     },
     alerts: {
       createAlert: unused,
