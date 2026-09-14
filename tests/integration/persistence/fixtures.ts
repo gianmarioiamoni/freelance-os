@@ -3,7 +3,7 @@ import type { PersistenceRepositories } from "@/domain/repositories";
 
 import { date } from "./helpers";
 
-type WorkspaceGraph = {
+export type WorkspaceGraph = {
   workspaceId: string;
   userId: string;
   clientId: string;
