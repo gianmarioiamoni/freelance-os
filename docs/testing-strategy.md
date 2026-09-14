@@ -1,6 +1,6 @@
 # FreelanceOS --- Testing Strategy
 
-**Status:** Testing and CI foundation implemented — EPIC-005 complete; UI test baseline added by EPIC-006; client coverage added by EPIC-101\
+**Status:** Testing and CI foundation implemented — EPIC-005 complete; UI test baseline added by EPIC-006; client coverage added by EPIC-101; contract coverage added by EPIC-102\
 **Document:** `docs/testing-strategy.md`\
 **Scope:** Release 0 Foundation + Release 1 MVP\
 **Canonical format:** Markdown
@@ -84,6 +84,14 @@ visible in archived view. P101-01 closed at 82 unit / 60 integration.
 P101-02 added no unit or integration tests. P101-03 closed at 82 unit /
 62 integration / 14 E2E. The EPIC-005 isolated E2E / CI contract is
 unchanged. Review: `docs/epics/EPIC-101/engineering-review.md`.
+
+EPIC-102 adds contract application-service unit tests, workspace-isolation
+and integrity integration tests, and one Playwright contract journey:
+empty list → create client → create contract → list / detail → edit →
+sequential adjacent contract → overlap rejection → unknown id not-found.
+P102-03 closed at 116 unit / 75 integration / 15 E2E. The EPIC-005
+isolated E2E / CI contract is unchanged. Review:
+`docs/epics/EPIC-102/engineering-review.md`.
 
 Isolated E2E database contract:
 
@@ -1089,7 +1097,8 @@ This is the primary acceptance journey.
 
 Foundation E2E covers Register / Login / Create workspace and the
 authenticated shell gate against `TEST_DATABASE_URL`. EPIC-101 adds
-the client create / edit / archive journey. The remaining MVP steps
+the client create / edit / archive journey. EPIC-102 adds the contract
+create / edit / sequential / overlap journey. The remaining MVP steps
 are later product work.
 
 ------------------------------------------------------------------------
@@ -1173,6 +1182,10 @@ create historical contract
 
 Attempt to create overlapping contracts and verify that the UI exposes a
 useful validation error.
+
+Implemented by EPIC-102 (`tests/e2e/contracts.spec.ts`): create, list,
+detail, edit, sequential adjacent contract, overlap rejection, unknown-id
+not-found. Time-entry historical journeys remain later product work.
 
 ------------------------------------------------------------------------
 

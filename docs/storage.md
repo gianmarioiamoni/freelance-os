@@ -110,6 +110,14 @@ scoped by `{ id, workspaceId }`. Application-owned models, Better Auth
 tables, and EPIC-002 composite foreign keys are unchanged. Review:
 `docs/epics/EPIC-101/engineering-review.md`.
 
+EPIC-102 added no schema or migration. `ContractRepository.updateContract`
+and `listContracts` are TypeScript/repository only. Updates persist
+existing commercial columns scoped by `{ id, workspaceId }` and do not
+change `workspaceId` or `clientId`. The exclusion constraint
+`Contract_client_validity_no_overlap` remains the concurrency
+authority. `TimeEntry.contractId` remains required. Review:
+`docs/epics/EPIC-102/engineering-review.md`.
+
 `Alert.clientId` and `Alert.contractId` are independently optional
 workspace-scoped FKs. The database does not prove they refer to the
 same client; that remains an application/domain responsibility

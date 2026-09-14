@@ -132,6 +132,13 @@ Consumption is evaluated within the relevant calendar month unless a different c
 
 A new contract should normally represent a new validity interval rather than mutating historical commercial conditions.
 
+EPIC-102 implementation defaults, temporary until the Product Owner decides:
+
+- creating a contract for an archived client is rejected; existing contracts remain readable and editable (proposed OBD-015)
+- commercial-field edits after TimeEntries exist are allowed; TimeEntry stores `contractId` and no rate snapshot (P102-F-001 / proposed OBD-016)
+
+These defaults do not close OBD-015 or OBD-016 and are not accepted product policy.
+
 ## 8. TimeEntry Rules
 
 - A TimeEntry belongs to one workspace.

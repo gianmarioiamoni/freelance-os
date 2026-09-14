@@ -6,6 +6,9 @@ All notable changes to FreelanceOS are documented in this file.
 
 ### Added
 
+- EPIC-102 Contracts Engineering Review completed; workspace-scoped contract management (create, list, detail, edit, client history, overlap prevention) implemented. No schema change. Not production-ready.
+- Authenticated `/contracts` product surface with Server Actions, application services, isolation tests, and a Playwright create/edit/overlap journey.
+
 - EPIC-101 Clients Engineering Review completed; workspace-scoped client master-data management (create, list ACTIVE, archived view, detail, edit, archive) implemented. No schema change. Not production-ready.
 - Authenticated `/clients` product surface with Server Actions, application services, isolation tests, and a Playwright create/edit/archive journey.
 

@@ -1,6 +1,6 @@
 # FreelanceOS — System Architecture
 
-**Status:** Architecture Baseline — Authentication, workspace, testing/CI, UI foundation, and client management implemented (EPIC-003, EPIC-004, EPIC-005, EPIC-006, EPIC-101)  
+**Status:** Architecture Baseline — Authentication, workspace, testing/CI, UI foundation, client management, and contract management implemented (EPIC-003, EPIC-004, EPIC-005, EPIC-006, EPIC-101, EPIC-102)  
 **Scope:** MVP  
 **Architectural style:** Modular Monolith  
 **Primary runtime:** Next.js / TypeScript  
@@ -262,7 +262,7 @@ Resolution uses the Better Auth session user id and `listMembershipsByUserId`. Z
 - client updates;
 - client archival;
 - client retrieval;
-- client-specific summaries (not implemented in EPIC-101; contract and hours remain R1-E02 / R1-E03).
+- client-specific summaries (contract history is implemented on client detail; hours remain R1-E03).
 
 ### Does not own
 
@@ -286,6 +286,8 @@ Resolution uses the Better Auth session user id and `listMembershipsByUserId`. Z
 ### Key rule
 
 Contract applicability must be deterministic for a given work date.
+
+EPIC-102 implements workspace-scoped contract create, list, detail, and update. Applicability is derived from `[validFrom, validTo)`. There is no stored `Contract.status`. Review: `docs/epics/EPIC-102/engineering-review.md`.
 
 ---
 
@@ -632,6 +634,8 @@ EPIC-006 does not change this runtime architecture. The authenticated `(app)` la
 
 EPIC-101 does not change this runtime architecture. Client mutations use Server Actions that resolve `WorkspaceContext` and call application services. Client reads use RSC loaders through the same services. `clientId` is a resource id, not a tenant grant. Query `status=archived` is a list filter only. Review: `docs/epics/EPIC-101/engineering-review.md`.
 
+EPIC-102 does not change this runtime architecture. Contract mutations use Server Actions that resolve `WorkspaceContext` and call application services. Contract reads use RSC loaders through the same services. `contractId` and `clientId` are resource ids, not tenant grants. Query `clientId` on `/contracts/new` is a form preselect only. Review: `docs/epics/EPIC-102/engineering-review.md`.
+
 Next.js 15.5.25 does not provide the `proxy.ts` request-interception convention. `middleware.ts` is deprecated by project convention and is not used. Server-side session validation in the authenticated layout is the authoritative boundary. Client auth state is a projection of that session.
 
 ## Authorization
@@ -762,11 +766,11 @@ src/components/app-shell/   authenticated chrome
 src/components/page/        PageHeader / PageContent
 src/components/states/      LoadingState / ErrorState / EmptyState
 src/components/placeholder/ structural placeholder pages
-src/features/               auth, workspace, and clients
+src/features/               auth, workspace, clients, and contracts
 src/lib/                    navigation helper, cn
 ```
 
-`src/features/clients` is implemented (EPIC-101). Remaining product feature folders (`contracts`, `time-tracking`, `dashboard`, `reporting`, `alerts`, `billing`) are future work.
+`src/features/clients` is implemented (EPIC-101). `src/features/contracts` is implemented (EPIC-102). Remaining product feature folders (`time-tracking`, `dashboard`, `reporting`, `alerts`, `billing`) are future work.
 
 ## 14.3 UI system
 
@@ -791,7 +795,7 @@ Desktop: skip link, header (product mark, workspace name, account label, Sign ou
 
 Mobile: header menu button opens a Sheet with Application nav.
 
-`/clients` is a product surface: ACTIVE list, archived view, create, detail, and edit. Other Application destinations remain structural placeholders with stable `h1` titles. `(app)/loading.tsx`, `error.tsx`, and `not-found.tsx` render the shared state primitives.
+`/clients` is a product surface: ACTIVE list, archived view, create, detail, and edit. `/contracts` is a product surface: list, create, detail, and edit. Other Application destinations remain structural placeholders with stable `h1` titles. `(app)/loading.tsx`, `error.tsx`, and `not-found.tsx` render the shared state primitives.
 
 ## 14.5 Responsive design
 
@@ -829,7 +833,7 @@ features/time-tracking/
 └── types/
 ```
 
-Generic UI primitives remain under `components/ui/`. Shared form, page, state, and shell composition live beside that folder. Business-specific components do not belong there. The client feature folder is implemented; remaining product feature folders remain future work.
+Generic UI primitives remain under `components/ui/`. Shared form, page, state, and shell composition live beside that folder. Business-specific components do not belong there. The client and contract feature folders are implemented; remaining product feature folders remain future work.
 
 ---
 
