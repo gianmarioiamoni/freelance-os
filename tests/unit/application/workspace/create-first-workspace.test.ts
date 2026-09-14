@@ -102,6 +102,12 @@ function createMemoryDependencies(
       listNotificationsForUser: unused,
       markNotificationRead: unused,
     },
+    analytics: {
+      getMonthlyAnalytics: unused,
+      getDailyAnalytics: unused,
+      getClientAllocations: unused,
+      getContractUtilizations: unused,
+    },
   };
 
   return {

@@ -22,6 +22,13 @@ import type {
   WorkspaceRecord,
   WorkspaceSettingsRecord,
 } from "@/domain/persistence-types";
+import type {
+  AnalyticsPeriod,
+  MonthlyAnalytics,
+  DailyAnalytics,
+  ClientAllocation,
+  ContractUtilization,
+} from "@/domain/analytics-types";
 
 export type WorkspaceRepository = {
   createWorkspace(input: CreateWorkspaceInput): Promise<WorkspaceRecord>;
@@ -163,6 +170,25 @@ export type NotificationRepository = {
   ): Promise<NotificationRecord>;
 };
 
+export type AnalyticsRepository = {
+  getMonthlyAnalytics(
+    workspaceId: string,
+    period: AnalyticsPeriod,
+  ): Promise<MonthlyAnalytics>;
+  getDailyAnalytics(
+    workspaceId: string,
+    period: AnalyticsPeriod,
+  ): Promise<DailyAnalytics[]>;
+  getClientAllocations(
+    workspaceId: string,
+    period: AnalyticsPeriod,
+  ): Promise<ClientAllocation[]>;
+  getContractUtilizations(
+    workspaceId: string,
+    period: AnalyticsPeriod,
+  ): Promise<ContractUtilization[]>;
+};
+
 export type PersistenceRepositories = {
   workspaces: WorkspaceRepository;
   members: WorkspaceMemberRepository;
@@ -172,4 +198,5 @@ export type PersistenceRepositories = {
   timeEntries: TimeEntryRepository;
   alerts: AlertRepository;
   notifications: NotificationRepository;
+  analytics: AnalyticsRepository;
 };

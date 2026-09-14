@@ -3,6 +3,7 @@ import "server-only";
 
 import type { PersistenceRepositories } from "@/domain/repositories";
 import { createAlertRepository } from "@/infrastructure/persistence/alert-repository";
+import { createAnalyticsRepository } from "@/infrastructure/persistence/analytics-repository";
 import { createClientRepository } from "@/infrastructure/persistence/client-repository";
 import { createContractRepository } from "@/infrastructure/persistence/contract-repository";
 import { createNotificationRepository } from "@/infrastructure/persistence/notification-repository";
@@ -27,6 +28,7 @@ export function createRepositories(
     timeEntries: createTimeEntryRepository(db),
     alerts: createAlertRepository(db),
     notifications: createNotificationRepository(db),
+    analytics: createAnalyticsRepository(db),
   };
 }
 
