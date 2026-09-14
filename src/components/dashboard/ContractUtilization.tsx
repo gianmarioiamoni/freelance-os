@@ -14,7 +14,7 @@ export function ContractUtilization({ utilizations }: ContractUtilizationProps):
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Contract Utilization</CardTitle>
+          <CardTitle role="heading" aria-level={2}>Contract Utilization</CardTitle>
         </CardHeader>
         <CardContent>
           <EmptyState
@@ -29,7 +29,7 @@ export function ContractUtilization({ utilizations }: ContractUtilizationProps):
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Contract Utilization</CardTitle>
+        <CardTitle role="heading" aria-level={2}>Contract Utilization</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">

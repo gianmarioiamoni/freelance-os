@@ -14,7 +14,7 @@ export function ClientAllocation({ allocations }: ClientAllocationProps): JSX.El
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Client Allocation</CardTitle>
+          <CardTitle role="heading" aria-level={2}>Client Allocation</CardTitle>
         </CardHeader>
         <CardContent>
           <EmptyState
@@ -29,7 +29,7 @@ export function ClientAllocation({ allocations }: ClientAllocationProps): JSX.El
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Client Allocation</CardTitle>
+        <CardTitle role="heading" aria-level={2}>Client Allocation</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">

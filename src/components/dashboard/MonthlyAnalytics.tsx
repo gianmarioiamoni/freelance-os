@@ -17,7 +17,7 @@ export function MonthlyAnalytics({ analytics }: MonthlyAnalyticsProps): JSX.Elem
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Monthly Summary</CardTitle>
+        <CardTitle role="heading" aria-level={2}>Monthly Summary</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

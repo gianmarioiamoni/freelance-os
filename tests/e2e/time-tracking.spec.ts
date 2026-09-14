@@ -10,6 +10,16 @@ const CLIENT_NAME = "Development Studio";
 const CONTRACT_RATE = "75";
 const UNKNOWN_TIME_ENTRY_ID = "00000000-0000-4000-8000-000000000099";
 
+// The entry form defaults the work date to today, so expectations follow the clock
+const TODAY = new Date();
+const TODAY_ISO = [
+  TODAY.getFullYear(),
+  String(TODAY.getMonth() + 1).padStart(2, "0"),
+  String(TODAY.getDate()).padStart(2, "0"),
+].join("-");
+const TODAY_URL = new RegExp(`/time-tracking\\?date=${TODAY_ISO}$`);
+const TODAY_DISPLAY = `${TODAY.getMonth() + 1}/${TODAY.getDate()}/${TODAY.getFullYear()}`;
+
 test("should complete authenticated time tracking journey", async ({ page }) => {
   const email = uniqueE2EEmail("e2e-time-tracking");
 
@@ -98,7 +108,7 @@ test("should complete authenticated time tracking journey", async ({ page }) => 
   await page.getByRole("button", { name: "Create Entry" }).click();
 
   // Should redirect to daily view and show the created entry
-  await expect(page).toHaveURL(/\/time-tracking\?date=2026-09-14$/);
+  await expect(page).toHaveURL(TODAY_URL);
   await expect(
     page.getByRole("heading", { level: 1, name: "Time Tracking" })
   ).toBeVisible();
@@ -143,7 +153,7 @@ test("should complete authenticated time tracking journey", async ({ page }) => 
   await page.getByRole("button", { name: "Save Changes" }).click();
 
   // Should redirect back to daily view
-  await expect(page).toHaveURL(/\/time-tracking\?date=2026-09-14$/);
+  await expect(page).toHaveURL(TODAY_URL);
 
   // Verify changes are reflected
   await expect(page.getByText("Updated: Development and testing work")).toBeVisible();
@@ -185,7 +195,7 @@ test("should complete authenticated time tracking journey", async ({ page }) => 
   await page.getByRole("button", { name: "Yes, Delete Entry" }).click();
 
   // Should redirect to daily view
-  await expect(page).toHaveURL(/\/time-tracking\?date=2026-09-14$/);
+  await expect(page).toHaveURL(TODAY_URL);
 
   // Entry should be gone (hard delete)
   await expect(page.getByText("Updated: Development and testing work")).not.toBeVisible();
@@ -448,7 +458,7 @@ test("should maintain immutability constraints in edit form", async ({ page }) =
   // Verify they are shown as read-only display
   await expect(page.locator("#client-readonly")).toHaveText("Immutable Client");
   await expect(page.locator("#contract-readonly")).toContainText("HOURLY ·");
-  await expect(page.locator("#workDate")).toHaveText("9/14/2026");
+  await expect(page.locator("#workDate")).toHaveText(TODAY_DISPLAY);
 
   // Verify mutable fields are editable
   await expect(page.getByPlaceholder("Hours")).toBeVisible();
