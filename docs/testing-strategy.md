@@ -1,6 +1,6 @@
 # FreelanceOS --- Testing Strategy
 
-**Status:** Testing and CI foundation implemented — EPIC-005 complete; UI test baseline added by EPIC-006; client coverage added by EPIC-101; contract coverage added by EPIC-102\
+**Status:** Testing and CI foundation implemented — EPIC-005 complete; UI test baseline added by EPIC-006; client coverage added by EPIC-101; contract coverage added by EPIC-102; time-tracking coverage added by EPIC-103\
 **Document:** `docs/testing-strategy.md`\
 **Scope:** Release 0 Foundation + Release 1 MVP\
 **Canonical format:** Markdown
@@ -92,6 +92,23 @@ sequential adjacent contract → overlap rejection → unknown id not-found.
 P102-03 closed at 116 unit / 75 integration / 15 E2E. The EPIC-005
 isolated E2E / CI contract is unchanged. Review:
 `docs/epics/EPIC-102/engineering-review.md`.
+
+EPIC-103 adds TimeEntry validation and application-service unit tests,
+lifecycle and workspace-isolation integration tests, and one Playwright
+time-tracking spec of six tests: authenticated journey (client and
+HOURLY contract fixture → create → daily view → edit → delete),
+contract metadata as presentation only, weekly view with per-day
+quick-add through the normal creation path, browser-level workspace
+isolation, unknown entry id not-found, and edit-form immutability.
+P103-03 closed at 164 unit / 119 integration / 21 E2E; those are suite
+totals, not counts of tests added by the Epic. The E2E contract
+fixtures select Billing model `HOURLY` explicitly, wait on URL and
+locator state rather than arbitrary timeouts, and assert canonical
+application output and canonical `?date=` redirect URLs. That fixture
+correction exposed a real application defect (F-103-001: `redirect()`
+called inside `try`/`catch`), which was fixed in application code, not
+in tests. The EPIC-005 isolated E2E / CI contract is unchanged. Review:
+`docs/epics/EPIC-103/engineering-review.md`.
 
 Isolated E2E database contract:
 
@@ -1098,8 +1115,9 @@ This is the primary acceptance journey.
 Foundation E2E covers Register / Login / Create workspace and the
 authenticated shell gate against `TEST_DATABASE_URL`. EPIC-101 adds
 the client create / edit / archive journey. EPIC-102 adds the contract
-create / edit / sequential / overlap journey. The remaining MVP steps
-are later product work.
+create / edit / sequential / overlap journey. EPIC-103 adds the time
+entry create / edit / delete journey with the daily and weekly views.
+The remaining MVP steps are later product work.
 
 ------------------------------------------------------------------------
 
@@ -1209,6 +1227,15 @@ Verify:
 -   billable state
 
 Also verify that the weekly view totals correctly.
+
+Implemented by EPIC-103 (`tests/e2e/time-tracking.spec.ts`): create,
+daily-view verification, edit of mutable fields, hard delete,
+client-first selection with a contract restricted to the client and
+work date, contract metadata as presentation only, weekly view with
+per-day quick-add, browser-level workspace isolation, unknown entry id
+not-found, and read-only `workDate` / client / contract on the edit
+form. Weekly and daily totals are minute sums; no monetary total is
+rendered or asserted, because no billing calculation exists yet.
 
 ------------------------------------------------------------------------
 

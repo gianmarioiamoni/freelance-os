@@ -6,6 +6,9 @@ All notable changes to FreelanceOS are documented in this file.
 
 ### Added
 
+- EPIC-103 Time Tracking Engineering Review completed; workspace-scoped time tracking (create, daily view, weekly timesheet, edit of duration/description/billable, hard delete) implemented. `workDate`, `clientId`, and `contractId` are immutable after creation. No schema change. Not production-ready.
+- Authenticated `/time-tracking` product surface with client-first contract selection restricted by `[validFrom, validTo)` validity, Server Actions, application services, lifecycle and isolation tests, and a Playwright create/edit/delete journey. No billing, rate calculation, or forecasting was introduced.
+
 - EPIC-102 Contracts Engineering Review completed; workspace-scoped contract management (create, list, detail, edit, client history, overlap prevention) implemented. No schema change. Not production-ready.
 - Authenticated `/contracts` product surface with Server Actions, application services, isolation tests, and a Playwright create/edit/overlap journey.
 
@@ -39,3 +42,7 @@ All notable changes to FreelanceOS are documented in this file.
 - Persistence invariants, workspace-scoped repositories, and a deterministic development seed.
 - Persistence integration tests against isolated PostgreSQL and a CI database gate.
 - EPIC-002 Engineering Review completed; persistence foundation certified for EPIC-003.
+
+### Fixed
+
+- Time-tracking Server Actions called `redirect()` inside `try`/`catch`, so the Next.js `NEXT_REDIRECT` control-flow error was caught and a successful create, update, or delete reported a false application error and skipped navigation. `redirect()` now runs outside the error handler in all three actions (EPIC-103 F-103-001).

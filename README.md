@@ -4,7 +4,7 @@ FreelanceOS is a web application for freelancer operations management.
 
 ## Status
 
-Release 1 — MVP in progress. EPIC-102 complete: workspace-scoped contract management (create, list, detail, edit, client history, overlap prevention). EPIC-101 client master-data management remains. EPIC-006 authenticated UI foundation and EPIC-005 isolated E2E / CI contract remain. Authentication remains Better Auth. Time tracking is not implemented. Role permissions (OBD-009) and production password-reset email are not decided. This is not production readiness.
+Release 1 — MVP in progress. EPIC-103 complete: workspace-scoped time tracking (create, daily view, weekly timesheet, edit of duration/description/billable, hard delete) with `workDate`, client, and contract immutable after creation. EPIC-102 contract management and EPIC-101 client master-data management remain. EPIC-006 authenticated UI foundation and EPIC-005 isolated E2E / CI contract remain. Authentication remains Better Auth. No billing, rate calculation, analytics, dashboard, or reporting is implemented. Role permissions (OBD-009) and production password-reset email are not decided. This is not production readiness.
 
 Planning and architecture documents are the source of truth. See [`MASTER_PLAN.md`](./MASTER_PLAN.md).
 
@@ -53,7 +53,7 @@ pnpm test:integration
 
 Playwright E2E (`pnpm test:e2e`) uses `TEST_DATABASE_URL` only. It refuses `freelance_os`. Apply `pnpm test:db:migrate` first. The command starts its own `pnpm dev` against the isolated database and does not use the development `DATABASE_URL`.
 
-The GitHub Actions quality workflow starts PostgreSQL 17, validates and generates the Prisma client, applies migrations, then runs lint, typecheck, unit tests, integration tests, build, and deterministic Playwright auth, onboarding, authenticated-shell, client, and contract E2E. CI uses `pnpm dev` with one Playwright worker. It does not require Google credentials or a production mailer.
+The GitHub Actions quality workflow starts PostgreSQL 17, validates and generates the Prisma client, applies migrations, then runs lint, typecheck, unit tests, integration tests, build, and deterministic Playwright auth, onboarding, authenticated-shell, client, contract, and time-tracking E2E. CI uses `pnpm dev` with one Playwright worker. It does not require Google credentials or a production mailer.
 
 `pnpm install` also runs `prisma generate`. The Prisma schema includes the application-owned persistence models and Better Auth 1.7.4 tables.
 

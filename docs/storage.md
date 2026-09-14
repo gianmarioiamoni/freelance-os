@@ -118,6 +118,21 @@ change `workspaceId` or `clientId`. The exclusion constraint
 authority. `TimeEntry.contractId` remains required. Review:
 `docs/epics/EPIC-102/engineering-review.md`.
 
+EPIC-103 added no schema or migration. `TimeEntryRepository.updateTimeEntry`,
+`deleteTimeEntry`, and `listTimeEntriesForPeriod` are TypeScript/repository
+only. `UpdateTimeEntryInput` carries `durationMinutes`, `description`, and
+`billable`; updates are scoped by `{ id, workspaceId }` and build `data` by
+conditional spread, so `workspaceId`, `userId`, `workDate`, `clientId`, and
+`contractId` cannot be written after creation. `deleteTimeEntry` is a hard
+`delete` scoped by `{ id, workspaceId }`; there is no archive column.
+`listTimeEntriesForPeriod` filters `workDate` with an inclusive `gte`/`lte`
+range ordered `workDate` asc then `createdAt` asc — that inclusive period
+bound is deliberately not the exclusive `[validFrom, validTo)` contract
+convention. The positive-duration CHECK constraint, the workspace-scoped
+composite foreign keys to `Client` and `Contract`, and the required
+`TimeEntry.contractId` are unchanged. Review:
+`docs/epics/EPIC-103/engineering-review.md`.
+
 `Alert.clientId` and `Alert.contractId` are independently optional
 workspace-scoped FKs. The database does not prove they refer to the
 same client; that remains an application/domain responsibility

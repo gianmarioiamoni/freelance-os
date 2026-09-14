@@ -6,17 +6,19 @@
 **Release:** Release 1 — MVP  
 **MASTER_PLAN identifier:** R1-E03 — Time Tracking  
 **Objective:** Time Tracking  
-**Status:** PLANNING COMPLETE  
+**Status:** IMPLEMENTED — ENGINEERING COMPLETE (PASS WITH FINDINGS)  
 **Depends on:** EPIC-002 — Database & Persistence; EPIC-003 — Authentication; EPIC-004 — Workspace; EPIC-005 — Testing & CI Foundation; EPIC-006 — UI Foundation; EPIC-101 — Clients; EPIC-102 — Contracts  
 **Next Epic:** Analytics & Dashboard (`MASTER_PLAN.md` §14 R1-E04)  
 **Canonical sources:** `MASTER_PLAN.md` §13 R1-E03; `docs/product-vision.md`; `docs/domain-model.md` §3.5 / §4.2 / §8 / BR-002 / BR-003 / BR-004; `docs/storage.md`; `docs/architecture.md`; `docs/testing-strategy.md`
 
 ```text
 PLANNING COMPLETE - PRODUCT DECISIONS FINALIZED
-IMPLEMENTATION: READY
-ENGINEERING REVIEW: NOT STARTED
+IMPLEMENTATION: COMPLETE (P103-01, P103-02, P103-03)
+ENGINEERING REVIEW: PASS WITH FINDINGS
 PRODUCTION READINESS: NO
 ```
+
+Engineering Review: `docs/epics/EPIC-103/engineering-review.md`.
 
 This document is the only planning artifact for EPIC-103. Do not create additional planning files.
 
@@ -26,18 +28,20 @@ This document is the only planning artifact for EPIC-103. Do not create addition
 
 ```text
 PLANNING COMPLETE
-IMPLEMENTATION: NOT STARTED
+IMPLEMENTATION: COMPLETE
 ```
 
 Phase statuses:
 
 ```text
-P103-01 READY
-P103-02 PENDING  
-P103-03 PENDING
-P103-04 PENDING
-FINAL VERDICT: READY FOR IMPLEMENTATION
+P103-01 COMPLETE  934d202
+P103-02 COMPLETE  ba1c597
+P103-03 COMPLETE  2e67759
+P103-04 COMPLETE  documentation & engineering review
+FINAL VERDICT: PASS WITH FINDINGS — ENGINEERING COMPLETE; PRODUCTION READINESS NO
 ```
+
+Final test evidence after EPIC-103: 164 unit, 119 integration, 21 E2E. These are suite totals, not counts of tests added by this Epic.
 
 ---
 
@@ -247,6 +251,8 @@ Based on finalized Product Owner decisions:
 ## PRODUCT DECISIONS FINALIZED
 
 **STATUS:** All blocking decisions resolved by Product Owner.
+
+**Canonical numbering:** the six `PD-103-00x` identifiers used in this document are canonical. Phase handoff notes sometimes refer to a four-item short list that numbers future dates, duplicate entries, and client-first selection differently. The reconciliation table is `docs/epics/EPIC-103/engineering-review.md` §6 (finding F-103-004).
 
 ### PD-103-001 — TimeEntry Deletion Mechanism
 
@@ -708,7 +714,7 @@ function isContractValidForDate(contract: ContractRecord, date: Date): boolean {
 **Repository Tests:**
 - `createTimeEntry` with valid input
 - `updateTimeEntry` with workspace validation
-- `archiveTimeEntry` with authorization
+- `deleteTimeEntry` with authorization (hard delete per PD-103-001; the earlier `archiveTimeEntry` wording predates that decision)
 - `getTimeEntry` with foreign ID (should return null)
 - `listTimeEntriesForDate` workspace isolation
 - Error mapping for database constraints
@@ -1456,7 +1462,7 @@ Each phase documents its completion in commit message and any implementation not
 - [x] Application architecture defined
 
 **Business Rules Clarity:**
-- [x] TimeEntry lifecycle defined (create → edit → archive)
+- [x] TimeEntry lifecycle defined (create → edit mutable fields → hard delete)
 - [x] Contract relationship preserved (contractId required)  
 - [x] Contract validity enforcement specified
 - [x] Historical correctness limitations acknowledged (P102-F-001)
@@ -1503,7 +1509,7 @@ EPIC-103 planning is complete and implementation-ready.
 ### 27.2 Key Planning Decisions
 
 1. **No Schema Changes:** Existing TimeEntry model is sufficient for all requirements
-2. **Lifecycle Policy:** Create → Edit → Archive (soft delete following established patterns)
+2. **Lifecycle Policy:** Create → Edit mutable fields → Hard delete (PD-103-001; no archive state, no soft delete)
 3. **Contract Requirement:** Preserved F-P2-004 (contractId required for all entries)  
 4. **Historical Limitation:** Accepted P102-F-001 (commercial reinterpretation risk)
 5. **UI Flow:** Client-first selection, then eligible Contracts
@@ -1534,7 +1540,15 @@ EPIC-103 planning is complete and implementation-ready.
 
 ## Implementation Status
 
-**READY FOR IMPLEMENTATION**
+**IMPLEMENTED — ENGINEERING COMPLETE (PASS WITH FINDINGS)**
+
+Delivered: workspace-scoped TimeEntry create / read / update / hard delete, contract eligibility and `[validFrom, validTo)` validity at create, archived-client create rejection, client-first selection, daily view, weekly timesheet, and the authenticated `/time-tracking`, `/time-tracking/new`, and `/time-tracking/[timeEntryId]/edit` surfaces. No Prisma schema change and no migration.
+
+Not delivered from `MASTER_PLAN.md` §13 scope and recorded as deferred: calendar view, and copy-previous-entry which remains conditional on UX Review. The optional `/time-tracking/[timeEntryId]` detail route was not justified; the edit route carries read-only context and delete.
+
+Open EPIC-103 findings: F-103-002 (archived-client entries not listed in the daily/weekly views), F-103-003 (contract-selector stale selection unverified), F-103-004, F-103-005, F-103-006, F-103-P-001, F-103-P-002. F-103-001 (`redirect()` inside `try`/`catch`) was a real application defect and is RESOLVED. Details in `docs/epics/EPIC-103/engineering-review.md`.
+
+Production readiness is NO. Later production validation and certification remain required.
 
 All Product Owner decisions have been finalized:
 
@@ -1549,6 +1563,9 @@ These decisions establish:
 - UI forms: full create form, restricted edit form (duration/description/billable only)
 - Database schema: no changes required for EPIC-103
 
-**Next Action:** Begin P103-01 implementation in NEW CURSOR CHAT.
+**Next Action:** Plan EPIC-104 — Analytics & Dashboard (`MASTER_PLAN.md` §14 R1-E04) in a NEW CURSOR CHAT.
 
-**Planning Status:** COMPLETE - READY FOR IMPLEMENTATION
+**Planning Status:** COMPLETE  
+**Implementation Status:** COMPLETE  
+**Engineering Review:** PASS WITH FINDINGS  
+**Production Readiness:** NO

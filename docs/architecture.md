@@ -1,6 +1,6 @@
 # FreelanceOS — System Architecture
 
-**Status:** Architecture Baseline — Authentication, workspace, testing/CI, UI foundation, client management, and contract management implemented (EPIC-003, EPIC-004, EPIC-005, EPIC-006, EPIC-101, EPIC-102)  
+**Status:** Architecture Baseline — Authentication, workspace, testing/CI, UI foundation, client management, contract management, and time tracking implemented (EPIC-003, EPIC-004, EPIC-005, EPIC-006, EPIC-101, EPIC-102, EPIC-103)  
 **Scope:** MVP  
 **Architectural style:** Modular Monolith  
 **Primary runtime:** Next.js / TypeScript  
@@ -308,6 +308,8 @@ EPIC-102 implements workspace-scoped contract create, list, detail, and update. 
 - dashboard aggregation;
 - report presentation;
 - notification delivery.
+
+EPIC-103 implements workspace-scoped TimeEntry create, read, daily list, weekly timesheet, update of mutable fields, and hard delete. `workDate`, `clientId`, and `contractId` are immutable after creation; `UpdateTimeEntryInput` carries only `durationMinutes`, `description`, and `billable`. Contract eligibility is derived from `[validFrom, validTo)` for the work date and is validated at create; no revalidation path exists on update because the three inputs it would depend on cannot change. Client selection precedes contract selection. Contract metadata is presented but never used for calculation: no rate, billing, utilization, or forecasting logic exists in this module. Review: `docs/epics/EPIC-103/engineering-review.md`.
 
 ---
 
@@ -636,6 +638,10 @@ EPIC-101 does not change this runtime architecture. Client mutations use Server 
 
 EPIC-102 does not change this runtime architecture. Contract mutations use Server Actions that resolve `WorkspaceContext` and call application services. Contract reads use RSC loaders through the same services. `contractId` and `clientId` are resource ids, not tenant grants. Query `clientId` on `/contracts/new` is a form preselect only. Review: `docs/epics/EPIC-102/engineering-review.md`.
 
+EPIC-103 does not change this runtime architecture. TimeEntry mutations use Server Actions that resolve `WorkspaceContext` and call application services. TimeEntry reads use RSC loaders through the same services. `timeEntryId`, `clientId`, and `contractId` are resource ids, not tenant grants. Query `date`, `view`, and `start` are view state; `clientId` and `contractId` on `/time-tracking/new` are form preselects only. The hidden `workDate` field on the edit form is redirect context only; the update service never receives it. Review: `docs/epics/EPIC-103/engineering-review.md`.
+
+**Server Action constraint:** `redirect()` and `notFound()` signal by throwing (`NEXT_REDIRECT`, `NEXT_NOT_FOUND`). They must be called outside any `try`/`catch` that maps errors to user-facing state, otherwise a successful mutation reports a false failure. EPIC-103 F-103-001 was exactly this defect and was corrected in the three TimeEntry Server Actions. This constraint is documentation-only; no lint rule enforces it.
+
 Next.js 15.5.25 does not provide the `proxy.ts` request-interception convention. `middleware.ts` is deprecated by project convention and is not used. Server-side session validation in the authenticated layout is the authoritative boundary. Client auth state is a projection of that session.
 
 ## Authorization
@@ -766,11 +772,11 @@ src/components/app-shell/   authenticated chrome
 src/components/page/        PageHeader / PageContent
 src/components/states/      LoadingState / ErrorState / EmptyState
 src/components/placeholder/ structural placeholder pages
-src/features/               auth, workspace, clients, and contracts
+src/features/               auth, workspace, clients, contracts, time-entries
 src/lib/                    navigation helper, cn
 ```
 
-`src/features/clients` is implemented (EPIC-101). `src/features/contracts` is implemented (EPIC-102). Remaining product feature folders (`time-tracking`, `dashboard`, `reporting`, `alerts`, `billing`) are future work.
+`src/features/clients` is implemented (EPIC-101). `src/features/contracts` is implemented (EPIC-102). `src/features/time-entries` is implemented (EPIC-103) and serves the `/time-tracking` routes. Remaining product feature folders (`dashboard`, `reporting`, `alerts`, `billing`) are future work.
 
 ## 14.3 UI system
 

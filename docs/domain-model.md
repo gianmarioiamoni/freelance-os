@@ -139,6 +139,8 @@ EPIC-102 implementation defaults, temporary until the Product Owner decides:
 
 These defaults do not close OBD-015 or OBD-016 and are not accepted product policy.
 
+EPIC-103 did not change them. Immutable `TimeEntry.contractId` protects the association, not the commercial terms it points at, so P102-F-001 remains open.
+
 ## 8. TimeEntry Rules
 
 - A TimeEntry belongs to one workspace.
@@ -148,6 +150,23 @@ These defaults do not close OBD-015 or OBD-016 and are not accepted product poli
 - A TimeEntry must reference a client.
 - The applicable contract must be determinable for its work date where billing requires a contract.
 - Editing/deleting historical entries may require audit or period-closing rules in a later release.
+
+EPIC-103 implementation, finalized by Product Owner decisions:
+
+- `workDate`, `clientId`, and `contractId` are immutable after creation. Correcting them requires delete and recreate (PD-103-002, PD-103-003).
+- Update permits `durationMinutes`, `description`, and `billable` only.
+- Deletion is a hard delete. There is no TimeEntry archive state, `archivedAt`, or status field (PD-103-001).
+- `contractId` remains required for every entry, including `billable = false` (F-P2-004).
+- Contract eligibility for a work date is `[validFrom, validTo)`; `validTo = null` is open-ended. Validated at create only, because the fields it depends on cannot change.
+- Duration is an integer between 1 and 1440 minutes.
+- Future work dates are permitted (PD-103-004).
+- Duplicate entries for the same contract and date are permitted (PD-103-005). Overlapping entries are not validated.
+- `workDate` is a calendar date. Midnight-crossing work is not representable (OBD-003 open).
+- Creating an entry for an archived client is rejected; existing entries for an archived client remain readable and editable at the application layer. The current time-tracking views do not list them (finding F-103-002).
+- No rate, billing, utilization, or forecasting calculation is derived from a TimeEntry. Editing Contract commercial fields can still change historical interpretation (P102-F-001 open).
+- No audit trail exists for TimeEntry edits or deletions (OBD-008 open).
+
+Review: `docs/epics/EPIC-103/engineering-review.md`.
 
 ## 9. Monthly Aggregation Rules
 
