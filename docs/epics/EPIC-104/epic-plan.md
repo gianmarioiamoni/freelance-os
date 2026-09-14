@@ -126,14 +126,14 @@ The analytics layer must become the authoritative source for all numerical facts
 - **Billable Percentage**: billableMinutes / totalMinutes (handle zero denominator)
 
 ### Client Analytics  
-- **Client Hours**: GROUP BY clientId, SUM(durationMinutes)
-- **Client Billable Hours**: GROUP BY clientId, SUM(durationMinutes WHERE billable = true)
-- **Client Percentage**: clientMinutes / totalMinutes for period
+- **Client Hours**: GROUP BY clientId, SUM(durationMinutes) — includes archived Clients per PD-104-001
+- **Client Billable Hours**: GROUP BY clientId, SUM(durationMinutes WHERE billable = true) — includes archived Clients
+- **Client Percentage**: clientMinutes / totalMinutes for period — archived Client status presented explicitly
 
 ### Contract Analytics
-- **Contract Utilization**: SUM(durationMinutes) / (monthlyContractedMinutes OR null for unlimited)
+- **Contract Utilization**: ALL tracked TimeEntry minutes (billable + non-billable) per PD-104-002
 - **Contract Consumed Hours**: SUM(durationMinutes) grouped by contractId for period
-- **Utilization Percentage**: consumedMinutes / contractedMinutes (handle unlimited contracts)
+- **Utilization Display**: consumedMinutes / contractedMinutes for finite contracts; "→ Ongoing" for unlimited contracts per PD-104-004
 
 ### Period Calculations
 - **Daily Totals**: GROUP BY workDate
@@ -162,7 +162,7 @@ The analytics layer must become the authoritative source for all numerical facts
 │ Contract Utilization                    │
 │ ├── ACME Retainer: 65h / 80h (81%)    │
 │ ├── Beta Project: 40h / 60h (67%)     │
-│ └── Gamma Support: 15h / ∞ (no limit) │
+│ └── Gamma Support: 15h → Ongoing      │
 └─────────────────────────────────────────┘
 ```
 
@@ -209,7 +209,7 @@ Dashboard Components (presentation)
 - **BR-104-003**: Cross-workspace data leakage in analytics is a security violation
 
 ### Historical Correctness Rules
-- **BR-104-004**: TimeEntry historical associations to archived clients must be preserved in analytics
+- **BR-104-004**: TimeEntry historical associations to archived clients must be preserved in analytics per PD-104-001
 - **BR-104-005**: Contract utilization must use the contract valid at time of work, not current contract
 - **BR-104-006**: Changing current contract terms must not retroactively change historical analytics
 
@@ -257,17 +257,17 @@ Following `TimeEntry.contractId` immutability from EPIC-103:
 - Time entries retain association with contract valid at time of work
 - Later contract changes do not retroactively affect historical analytics
 
-### Archived Client Handling Decision Required
-**OPEN PRODUCT DECISION PD-104-001**: How should analytics treat TimeEntries for archived clients?
+### Archived Client Handling
+**RESOLVED DECISION PD-104-001**: Analytics MUST include TimeEntries associated with archived Clients when those TimeEntries fall within the selected analytics date range.
 
-**Options:**
-1. **Include archived-client time in analytics** (recommended for historical accuracy)
-2. **Exclude archived-client time from analytics** (matching current UI behavior)  
-3. **Include with separate archived-client breakdown**
+**Rationale**: 
+- Archiving a Client must not retroactively remove historical tracked time from analytics
+- TimeEntry history remains meaningful for operational analysis
+- Current Client status must not alter historical totals
 
-**Current Implementation Gap**: EPIC-103 finding F-103-002 shows daily/weekly views join against ACTIVE clients only, omitting archived-client entries from UI. Analytics must not inherit this gap.
+**Implementation**: For Client breakdowns, archived Clients remain visible when they have qualifying TimeEntries, with their archived status presented explicitly where relevant.
 
-**Recommendation**: Include archived-client time in total analytics but identify the data source transparently.
+**Acknowledgment**: This decision explicitly addresses EPIC-103 F-103-002, where daily/weekly views join against ACTIVE clients only. Analytics has its own explicit inclusion rule that differs from Time Tracking display behavior.
 
 ### Contract Commercial Terms (Inherited from EPIC-102)
 **INHERITED FINDING P102-F-001**: TimeEntry stores contractId but no commercial snapshot. Contract rate/terms changes affect historical interpretation.
@@ -284,19 +284,31 @@ Analytics calculations that depend on contract terms (utilization) are subject t
 - **Period Inclusion**: Inclusive range `[monthStart, monthEnd]` for TimeEntry.workDate
 - **Current Date**: Server-resolved "today" in workspace timezone
 
+### Default Dashboard Period
+**RESOLVED DECISION PD-104-003**: Default dashboard period spans from the first day of the current calendar month through today, using date-based workDate semantics consistent with Time Tracking.
+
+**Rationale**:
+- Aligns with business reporting conventions (calendar month boundaries)
+- Provides meaningful period context for operational planning
+- Maintains consistency with existing Time Tracking date semantics
+
+**Implementation**: Use workspace timezone for month boundary calculations. Future TimeEntries remain permitted when the user explicitly selects a future period.
+
+**Date Range Boundaries**: Dashboard must define date-range boundaries clearly and consider EPIC-103 F-103-006 concerning invalid date parameters without silently inheriting ambiguous behavior.
+
 ### Date Range Implementation  
 ```typescript
-// Example for current month in workspace timezone
+// Current month default in workspace timezone
 const now = new Date(); // Server time
 const workspaceTimezone = workspace.timezone; // 'Europe/Rome'
 const monthStart = startOfMonth(zonedTimeToUtc(now, workspaceTimezone));
-const monthEnd = endOfMonth(zonedTimeToUtc(now, workspaceTimezone));
-// Query: WHERE workDate >= monthStart AND workDate <= monthEnd
+const today = startOfDay(zonedTimeToUtc(now, workspaceTimezone));
+// Query: WHERE workDate >= monthStart AND workDate <= today
 ```
 
 ### Future Date Handling
-- **Future Entries**: Include future TimeEntries in current month if workDate falls within range  
-- **Invalid Dates**: Invalid ?month= parameters fall back to current month with user notification
+- **Future Entries**: Include future TimeEntries when user explicitly selects a future period  
+- **Invalid Dates**: Invalid parameters fall back to current month with user notification
 - **Empty Periods**: Handle months with no time entries gracefully with empty state
 
 ---
@@ -315,14 +327,16 @@ const monthEnd = endOfMonth(zonedTimeToUtc(now, workspaceTimezone));
 - **Billable Percentage**: billableMinutes / totalMinutes * 100 (show 0% for zero total)
 
 ### Contract Utilization vs Billable Hours
-**Utilization calculation ambiguity - OPEN PRODUCT DECISION PD-104-002**: 
-Should contract utilization count ALL time or only BILLABLE time toward contracted hours?
+**RESOLVED DECISION PD-104-002**: Where Contract utilization is applicable and a valid contractual capacity denominator exists, the numerator equals ALL tracked TimeEntry minutes (both billable and non-billable time are included).
 
-**Options:**
-1. **All time counts toward utilization** (recommended - captures total contract consumption)
-2. **Only billable time counts toward utilization** (commercial interpretation)
+**Rationale**: 
+- Utilization measures total contract consumption, not just billable activity
+- Billable time remains a separate metric distinct from utilization
+- Contract capacity represents total available working time allocation
 
-**Default for EPIC-104**: All time (billable + non-billable) counts toward utilization percentage.
+**Explicit Exclusions**: Do NOT introduce revenue calculation, invoice calculation, payment calculation, profitability, forecasting, or rate-based billing calculations.
+
+**Boundary Condition**: If contractual capacity is not semantically available for a Contract type, do not invent a denominator. Analytics will display consumed hours without percentage when capacity is undefined.
 
 ---
 
@@ -332,7 +346,7 @@ Should contract utilization count ALL time or only BILLABLE time toward contract
 - **New Workspace**: "No time entries yet. Start by creating your first client and logging some work."
 - **Empty Month**: "No work recorded in [Month Year]. You can add time entries from the Time Tracking page."
 - **No Billable Time**: Show 0h billable, 100% non-billable in monthly summary
-- **No Active Contracts**: Contract utilization section shows "No active contracts for this period"
+- **No Active Contracts**: Contract utilization section shows "No contracts for current month period"
 
 ### Loading States  
 - **Dashboard Loading**: Skeleton placeholders for each analytics section
@@ -473,40 +487,37 @@ Should contract utilization count ALL time or only BILLABLE time toward contract
 
 ---
 
-## 20. Open Product Decisions
+## 20. Resolved Product Decisions
 
-### PD-104-001: Archived Client Time in Analytics
-**Decision Required**: Should analytics calculations include time entries for archived clients?
-**Options**: Include (recommended), exclude, separate breakdown
-**Blocks**: Client allocation accuracy, total hours calculation
-**Recommendation**: Include archived-client time with transparent labeling
+### PD-104-001: Archived Client Time in Analytics — RESOLVED: INCLUDE
+**Decision**: Analytics MUST include TimeEntries associated with archived Clients when those TimeEntries fall within the selected analytics date range.
+**Rationale**: Archiving a client must not retroactively remove historical tracked time from analytics; TimeEntry history remains meaningful; current Client status must not alter historical totals.
+**Implementation**: For Client breakdowns, archived Clients remain visible when they have qualifying TimeEntries, with their archived status presented explicitly where relevant.
+**Acknowledgment**: This decision explicitly addresses EPIC-103 F-103-002.
 
-### PD-104-002: Contract Utilization Calculation Basis  
-**Decision Required**: Should contract utilization count all time or only billable time?
-**Options**: All time (recommended), billable time only
-**Blocks**: Contract utilization widget implementation  
-**Recommendation**: All time counts toward contracted hour consumption
+### PD-104-002: Contract Utilization Calculation Basis — RESOLVED: ALL TIME
+**Decision**: Where Contract utilization is applicable and a valid contractual capacity denominator exists, numerator = ALL tracked TimeEntry minutes; both billable and non-billable time are included.
+**Rationale**: Utilization measures total contract consumption; billable time remains a separate metric; do NOT equate utilization with billable percentage.
+**Exclusions**: Do NOT introduce revenue calculation, invoice calculation, payment calculation, profitability, forecasting, or rate-based billing calculations.
 
-### PD-104-003: Dashboard Default Date Range
-**Decision Required**: Should dashboard default to current month or last 30 days?
-**Options**: Current calendar month (recommended), rolling 30 days, user preference
-**Blocks**: Period calculation implementation
-**Recommendation**: Current calendar month for business reporting alignment
+### PD-104-003: Dashboard Default Date Range — RESOLVED: CURRENT MONTH
+**Decision**: Default dashboard period spans first day of the current calendar month through today.
+**Rationale**: Aligns with business reporting conventions; provides meaningful period context; maintains consistency with Time Tracking date semantics.
+**Implementation**: Use workspace timezone for boundaries; future TimeEntries remain permitted when user explicitly selects a future period.
 
-### PD-104-004: Contract Utilization Display for Unlimited Contracts
-**Decision Required**: How should unlimited contracts (monthlyContractedMinutes = null) be displayed?
-**Options**: "No limit", "∞", percentage bar at 0%, separate section  
-**Blocks**: Contract utilization UI implementation
-**Recommendation**: "No limit" text with hours worked display
+### PD-104-004: Unlimited Contract Display Format — RESOLVED: ONGOING
+**Decision**: For Contracts where validTo is null, display "validFrom → Ongoing". For finite Contracts, display "validFrom → validTo".
+**Rationale**: This is presentation only and does not change existing Contract validity semantics (finite: validFrom <= workDate < validTo; open-ended: workDate >= validFrom).
+**Implementation**: Contract utilization section shows consumed hours with "→ Ongoing" indicator rather than percentage calculation.
 
 ---
 
 ## 21. Findings Inherited from Previous Epics
 
 ### F-103-002: Archived Client Visibility (HIGH PRIORITY)
-**Impact on Analytics**: Daily/weekly time views join against ACTIVE clients only. Analytics must NOT inherit this limitation.
-**Resolution Required**: Analytics must explicitly handle archived-client time entries per PD-104-001.
-**Testing**: Integration tests must verify archived-client time included in analytics calculations.
+**Impact on Analytics**: Daily/weekly time views join against ACTIVE clients only. Analytics has its own explicit inclusion rule per resolved PD-104-001.
+**Resolution**: Analytics MUST include TimeEntries associated with archived Clients when those TimeEntries fall within the selected analytics date range.
+**Testing**: Integration tests must verify archived-client time included in analytics calculations consistently.
 
 ### P102-F-001: Contract Commercial Terms Mutability (MEDIUM PRIORITY)  
 **Impact on Analytics**: Contract utilization calculations subject to commercial terms changes affecting historical interpretation.
@@ -549,7 +560,7 @@ Should contract utilization count ALL time or only BILLABLE time toward contract
 - `AnalyticsService.getMonthlyAnalytics(workspaceId, period)` returns deterministic calculations
 - All analytics calculations respect workspace boundaries  
 - Contract utilization handles unlimited contracts gracefully
-- Archived-client time entries included per PD-104-001 resolution
+- Archived-client time entries included per resolved PD-104-001
 
 ---
 
@@ -591,7 +602,7 @@ Should contract utilization count ALL time or only BILLABLE time toward contract
 - Add integration tests for analytics workspace isolation  
 - Add E2E dashboard journey from authentication through analytics display
 - Add performance testing baseline for analytics queries
-- Test archived-client handling per PD-104-001 resolution
+- Test archived-client handling per resolved PD-104-001
 - Verify historical correctness of contract utilization calculations
 
 **Validation:**
@@ -607,7 +618,7 @@ Should contract utilization count ALL time or only BILLABLE time toward contract
 - All analytics calculations tested for accuracy and isolation
 - Dashboard E2E journey passes reliably in CI
 - Performance baseline documented for future optimization
-- Archived-client analytics behavior verified per product decision
+- Archived-client analytics behavior verified per resolved PD-104-001
 
 ---
 
@@ -616,7 +627,7 @@ Should contract utilization count ALL time or only BILLABLE time toward contract
 ### Scope Compliance Verification
 - Analytics calculations implemented per domain rules BR-104-001 through BR-104-012
 - Dashboard UI implemented with responsive layout and accessibility baseline
-- All product decisions PD-104-001 through PD-104-004 resolved or explicitly documented
+- All product decisions PD-104-001 through PD-104-004 resolved and implemented consistently
 - No revenue calculations or commercial amounts calculated (explicit non-goal verified)
 
 ### Architecture Compliance Review
@@ -628,7 +639,7 @@ Should contract utilization count ALL time or only BILLABLE time toward contract
 ### Historical Correctness Review  
 - TimeEntry historical associations preserved in analytics calculations
 - Contract utilization respects stored contractId references  
-- Archived-client handling explicitly implemented per PD-104-001 resolution
+- Archived-client handling explicitly implemented per resolved PD-104-001
 - P102-F-001 impact documented but not resolved (outside scope)
 
 ### Security and Isolation Review
@@ -682,7 +693,7 @@ feat(analytics): implement shared analytics calculation services
 - Add analytics domain value objects and period utilities
 - Implement client allocation and contract utilization calculations
 - Add timezone-aware period boundary calculations
-- Include archived-client time entries per PD-104-001
+- Include archived-client time entries per resolved PD-104-001
 
 Closes: Analytics foundation requirements for R1-E04
 Tested: Unit and integration coverage for calculation accuracy
@@ -709,7 +720,7 @@ test(analytics): add comprehensive analytics and dashboard test coverage
 - Add integration tests for analytics workspace isolation
 - Add E2E dashboard journey from authentication to analytics
 - Add performance testing baseline for analytics queries  
-- Test archived-client analytics handling per PD-104-001
+- Test archived-client analytics handling per resolved PD-104-001
 - Verify contract utilization historical correctness
 
 Closes: Testing requirements for R1-E04 engineering completion
@@ -743,7 +754,7 @@ Tested: Integration and E2E coverage for analytics accuracy
 - [ ] E2E dashboard journey passes reliably from sign-in to analytics display
 - [ ] Performance baseline documented for analytics query execution
 - [ ] Cross-workspace data leakage prevention verified
-- [ ] Archived-client analytics behavior matches product decision
+- [ ] Archived-client analytics behavior matches resolved PD-104-001
 - [ ] Historical contract utilization accuracy verified
 
 ### Engineering Review Gate
@@ -779,9 +790,9 @@ Tested: Integration and E2E coverage for analytics accuracy
 ## Document Status
 
 **Planning Status**: COMPLETE  
-**Product Decisions**: 4 identified, resolution required before implementation  
+**Product Decisions**: 4 resolved, implemented consistently throughout plan  
 **Inherited Findings**: 3 documented, resolution approach defined  
 **Architecture Compliance**: Verified against existing patterns  
-**Implementation Ready**: YES, pending product decision resolution
+**Implementation Ready**: YES
 
-**Next Action**: Resolve PD-104-001 through PD-104-004, then proceed to Phase 1 implementation.
+**Next Action**: Proceed to Phase 1 implementation with resolved product decisions.
