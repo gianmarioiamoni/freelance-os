@@ -1,6 +1,9 @@
 // tests/integration/analytics/analytics-workspace-isolation.test.ts
+import { randomUUID } from "node:crypto";
+
 import { beforeEach, describe, expect, it } from "vitest";
 import { AnalyticsService } from "@/application/analytics/analytics-service";
+import { InvalidPersistenceStateError } from "@/domain/persistence-errors";
 import { createWorkspaceGraph } from "../persistence/fixtures";
 import { repositories } from "../persistence/helpers";
 
@@ -210,16 +213,33 @@ describe("Analytics Workspace Isolation", () => {
   });
 
   describe("Workspace context validation", () => {
-    it("requires valid workspace context for analytics calculation", async () => {
-      const invalidContext = {
+    it("rejects a malformed workspace identifier and reports empty analytics for an unknown one", async () => {
+      const malformedContext = {
         workspaceId: "invalid-workspace-id",
         userId: workspaceA.userId,
         role: "OWNER" as const,
       };
 
-      const analytics = await analyticsService.getCurrentMonthAnalytics(invalidContext);
-      
-      // Should return empty analytics for invalid workspace
+      // A malformed identifier fails closed: it must never be silently reduced to
+      // empty analytics, because that is indistinguishable from a real empty period.
+      await expect(
+        analyticsService.getCurrentMonthAnalytics(malformedContext),
+      ).rejects.toBeInstanceOf(InvalidPersistenceStateError);
+
+      await expect(
+        analyticsService.getCurrentMonthAnalytics(malformedContext),
+      ).rejects.toMatchObject({ code: "INVALID_PERSISTENCE_STATE" });
+
+      // A well-formed but unknown workspace is a different case: the scoped queries
+      // match no rows, so analytics are legitimately empty.
+      const unknownContext = {
+        workspaceId: randomUUID(),
+        userId: workspaceA.userId,
+        role: "OWNER" as const,
+      };
+
+      const analytics = await analyticsService.getCurrentMonthAnalytics(unknownContext);
+
       expect(analytics.totalMinutes).toBe(0);
       expect(analytics.clientAllocations).toHaveLength(0);
       expect(analytics.contractUtilizations).toHaveLength(0);
