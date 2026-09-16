@@ -3,12 +3,37 @@
 **Epic:** EPIC-104  
 **Release:** Release 1 — MVP  
 **MASTER_PLAN identifier:** R1-E04 — Analytics & Dashboard  
-**Status:** PLANNING  
+**Status:** IMPLEMENTED — ENGINEERING COMPLETE (PASS WITH FINDINGS)  
 **Dependencies:** EPIC-002, EPIC-003, EPIC-004, EPIC-005, EPIC-006, EPIC-101, EPIC-102, EPIC-103  
 **Previous Epic:** EPIC-103 Time Tracking  
+**Next Epic:** R1-E05 Reporting (`MASTER_PLAN.md` §15)  
 **Product Owner:** Human  
 **Architect:** Assistant  
 **Implementation Engineer:** Cursor  
+**Engineering Review:** `docs/epics/EPIC-104/engineering-review.md` (commit `18c3b0a`)  
+
+```text
+PLANNING COMPLETE - PRODUCT DECISIONS FINALIZED
+IMPLEMENTATION: COMPLETE (P104-01, P104-02, P104-03)
+ENGINEERING REVIEW: PASS WITH FINDINGS
+BLOCKING FINDINGS: NONE (F-104-000 RESOLVED)
+PRODUCTION READINESS: NO
+```
+
+Final gate evidence: unit 216 PASS; integration 148 PASS; E2E 37 PASS
+(0 failed, 0 skipped); build PASS; lint PASS; typecheck PASS. Unit,
+integration, and E2E are three separate suites and are never combined
+into a single figure.
+
+Seventeen EPIC-104 findings (F-104-001 … F-104-017) and two registered
+planning findings (F-104-P-001, F-104-P-002) remain open and
+non-blocking. Engineering completion is not production readiness.
+
+**Route correction:** the delivered dashboard is the authenticated
+default landing route `/`, established by EPIC-006 and labelled
+`Dashboard` in `src/lib/navigation.ts`. References to a `/dashboard`
+route below are stale planning wording retained for audit; no
+`/dashboard` route exists or is planned.
 
 ---
 
@@ -69,7 +94,8 @@ The analytics layer must become the authoritative source for all numerical facts
 - Historical contract interpretation preservation
 
 ### In Scope - Dashboard UI  
-- `/dashboard` route as authenticated default landing
+- `/` route as authenticated default landing (delivered; the earlier
+  `/dashboard` wording was never implemented)
 - Current month overview dashboard
 - Monthly total hours display
 - Billable hours and percentage
@@ -570,7 +596,8 @@ const today = startOfDay(zonedTimeToUtc(now, workspaceTimezone));
 **Commit**: `feat(dashboard): implement monthly analytics dashboard with responsive layout`
 
 **Implementation Notes:**  
-- Replace `/dashboard` placeholder with functional analytics dashboard
+- Replace the `/` placeholder with the functional analytics dashboard
+  (planned as `/dashboard`; delivered at `/`)
 - Implement dashboard components: MonthlyAnalytics, ClientAllocation, ContractUtilization  
 - Add responsive layout for mobile/tablet/desktop
 - Implement loading, empty, and error state handling
@@ -684,6 +711,21 @@ EPIC-104 engineering completion **IS NOT** production readiness. Production depl
 
 ## 25. Commit Messages and Git Strategy
 
+The blocks below are the **planned** commit messages, retained for
+audit. The commits actually delivered are:
+
+```text
+P104-01  2ffb1c4  feat(analytics): establish analytics foundation
+P104-02  6faf68b  feat(analytics): add authenticated dashboard UI
+P104-03  48c3552  test(analytics): add integration tests and E2E journey
+Review   18c3b0a  test(analytics): align malformed workspace integration contract
+```
+
+Two planned bullets below were not delivered and are recorded as open
+findings, not as implemented behaviour: timezone-aware period
+boundaries (F-104-005 / F-104-P-002) and the analytics performance
+baseline (F-104-009 / F-104-P-001).
+
 ### Phase 1 Commit
 ```
 feat(analytics): implement shared analytics calculation services
@@ -790,9 +832,13 @@ Tested: Integration and E2E coverage for analytics accuracy
 ## Document Status
 
 **Planning Status**: COMPLETE  
-**Product Decisions**: 4 resolved, implemented consistently throughout plan  
-**Inherited Findings**: 3 documented, resolution approach defined  
-**Architecture Compliance**: Verified against existing patterns  
-**Implementation Ready**: YES
+**Implementation Status**: COMPLETE (P104-01, P104-02, P104-03)  
+**Engineering Review**: PASS WITH FINDINGS — `docs/epics/EPIC-104/engineering-review.md`  
+**Blocking Findings**: NONE — F-104-000 RESOLVED  
+**Open Findings**: F-104-001 … F-104-017, F-104-P-001, F-104-P-002 — all non-blocking  
+**Product Decisions**: PD-104-001 implemented; PD-104-002 implemented; PD-104-003 partial (F-104-017 open); PD-104-004 divergent (F-104-003 open, awaiting Product Owner)  
+**Inherited Findings**: documented, none resolved by this Epic  
+**Architecture Compliance**: PASS WITH FINDINGS — shared-calculation requirement violated (F-104-002)  
+**Production Readiness**: NO
 
 **Next Action**: Proceed to Phase 1 implementation with resolved product decisions.

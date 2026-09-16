@@ -4,7 +4,7 @@
 **Document:** `MASTER_PLAN.md`\
 **Product:** FreelanceOS\
 **Canonical format:** Markdown\
-**Current phase:** EPIC-103 complete → R1-E04 Analytics & Dashboard
+**Current phase:** EPIC-104 engineering-complete → R1-E05 Reporting
 
 ------------------------------------------------------------------------
 
@@ -135,8 +135,8 @@ context is recovered from repository documentation.
 ## Overall
 
 ``` text
-STATUS: EPIC-103 COMPLETE (PASS WITH FINDINGS)
-NEXT: R1-E04 — Analytics & Dashboard
+STATUS: EPIC-104 COMPLETE (PASS WITH FINDINGS)
+NEXT: R1-E05 — Reporting
 ```
 
 ## Completed planning artifacts
@@ -155,7 +155,7 @@ docs/
 ``` text
 Application implementation: STARTED
 Foundation implementation: EPIC-001 COMPLETE; EPIC-002 COMPLETE; EPIC-003 COMPLETE; EPIC-004 COMPLETE; EPIC-005 COMPLETE; EPIC-006 COMPLETE
-MVP implementation: EPIC-101 COMPLETE; EPIC-102 COMPLETE; EPIC-103 COMPLETE
+MVP implementation: EPIC-101 COMPLETE; EPIC-102 COMPLETE; EPIC-103 COMPLETE; EPIC-104 COMPLETE
 Production deployment: NOT STARTED
 Authentication: IMPLEMENTED — see docs/epics/EPIC-003/engineering-review.md
 Workspace / authorization: IMPLEMENTED — see docs/epics/EPIC-004/engineering-review.md
@@ -164,18 +164,57 @@ UI foundation: IMPLEMENTED — see docs/epics/EPIC-006/engineering-review.md
 Client management: IMPLEMENTED — see docs/epics/EPIC-101/engineering-review.md
 Contract management: IMPLEMENTED — see docs/epics/EPIC-102/engineering-review.md
 Time tracking: IMPLEMENTED — see docs/epics/EPIC-103/engineering-review.md
+Analytics / dashboard: IMPLEMENTED — see docs/epics/EPIC-104/engineering-review.md
 ```
 
-EPIC-103 completed workspace-scoped time tracking. It did not start
-analytics, dashboard, reporting, or any billing calculation.
+EPIC-104 completed the shared analytics layer and the authenticated
+monthly dashboard. It did not start reporting, alerts, or any billing
+or revenue calculation.
+
+``` text
+Phase 3: 48c3552
+Review:  18c3b0a
+Verdict: PASS WITH FINDINGS
+Engineering status: COMPLETE
+Blocking findings: NONE (F-104-000 RESOLVED)
+Production readiness: NO
+Tests: 216 unit / 148 integration / 37 E2E (suite totals, reported separately)
+Gates: lint PASS; typecheck PASS; build PASS
+```
+
+Present after EPIC-104:
+
+-   `AnalyticsService` as the shared, workspace-scoped calculation
+    layer for monthly, daily, client-allocation, and
+    contract-utilization figures
+-   `AnalyticsRepository` performing `workspaceId`-scoped Prisma
+    aggregation and grouping over `TimeEntry`
+-   analytics domain types and period utilities in
+    `src/lib/analytics-periods.ts`
+-   the authenticated dashboard at `/` — a React Server Component that
+    replaced the EPIC-006 structural placeholder; no `/dashboard`
+    route exists
+-   monthly summary, client allocation, and contract utilization
+    surfaces with empty and error states
+-   archived-client time included in analytics and labelled
+    `Archived` (PD-104-001); utilization uses all tracked time
+    (PD-104-002); current-month default (PD-104-003)
+-   workspace isolation proven by six integration scenarios
+-   no schema or migration change; no revenue, rate, or commercial
+    amount calculated anywhere in the analytics layer
+-   weekly aggregation, timezone-aware period boundaries, loading
+    skeletons, a custom date-range UI, and a measured performance
+    baseline are **not** implemented — see F-104-013, F-104-005,
+    F-104-008, Epic-plan §5, and F-104-009
+
+Present after EPIC-103:
 
 ``` text
 Phase 3: 2e67759
 Verdict: PASS WITH FINDINGS
-Tests: 164 unit / 119 integration / 21 E2E (suite totals)
+Tests: 164 unit / 119 integration / 21 E2E (suite totals at EPIC-103 closure)
 ```
 
-Present after EPIC-103:
 
 -   workspace-scoped TimeEntry create, read, daily list, weekly
     timesheet, update, and hard delete
@@ -683,6 +722,18 @@ A normal workday entry should be recordable in less than one minute.
 
 # 14. R1-E04 --- Analytics & Dashboard
 
+### Status
+
+IMPLEMENTED — engineering complete (PASS WITH FINDINGS). Review:
+`docs/epics/EPIC-104/engineering-review.md`. Blocking findings: none.
+Production readiness is not claimed. The dashboard is the
+authenticated default landing route `/`; no `/dashboard` route was
+created. Estimated revenue and current alerts were removed from this
+Epic's scope (see the scope reconciliation below). Weekly aggregation,
+timezone-aware period boundaries, loading skeletons, a custom
+date-range UI, and a measured query-performance baseline are not
+implemented.
+
 ## Objective
 
 Create a shared deterministic analytics layer and expose the operational
@@ -690,14 +741,34 @@ dashboard.
 
 ## Scope
 
+Approved and delivered scope:
+
 -   current month total hours
 -   billable hours
 -   non-billable hours
--   estimated revenue
 -   client allocation
 -   contract utilization
--   current alerts
 -   shared analytics services
+
+### Scope reconciliation — revenue and alerts
+
+This section previously listed `estimated revenue` and
+`current alerts` in R1-E04 scope. The approved EPIC-104 plan declared
+both **explicit non-goals**: revenue and every monetary calculation
+are deferred (Epic-plan §5), and alerts belong to R1-E06 Alerts &
+Notifications. The Engineering Review confirmed that no revenue or
+commercial amount is calculated anywhere in the delivered analytics
+layer and that no alert surface exists.
+
+The historical wording is recorded here for audit only. The current
+R1-E04 scope is the list above.
+
+-   estimated revenue → deferred; depends on the commercial
+    calculation decisions tracked as OBD-002 and OBD-011
+-   current alerts → R1-E06 Alerts & Notifications; the undocumented
+    80 percent bar-colour change in `ContractUtilization.tsx` is a
+    visual cue only and must not be read as an accepted threshold
+    (OBD-006 remains open)
 
 ## Dependencies
 
@@ -711,6 +782,12 @@ R1-E03 Time Tracking
 Dashboard calculations must use the shared analytics capability.
 
 Do not create dashboard-specific versions of business calculations.
+
+This requirement is **not** satisfied as delivered: percentage
+arithmetic exists in three independent places and the shared
+`AnalyticsService` statics are unreachable from production code
+(F-104-002, open). R1-E05 Reporting must consume the shared service
+and must not reproduce the duplicated arithmetic.
 
 ------------------------------------------------------------------------
 
@@ -1460,6 +1537,41 @@ Real debt recorded by EPIC-103 (see
   F-103-005   Unused TimeEntry domain error classes                     Open
   F-103-006   Invalid `?date=` falls back to today silently             Open
 
+Real debt recorded by EPIC-104 (see
+`docs/epics/EPIC-104/engineering-review.md` §10 and §11). All are
+non-blocking; F-104-000 is RESOLVED and is not listed:
+
+  ID            Area                                                          Severity   Status
+  ------------- ------------------------------------------------------------- ---------- -------
+  F-104-001     Daily average divides by a hardcoded 30                        Medium     Open
+  F-104-002     Percentage logic duplicated; shared service unreachable        Medium     Open
+  F-104-003     `isOngoing` derived from capacity, diverges from PD-104-004    Medium     Open
+  F-104-004     Contract `[validFrom, validTo)` validity unapplied             Medium     Open
+  F-104-005     Workspace timezone unused for period boundaries               Medium     Open
+  F-104-006     Analytics integration tests bound to the current month        High       Open
+  F-104-007     Page-level `catch` swallows Next.js control-flow signals      Medium     Open
+  F-104-008     Loading skeletons / per-section loading not implemented       Medium     Open
+  F-104-009     Performance acceptance criteria unevidenced                   Medium     Open
+  F-104-010     Several accessibility assertions cannot fail                  Medium     Open
+  F-104-011     `dt`/`dd` markup without a `dl` ancestor                      Low        Open
+  F-104-012     Residual accessibility-specification gaps                     Low        Open
+  F-104-013     Weekly aggregation absent; daily aggregation unconsumed       Low        Open
+  F-104-014     `AnalyticsService` does not verify workspace membership       Low        Open
+  F-104-015     Locale-dependent period formatting and assertion              Low        Open
+  F-104-016     Analytics error path untested                                 Low        Open
+  F-104-017     PD-104-003 period end diverges from the decision text         Low        Open
+  F-104-P-001   Analytics query performance — unevidenced                     Low        Open
+  F-104-P-002   Timezone complexity — confirmed by F-104-005                  Medium     Open
+
+**F-104-006 expires on 2026-10-01.** Roughly twenty analytics
+integration tests hardcode September 2026 fixtures while asserting
+against the current month resolved from the system clock. The suite is
+green until 2026-09-30 and fails from 2026-10-01. Schedule it, with
+F-104-001, as the first EPIC-104 follow-up.
+
+F-104-003 and F-104-017 require Product Owner clarification before
+R1-E05 Reporting reuses the period and ongoing-contract semantics.
+
 Do not use "technical debt" as a label for unimplemented planned
 features.
 
@@ -1493,6 +1605,15 @@ partial-day calculation. OBD-003 was not required because `workDate`
 is a calendar date and midnight-crossing work is not representable.
 OBD-008 remains the blocker for TimeEntry audit history (F-103-P-001).
 Proposed OBD-013 through OBD-016 remain proposals and are not policy.
+
+EPIC-104 did not close any OBD. OBD-002 was not required because no
+monetary amount is computed, but the percentage rounding applied by
+`AnalyticsService.formatPercentage` should be settled with OBD-002
+before R1-E05 publishes figures. OBD-012 is directly coupled to
+F-104-004: utilization compares period consumption against current
+monthly capacity with no rollover, carry-over, or expiry semantics.
+OBD-006 remains deferred to R1-E06 and is not satisfied by the
+dashboard's 80 percent bar-colour cue.
 
 ------------------------------------------------------------------------
 
@@ -1717,17 +1838,24 @@ The exact parallelization will be determined during each Epic plan.
 # 47. Current Next Action
 
 Release 0 Foundation engineering is complete. EPIC-101 Client
-Management, EPIC-102 Contract Management, and EPIC-103 Time Tracking
-are engineering-complete. The next planned product Epic is Analytics &
-Dashboard. Do not start it without an Epic plan.
+Management, EPIC-102 Contract Management, EPIC-103 Time Tracking, and
+EPIC-104 Analytics & Dashboard are engineering-complete. The next
+planned product Epic is Reporting. Do not start it without an Epic
+plan.
 
 Next actions:
 
 ``` text
 1. Open a new Cursor chat
-2. Create docs/epics/EPIC-104/epic-plan.md before implementation
-3. Execute EPIC-104 — Analytics & Dashboard
+2. Create docs/epics/EPIC-105/epic-plan.md before implementation
+3. Execute EPIC-105 — R1-E05 Reporting
 ```
+
+Before R1-E05 planning, obtain Product Owner clarification on
+F-104-003 (PD-104-004 `validTo` versus capacity semantics) and
+F-104-017 (PD-104-003 period end). R1-E05 reuses both semantics and
+exposes the arbitrary date ranges that make F-104-004's unscaled
+monthly denominator material.
 
 This follows the methodology's rule that each Phase gets a focused
 Cursor chat, a defined commit expectation, review, approval, and then
@@ -1774,11 +1902,23 @@ releases:
     name: AI
     status: future
 
-next:
+last_completed:
   epic: EPIC-104
-  phase: planning
   objective: Analytics & Dashboard
-  implementation: epic-103-complete
+  verdict: pass-with-findings
+  engineering_status: complete
+  blocking_findings: none
+  production_readiness: false
+  tests:
+    unit: 216
+    integration: 148
+    e2e: 37
+
+next:
+  epic: EPIC-105
+  phase: planning
+  objective: Reporting
+  implementation: epic-104-complete
 ```
 
 ------------------------------------------------------------------------
@@ -1867,7 +2007,9 @@ The planning stage is considered complete when:
 The next artifact is therefore:
 
 ``` text
-docs/epics/EPIC-104/epic-plan.md
+docs/epics/EPIC-105/epic-plan.md
 ```
 
-Do not start EPIC-104 implementation before that Epic plan is created.
+Do not start EPIC-105 implementation before that Epic plan is created.
+`docs/epics/EPIC-104/epic-plan.md` exists and EPIC-104 is
+engineering-complete.

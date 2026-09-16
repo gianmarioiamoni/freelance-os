@@ -1,6 +1,6 @@
 # FreelanceOS — System Architecture
 
-**Status:** Architecture Baseline — Authentication, workspace, testing/CI, UI foundation, client management, contract management, and time tracking implemented (EPIC-003, EPIC-004, EPIC-005, EPIC-006, EPIC-101, EPIC-102, EPIC-103)  
+**Status:** Architecture Baseline — Authentication, workspace, testing/CI, UI foundation, client management, contract management, time tracking, and analytics/dashboard implemented (EPIC-003, EPIC-004, EPIC-005, EPIC-006, EPIC-101, EPIC-102, EPIC-103, EPIC-104)  
 **Scope:** MVP  
 **Architectural style:** Modular Monolith  
 **Primary runtime:** Next.js / TypeScript  
@@ -334,6 +334,64 @@ The analytics layer is not a second database of truth.
 
 It derives information from domain data.
 
+### Implemented by EPIC-104
+
+The analytics module is implemented as an application service over a
+dedicated persistence adapter. Review:
+`docs/epics/EPIC-104/engineering-review.md`.
+
+```text
+src/domain/analytics-types.ts                       domain types
+src/domain/repositories.ts                          AnalyticsRepository port
+src/application/analytics/analytics-service.ts      AnalyticsService
+src/infrastructure/persistence/analytics-repository.ts   Prisma adapter
+src/lib/analytics-periods.ts                        period utilities
+```
+
+`AnalyticsService` follows the established application-service shape:
+the repository is constructor-injected, `WorkspaceContext` is the first
+parameter of every method, and the workspace identifier is never
+accepted from the browser. It exposes workspace-scoped monthly, daily,
+client-allocation, and contract-utilization calculations.
+
+`AnalyticsRepository` is registered in `PersistenceRepositories` and
+constructed by `createRepositories()`, like every other repository. It
+performs Prisma `aggregate` and `groupBy` queries over `TimeEntry`;
+**every** query carries `where: { workspaceId }`. No raw SQL exists in
+the analytics layer.
+
+Domain types: `AnalyticsPeriod`, `MonthlyAnalytics`, `ClientAllocation`,
+`ContractUtilization`, `DailyAnalytics`, `DailyClientBreakdown`.
+
+Period utilities: `getCurrentMonthPeriod`, `getMonthPeriod`,
+`getDateRangePeriod`, `isValidPeriod`, `isDateInPeriod`,
+`getPeriodDays`, `formatPeriodDisplay`.
+
+Durations are integer minutes throughout; a zero denominator yields
+`null` rather than a fabricated percentage. No revenue, rate, or
+commercial amount is computed anywhere in the analytics layer.
+
+### Not implemented
+
+The following remain future work and must not be described as
+delivered:
+
+- weekly aggregation (F-104-013); `getDailyAnalytics` exists but has no
+  production consumer;
+- timezone-aware period boundaries — `workspace.timezone` is never read
+  (F-104-005 / F-104-P-002);
+- a measured query-performance baseline (F-104-009 / F-104-P-001);
+- a custom date-range UI — an explicit EPIC-104 non-goal, deferred to
+  R1-E05, although the shared layer already accepts arbitrary periods;
+- a workspace-membership guard inside `AnalyticsService` itself, which
+  currently trusts the `WorkspaceContext` resolved by its caller
+  (F-104-014).
+
+Percentage arithmetic is currently duplicated across the repository,
+the `MonthlyAnalytics` component, and the `AnalyticsService` statics,
+so principle A-006 is not yet satisfied in production code
+(F-104-002). R1-E05 must consume the shared service.
+
 ### Why it is central
 
 ```text
@@ -423,6 +481,38 @@ Analytics services
    ↓
 Domain / persistence
 ```
+
+### Implemented by EPIC-104
+
+The dashboard is the authenticated default landing route `/`
+(`src/app/(app)/page.tsx`), labelled `Dashboard` in
+`src/lib/navigation.ts`. It replaced the EPIC-006 structural
+placeholder. There is no `/dashboard` route.
+
+- It is a **React Server Component** with no client island, which is
+  the correct default for a read-only analytics surface.
+- Session and workspace are resolved **server-side** by
+  `getCurrentWorkspaceContext()`; no workspace identifier is accepted
+  from the request.
+- It renders inside the `(app)/layout.tsx` `AppShell`.
+- It consumes the **shared analytics capability** rather than querying
+  persistence directly: `AnalyticsService` via the repositories built
+  by `createRepositories()`.
+- Presentation components live in `src/components/dashboard/`:
+  `Dashboard`, `MonthlyAnalytics`, `ClientAllocation`,
+  `ContractUtilization`.
+- Empty state and error state are handled; loading is only the
+  route-level `(app)/loading.tsx` inherited from EPIC-006 — per-section
+  skeletons are specified but **not** implemented (F-104-008).
+
+The route is dynamic (`ƒ /` in the build route table) because
+authentication reads `headers()`. This is intentional and correct for
+an authenticated workspace-scoped surface and must not be changed. The
+page-level `try`/`catch` currently intercepts Next.js control-flow
+signals including `NEXT_REDIRECT`; the redirect still reaches the user
+because `(app)/layout.tsx` performs the same workspace resolution
+outside any handler and wins. Recorded as F-104-007, confirmed and
+non-blocking.
 
 ---
 
@@ -559,7 +649,14 @@ ClientRepository
 ContractRepository
 TimeEntryRepository
 WorkspaceRepository
+AnalyticsRepository
 ```
+
+`AnalyticsRepository` (EPIC-104) is the aggregation-side adapter: it
+owns the `workspaceId`-scoped Prisma `aggregate` and `groupBy` queries
+that back analytics, and the client/contract lookups needed to label
+their results. It is a read-only query boundary and performs no
+mutation.
 
 Concrete Prisma implementations live in infrastructure.
 
@@ -772,11 +869,12 @@ src/components/app-shell/   authenticated chrome
 src/components/page/        PageHeader / PageContent
 src/components/states/      LoadingState / ErrorState / EmptyState
 src/components/placeholder/ structural placeholder pages
+src/components/dashboard/   analytics dashboard presentation (EPIC-104)
 src/features/               auth, workspace, clients, contracts, time-entries
-src/lib/                    navigation helper, cn
+src/lib/                    navigation helper, cn, analytics periods
 ```
 
-`src/features/clients` is implemented (EPIC-101). `src/features/contracts` is implemented (EPIC-102). `src/features/time-entries` is implemented (EPIC-103) and serves the `/time-tracking` routes. Remaining product feature folders (`dashboard`, `reporting`, `alerts`, `billing`) are future work.
+`src/features/clients` is implemented (EPIC-101). `src/features/contracts` is implemented (EPIC-102). `src/features/time-entries` is implemented (EPIC-103) and serves the `/time-tracking` routes. EPIC-104 added `src/components/dashboard/` as presentation-only server components for the `/` dashboard; the calculation logic lives in the analytics application service, not in a feature folder. Remaining product feature folders (`reporting`, `alerts`, `billing`) are future work.
 
 ## 14.3 UI system
 
@@ -801,7 +899,7 @@ Desktop: skip link, header (product mark, workspace name, account label, Sign ou
 
 Mobile: header menu button opens a Sheet with Application nav.
 
-`/clients` is a product surface: ACTIVE list, archived view, create, detail, and edit. `/contracts` is a product surface: list, create, detail, and edit. Other Application destinations remain structural placeholders with stable `h1` titles. `(app)/loading.tsx`, `error.tsx`, and `not-found.tsx` render the shared state primitives.
+`/` is the authenticated Dashboard product surface (EPIC-104): monthly summary, client allocation, and contract utilization, rendered as a Server Component from the shared analytics service. It is no longer a structural placeholder. `/clients` is a product surface: ACTIVE list, archived view, create, detail, and edit. `/contracts` is a product surface: list, create, detail, and edit. `/time-tracking` is a product surface. Other Application destinations remain structural placeholders with stable `h1` titles. `(app)/loading.tsx`, `error.tsx`, and `not-found.tsx` render the shared state primitives; the dashboard uses the route-level loading surface only, with no per-section skeletons (F-104-008).
 
 ## 14.5 Responsive design
 

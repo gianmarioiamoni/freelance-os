@@ -1,6 +1,6 @@
 # FreelanceOS --- Testing Strategy
 
-**Status:** Testing and CI foundation implemented — EPIC-005 complete; UI test baseline added by EPIC-006; client coverage added by EPIC-101; contract coverage added by EPIC-102; time-tracking coverage added by EPIC-103\
+**Status:** Testing and CI foundation implemented — EPIC-005 complete; UI test baseline added by EPIC-006; client coverage added by EPIC-101; contract coverage added by EPIC-102; time-tracking coverage added by EPIC-103; analytics and dashboard coverage added by EPIC-104\
 **Document:** `docs/testing-strategy.md`\
 **Scope:** Release 0 Foundation + Release 1 MVP\
 **Canonical format:** Markdown
@@ -100,8 +100,8 @@ HOURLY contract fixture → create → daily view → edit → delete),
 contract metadata as presentation only, weekly view with per-day
 quick-add through the normal creation path, browser-level workspace
 isolation, unknown entry id not-found, and edit-form immutability.
-P103-03 closed at 164 unit / 119 integration / 21 E2E; those are suite
-totals, not counts of tests added by the Epic. The E2E contract
+P103-03 closed at 164 unit / 119 integration / 21 E2E (suite totals at
+EPIC-103 closure, not counts of tests added by the Epic). The E2E contract
 fixtures select Billing model `HOURLY` explicitly, wait on URL and
 locator state rather than arbitrary timeouts, and assert canonical
 application output and canonical `?date=` redirect URLs. That fixture
@@ -109,6 +109,83 @@ correction exposed a real application defect (F-103-001: `redirect()`
 called inside `try`/`catch`), which was fixed in application code, not
 in tests. The EPIC-005 isolated E2E / CI contract is unchanged. Review:
 `docs/epics/EPIC-103/engineering-review.md`.
+
+EPIC-104 adds analytics and dashboard coverage. The EPIC-005 isolated
+E2E / CI contract is unchanged. Review:
+`docs/epics/EPIC-104/engineering-review.md`.
+
+Current suite totals — **three separate suites, never combined**:
+
+``` text
+Unit          216   pnpm test                            (vitest)
+Integration   148   pnpm test:integration                (vitest.integration.config.mts)
+E2E            37   CI=true pnpm test:e2e --workers=1     (0 failed, 0 skipped)
+```
+
+The integration suite is a separate `vitest` project with its own
+config and its own required CI step. The earlier combined figure
+"216 unit/integration" was invalid and must not be reused: 216 was the
+unit suite alone.
+
+Added by EPIC-104:
+
+- unit — `tests/unit/application/analytics/analytics-service.test.ts`
+  and `tests/unit/lib/analytics-periods.test.ts`, covering the
+  calculation statics and the period utilities;
+- integration — `tests/integration/analytics/analytics-isolation.test.ts`,
+  `tests/integration/analytics/analytics-workspace-isolation.test.ts`,
+  `tests/integration/analytics/analytics-product-decisions.test.ts`,
+  and `tests/integration/dashboard/dashboard-page.test.ts`;
+- E2E — `tests/e2e/dashboard.spec.ts`,
+  `tests/e2e/dashboard-accessibility.spec.ts`, and the shared fixture
+  helper `tests/e2e/helpers/analytics-fixtures.ts`.
+
+Analytics integration coverage proves monthly totals, billable and
+non-billable split, client allocation, contract utilization, and the
+`null`-on-zero-denominator rule.
+
+Workspace-isolation coverage is six integration scenarios, including
+identical client names across two workspaces, and proves that no
+foreign-workspace row reaches analytics. The malformed-workspace test
+pins the fail-closed contract — a non-UUID identifier rejects with
+`InvalidPersistenceStateError` / `INVALID_PERSISTENCE_STATE`, while a
+well-formed unknown identifier legitimately returns empty analytics.
+
+Product-decision coverage proves PD-104-001 (archived-client time
+included, including a client archived between two recorded entries),
+PD-104-002 (all tracked time consumes capacity, asserted by showing
+billable percentage and utilization percentage differ), and PD-104-003
+(current-month scoping).
+
+Dashboard E2E covers the authenticated journey from sign-in to
+analytics display, archived-client behaviour on the dashboard, the
+empty state, responsive layout at 375 / 768 / 1024 / 1440 / 2560 px,
+and that an unauthenticated request to `/` lands on `/sign-in`.
+
+Accessibility E2E coverage is **partial, and must not be cited as an
+accessibility audit** (F-104-010, open). Genuinely verified: the
+count of exactly three level-2 headings, absence of horizontal
+overflow at mobile width, a 40-pixel touch-target floor, and the
+textual utilization label. Not verified despite appearing in the
+suite: focus indicators, colour independence and contrast, and
+no-horizontal-scroll at 200 percent text scaling — those assertions
+are unsound and cannot fail. No automated accessibility scan (for
+example axe-core) exists anywhere in the repository.
+
+Two gaps are recorded rather than covered: the analytics error path is
+exercised by no test in any suite (F-104-016), and no test asserts the
+Daily Average value (F-104-001). No performance baseline exists for
+analytics queries; the only timing assertion runs against a workspace
+with no time entries and therefore measures no aggregation
+(F-104-009).
+
+**Durability warning — F-104-006.** Roughly twenty analytics
+integration tests hardcode `Date.UTC(2026, 8, …)` fixtures while
+asserting against the current month resolved from the system clock.
+Those tests pass only until 2026-09-30. `analytics-isolation.test.ts`
+is immune because it passes explicit periods built with
+`getDateRangePeriod(...)`; new analytics tests should follow that
+pattern rather than relying on the current month.
 
 Isolated E2E database contract:
 
@@ -1241,19 +1318,33 @@ rendered or asserted, because no billing calculation exists yet.
 
 # 26. Dashboard E2E Tests
 
+### Implemented by EPIC-104
+
+`tests/e2e/dashboard.spec.ts` and
+`tests/e2e/dashboard-accessibility.spec.ts` cover the `/` dashboard,
+with fixtures built by `tests/e2e/helpers/analytics-fixtures.ts`.
+Verified: monthly totals, billable and non-billable hours, client
+allocation, contract utilization, archived-client labelling, the empty
+state, responsive layout, and the unauthenticated redirect to
+`/sign-in`.
+
+Estimated revenue and alerts are **not** verified because they are not
+implemented: revenue is an explicit EPIC-104 non-goal and alerts
+belong to R1-E06.
+
 The dashboard should show consistent figures derived from the same
 source data.
 
 Given known seed/test data, verify:
 
 ``` text
-total hours
-billable hours
-non-billable hours
-estimated revenue
-client allocation
-contract utilization
-alerts
+total hours              verified (EPIC-104)
+billable hours           verified (EPIC-104)
+non-billable hours       verified (EPIC-104)
+client allocation        verified (EPIC-104)
+contract utilization     verified (EPIC-104)
+estimated revenue        not implemented — deferred
+alerts                   not implemented — R1-E06
 ```
 
 Dashboard values must agree with report calculations.
@@ -1484,8 +1575,22 @@ shell. Playwright asserts semantic Application nav, skip link to
 mobile menu keyboard/role access. Field helpers associate label,
 hint, and error (`aria-invalid` / `aria-describedby`).
 
-This is an accessibility baseline, not WCAG certification. Formal UX
-Review remains a later lifecycle activity.
+EPIC-104 added `tests/e2e/dashboard-accessibility.spec.ts` for the `/`
+dashboard. Only part of it is sound evidence. Verified: exactly three
+level-2 headings, no horizontal overflow at mobile width, a 40-pixel
+touch-target floor, and a textual (non-colour) utilization label.
+**Not** verified, despite being present in the suite: focus
+indicators, colour independence and contrast, and no-horizontal-scroll
+at 200 percent text scaling — those assertions cannot fail as written
+(F-104-010, open). The dashboard also renders `dt`/`dd` pairs with no
+`dl` ancestor (F-104-011) and uses `role="heading" aria-level={2}`
+rather than native `h2` (F-104-012).
+
+This is an accessibility baseline, not WCAG certification, and the
+dashboard portion of it is weaker than its test count suggests. No
+automated accessibility scan (for example axe-core) exists in the
+repository. Formal UX Review and a real accessibility audit remain
+later lifecycle activities.
 
 Later product screens still need accessibility coverage when they
 exist:
@@ -1583,6 +1688,12 @@ These states are part of product behavior.
 
 Full performance engineering is outside MVP scope, but obvious
 regressions should be detected.
+
+None of these is implemented. EPIC-104 left the analytics performance
+baseline unevidenced: the only timing assertion runs against a
+workspace with no time entries, so it exercises no aggregation
+(F-104-009, F-104-P-001). The dashboard's two-second target is
+therefore unproven.
 
 Representative checks:
 

@@ -6,6 +6,11 @@ All notable changes to FreelanceOS are documented in this file.
 
 ### Added
 
+- EPIC-104 Analytics & Dashboard Engineering Review completed (PASS WITH FINDINGS); shared analytics foundation and the authenticated dashboard implemented. No schema change. Findings remain open and non-blocking. Not production-ready.
+- Analytics foundation: `AnalyticsService` as the shared workspace-scoped calculation layer, `AnalyticsRepository` for `workspaceId`-scoped aggregation over `TimeEntry`, analytics domain types, and period utilities. No revenue, rate, or commercial amount is calculated.
+- Authenticated Dashboard at `/` as a React Server Component, replacing the structural placeholder: monthly summary (total, billable, non-billable hours and billable percentage), client allocation, and contract utilization, with responsive layout and empty and error states. Archived clients are included in analytics and labelled as archived; utilization uses all tracked time; the default period is the current month.
+- Analytics workspace isolation and product-decision integration tests, dashboard integration tests, a Playwright dashboard journey, a Playwright dashboard-accessibility spec, and an analytics E2E fixture helper. Suite totals at closure: 216 unit, 148 integration, 37 E2E, reported separately.
+
 - EPIC-103 Time Tracking Engineering Review completed; workspace-scoped time tracking (create, daily view, weekly timesheet, edit of duration/description/billable, hard delete) implemented. `workDate`, `clientId`, and `contractId` are immutable after creation. No schema change. Not production-ready.
 - Authenticated `/time-tracking` product surface with client-first contract selection restricted by `[validFrom, validTo)` validity, Server Actions, application services, lifecycle and isolation tests, and a Playwright create/edit/delete journey. No billing, rate calculation, or forecasting was introduced.
 

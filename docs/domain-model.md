@@ -162,7 +162,7 @@ EPIC-103 implementation, finalized by Product Owner decisions:
 - Future work dates are permitted (PD-103-004).
 - Duplicate entries for the same contract and date are permitted (PD-103-005). Overlapping entries are not validated.
 - `workDate` is a calendar date. Midnight-crossing work is not representable (OBD-003 open).
-- Creating an entry for an archived client is rejected; existing entries for an archived client remain readable and editable at the application layer. The current time-tracking views do not list them (finding F-103-002).
+- Creating an entry for an archived client is rejected; existing entries for an archived client remain readable and editable at the application layer. The current time-tracking views do not list them (finding F-103-002); analytics does include them, per PD-104-001 (see §9).
 - No rate, billing, utilization, or forecasting calculation is derived from a TimeEntry. Editing Contract commercial fields can still change historical interpretation (P102-F-001 open).
 - No audit trail exists for TimeEntry edits or deletions (OBD-008 open).
 
@@ -182,6 +182,26 @@ For a calendar month and client, the system can derive:
 - Billable/estimated amount
 
 The aggregation layer must be the common source for dashboard, reports, alerts and future AI queries.
+
+### Implemented by EPIC-104
+
+EPIC-104 implemented the aggregation layer for worked, billable, and non-billable minutes, client allocation, and contract utilization. Billable/estimated amounts were an explicit non-goal and are not computed. Review: `docs/epics/EPIC-104/engineering-review.md`.
+
+Rules established and proven:
+
+- **Stored associations are authoritative.** Analytics reads the `clientId` and `contractId` stored on each TimeEntry and never re-resolves them against current state. Changing a client's status does not alter historical totals.
+- **Archived clients are included (PD-104-001).** Analytics selects client rows by identifier with no `status` filter, so time recorded for a client that was later archived remains counted. This is a deliberate divergence from the ACTIVE-only join used by the time-tracking views (F-103-002).
+- **Archived is exposed, not hidden.** Each client allocation carries `isArchived`, which the dashboard renders as an explicit `Archived` label. Archived time is never silently omitted and never silently indistinguishable.
+- **Utilization uses all tracked time (PD-104-002).** The consumption numerator applies no `billable` filter, so billable and non-billable minutes both consume contracted capacity. Billable percentage and utilization percentage are therefore independent figures.
+- **Contracted capacity is the denominator.** Utilization compares consumption against `Contract.monthlyContractedMinutes`. When that value is absent, `utilizationPercentage` is `null`: no denominator is invented.
+- **Integer minutes only.** All aggregation is integer arithmetic; a zero denominator yields `null` rather than zero or a fabricated percentage.
+- **Default period is the current calendar month (PD-104-003)**, as implemented by `getCurrentMonthPeriod()`. The implementation returns the first through the **last** day of the month, while the PD-104-003 text says "through today". This divergence is recorded as F-104-017 and is **not** resolved here; neither reading is yet canonical. It has no user-visible effect while the dashboard offers no period selector.
+- **Ongoing/unlimited contracts.** As implemented, a utilization row is marked ongoing when `monthlyContractedMinutes` is null — that is, when there is no capacity to measure against — and is rendered as consumed hours followed by `→ Ongoing`. PD-104-004 instead defines an ongoing contract as one where `validTo` is null. These are independent columns and the two statements conflict. Recorded as F-104-003, open and awaiting Product Owner clarification; no new policy is established here.
+- **Contract validity is not applied to analytics.** `[validFrom, validTo)` filtering (BR-104-007/008/009) is unimplemented in the analytics layer, and contracts with capacity but no tracked time do not appear at all. Recorded as F-104-004. The application layer still prevents recording an entry against an out-of-validity contract.
+- **Denominator stability is limited by P102-F-001.** Utilization reads the contract's current contracted capacity, so editing that capacity retroactively changes historical utilization. Documented, not resolved.
+- **Workspace isolation.** Every aggregation query is scoped by `workspaceId`; no route parameter or form field can influence analytics scope.
+
+Not implemented: weekly aggregation (F-104-013) and workspace-timezone period boundaries (F-104-005).
 
 ## 10. Alert Rules
 

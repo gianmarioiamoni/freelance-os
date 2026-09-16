@@ -1,6 +1,6 @@
 # FreelanceOS --- Storage Architecture
 
-**Status:** Implemented — EPIC-002 complete; EPIC-003 auth persistence reviewed; EPIC-004 workspace index reviewed\
+**Status:** Implemented — EPIC-002 complete; EPIC-003 auth persistence reviewed; EPIC-004 workspace index reviewed; EPIC-104 analytics aggregation reviewed\
 **Document:** `docs/storage.md`\
 **Scope:** Release 0 Foundation + Release 1 MVP\
 **Canonical format:** Markdown
@@ -132,6 +132,59 @@ convention. The positive-duration CHECK constraint, the workspace-scoped
 composite foreign keys to `Client` and `Contract`, and the required
 `TimeEntry.contractId` are unchanged. Review:
 `docs/epics/EPIC-103/engineering-review.md`.
+
+EPIC-104 added no schema or migration. It added `AnalyticsRepository`
+(`src/infrastructure/persistence/analytics-repository.ts`), registered
+in `PersistenceRepositories` and constructed by `createRepositories()`
+like every other repository. It is a **read-only aggregation
+boundary**: it performs no insert, update, or delete.
+
+Responsibilities:
+
+- monthly totals through Prisma `aggregate` on
+  `TimeEntry.durationMinutes`, once for all entries and once filtered
+  by `billable: true`; non-billable minutes are derived by
+  subtraction;
+- client allocation through `groupBy(["clientId"])` plus a
+  `client.findMany` lookup by identifier to label the groups;
+- contract utilization through `groupBy(["contractId"])` plus a
+  `contract.findMany` lookup supplying `monthlyContractedMinutes` as
+  the denominator;
+- daily aggregation through `groupBy` on `workDate`.
+
+Isolation and typing rules:
+
+- **Every** query carries `where: { workspaceId }`, and `workspaceId`
+  is a required explicit argument. No raw SQL exists in the analytics
+  layer; all queries are parameterized through Prisma.
+- The client and contract lookups apply **no `status` filter**, so
+  archived clients are included per PD-104-001 and exposed with
+  `isArchived` rather than dropped.
+- `TimeEntry.workspaceId` is `@db.Uuid`, so a malformed workspace
+  identifier is rejected by Prisma before any row is read and is
+  mapped by `withPersistenceErrors` / `mapPrismaError` to
+  `InvalidPersistenceStateError`. This **fail-closed** behaviour is
+  the pinned contract; a well-formed but unknown workspace identifier
+  legitimately yields empty analytics instead.
+- Aggregation is integer-minute arithmetic. A zero denominator yields
+  `null`, never a fabricated percentage. No monetary column is read
+  and no revenue is computed.
+
+The existing `TimeEntry` indexes support this access path and were
+sufficient without change:
+
+``` text
+TimeEntry(workspaceId, workDate)             monthly and daily totals
+TimeEntry(workspaceId, clientId, workDate)   client allocation
+TimeEntry(workspaceId, contractId, workDate) contract utilization
+```
+
+**Query performance is not verified.** A dashboard render issues six
+queries and the daily path issues five; no measurement was taken at
+any data volume, so no performance baseline exists for the analytics
+aggregation path. F-104-P-001 and F-104-009 remain open and
+unevidenced. Do not cite these indexes as proof of analytics query
+performance. Review: `docs/epics/EPIC-104/engineering-review.md`.
 
 `Alert.clientId` and `Alert.contractId` are independently optional
 workspace-scoped FKs. The database does not prove they refer to the
@@ -971,6 +1024,11 @@ These support:
 -   client reports
 -   contract utilization
 -   user-specific history
+
+All four are present in `prisma/schema.prisma`. The first three back
+the EPIC-104 analytics aggregation queries. Their presence is
+structural support only; no query-execution time has been measured
+(F-104-P-001, F-104-009).
 
 Avoid creating indexes speculatively beyond the actual query patterns.
 
