@@ -1,6 +1,13 @@
 // tests/integration/analytics/analytics-product-decisions.test.ts
 import { beforeEach, describe, expect, it } from "vitest";
 import { AnalyticsService } from "@/application/analytics/analytics-service";
+import {
+  currentMonthDay,
+  februaryDayOfPreviousYear,
+  lastDayOfCurrentMonth,
+  lastDayOfPreviousMonth,
+  monthOffsetDay,
+} from "../current-month-dates";
 import { createWorkspaceGraph } from "../persistence/fixtures";
 import { repositories } from "../persistence/helpers";
 
@@ -38,7 +45,7 @@ describe("Analytics Product Decisions Verification", () => {
         rate: "100.0000",
         currency: "EUR",
         monthlyContractedMinutes: 4800,
-        validFrom: new Date(Date.UTC(2026, 8, 1)),
+        validFrom: currentMonthDay(1),
         validTo: null,
       });
 
@@ -48,12 +55,12 @@ describe("Analytics Product Decisions Verification", () => {
         rate: "120.0000",
         currency: "EUR",
         monthlyContractedMinutes: 3600,
-        validFrom: new Date(Date.UTC(2026, 8, 1)),
+        validFrom: currentMonthDay(1),
         validTo: null,
       });
 
       // Add time entries for both clients
-      const workDate = new Date(Date.UTC(2026, 8, 15));
+      const workDate = currentMonthDay(15);
 
       // Active client time
       await repositories.timeEntries.recordTimeEntry(context.workspaceId, {
@@ -85,7 +92,7 @@ describe("Analytics Product Decisions Verification", () => {
         userId: context.userId,
         clientId: clientToArchive.id,
         contractId: archivedContract.id,
-        workDate: new Date(Date.UTC(2026, 8, 16)),
+        workDate: currentMonthDay(16),
         durationMinutes: 180, // 3 hours
         description: "Work after archiving",
         billable: false,
@@ -138,7 +145,7 @@ describe("Analytics Product Decisions Verification", () => {
         rate: "100.0000",
         currency: "EUR",
         monthlyContractedMinutes: null,
-        validFrom: new Date(Date.UTC(2026, 8, 1)),
+        validFrom: currentMonthDay(1),
         validTo: null,
       });
 
@@ -149,7 +156,7 @@ describe("Analytics Product Decisions Verification", () => {
         userId: context.userId,
         clientId: archivedClient.id,
         contractId: contract.id,
-        workDate: new Date(Date.UTC(2026, 8, 15)),
+        workDate: currentMonthDay(15),
         durationMinutes: 360,
         description: "Work for archived client",
         billable: true,
@@ -182,11 +189,11 @@ describe("Analytics Product Decisions Verification", () => {
         rate: "100.0000",
         currency: "EUR",
         monthlyContractedMinutes: 2400, // 40 hours
-        validFrom: new Date(Date.UTC(2026, 8, 1)),
+        validFrom: currentMonthDay(1),
         validTo: null,
       });
 
-      const workDate = new Date(Date.UTC(2026, 8, 15));
+      const workDate = currentMonthDay(15);
 
       // Add billable time
       await repositories.timeEntries.recordTimeEntry(context.workspaceId, {
@@ -243,7 +250,7 @@ describe("Analytics Product Decisions Verification", () => {
         rate: "800.0000",
         currency: "EUR",
         monthlyContractedMinutes: 4800, // 80 hours
-        validFrom: new Date(Date.UTC(2026, 8, 1)),
+        validFrom: currentMonthDay(1),
         validTo: null,
       });
 
@@ -252,7 +259,7 @@ describe("Analytics Product Decisions Verification", () => {
         userId: context.userId,
         clientId: client.id,
         contractId: contract.id,
-        workDate: new Date(Date.UTC(2026, 8, 15)),
+        workDate: currentMonthDay(15),
         durationMinutes: 120, // 2 hours billable
         description: "Client-billable work",
         billable: true,
@@ -262,7 +269,7 @@ describe("Analytics Product Decisions Verification", () => {
         userId: context.userId,
         clientId: client.id,
         contractId: contract.id,
-        workDate: new Date(Date.UTC(2026, 8, 15)),
+        workDate: currentMonthDay(15),
         durationMinutes: 480, // 8 hours non-billable
         description: "Training, meetings, admin",
         billable: false,
@@ -299,7 +306,7 @@ describe("Analytics Product Decisions Verification", () => {
         rate: "150.0000",
         currency: "EUR",
         monthlyContractedMinutes: null, // Unlimited
-        validFrom: new Date(Date.UTC(2026, 8, 1)),
+        validFrom: currentMonthDay(1),
         validTo: null,
       });
 
@@ -307,7 +314,7 @@ describe("Analytics Product Decisions Verification", () => {
         userId: context.userId,
         clientId: client.id,
         contractId: unlimitedContract.id,
-        workDate: new Date(Date.UTC(2026, 8, 15)),
+        workDate: currentMonthDay(15),
         durationMinutes: 600, // 10 hours
         description: "Unlimited contract work",
         billable: true,
@@ -341,7 +348,7 @@ describe("Analytics Product Decisions Verification", () => {
         userId: context.userId,
         clientId: client.id,
         contractId: context.contractId,
-        workDate: new Date(Date.UTC(2026, 7, 31)), // August 31, 2026
+        workDate: lastDayOfPreviousMonth(), // last day of the previous month
         durationMinutes: 300,
         description: "Previous month work",
         billable: true,
@@ -352,7 +359,7 @@ describe("Analytics Product Decisions Verification", () => {
         userId: context.userId,
         clientId: client.id,
         contractId: context.contractId,
-        workDate: new Date(Date.UTC(2026, 8, 1)), // September 1, 2026
+        workDate: currentMonthDay(1), // first day of the current month
         durationMinutes: 240,
         description: "First day of month",
         billable: true,
@@ -363,7 +370,7 @@ describe("Analytics Product Decisions Verification", () => {
         userId: context.userId,
         clientId: client.id,
         contractId: context.contractId,
-        workDate: new Date(Date.UTC(2026, 8, 15)), // September 15, 2026
+        workDate: currentMonthDay(15), // inside the current month
         durationMinutes: 360,
         description: "Mid-month work",
         billable: true,
@@ -374,7 +381,7 @@ describe("Analytics Product Decisions Verification", () => {
         userId: context.userId,
         clientId: client.id,
         contractId: context.contractId,
-        workDate: new Date(Date.UTC(2026, 9, 1)), // October 1, 2026
+        workDate: monthOffsetDay(1, 1), // first day of the next month
         durationMinutes: 180,
         description: "Next month work",
         billable: true,
@@ -402,7 +409,7 @@ describe("Analytics Product Decisions Verification", () => {
         userId: context.userId,
         clientId: client.id,
         contractId: context.contractId,
-        workDate: new Date(Date.UTC(2026, 8, 30)), // September 30, 2026 (last day)
+        workDate: lastDayOfCurrentMonth(), // last day of the current month
         durationMinutes: 420,
         description: "Last day of month",
         billable: true,
@@ -419,8 +426,9 @@ describe("Analytics Product Decisions Verification", () => {
         role: "OWNER" as const,
       };
 
-      // This test assumes current month is September 2026 (30 days)
-      // Test that February entries (28/29 days) don't leak into other months
+      // Test that February entries (28/29 days) don't leak into other months.
+      // February of the previous year is never the current month, whatever the
+      // current month's own length is.
 
       const client = await repositories.clients.getClient(context.workspaceId, context.clientId);
       if (!client) throw new Error("Client not found");
@@ -433,7 +441,7 @@ describe("Analytics Product Decisions Verification", () => {
         userId: context.userId,
         clientId: client.id,
         contractId: context.contractId,
-        workDate: new Date(Date.UTC(2026, 1, 28)), // February 28, 2026
+        workDate: februaryDayOfPreviousYear(28), // February of the previous year
         durationMinutes: 240,
         description: "February work",
         billable: true,
@@ -441,7 +449,7 @@ describe("Analytics Product Decisions Verification", () => {
 
       // Current month analytics should not include February entry
       const analytics = await analyticsService.getCurrentMonthAnalytics(workspaceContext);
-      expect(analytics.totalMinutes).toBe(0); // No September entries in this test
+      expect(analytics.totalMinutes).toBe(0); // No current-month entries in this test
     });
   });
 
@@ -463,15 +471,15 @@ describe("Analytics Product Decisions Verification", () => {
         rate: "100.0000",
         currency: "EUR",
         monthlyContractedMinutes: 4800,
-        validFrom: new Date(Date.UTC(2026, 8, 1)), // September 1, 2026
-        validTo: new Date(Date.UTC(2026, 11, 31)), // December 31, 2026
+        validFrom: currentMonthDay(1), // first day of the current month
+        validTo: monthOffsetDay(3, 28), // a finite end well after the current month
       });
 
       await repositories.timeEntries.recordTimeEntry(context.workspaceId, {
         userId: context.userId,
         clientId: client.id,
         contractId: finiteContract.id,
-        workDate: new Date(Date.UTC(2026, 8, 15)),
+        workDate: currentMonthDay(15),
         durationMinutes: 480,
         description: "Finite contract work",
         billable: true,
@@ -504,7 +512,7 @@ describe("Analytics Product Decisions Verification", () => {
         rate: "800.0000",
         currency: "EUR",
         monthlyContractedMinutes: null, // Unlimited
-        validFrom: new Date(Date.UTC(2026, 8, 1)), // September 1, 2026
+        validFrom: currentMonthDay(1), // first day of the current month
         validTo: null, // Unlimited/ongoing
       });
 
@@ -512,7 +520,7 @@ describe("Analytics Product Decisions Verification", () => {
         userId: context.userId,
         clientId: client.id,
         contractId: unlimitedContract.id,
-        workDate: new Date(Date.UTC(2026, 8, 15)),
+        workDate: currentMonthDay(15),
         durationMinutes: 600,
         description: "Unlimited contract work",
         billable: true,
@@ -552,8 +560,8 @@ describe("Analytics Product Decisions Verification", () => {
         rate: "100.0000",
         currency: "EUR",
         monthlyContractedMinutes: 2400, // 40 hours
-        validFrom: new Date(Date.UTC(2026, 8, 1)),
-        validTo: new Date(Date.UTC(2026, 10, 31)), // Ends October 31
+        validFrom: currentMonthDay(1),
+        validTo: monthOffsetDay(1, 28), // ends inside the next month
       });
 
       // Unlimited contract
@@ -563,12 +571,12 @@ describe("Analytics Product Decisions Verification", () => {
         rate: "120.0000",
         currency: "EUR",
         monthlyContractedMinutes: null,
-        validFrom: new Date(Date.UTC(2026, 8, 1)),
+        validFrom: currentMonthDay(1),
         validTo: null, // No end date
       });
 
       // Add time to both contracts
-      const workDate = new Date(Date.UTC(2026, 8, 15));
+      const workDate = currentMonthDay(15);
 
       await repositories.timeEntries.recordTimeEntry(context.workspaceId, {
         userId: context.userId,

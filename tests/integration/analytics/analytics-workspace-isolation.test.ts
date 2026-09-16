@@ -4,6 +4,7 @@ import { randomUUID } from "node:crypto";
 import { beforeEach, describe, expect, it } from "vitest";
 import { AnalyticsService } from "@/application/analytics/analytics-service";
 import { InvalidPersistenceStateError } from "@/domain/persistence-errors";
+import { currentMonthDay } from "../current-month-dates";
 import { createWorkspaceGraph } from "../persistence/fixtures";
 import { repositories } from "../persistence/helpers";
 
@@ -37,7 +38,7 @@ describe("Analytics Workspace Isolation", () => {
         userId: workspaceB.userId,
         clientId: workspaceB.clientId,
         contractId: workspaceB.contractId,
-        workDate: new Date(Date.UTC(2026, 8, 15)),
+        workDate: currentMonthDay(15),
         durationMinutes: 480,
         description: "Workspace B work",
         billable: true,
@@ -74,7 +75,7 @@ describe("Analytics Workspace Isolation", () => {
         rate: "100.0000",
         currency: "EUR",
         monthlyContractedMinutes: 4800,
-        validFrom: new Date(Date.UTC(2026, 8, 1)),
+        validFrom: currentMonthDay(1),
         validTo: null,
       });
 
@@ -83,7 +84,7 @@ describe("Analytics Workspace Isolation", () => {
         userId: workspaceB.userId,
         clientId: workspaceBClient.id,
         contractId: workspaceBContract.id,
-        workDate: new Date(Date.UTC(2026, 8, 15)),
+        workDate: currentMonthDay(15),
         durationMinutes: 360,
         description: "Foreign client work",
         billable: true,
@@ -107,7 +108,7 @@ describe("Analytics Workspace Isolation", () => {
         userId: workspaceB.userId,
         clientId: workspaceB.clientId,
         contractId: workspaceB.contractId,
-        workDate: new Date(Date.UTC(2026, 8, 15)),
+        workDate: currentMonthDay(15),
         durationMinutes: 480,
         description: "Workspace B contract work",
         billable: true,
@@ -149,7 +150,7 @@ describe("Analytics Workspace Isolation", () => {
         userId: workspaceA.userId,
         clientId: workspaceA.clientId,
         contractId: workspaceA.contractId,
-        workDate: new Date(Date.UTC(2026, 8, 15)),
+        workDate: currentMonthDay(15),
         durationMinutes: 240, // 4 hours
         description: "Workspace A work",
         billable: true,
@@ -159,7 +160,7 @@ describe("Analytics Workspace Isolation", () => {
         userId: workspaceB.userId,
         clientId: workspaceB.clientId,
         contractId: workspaceB.contractId,
-        workDate: new Date(Date.UTC(2026, 8, 15)),
+        workDate: currentMonthDay(15),
         durationMinutes: 480, // 8 hours
         description: "Workspace B work",
         billable: true,
@@ -189,7 +190,7 @@ describe("Analytics Workspace Isolation", () => {
         userId: workspaceB.userId,
         clientId: workspaceB.clientId,
         contractId: workspaceB.contractId,
-        workDate: new Date(Date.UTC(2026, 8, 15)),
+        workDate: currentMonthDay(15),
         durationMinutes: 480,
         description: "Workspace B work",
         billable: true,

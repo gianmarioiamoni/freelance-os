@@ -1,6 +1,11 @@
 // tests/integration/dashboard/dashboard-page.test.ts
 import { beforeEach, describe, expect, it } from "vitest";
 import { AnalyticsService } from "@/application/analytics/analytics-service";
+import {
+  currentMonthDay,
+  lastDayOfPreviousMonth,
+  monthOffsetDay,
+} from "../current-month-dates";
 import { createWorkspaceGraph } from "../persistence/fixtures";
 import { repositories } from "../persistence/helpers";
 
@@ -55,7 +60,7 @@ describe("Dashboard Analytics Integration", () => {
       rate: "100.0000",
       currency: "EUR",
       monthlyContractedMinutes: 4800, // 80 hours
-      validFrom: new Date(Date.UTC(2026, 7, 1)), // August 1, 2026
+      validFrom: monthOffsetDay(-1, 1), // first day of the previous month
       validTo: null, // Ongoing
     });
 
@@ -65,12 +70,12 @@ describe("Dashboard Analytics Integration", () => {
       rate: "800.0000",
       currency: "EUR",
       monthlyContractedMinutes: null, // Unlimited
-      validFrom: new Date(Date.UTC(2026, 8, 1)), // September 1, 2026
-      validTo: new Date(Date.UTC(2026, 11, 31)), // December 31, 2026
+      validFrom: currentMonthDay(1), // first day of the current month
+      validTo: monthOffsetDay(3, 28), // a finite end well after the current month
     });
 
     // Create time entries for current month
-    const workDate = new Date(Date.UTC(2026, 8, 15)); // September 15, 2026
+    const workDate = currentMonthDay(15); // inside the current month
 
     // ACME Corp - billable time
     await repositories.timeEntries.recordTimeEntry(context.workspaceId, {
@@ -158,7 +163,7 @@ describe("Dashboard Analytics Integration", () => {
       userId: otherContext.userId,
       clientId: otherContext.clientId,
       contractId: otherContext.contractId,
-      workDate: new Date(Date.UTC(2026, 8, 15)),
+      workDate: currentMonthDay(15),
       durationMinutes: 480,
       description: "Other workspace work",
       billable: true,
@@ -183,7 +188,7 @@ describe("Dashboard Analytics Integration", () => {
       userId: context.userId,
       clientId: context.clientId,
       contractId: context.contractId,
-      workDate: new Date(Date.UTC(2026, 7, 31)), // August 31, 2026 (previous month)
+      workDate: lastDayOfPreviousMonth(), // last day of the previous month
       durationMinutes: 480,
       description: "Previous month work",
       billable: true,
@@ -194,7 +199,7 @@ describe("Dashboard Analytics Integration", () => {
       userId: context.userId,
       clientId: context.clientId,
       contractId: context.contractId,
-      workDate: new Date(Date.UTC(2026, 8, 1)), // September 1, 2026 (current month)
+      workDate: currentMonthDay(1), // first day of the current month
       durationMinutes: 240,
       description: "Current month work",
       billable: true,
