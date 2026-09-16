@@ -16,10 +16,15 @@ PLANNING:              COMPLETE
 PRODUCT DECISIONS:     6 BLOCKING — ALL RESOLVED BY THE PRODUCT OWNER
                        6 NON-BLOCKING — DOCUMENTED DEFAULTS ACCEPTED
 BLOCKING DECISIONS:    NONE OUTSTANDING
-IMPLEMENTATION:        READY — P105-01 MAY START
+IMPLEMENTATION:        IN PROGRESS — P105-03 IS NEXT
+P105-01:               COMPLETE — commit 134800f
+P105-02:               COMPLETE — commit 756649d
 OBD CLOSED:            NONE
 OBD DEPENDENCY:        OBD-012 OPEN — GATES ROLLOVER / EXPIRY SEMANTICS ONLY
 EPIC-104 FINDINGS:     NONE RESOLVED BY THIS PLAN, NONE REOPENED
+                       F-104-001, F-104-002, F-104-014 ADDRESSED IN P105-02 —
+                       CLOSURE IS THE ENGINEERING REVIEW'S CALL (§16.1)
+EPIC-105 FINDINGS:     F-105-001 OPEN — PRE-EXISTING E2E FAILURE (§16.4)
 ```
 
 This plan was produced entirely from the documentation synchronized by
@@ -1144,6 +1149,16 @@ existing history; every commit leaves all six gates green; no commit
 mixes documentation synchronization with production code; no commit
 closes an OBD.
 
+**Scope of the E2E gate.** The rule above is unchanged and is not
+rewritten by any phase. What "green" means for E2E is defined by the
+gate itself in §17.1: the E2E gate is *required once the reporting UI
+exists (P105-05 onward)*. P105-01 and P105-02 therefore close against
+lint, typecheck, unit, integration, and build, with the E2E gate not
+yet applicable rather than waived. This is the gate table's own
+wording, not an exception granted to a phase. `F-105-001` (§16.4)
+records the pre-existing E2E failure that must be resolved before
+P105-05 can satisfy the gate once it becomes applicable.
+
 Planning produces exactly one commit,
 `docs: establish EPIC-105 reporting plan`, covering both the plan and
 the recorded Product Decisions.
@@ -1451,6 +1466,86 @@ and evidence. Classification records impact on the plan.
   `null`, out-of-validity flag set, no invented capacity. No Product
   Decision is required; the two decisions already determine the
   behaviour.
+
+### 16.4 EPIC-105 implementation findings
+
+Findings raised by an implementation phase rather than by planning.
+They follow the EPIC-104 convention: `F-105-NNN` for implementation and
+review findings, `F-105-P-NNN` for planning findings.
+
+#### F-105-001 — pre-existing E2E failure in the time-tracking journey
+
+- **Severity:** Medium — blocks the E2E release gate from P105-05, with
+  no production impact established either way
+- **Status:** **OPEN.** Raised during P105-02. Not owned by P105-02, not
+  resolved, not closed
+- **Location:** `tests/e2e/time-tracking.spec.ts:185`, test
+  `should complete authenticated time tracking journey`
+- **Failure:** after the date-navigation step
+  `page.getByRole("link", { name: "Next Day" }).click()` (line 184), the
+  assertion
+  `expect(page.getByText("Updated: Development and testing work")).toBeVisible()`
+  fails with `element(s) not found` after the 5000 ms locator timeout.
+- **Root cause:** **not established.** No root cause is asserted here.
+  The failing step exercises `/time-tracking` daily-view date
+  navigation; whether the defect lies in the application or in the test
+  has not been determined, and no diagnosis should be inferred from
+  this entry.
+- **Proven pre-existing.** Established by an isolated HEAD-versus-parent
+  comparison, not by inspection:
+
+  ```text
+  CI=true pnpm exec playwright test tests/e2e/time-tracking.spec.ts \
+    -g "should complete authenticated time tracking journey" \
+    --workers=1 --reporter=line
+  ```
+
+  | Commit | Role | Result |
+  | --- | --- | --- |
+  | `134800f` | baseline — P105-01, parent of P105-02 | FAIL, ~19.8 s |
+  | `756649d` | HEAD — P105-02 | FAIL, ~20.3 s |
+
+  Both runs selected exactly one test, verified with `--list`
+  (`Total: 1 test in 1 file`), and failed at the same line, on the same
+  locator, with the same error and the same timeout. Same command,
+  worker count, browser, database contract, and server lifecycle. The
+  full suite was not used for the comparison.
+- **Not related to the P105-02 diff.** `git diff --name-only 134800f
+  756649d` returns no file under `tests/e2e/` and no time-tracking
+  source file; the diff is confined to the analytics service,
+  repository, dashboard component, dashboard route, and analytics
+  tests. `time-tracking.spec.ts` contains no reference to
+  `AnalyticsService`, the dashboard route, the shared calculations, or
+  workspace membership. The
+  `Failed to load dashboard analytics: Error: NEXT_REDIRECT` webServer
+  log appears identically on both commits, so it is the pre-existing
+  F-104-007 `try`/`catch` behaviour and not an effect of P105-02.
+- **Impact:** None on P105-02, whose gate set excludes E2E (§13, §17.1).
+  From **P105-05 onward the E2E gate becomes applicable and requires
+  exit 0 with 0 failed and 0 skipped**, so this failure must be resolved
+  before P105-05 can close.
+- **Recommended resolution / owner:** Engineering — diagnose and resolve
+  before P105-05 closes; P105-06 owns the consolidated E2E evidence.
+  The finding is closed only by the phase that resolves it, under its
+  own review, and only once the full suite passes with 0 failed and
+  0 skipped.
+
+#### Test-environment note — orphaned Playwright `webServer` on port 3000 (resolved)
+
+Not a finding against the repository; recorded so the failure mode is
+recognised rather than rediagnosed.
+
+An aborted Playwright run left its `webServer` child, a `next-server`
+process, bound to port 3000. Because `playwright.config.ts` sets
+`reuseExistingServer: false`, every later run tried to start its own
+server against the occupied port and stalled at startup, which
+initially made the HEAD-versus-parent comparison inconclusive.
+Terminating the orphaned process freed the port, after which the
+isolated test completed in roughly 20 seconds on both commits.
+
+No repository change was involved: no production code, test,
+Playwright configuration, or package script was modified. When an E2E
+run is interrupted, confirm port 3000 is free before rerunning.
 
 ---
 
