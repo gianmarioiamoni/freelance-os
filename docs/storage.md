@@ -179,12 +179,16 @@ TimeEntry(workspaceId, clientId, workDate)   client allocation
 TimeEntry(workspaceId, contractId, workDate) contract utilization
 ```
 
-**Query performance is not verified.** A dashboard render issues six
-queries and the daily path issues five; no measurement was taken at
-any data volume, so no performance baseline exists for the analytics
-aggregation path. F-104-P-001 and F-104-009 remain open and
-unevidenced. Do not cite these indexes as proof of analytics query
-performance. Review: `docs/epics/EPIC-104/engineering-review.md`.
+**Query performance baseline measured by EPIC-105 P105-06.** A monthly
+contract report issues ≤ 53 DB operations; a year-scale annual overview
+issues ≤ 636 DB operations (12 monthly calls); a weekly aggregation
+issues 5 fixed queries. These are wall-clock measurements at the
+EPIC-104 reference volume (100 clients, 50 contracts, 1000 time entries,
+13 months). F-104-P-001 is now measured. No query-execution plan
+analysis has been performed; these indexes provide structural support
+only. Do not cite the measured timings as a production guarantee.
+Reviews: `docs/epics/EPIC-104/engineering-review.md`,
+`docs/epics/EPIC-105/engineering-review.md` (pending P105-08).
 
 `Alert.clientId` and `Alert.contractId` are independently optional
 workspace-scoped FKs. The database does not prove they refer to the
@@ -999,7 +1003,10 @@ Contract(workspaceId, clientId, validTo)
 ```
 
 The exact set should be validated against query plans once real
-reporting queries exist.
+reporting queries have been profiled. EPIC-105 reporting queries exist
+(`ReportingService` / `AnalyticsRepository`) but no query-execution
+plan analysis has been performed; the existing indexes provide
+structural support for the delivered aggregation shape.
 
 ------------------------------------------------------------------------
 
@@ -1026,9 +1033,10 @@ These support:
 -   user-specific history
 
 All four are present in `prisma/schema.prisma`. The first three back
-the EPIC-104 analytics aggregation queries. Their presence is
-structural support only; no query-execution time has been measured
-(F-104-P-001, F-104-009).
+the EPIC-104 analytics aggregation queries and the EPIC-105 reporting
+queries. Their presence is structural support only; a performance
+baseline has been measured by EPIC-105 P105-06 (see above), but no
+query-execution plan analysis has been performed.
 
 Avoid creating indexes speculatively beyond the actual query patterns.
 

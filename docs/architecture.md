@@ -326,7 +326,6 @@ Provide deterministic read/calculation services for:
 - non-billable hours;
 - client allocation;
 - contract utilization;
-- estimated revenue;
 - monthly summaries;
 - period summaries.
 
@@ -334,25 +333,42 @@ The analytics layer is not a second database of truth.
 
 It derives information from domain data.
 
-### Implemented by EPIC-104
+**`Workspace.timezone` is the sole authority for all period boundaries
+(PD-105-003).** Every period constructor (`getTodayPeriod`,
+`getCurrentWeekPeriod`, `getCurrentMonthPeriod`, `getCurrentYearPeriod`)
+accepts the workspace timezone as an explicit parameter. No period
+boundary is derived from the process clock timezone or from an
+unauthenticated request parameter.
+
+### Implemented by EPIC-104 and extended by EPIC-105
 
 The analytics module is implemented as an application service over a
-dedicated persistence adapter. Review:
-`docs/epics/EPIC-104/engineering-review.md`.
+dedicated persistence adapter. Reviews:
+`docs/epics/EPIC-104/engineering-review.md`,
+`docs/epics/EPIC-105/engineering-review.md` (pending P105-08).
 
 ```text
 src/domain/analytics-types.ts                       domain types
 src/domain/repositories.ts                          AnalyticsRepository port
 src/application/analytics/analytics-service.ts      AnalyticsService
+src/application/reporting/reporting-service.ts      ReportingService (P105-04)
 src/infrastructure/persistence/analytics-repository.ts   Prisma adapter
 src/lib/analytics-periods.ts                        period utilities
+src/features/reporting/                             RSC presentation components
 ```
 
 `AnalyticsService` follows the established application-service shape:
 the repository is constructor-injected, `WorkspaceContext` is the first
 parameter of every method, and the workspace identifier is never
 accepted from the browser. It exposes workspace-scoped monthly, daily,
-client-allocation, and contract-utilization calculations.
+weekly, client-allocation, and contract-utilization calculations. A
+service-level membership guard (SI-105-005) rejects callers who are not
+members of the target workspace.
+
+`ReportingService` is a thin layer that resolves period-kind requests
+into `AnalyticsPeriod` values using `Workspace.timezone` and delegates
+all arithmetic to `AnalyticsService`. It contains no percentage, average,
+capacity, or utilization formula.
 
 `AnalyticsRepository` is registered in `PersistenceRepositories` and
 constructed by `createRepositories()`, like every other repository. It
@@ -361,36 +377,47 @@ performs Prisma `aggregate` and `groupBy` queries over `TimeEntry`;
 the analytics layer.
 
 Domain types: `AnalyticsPeriod`, `MonthlyAnalytics`, `ClientAllocation`,
-`ContractUtilization`, `DailyAnalytics`, `DailyClientBreakdown`.
+`ContractUtilization`, `DailyAnalytics`, `DailyClientBreakdown`,
+`WeeklyAnalytics`, `ReportingPeriodKind`.
 
-Period utilities: `getCurrentMonthPeriod`, `getMonthPeriod`,
-`getDateRangePeriod`, `isValidPeriod`, `isDateInPeriod`,
-`getPeriodDays`, `formatPeriodDisplay`.
+Period utilities: `getTodayPeriod`, `getCurrentWeekPeriod`,
+`getCurrentMonthPeriod`, `getCurrentYearPeriod`, `getMonthPeriod`,
+`getDateRangePeriod`, `getWeekStartFromDate`, `isValidPeriod`,
+`isDateInPeriod`, `getPeriodDays`, `formatPeriodDisplay`.
 
 Durations are integer minutes throughout; a zero denominator yields
 `null` rather than a fabricated percentage. No revenue, rate, or
-commercial amount is computed anywhere in the analytics layer.
+commercial amount is computed anywhere in the analytics or reporting
+layers.
+
+Contract capacity is **pro-rated** to the reporting period using the
+overlap between `[validFrom, validTo)` and the period (PD-105-005).
+`isOngoing` ≡ `validTo === null`; unlimited capacity ≡
+`monthlyContractedMinutes === null`; these are independent properties
+(PD-105-004). No rollover, carry-over, or expiry semantics are applied
+(OBD-012 open).
+
+A measured query-performance baseline exists at the EPIC-104 reference
+volume (100 clients, 50 contracts, 1000 time entries, 13 months). No
+pass/fail threshold is established (PD-105-008 accepted default).
 
 ### Not implemented
 
 The following remain future work and must not be described as
 delivered:
+- a workspace-membership guard inside `AnalyticsService` itself
+  (F-104-014) — **resolved by EPIC-105 P105-02** (SI-105-005);
+- weekly aggregation (F-104-013) — **resolved by EPIC-105 P105-03**
+  (`getWeeklyAnalytics` composes over `getDailyAnalytics`);
+- timezone-aware period boundaries (F-104-005 / F-104-P-002) — **resolved
+  by EPIC-105 P105-03** (`Workspace.timezone` is now the authority);
+- a measured query-performance baseline (F-104-009 / F-104-P-001) —
+  **measured by EPIC-105 P105-06** (baseline recorded; no threshold
+  established per PD-105-008).
 
-- weekly aggregation (F-104-013); `getDailyAnalytics` exists but has no
-  production consumer;
-- timezone-aware period boundaries — `workspace.timezone` is never read
-  (F-104-005 / F-104-P-002);
-- a measured query-performance baseline (F-104-009 / F-104-P-001);
-- a custom date-range UI — an explicit EPIC-104 non-goal, deferred to
-  R1-E05, although the shared layer already accepts arbitrary periods;
-- a workspace-membership guard inside `AnalyticsService` itself, which
-  currently trusts the `WorkspaceContext` resolved by its caller
-  (F-104-014).
-
-Percentage arithmetic is currently duplicated across the repository,
-the `MonthlyAnalytics` component, and the `AnalyticsService` statics,
-so principle A-006 is not yet satisfied in production code
-(F-104-002). R1-E05 must consume the shared service.
+Percentage arithmetic was consolidated onto shared `AnalyticsService`
+static methods by EPIC-105 P105-02 (F-104-002). The reporting layer and
+the dashboard both consume the shared service; no formula is duplicated.
 
 ### Why it is central
 
@@ -975,9 +1002,9 @@ Client-side validation is a UX optimization, not a security boundary.
 
 # 17. Reporting Architecture
 
-Reporting should be implemented as application queries/read models.
-
-Conceptually:
+Reporting is implemented as application queries/read models, as
+specified. Review: `docs/epics/EPIC-105/engineering-review.md` (pending
+P105-08).
 
 ```text
                  ┌───────────────┐
@@ -994,11 +1021,25 @@ Conceptually:
    Dashboard          Reports           Alerts
 ```
 
-The reporting layer must not create an independent source of truth.
+The reporting layer does not create an independent source of truth.
+`ReportingService` is a thin orchestration layer that resolves
+period-kind requests and delegates all arithmetic to `AnalyticsService`.
+No reporting formula is duplicated from the analytics layer.
 
-For performance, dedicated SQL aggregation queries or database views may be introduced later if profiling justifies them.
+`/reports` is a React Server Component with no `use client` directive.
+Authorization is resolved through `getCurrentWorkspaceContext()` outside
+any `try` block. Period selection is URL-driven (search parameters only);
+no browser-supplied tenant identifier can influence the workspace scope.
 
-Do not prematurely introduce a data warehouse.
+Performance: a baseline has been measured at the EPIC-104 reference
+volume (100 clients, 50 contracts, 1000 time entries, 13 months). The
+out-of-validity check issues one COUNT query per contract with in-period
+consumption via `Promise.all` (concurrent, not serial). At the declared
+MVP scale of 50 contracts this yields ≤ 53 DB operations per
+`getContractUtilizations` call. No dedicated SQL aggregation or database
+view has been introduced; the architecture permits them later if
+profiling justifies it (PD-105-008 unanswered). Do not prematurely
+introduce a data warehouse.
 
 ---
 

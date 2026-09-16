@@ -6,6 +6,19 @@ All notable changes to FreelanceOS are documented in this file.
 
 ### Added
 
+- EPIC-105 Reporting engineering-complete (COMPLETE WITH DOCUMENTED ENVIRONMENTAL GATE EXCEPTION). Engineering Review pending (P105-08). No schema change. Not production-ready.
+- Reporting surface at `/reports` as a React Server Component; authorization resolved outside any `try` block; period selection URL-driven (today / week / month / year / custom). Three tabular report sections: hours by client, contract report, annual overview. Loading, zero-activity, and error states. Responsive layout. Accessible table semantics, native headings, keyboard-reachable period selector.
+- `ReportingService`: thin workspace-scoped orchestration layer that resolves period-kind requests using `Workspace.timezone` and delegates all arithmetic to `AnalyticsService`. No formula is duplicated from the analytics layer.
+- Timezone-aware period constructors: `getTodayPeriod`, `getCurrentWeekPeriod`, `getCurrentYearPeriod`, corrected `getCurrentMonthPeriod` (ends today, not end of month). `Workspace.timezone` is the sole period-boundary authority (PD-105-003 / BR-105-014).
+- Weekly aggregation: `getWeeklyAnalytics` composed over `getDailyAnalytics`; no new SQL required (F-104-013 resolved).
+- Pro-rata contract capacity (BR-105-017): `contractedMinutes` = `monthlyContractedMinutes × (overlapDays / periodDays)`. No rollover or expiry (OBD-012 open).
+- Ongoing/unlimited separation (PD-105-004 / F-104-003 resolved): `isOngoing` ≡ `validTo === null`; unlimited ≡ `monthlyContractedMinutes === null`; independent properties.
+- Relevance-driven contract list (PD-105-006 / BR-105-018): validity overlap ∪ in-period consumption. Out-of-validity time retained and flagged; zero-consumption valid contracts appear at 0 h / capacity / 0%.
+- Service-level workspace membership guard in `AnalyticsService` (SI-105-005 / F-104-014 resolved).
+- Shared percentage arithmetic consolidated onto `AnalyticsService` static methods (F-104-002 resolved).
+- Reporting integration suite: period resolution, workspace isolation, all four ongoing/unlimited combinations, pro-rata cases, OBD-012 no-rollover assertion, dashboard-agreement test (F-105-P-006), archived-client coverage (F-105-010), zero-activity coverage (F-105-011).
+- Performance baseline at EPIC-104 reference volume: 100 clients, 50 contracts, 1000 time entries, 13 months. Monthly report ~27 ms / ≤ 53 DB ops; annual overview ~27 ms / ≤ 636 DB ops; weekly ~3 ms / 5 fixed ops. F-104-P-001 measured; no threshold enforced (PD-105-008 default).
+- Reporting E2E suite (`tests/e2e/reports.spec.ts`): 14 tests covering SI-105-006 redirects, navigation, period selection, empty states, tabular rendering, accessibility, responsive layout at 4 viewports, error recovery.
 - EPIC-104 Analytics & Dashboard Engineering Review completed (PASS WITH FINDINGS); shared analytics foundation and the authenticated dashboard implemented. No schema change. Findings remain open and non-blocking. Not production-ready.
 - Analytics foundation: `AnalyticsService` as the shared workspace-scoped calculation layer, `AnalyticsRepository` for `workspaceId`-scoped aggregation over `TimeEntry`, analytics domain types, and period utilities. No revenue, rate, or commercial amount is calculated.
 - Authenticated Dashboard at `/` as a React Server Component, replacing the structural placeholder: monthly summary (total, billable, non-billable hours and billable percentage), client allocation, and contract utilization, with responsive layout and empty and error states. Archived clients are included in analytics and labelled as archived; utilization uses all tracked time; the default period is the current month.

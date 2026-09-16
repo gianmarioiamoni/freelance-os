@@ -836,6 +836,14 @@ creation must be prevented.
 
 Reports are derived from source data.
 
+### Scope reconciliation — estimated revenue
+
+This section previously listed `estimated revenue` as a test concern.
+PD-105-001 explicitly excludes revenue from EPIC-105. No revenue,
+monetary amount, rate, or commercial calculation is implemented in
+the reporting layer; it must not be tested as if it were delivered.
+The historical wording is retained for audit only.
+
 Tests should verify:
 
 -   date range filtering
@@ -844,13 +852,25 @@ Tests should verify:
 -   total minutes
 -   billable minutes
 -   non-billable minutes
--   estimated revenue
 -   monthly boundaries
 -   yearly boundaries
 -   empty periods
 -   multiple clients
 -   multiple contracts
 -   historical contracts
+-   pro-rata capacity (overlap days / period days)
+-   ongoing and unlimited as independent properties
+-   out-of-validity time retained and flagged
+-   dashboard and reporting surface agreement for the same period
+
+### Implemented by EPIC-105
+
+The reporting integration suite (`tests/integration/reporting/`) covers
+all categories above. The E2E suite (`tests/e2e/reports.spec.ts`) covers
+SI-105-006 redirect invariants, period navigation, empty-state
+rendering, tabular semantics, accessibility, responsive layout, and
+error recovery. Suite totals at EPIC-105 closure: 331 unit /
+187 integration / 51 E2E (reported separately).
 
 Example:
 
@@ -1689,13 +1709,30 @@ These states are part of product behavior.
 Full performance engineering is outside MVP scope, but obvious
 regressions should be detected.
 
-None of these is implemented. EPIC-104 left the analytics performance
-baseline unevidenced: the only timing assertion runs against a
-workspace with no time entries, so it exercises no aggregation
-(F-104-009, F-104-P-001). The dashboard's two-second target is
-therefore unproven.
+### Baseline measured by EPIC-105
 
-Representative checks:
+EPIC-104 left the analytics performance baseline unevidenced
+(F-104-009 / F-104-P-001). EPIC-105 P105-06 measured a baseline at
+the EPIC-104 reference volume: 100 clients, 50 contracts, 1000 time
+entries spanning 13 months. Results (wall-clock, local runner):
+
+``` text
+Monthly contract report:        ~27 ms  /  ≤ 53 DB operations
+Annual overview (12 months):    ~27 ms  /  ≤ 636 DB operations
+Weekly aggregation (30-day):    ~3 ms   /  5 fixed DB operations
+Year-scale contract report:     ~9 ms   /  ≤ 53 DB operations
+```
+
+No pass/fail threshold is enforced in CI (PD-105-008 accepted default;
+no threshold established). The baseline is recorded for the Engineering
+Review and as a regression reference.
+
+The out-of-validity check issues one COUNT per contract with in-period
+consumption via `Promise.all` (concurrent, not serial). This is not a
+classical serial N+1. At the declared MVP scale (50 contracts) the
+total DB operations per call is bounded and acceptable.
+
+Representative checks for future phases:
 
 -   dashboard with realistic number of time entries
 -   monthly report over a realistic period
@@ -1715,8 +1752,10 @@ and:
 loading entire TimeEntry history into application memory
 ```
 
-Reporting should aggregate at the database/query layer where
-appropriate.
+Reporting aggregates at the database/query layer. A dedicated SQL
+aggregation query or view may be introduced if profiling justifies it
+(permitted by `docs/architecture.md` §17); do not introduce one
+speculatively.
 
 ------------------------------------------------------------------------
 

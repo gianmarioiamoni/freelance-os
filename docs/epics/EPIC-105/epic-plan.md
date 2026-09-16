@@ -3,7 +3,7 @@
 **Epic:** EPIC-105  
 **Release:** Release 1 — MVP  
 **MASTER_PLAN identifier:** R1-E05 — Reporting (`MASTER_PLAN.md` §15)  
-**Status:** PLANNING — **READY FOR IMPLEMENTATION**  
+**Status:** IMPLEMENTATION COMPLETE — **COMPLETE WITH DOCUMENTED ENVIRONMENTAL GATE EXCEPTION**  
 **Dependencies:** EPIC-002, EPIC-003, EPIC-004, EPIC-005, EPIC-006, EPIC-101, EPIC-102, EPIC-103, EPIC-104  
 **Previous Epic:** EPIC-104 Analytics & Dashboard (`docs/epics/EPIC-104/engineering-review.md`, commit `b387c01`)  
 **Next Epic:** R1-E06 Alerts & Notifications (`MASTER_PLAN.md` §16)  
@@ -16,16 +16,27 @@ PLANNING:              COMPLETE
 PRODUCT DECISIONS:     6 BLOCKING — ALL RESOLVED BY THE PRODUCT OWNER
                        6 NON-BLOCKING — DOCUMENTED DEFAULTS ACCEPTED
 BLOCKING DECISIONS:    NONE OUTSTANDING
-IMPLEMENTATION:        IN PROGRESS — P105-04 IS NEXT
+IMPLEMENTATION:        COMPLETE — P105-07 DOCUMENTATION SYNCHRONIZATION DONE
 P105-01:               COMPLETE — commit 134800f
 P105-02:               COMPLETE — commit 756649d
 P105-03:               COMPLETE — commits 428f6e4 + 6822600 (corrective)
+P105-04:               COMPLETE — commits e1a1a42 + caf6f96 (corrective)
+P105-05:               COMPLETE — commit 59d28fa
+P105-06:               COMPLETE WITH DOCUMENTED ENVIRONMENTAL GATE EXCEPTION — commit 8faed35
+P105-07:               COMPLETE — documentation synchronization (this commit)
+P105-08:               PENDING — Engineering Review
 OBD CLOSED:            NONE
 OBD DEPENDENCY:        OBD-012 OPEN — GATES ROLLOVER / EXPIRY SEMANTICS ONLY
-EPIC-104 FINDINGS:     NONE RESOLVED BY THIS PLAN, NONE REOPENED
-                       F-104-001, F-104-002, F-104-014 ADDRESSED IN P105-02 —
-                       CLOSURE IS THE ENGINEERING REVIEW'S CALL (§16.1)
-EPIC-105 FINDINGS:     F-105-001 OPEN — PRE-EXISTING E2E FAILURE (§16.4)
+EPIC-104 FINDINGS:     F-104-002 CLOSED — P105-02, shared percentage arithmetic
+                       F-104-003 CLOSED — P105-04, isOngoing ≡ validTo === null (PD-105-004)
+                       F-104-004 CLOSED (reporting surface) — P105-04, relevance-driven list
+                       F-104-005 CLOSED — P105-03, Workspace.timezone is period authority
+                       F-104-013 CLOSED — P105-03, weekly aggregation via getDailyAnalytics
+                       F-104-014 CLOSED — P105-02, service-level membership guard (SI-105-005)
+                       F-104-017 CLOSED — P105-03, period end "through today" canonical (PD-105-002)
+                       F-104-P-001 MEASURED — P105-06, baseline recorded, no threshold (PD-105-008)
+                       ALL OTHER EPIC-104 FINDINGS: status unchanged (see §16.1)
+EPIC-105 FINDINGS:     F-105-001 CLOSED — P105-01, corrective test durability pass
                        F-105-002 CLOSED — verified by final P105-03 Engineering Review
                        F-105-003 CLOSED — verified by final P105-03 Engineering Review
                        F-105-004 CLOSED — verified by final P105-03 Engineering Review
@@ -33,6 +44,12 @@ EPIC-105 FINDINGS:     F-105-001 OPEN — PRE-EXISTING E2E FAILURE (§16.4)
                        F-105-006 CLOSED — verified by final P105-03 Engineering Review
                        F-105-007 CLOSED — verified by final P105-03 Engineering Review
                        F-105-008 OPEN — NON-BLOCKING comment nit (§16.4)
+                       F-105-013 OPEN — latent year/now inconsistency (§16.4); not owned by P105-07
+                       F-105-P-007 MEASURED — concurrent Promise.all, not serial N+1; acceptable at MVP scale
+                       F-104-006 OPEN (inherited) — clock-sensitive E2E and integration failures;
+                                 partially remediated in P105-01; two E2E and one integration failure
+                                 remain as documented environmental gate exceptions
+                       PD-105-008 OPEN — no performance threshold established by Product Owner
 ```
 
 This plan was produced entirely from the documentation synchronized by

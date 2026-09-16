@@ -4,7 +4,7 @@ FreelanceOS is a web application for freelancer operations management.
 
 ## Status
 
-Release 1 — MVP in progress. EPIC-104 complete: an analytics foundation (`AnalyticsService` and `AnalyticsRepository`) providing workspace-scoped monthly analytics, client allocation, and contract utilization, plus the authenticated Dashboard at `/`, rendered as a React Server Component. Archived clients are included in analytics and labelled as archived. EPIC-103 workspace-scoped time tracking, EPIC-102 contract management, and EPIC-101 client master-data management remain. EPIC-006 authenticated UI foundation and EPIC-005 isolated E2E / CI contract remain. Authentication remains Better Auth. No billing, rate calculation, revenue estimation, alerts, or reporting is implemented. Role permissions (OBD-009) and production password-reset email are not decided. This is not production readiness.
+Release 1 — MVP in progress. EPIC-105 complete: a workspace-scoped reporting surface (`/reports`) and an extended analytics layer providing timezone-aware period boundaries, weekly aggregation, and pro-rata contract capacity. EPIC-104 complete: shared analytics foundation and the authenticated Dashboard at `/`. EPIC-103 time tracking, EPIC-102 contract management, and EPIC-101 client master-data management are implemented. Authentication remains Better Auth. No billing, rate calculation, revenue estimation, or alerts are implemented. Role permissions (OBD-009) and production password-reset email are not decided. This is not production readiness.
 
 Planning and architecture documents are the source of truth. See [`MASTER_PLAN.md`](./MASTER_PLAN.md).
 

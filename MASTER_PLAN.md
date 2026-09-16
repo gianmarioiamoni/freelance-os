@@ -135,8 +135,8 @@ context is recovered from repository documentation.
 ## Overall
 
 ``` text
-STATUS: EPIC-104 COMPLETE (PASS WITH FINDINGS)
-NEXT: R1-E05 — Reporting
+STATUS: EPIC-105 COMPLETE WITH DOCUMENTED ENVIRONMENTAL GATE EXCEPTION
+NEXT: R1-E05 Engineering Review (P105-08)
 ```
 
 ## Completed planning artifacts
@@ -155,7 +155,7 @@ docs/
 ``` text
 Application implementation: STARTED
 Foundation implementation: EPIC-001 COMPLETE; EPIC-002 COMPLETE; EPIC-003 COMPLETE; EPIC-004 COMPLETE; EPIC-005 COMPLETE; EPIC-006 COMPLETE
-MVP implementation: EPIC-101 COMPLETE; EPIC-102 COMPLETE; EPIC-103 COMPLETE; EPIC-104 COMPLETE
+MVP implementation: EPIC-101 COMPLETE; EPIC-102 COMPLETE; EPIC-103 COMPLETE; EPIC-104 COMPLETE; EPIC-105 COMPLETE
 Production deployment: NOT STARTED
 Authentication: IMPLEMENTED — see docs/epics/EPIC-003/engineering-review.md
 Workspace / authorization: IMPLEMENTED — see docs/epics/EPIC-004/engineering-review.md
@@ -165,11 +165,15 @@ Client management: IMPLEMENTED — see docs/epics/EPIC-101/engineering-review.md
 Contract management: IMPLEMENTED — see docs/epics/EPIC-102/engineering-review.md
 Time tracking: IMPLEMENTED — see docs/epics/EPIC-103/engineering-review.md
 Analytics / dashboard: IMPLEMENTED — see docs/epics/EPIC-104/engineering-review.md
+Reporting: IMPLEMENTED — see docs/epics/EPIC-105/engineering-review.md (pending P105-08)
 ```
 
 EPIC-104 completed the shared analytics layer and the authenticated
-monthly dashboard. It did not start reporting, alerts, or any billing
-or revenue calculation.
+monthly dashboard. EPIC-105 extended the analytics layer with
+timezone-aware period boundaries, weekly aggregation, and pro-rata
+contract capacity; added the reporting service and the `/reports` RSC
+surface; and produced integration, E2E, and performance baseline
+evidence. No billing, revenue, or rollover semantics were introduced.
 
 ``` text
 Phase 3: 48c3552
@@ -180,6 +184,23 @@ Blocking findings: NONE (F-104-000 RESOLVED)
 Production readiness: NO
 Tests: 216 unit / 148 integration / 37 E2E (suite totals, reported separately)
 Gates: lint PASS; typecheck PASS; build PASS
+
+EPIC-105 — Reporting
+Commits: 134800f (P105-01) · 756649d (P105-02) · 428f6e4 + 6822600 (P105-03)
+         e1a1a42 (P105-04 initial) · caf6f96 (P105-04 corrective) · 59d28fa (P105-05)
+         8faed35 (P105-06)
+Verdict: COMPLETE WITH DOCUMENTED ENVIRONMENTAL GATE EXCEPTION
+Engineering status: COMPLETE (P105-08 Engineering Review pending)
+Blocking findings: NONE
+Production readiness: NO
+Tests: 331 unit / 187 integration / 51 E2E (suite totals, reported separately)
+Gates: lint PASS; typecheck PASS; build PASS
+Environmental exceptions: two inherited F-104-006 clock-sensitive E2E failures
+                          (time-tracking.spec.ts, unchanged from prior phases),
+                          one inherited F-104-006 clock-sensitive integration failure
+                          (analytics-isolation.test.ts, unchanged from prior phases).
+                          Both fail only when the test runner's local clock
+                          crosses midnight while the server runs UTC.
 ```
 
 Present after EPIC-104:
@@ -793,11 +814,19 @@ and must not reproduce the duplicated arithmetic.
 
 # 15. R1-E05 --- Reporting
 
+## Status
+
+IMPLEMENTED — engineering complete (COMPLETE WITH DOCUMENTED ENVIRONMENTAL GATE EXCEPTION).
+Engineering Review pending (P105-08). Blocking findings: none.
+Production readiness is not claimed.
+
 ## Objective
 
 Provide reliable operational reporting.
 
 ## Scope
+
+Approved and delivered scope:
 
 -   today
 -   week
@@ -805,9 +834,25 @@ Provide reliable operational reporting.
 -   year
 -   custom period
 -   hours by client
--   revenue by client
 -   contract report
 -   annual overview
+
+### Scope reconciliation — revenue by client
+
+This section previously listed `revenue by client` in R1-E05 scope.
+The approved EPIC-105 plan declared it an **explicit non-goal**:
+revenue and every monetary calculation are deferred (PD-105-001).
+OBD-001, OBD-002, OBD-011, and OBD-016 remain open and are not
+closed by this exclusion. The Engineering Review confirmed that no
+revenue or commercial amount is calculated anywhere in the delivered
+reporting layer.
+
+The historical wording is recorded here for audit only. The current
+R1-E05 scope is the list above.
+
+-   revenue by client → deferred; depends on OBD-001, OBD-002,
+    OBD-011, OBD-016, and a decision on live contract fields versus
+    snapshots (P102-F-001).
 
 ## Dependencies
 
@@ -1567,10 +1612,30 @@ non-blocking; F-104-000 is RESOLVED and is not listed:
 integration tests hardcode September 2026 fixtures while asserting
 against the current month resolved from the system clock. The suite is
 green until 2026-09-30 and fails from 2026-10-01. Schedule it, with
-F-104-001, as the first EPIC-104 follow-up.
+F-104-001, as the first EPIC-104 follow-up. The P105-01 corrective
+pass decoupled the analytics integration suite from the current month;
+E2E and some integration tests that use `new Date()` at runtime remain
+clock-sensitive and fail when the test runner's local clock crosses
+midnight while the server runs UTC. These are documented as the
+EPIC-105 environmental gate exception.
 
-F-104-003 and F-104-017 require Product Owner clarification before
-R1-E05 Reporting reuses the period and ongoing-contract semantics.
+F-104-003 and F-104-017 were resolved by EPIC-105: PD-105-004 settled
+ongoing ≡ `validTo === null` (independent from capacity) and
+PD-105-002 settled period end as "through today". Both are implemented
+in P105-04 and verified by integration evidence.
+
+Real debt recorded by EPIC-105 (see `docs/epics/EPIC-105/epic-plan.md`
+§16.4 and the Engineering Review pending at P105-08):
+
+  ID            Area                                                          Severity    Status
+  ------------- ------------------------------------------------------------- ----------- -------
+  F-105-008     Test comment arithmetic description imprecise                 Non-blocking Open
+  F-105-013     Annual overview `year` / `now` latent inconsistency          Low          Open
+  F-104-006     Clock-sensitive E2E / integration tests (partially resolved)  High         Open
+
+EPIC-105 findings F-105-001 through F-105-007 are closed; F-105-P-007
+(performance N+1 concern) is evidenced and measured at MVP scale; no
+optimization is required without a threshold from PD-105-008.
 
 Do not use "technical debt" as a label for unimplemented planned
 features.
@@ -1614,6 +1679,15 @@ F-104-004: utilization compares period consumption against current
 monthly capacity with no rollover, carry-over, or expiry semantics.
 OBD-006 remains deferred to R1-E06 and is not satisfied by the
 dashboard's 80 percent bar-colour cue.
+
+EPIC-105 did not close any OBD. OBD-012 gates rollover/expiry
+semantics only: EPIC-105 implemented pro-rata capacity (no rollover,
+no carry-over, no expiry) as its intentional behaviour, and OBD-012
+remains open for the future rollover decision. OBD-001, OBD-002,
+OBD-011, and OBD-016 remain open and gate revenue reporting. PD-105-008
+(performance threshold) was accepted as a default with no threshold
+established; the measured baseline is recorded in the Engineering
+Review (F-104-P-001 now measured, not closed).
 
 ------------------------------------------------------------------------
 
@@ -1837,29 +1911,29 @@ The exact parallelization will be determined during each Epic plan.
 
 # 47. Current Next Action
 
-Release 0 Foundation engineering is complete. EPIC-101 Client
-Management, EPIC-102 Contract Management, EPIC-103 Time Tracking, and
-EPIC-104 Analytics & Dashboard are engineering-complete. The next
-planned product Epic is Reporting. Do not start it without an Epic
-plan.
+EPIC-105 Reporting is engineering-complete (COMPLETE WITH DOCUMENTED
+ENVIRONMENTAL GATE EXCEPTION). P105-07 documentation synchronization is
+complete. The next step is the Engineering Review.
 
 Next actions:
 
 ``` text
 1. Open a new Cursor chat
-2. Create docs/epics/EPIC-105/epic-plan.md before implementation
-3. Execute EPIC-105 — R1-E05 Reporting
+2. Execute P105-08 — EPIC-105 Engineering Review
+3. Produce docs/epics/EPIC-105/engineering-review.md
 ```
 
-Before R1-E05 planning, obtain Product Owner clarification on
-F-104-003 (PD-104-004 `validTo` versus capacity semantics) and
-F-104-017 (PD-104-003 period end). R1-E05 reuses both semantics and
-exposes the arbitrary date ranges that make F-104-004's unscaled
-monthly denominator material.
+The Engineering Review (P105-08) requires no code changes. It produces
+the verdict, per-suite evidence, findings summary, inherited findings
+status, OBD relevance, and production-readiness limitations for
+EPIC-105. It depends on P105-07 being complete.
+
+Before starting R1-E06 Alerts and Notifications, resolve OBD-006
+(capacity warning threshold) and confirm the alert trigger semantics.
 
 This follows the methodology's rule that each Phase gets a focused
 Cursor chat, a defined commit expectation, review, approval, and then
-progression to the next Phase. fileciteturn1file0L59-L87
+progression to the next Phase.
 
 ------------------------------------------------------------------------
 
@@ -1903,22 +1977,25 @@ releases:
     status: future
 
 last_completed:
-  epic: EPIC-104
-  objective: Analytics & Dashboard
-  verdict: pass-with-findings
+  epic: EPIC-105
+  objective: Reporting
+  verdict: complete-with-documented-environmental-gate-exception
   engineering_status: complete
   blocking_findings: none
   production_readiness: false
   tests:
-    unit: 216
-    integration: 148
-    e2e: 37
+    unit: 331
+    integration: 187
+    e2e: 51
+  environmental_exceptions:
+    - inherited F-104-006 clock-sensitive E2E failures (2 tests, time-tracking.spec.ts)
+    - inherited F-104-006 clock-sensitive integration failure (1 test, analytics-isolation.test.ts)
 
 next:
   epic: EPIC-105
-  phase: planning
-  objective: Reporting
-  implementation: epic-104-complete
+  phase: engineering-review
+  objective: P105-08 Engineering Review
+  implementation: epic-105-complete
 ```
 
 ------------------------------------------------------------------------
