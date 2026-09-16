@@ -83,16 +83,18 @@ describe("requireWorkspaceAccess", () => {
     });
   });
 
-  it("defaults timezone to UTC when no workspaces repository is provided", async () => {
+  it("defaults timezone to UTC when workspace record is not found", async () => {
     const record = membership({ role: "MEMBER" });
     const members = membersLookingUp((workspaceId, userId) =>
       workspaceId === record.workspaceId && userId === record.userId
         ? record
         : null,
     );
+    // Workspace exists in members but not in workspaces repository
+    const workspaces = workspacesWith([]);
 
     await expect(
-      requireWorkspaceAccess("user-1", "workspace-owned", members),
+      requireWorkspaceAccess("user-1", "workspace-owned", members, workspaces),
     ).resolves.toEqual({
       workspaceId: "workspace-owned",
       userId: "user-1",
@@ -103,9 +105,10 @@ describe("requireWorkspaceAccess", () => {
 
   it("denies a user who is not a member of the requested workspace", async () => {
     const members = membersLookingUp(() => null);
+    const workspaces = workspacesWith([]);
 
     await expect(
-      requireWorkspaceAccess("user-1", "workspace-foreign", members),
+      requireWorkspaceAccess("user-1", "workspace-foreign", members, workspaces),
     ).rejects.toBeInstanceOf(UnauthorizedWorkspaceAccessError);
   });
 
@@ -114,9 +117,10 @@ describe("requireWorkspaceAccess", () => {
     const members = membersLookingUp((workspaceId, userId) =>
       workspaceId === owned.workspaceId && userId === owned.userId ? owned : null,
     );
+    const workspaces = workspacesWith([]);
 
     await expect(
-      requireWorkspaceAccess("user-1", "workspace-other", members),
+      requireWorkspaceAccess("user-1", "workspace-other", members, workspaces),
     ).rejects.toSatisfy((error: unknown) => {
       return (
         error instanceof UnauthorizedWorkspaceAccessError &&

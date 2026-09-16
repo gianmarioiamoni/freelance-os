@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { TimeEntryList } from "@/features/time-entries/TimeEntryList";
 import { WeeklyTimesheet } from "@/features/time-entries/WeeklyTimesheet";
 import { loadTimeEntriesForDate, loadTimeEntriesForWeek, loadClientsAndContracts } from "@/features/time-entries/load-time-entries";
+import { getWeekStartFromDate } from "@/lib/analytics-periods";
 import Link from "next/link";
 import type { JSX } from "react";
 
@@ -23,13 +24,6 @@ function parseDate(dateString?: string): Date {
   }
 }
 
-function getWeekStart(date: Date): Date {
-  const weekStart = new Date(date);
-  const dayOfWeek = weekStart.getDay(); // 0 = Sunday, 1 = Monday, etc.
-  const daysFromMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // Make Monday = 0
-  weekStart.setDate(weekStart.getDate() - daysFromMonday);
-  return weekStart;
-}
 
 function getPreviousDate(date: Date): string {
   const prev = new Date(date);
@@ -63,7 +57,7 @@ export default async function TimeTrackingPage({
   const selectedDate = parseDate(params.date || params.start);
   
   if (view === "week") {
-    const weekStart = params.start ? parseDate(params.start) : getWeekStart(selectedDate);
+    const weekStart = params.start ? parseDate(params.start) : getWeekStartFromDate(selectedDate);
     const [timeEntries, { clients, contracts }] = await Promise.all([
       loadTimeEntriesForWeek(weekStart),
       loadClientsAndContracts(),
@@ -129,7 +123,7 @@ export default async function TimeTrackingPage({
 
   const prevDay = getPreviousDate(selectedDate);
   const nextDay = getNextDate(selectedDate);
-  const weekStart = getWeekStart(selectedDate);
+  const weekStart = getWeekStartFromDate(selectedDate);
 
   return (
     <>

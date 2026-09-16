@@ -26,14 +26,17 @@ export const resolveSessionWorkspace = cache(
       return { status: "unauthenticated" };
     }
 
+    const repos = createRepositories();
+    const resolution = await resolveWorkspaceContext(
+      session.user.id,
+      repos.members,
+      repos.workspaces,
+    );
+
     return {
       status: "authenticated",
       userId: session.user.id,
-      resolution: await resolveWorkspaceContext(
-        session.user.id,
-        createRepositories().members,
-        createRepositories().workspaces,
-      ),
+      resolution,
     };
   },
 );

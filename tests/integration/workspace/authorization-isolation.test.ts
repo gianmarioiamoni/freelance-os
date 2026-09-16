@@ -104,7 +104,7 @@ describe("workspace authorization and isolation", () => {
     const { userA, workspaceB } = await createIsolatedTenants();
 
     await expect(
-      requireWorkspaceAccess(userA, workspaceB.workspace.id, repositories.members),
+      requireWorkspaceAccess(userA, workspaceB.workspace.id, repositories.members, repositories.workspaces),
     ).rejects.toBeInstanceOf(UnauthorizedWorkspaceAccessError);
   });
 
@@ -114,7 +114,7 @@ describe("workspace authorization and isolation", () => {
     expect(workspaceB.workspace.id).not.toBe(workspaceA.workspace.id);
 
     await expect(
-      requireWorkspaceAccess(userA, workspaceB.workspace.id, repositories.members),
+      requireWorkspaceAccess(userA, workspaceB.workspace.id, repositories.members, repositories.workspaces),
     ).rejects.toSatisfy((error: unknown) => {
       return (
         error instanceof UnauthorizedWorkspaceAccessError &&
@@ -206,7 +206,7 @@ describe("workspace authorization and isolation", () => {
     );
 
     await expect(
-      requireWorkspaceAccess(userId, foreign.workspace.id, repositories.members),
+      requireWorkspaceAccess(userId, foreign.workspace.id, repositories.members, repositories.workspaces),
     ).rejects.toBeInstanceOf(UnauthorizedWorkspaceAccessError);
     await expect(
       getAuthorizedWorkspace(userId, foreign.workspace.id, authorizedRead),

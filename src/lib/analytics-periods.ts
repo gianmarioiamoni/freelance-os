@@ -102,6 +102,21 @@ export function getCurrentYearPeriod(timezone: string, now: Date = new Date()): 
   return { startDate, endDate };
 }
 
+/**
+ * Returns the Monday that starts the ISO week containing `date`.
+ * `date` is treated as a UTC-midnight calendar date (as produced by the
+ * period constructors above and by URL search-parameter parsing).
+ * PD-105-009: Monday-start convention, shared across time-tracking and reporting.
+ * F-105-P-003: promoted from `src/app/(app)/time-tracking/page.tsx`.
+ */
+export function getWeekStartFromDate(date: Date): Date {
+  const dayOfWeek = date.getUTCDay(); // 0 = Sunday
+  const daysFromMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+  const weekStart = new Date(date);
+  weekStart.setUTCDate(date.getUTCDate() - daysFromMonday);
+  return weekStart;
+}
+
 // ---------------------------------------------------------------------------
 // Historical period constructors (natural end — BR-105-015)
 // ---------------------------------------------------------------------------

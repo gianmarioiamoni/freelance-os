@@ -13,7 +13,7 @@ export async function requireWorkspaceAccess(
   userId: string,
   workspaceId: string,
   members: WorkspaceMemberRepository,
-  workspaces?: WorkspaceRepository,
+  workspaces: WorkspaceRepository,
 ): Promise<WorkspaceContext> {
   const membership = await members.getMember(workspaceId, userId);
 
@@ -21,9 +21,7 @@ export async function requireWorkspaceAccess(
     throw new UnauthorizedWorkspaceAccessError();
   }
 
-  const workspace = workspaces
-    ? await workspaces.getWorkspaceById(workspaceId)
-    : null;
+  const workspace = await workspaces.getWorkspaceById(workspaceId);
 
   return toWorkspaceContext(membership, workspace?.timezone ?? "UTC");
 }

@@ -3,6 +3,7 @@ import type {
   AnalyticsPeriod, 
   MonthlyAnalytics, 
   DailyAnalytics,
+  WeeklyAnalytics,
   ClientAllocation,
   ContractUtilization,
 } from "@/domain/analytics-types";
@@ -83,6 +84,38 @@ export class AnalyticsService {
     }
 
     return await this.analytics.getDailyAnalytics(context.workspaceId, period);
+  }
+
+  /**
+   * Gets weekly analytics for a period by composing daily analytics rows (F-104-013).
+   * Weekly totals are the arithmetic sum of all daily rows within the period.
+   * Reuses getDailyAnalytics so no new SQL or repository method is needed.
+   * BR-105-014: the period must be resolved against Workspace.timezone before calling.
+   */
+  async getWeeklyAnalytics(
+    context: WorkspaceContext,
+    period: AnalyticsPeriod
+  ): Promise<WeeklyAnalytics> {
+    await this.requireMembership(context);
+
+    if (!isValidPeriod(period)) {
+      throw new AnalyticsError("Invalid period: start date must be <= end date");
+    }
+
+    const days = await this.analytics.getDailyAnalytics(context.workspaceId, period);
+
+    const totalMinutes = days.reduce((sum, d) => sum + d.totalMinutes, 0);
+    const billableMinutes = days.reduce((sum, d) => sum + d.billableMinutes, 0);
+    const nonBillableMinutes = days.reduce((sum, d) => sum + d.nonBillableMinutes, 0);
+
+    return {
+      period,
+      totalMinutes,
+      billableMinutes,
+      nonBillableMinutes,
+      billablePercentage: AnalyticsService.calculateBillablePercentage(billableMinutes, totalMinutes),
+      days,
+    };
   }
 
   /**
