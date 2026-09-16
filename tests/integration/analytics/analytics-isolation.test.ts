@@ -207,12 +207,20 @@ describe("Analytics Workspace Isolation", () => {
 
     const result = await analytics.getMonthlyAnalytics(context, period);
 
-    // Verify utilization includes ALL time (billable + non-billable)
+    // Verify utilization includes ALL time (billable + non-billable) per PD-104-002.
+    // The period 2026-09-01 is outside the contract validity [2026-01-01, 2026-07-01),
+    // so pro-rata overlap = 0 days → contractedMinutes = 0 → utilizationPercentage = null
+    // (BR-104-011: zero denominator yields null, not division by zero).
+    // The contract appears via in-period consumption (BR-105-018 relevance union).
+    // F-105-P-009: consumption retained, percentage null, isOutOfValidity true.
     expect(result.contractUtilizations).toHaveLength(1);
-    expect(result.contractUtilizations[0].consumedMinutes).toBe(480); // 5h + 3h = 8h
-    expect(result.contractUtilizations[0].contractedMinutes).toBe(4800); // 80h
-    expect(result.contractUtilizations[0].utilizationPercentage).toBe(10); // 8h / 80h = 10%
+    expect(result.contractUtilizations[0].consumedMinutes).toBe(480); // 5h + 3h = 8h — ALL time
+    expect(result.contractUtilizations[0].contractedMinutes).toBe(0); // no overlap → 0 pro-rata
+    expect(result.contractUtilizations[0].utilizationPercentage).toBeNull(); // null: zero denominator
+    // BR-105-016: isOngoing ≡ validTo === null. This contract has validTo: 2026-07-01 → false.
     expect(result.contractUtilizations[0].isOngoing).toBe(false);
+    // BR-105-018: time is outside validity → flagged.
+    expect(result.contractUtilizations[0].isOutOfValidity).toBe(true);
   });
 
   it("should handle unlimited contracts per PD-104-004", async () => {
@@ -243,12 +251,17 @@ describe("Analytics Workspace Isolation", () => {
 
     const result = await analytics.getMonthlyAnalytics(context, period);
 
-    // Verify unlimited contract handling
+    // Verify unlimited contract handling per PD-104-004 / BR-105-016.
+    // The default fixture contract has monthlyContractedMinutes: null (unlimited)
+    // and validTo: date("2026-07-01") (finite). Period 2026-09-01 is outside validity.
+    // contractedMinutes = null (unlimited — no denominator invented, BR-105-017).
+    // BR-105-016: isOngoing ≡ validTo === null → false (finite validTo).
     expect(result.contractUtilizations).toHaveLength(1);
     expect(result.contractUtilizations[0].consumedMinutes).toBe(480);
-    expect(result.contractUtilizations[0].contractedMinutes).toBe(null); // Unlimited
-    expect(result.contractUtilizations[0].utilizationPercentage).toBe(null);
-    expect(result.contractUtilizations[0].isOngoing).toBe(true);
+    expect(result.contractUtilizations[0].contractedMinutes).toBeNull(); // unlimited
+    expect(result.contractUtilizations[0].utilizationPercentage).toBeNull(); // null: no denominator
+    // BR-105-016: validTo is date("2026-07-01") (finite) → isOngoing is false.
+    expect(result.contractUtilizations[0].isOngoing).toBe(false);
   });
 
   it("should handle future time entries when included in range", async () => {

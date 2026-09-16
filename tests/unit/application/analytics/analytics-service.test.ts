@@ -53,10 +53,13 @@ const mockMonthlyAnalytics: MonthlyAnalytics = {
     {
       contractId: "contract-1",
       clientName: "ACME Corp",
+      validFrom: new Date("2026-01-01T00:00:00.000Z"),
+      validTo: new Date("2027-01-01T00:00:00.000Z"),
+      isOngoing: false,
       consumedMinutes: 3600,
       contractedMinutes: 4800,
       utilizationPercentage: 75,
-      isOngoing: false,
+      isOutOfValidity: false,
     },
   ],
 };
@@ -290,10 +293,13 @@ describe("AnalyticsService", () => {
         {
           contractId: "contract-1",
           clientName: "ACME Corp",
+          validFrom: new Date("2026-01-01T00:00:00.000Z"),
+          validTo: new Date("2027-01-01T00:00:00.000Z"),
+          isOngoing: false,
           consumedMinutes: 3600,
           contractedMinutes: 4800,
           utilizationPercentage: 75,
-          isOngoing: false,
+          isOutOfValidity: false,
         },
       ];
 
@@ -322,10 +328,13 @@ describe("AnalyticsService", () => {
         {
           contractId: "contract-2",
           clientName: "Gamma Inc",
-          consumedMinutes: 2400,
-          contractedMinutes: null, // unlimited contract
-          utilizationPercentage: null,
+          validFrom: new Date("2026-01-01T00:00:00.000Z"),
+          validTo: null, // ongoing
           isOngoing: true,
+          consumedMinutes: 2400,
+          contractedMinutes: null, // unlimited — no capacity denominator
+          utilizationPercentage: null,
+          isOutOfValidity: false,
         },
       ];
 
@@ -429,14 +438,14 @@ describe("AnalyticsService", () => {
     });
   });
 
-  describe("isOngoingUtilization", () => {
-    it("should return true for null contracted minutes", () => {
+  describe("isOngoingUtilization (BR-105-016: ongoing ≡ validTo === null)", () => {
+    it("should return true for null validTo (ongoing contract)", () => {
       expect(AnalyticsService.isOngoingUtilization(null)).toBe(true);
     });
 
-    it("should return false for finite contracted minutes", () => {
-      expect(AnalyticsService.isOngoingUtilization(4800)).toBe(false);
-      expect(AnalyticsService.isOngoingUtilization(0)).toBe(false);
+    it("should return false for a finite validTo date", () => {
+      expect(AnalyticsService.isOngoingUtilization(new Date("2027-01-01"))).toBe(false);
+      expect(AnalyticsService.isOngoingUtilization(new Date("2026-07-01"))).toBe(false);
     });
   });
 });

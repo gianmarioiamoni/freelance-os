@@ -229,11 +229,66 @@ export class AnalyticsService {
   }
 
   /**
-   * Determines if a contract utilization should show as "Ongoing"
-   * per PD-104-004 (contracts with validTo = null)
+   * Determines if a contract is ongoing.
+   * BR-105-016: ongoing ≡ validTo === null. Independent from capacity.
+   * @deprecated Use validTo === null directly. This helper exists for
+   *   backward compatibility; callers should prefer the direct check.
    */
-  static isOngoingUtilization(contractedMinutes: number | null): boolean {
-    return contractedMinutes === null;
+  static isOngoingUtilization(validTo: Date | null): boolean {
+    return validTo === null;
+  }
+
+  /**
+   * Calculates pro-rated contractual capacity for a reporting period (BR-105-017).
+   *
+   * Formula:
+   *   overlapDays = max(0, min(periodEnd, contractEffectiveEnd) − max(periodStart, validFrom) + 1)
+   *   proRataMinutes = monthlyContractedMinutes × (overlapDays / periodDays)
+   *
+   * Boundary convention: [validFrom, validTo) — validTo is exclusive.
+   * When validTo is null the contract is ongoing; its effective end is treated as
+   * one day past the period end, so the overlap is always the full period (or
+   * whatever portion follows validFrom).
+   *
+   * Returns null when monthlyContractedMinutes is null — no denominator is invented.
+   * No rollover, carry-over, or expiry semantics are applied (OBD-012 open).
+   *
+   * @param monthlyContractedMinutes - Monthly capacity in minutes, or null.
+   * @param validFrom                - Contract validity start (inclusive).
+   * @param validTo                  - Contract validity end (exclusive). null = ongoing.
+   * @param period                   - The reporting period.
+   */
+  static calculateProRataCapacity(
+    monthlyContractedMinutes: number | null,
+    validFrom: Date,
+    validTo: Date | null,
+    period: AnalyticsPeriod,
+  ): number | null {
+    if (monthlyContractedMinutes === null) {
+      return null;
+    }
+
+    const periodDays = getPeriodDays(period);
+
+    // [validFrom, validTo) — validTo is exclusive, so the last inclusive day is validTo − 1.
+    // When validTo is null the contract never ends; effective inclusive end = periodEnd.
+    const contractInclusiveEnd =
+      validTo === null
+        ? period.endDate
+        : new Date(validTo.getTime() - 24 * 60 * 60 * 1000); // validTo − 1 day
+
+    const overlapStart = period.startDate > validFrom ? period.startDate : validFrom;
+    const overlapEnd = period.endDate < contractInclusiveEnd ? period.endDate : contractInclusiveEnd;
+
+    const overlapDays = overlapEnd >= overlapStart
+      ? Math.round((overlapEnd.getTime() - overlapStart.getTime()) / (1000 * 60 * 60 * 24)) + 1
+      : 0;
+
+    if (overlapDays <= 0) {
+      return 0;
+    }
+
+    return (monthlyContractedMinutes * overlapDays) / periodDays;
   }
 }
 

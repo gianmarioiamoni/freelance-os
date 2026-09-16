@@ -235,9 +235,11 @@ describe("Analytics Product Decisions Verification", () => {
       expect(analytics.contractUtilizations).toHaveLength(1);
       const utilization = analytics.contractUtilizations[0];
       expect(utilization.consumedMinutes).toBe(840); // ALL tracked time
-      expect(utilization.contractedMinutes).toBe(2400);
-      expect(utilization.utilizationPercentage).toBe(35); // 840/2400 = 35%
-      expect(utilization.isOngoing).toBe(false);
+      // Pro-rata: contract starts day 1, ongoing → full period overlap → 2400.
+      expect(utilization.contractedMinutes).toBeCloseTo(2400, 0);
+      expect(utilization.utilizationPercentage).toBeCloseTo(35, 0); // 840/2400 = 35%
+      // BR-105-016: isOngoing ≡ validTo === null. This contract has validTo: null → true.
+      expect(utilization.isOngoing).toBe(true);
     });
 
     it("keeps billable percentage separate from utilization percentage", async () => {

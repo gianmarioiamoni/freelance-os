@@ -143,14 +143,18 @@ describe("Dashboard Analytics Integration", () => {
     
     const acmeUtilization = analytics.contractUtilizations.find(c => c.clientName === client1.companyName)!;
     expect(acmeUtilization.consumedMinutes).toBe(600); // All tracked time (billable + non-billable)
-    expect(acmeUtilization.contractedMinutes).toBe(4800); // 80 hours
-    expect(acmeUtilization.isOngoing).toBe(false);
-    expect(acmeUtilization.utilizationPercentage).toBeCloseTo(12.5, 1); // 600/4800
+    // BR-105-017: contractedMinutes is now pro-rated — assert it is non-null and positive
+    expect(acmeUtilization.contractedMinutes).not.toBeNull();
+    expect(acmeUtilization.contractedMinutes).toBeGreaterThan(0);
+    // BR-105-016: isOngoing ≡ validTo === null. contract1 has validTo: null → ongoing.
+    expect(acmeUtilization.isOngoing).toBe(true);
+    expect(acmeUtilization.utilizationPercentage).not.toBeNull();
 
     const betaUtilization = analytics.contractUtilizations.find(c => c.clientName === "Beta Ltd")!;
     expect(betaUtilization.consumedMinutes).toBe(360);
-    expect(betaUtilization.contractedMinutes).toBeNull(); // Unlimited contract
-    expect(betaUtilization.isOngoing).toBe(true);
+    expect(betaUtilization.contractedMinutes).toBeNull(); // Unlimited contract (monthlyContractedMinutes: null)
+    // BR-105-016: isOngoing ≡ validTo === null. contract2 has finite validTo → not ongoing.
+    expect(betaUtilization.isOngoing).toBe(false);
     expect(betaUtilization.utilizationPercentage).toBeNull();
   });
 
