@@ -8,6 +8,7 @@ import {
 import type { WorkspaceContext } from "@/application/workspace/workspace-context";
 import { repositories } from "../persistence/helpers";
 import { createWorkspaceGraph } from "../persistence/fixtures";
+import type { AnalyticsPeriod } from "@/domain/analytics-types";
 
 /**
  * Integration tests for ReportingService (P105-04).
@@ -676,5 +677,213 @@ describe("ReportingService integration", () => {
     // Sep period = 16 days: 4800 × 16/16 = 4800 (contract covers all).
     expect(sepUtil!.contractedMinutes).toBeCloseTo(4800, 4);
     // Capacity is NOT aug's 4800 + sep's 4800 — no rollover.
+  });
+
+  // --------------------------------------------------------------------------
+  // F-105-010: Archived-client integration test (BR-104-007 / PD-104-001)
+  // --------------------------------------------------------------------------
+
+  it("archived-client time is included and the client is accessible via the reporting path (PD-104-001)", async () => {
+    // An archived client's time must be retained in the reporting layer, not filtered.
+    // The underlying analytics rule (PD-104-001) is verified here at the ReportingService boundary.
+    const workCtx: WorkspaceContext = {
+      workspaceId: context.workspaceId,
+      userId: context.userId,
+      role: "OWNER",
+      timezone: "UTC",
+    };
+
+    // Create and archive a client.
+    const archivedClient = await repositories.clients.createClient(context.workspaceId, {
+      companyName: "Archived Corp",
+    });
+    await repositories.clients.archiveClient(context.workspaceId, archivedClient.id);
+
+    // Create a contract for the archived client valid over the period.
+    const archivedContract = await repositories.contracts.createContract(context.workspaceId, {
+      clientId: archivedClient.id,
+      validFrom: d("2026-01-01"),
+      validTo: d("2027-01-01"),
+      billingModel: "HOURLY",
+      rate: "100.0000",
+      currency: "EUR",
+      monthlyContractedMinutes: 4800,
+    });
+
+    // Record time for the archived client inside the period.
+    await repositories.timeEntries.recordTimeEntry(context.workspaceId, {
+      userId: context.userId,
+      clientId: archivedClient.id,
+      contractId: archivedContract.id,
+      workDate: d("2026-09-10"),
+      durationMinutes: 360, // 6 hours
+      billable: true,
+    });
+
+    const report = await reportingService.getContractReport(workCtx, { kind: "month" }, NOW);
+
+    // The archived client's contract must appear in the report (PD-104-001).
+    const util = report.contractUtilizations.find(u => u.contractId === archivedContract.id);
+    expect(util).toBeDefined();
+    expect(util!.clientName).toBe("Archived Corp");
+    expect(util!.consumedMinutes).toBe(360); // not dropped
+    expect(util!.contractedMinutes).not.toBeNull();
+    expect(util!.utilizationPercentage).not.toBeNull();
+
+    // Hours-by-client must also include the archived client.
+    const clientReport = await reportingService.getHoursByClient(workCtx, { kind: "month" }, NOW);
+    const clientAllocation = clientReport.clientAllocations.find(
+      a => a.clientName === "Archived Corp",
+    );
+    expect(clientAllocation).toBeDefined();
+    expect(clientAllocation!.isArchived).toBe(true); // flagged as archived
+    expect(clientAllocation!.totalMinutes).toBe(360);
+  });
+
+  // --------------------------------------------------------------------------
+  // F-105-011: Zero-activity integration test
+  // --------------------------------------------------------------------------
+
+  it("zero-activity period: relevant contracts appear with 0h, capacity retained, 0% utilization", async () => {
+    // A period with no tracked activity at all.
+    // Contracts with validity overlap still appear (BR-105-018).
+    const workCtx: WorkspaceContext = {
+      workspaceId: context.workspaceId,
+      userId: context.userId,
+      role: "OWNER",
+      timezone: "UTC",
+    };
+
+    // Contract with finite capacity, valid over the period — no time entries.
+    const clientFinite = await repositories.clients.createClient(context.workspaceId, {
+      companyName: "Zero Activity Finite",
+    });
+    const finiteContract = await repositories.contracts.createContract(context.workspaceId, {
+      clientId: clientFinite.id,
+      validFrom: d("2026-01-01"),
+      validTo: d("2027-01-01"),
+      billingModel: "HOURLY",
+      rate: "100.0000",
+      currency: "EUR",
+      monthlyContractedMinutes: 4800,
+    });
+
+    // Contract with null capacity, valid over the period — no time entries.
+    const clientNull = await repositories.clients.createClient(context.workspaceId, {
+      companyName: "Zero Activity Null",
+    });
+    const nullContract = await repositories.contracts.createContract(context.workspaceId, {
+      clientId: clientNull.id,
+      validFrom: d("2026-01-01"),
+      validTo: d("2027-01-01"),
+      billingModel: "DAILY",
+      rate: "800.0000",
+      currency: "EUR",
+      monthlyContractedMinutes: null, // unlimited
+    });
+
+    // No time entries recorded for either contract.
+
+    const report = await reportingService.getContractReport(workCtx, { kind: "month" }, NOW);
+
+    // Finite-capacity contract: 0h consumed, capacity available, 0% utilization.
+    const finiteUtil = report.contractUtilizations.find(u => u.contractId === finiteContract.id);
+    expect(finiteUtil).toBeDefined();
+    expect(finiteUtil!.consumedMinutes).toBe(0); // zero tracked time
+    expect(finiteUtil!.contractedMinutes).not.toBeNull(); // capacity retained
+    expect(finiteUtil!.contractedMinutes).toBeGreaterThan(0);
+    expect(finiteUtil!.utilizationPercentage).toBe(0); // 0/capacity = 0%
+    expect(finiteUtil!.isOutOfValidity).toBe(false);
+
+    // Null-capacity contract: 0h consumed, null capacity, null utilization.
+    const nullUtil = report.contractUtilizations.find(u => u.contractId === nullContract.id);
+    expect(nullUtil).toBeDefined();
+    expect(nullUtil!.consumedMinutes).toBe(0);
+    expect(nullUtil!.contractedMinutes).toBeNull(); // no denominator
+    expect(nullUtil!.utilizationPercentage).toBeNull(); // null — not 0%
+  });
+
+  // --------------------------------------------------------------------------
+  // F-105-012: Dashboard-agreement assertion
+  // P105-04 plan §12, F-105-P-006: dedicated dashboard-agreement integration test.
+  // Proves that AnalyticsService (dashboard path) and ReportingService (reporting path)
+  // yield the same underlying business figures for the same period and workspace data.
+  // --------------------------------------------------------------------------
+
+  it("dashboard-agreement: ReportingService figures match AnalyticsService for the same period (F-105-P-006)", async () => {
+    // Shared deterministic period: Sep 1–16 (matches NOW-derived month period).
+    const period: AnalyticsPeriod = {
+      startDate: d("2026-09-01"),
+      endDate: d("2026-09-16"),
+    };
+    const workCtx: WorkspaceContext = {
+      workspaceId: context.workspaceId,
+      userId: context.userId,
+      role: "OWNER",
+      timezone: "UTC",
+    };
+
+    // Seed: one contract with finite capacity, one time entry.
+    const client = await repositories.clients.createClient(context.workspaceId, {
+      companyName: "Agreement Client",
+    });
+    const contract = await repositories.contracts.createContract(context.workspaceId, {
+      clientId: client.id,
+      validFrom: d("2026-01-01"),
+      validTo: d("2027-01-01"),
+      billingModel: "HOURLY",
+      rate: "100.0000",
+      currency: "EUR",
+      monthlyContractedMinutes: 4800,
+    });
+    await repositories.timeEntries.recordTimeEntry(context.workspaceId, {
+      userId: context.userId,
+      clientId: client.id,
+      contractId: contract.id,
+      workDate: d("2026-09-10"),
+      durationMinutes: 480, // 8 hours
+      billable: true,
+    });
+
+    // Dashboard path: AnalyticsService.getMonthlyAnalytics (called by the dashboard route).
+    const dashboardAnalytics = await analyticsService.getMonthlyAnalytics(workCtx, period);
+
+    // Reporting path: ReportingService.getContractReport (called by the reporting route).
+    const contractReport = await reportingService.getContractReport(
+      workCtx,
+      { kind: "custom", startDate: period.startDate, endDate: period.endDate },
+      NOW,
+    );
+
+    // The two paths must agree on total tracked minutes for the period.
+    const reportTotal = contractReport.contractUtilizations.reduce(
+      (sum, u) => sum + u.consumedMinutes, 0,
+    );
+    expect(reportTotal).toBe(dashboardAnalytics.totalMinutes);
+
+    // They must agree on the utilization figures for each contract.
+    const dashboardUtil = dashboardAnalytics.contractUtilizations.find(
+      u => u.contractId === contract.id,
+    );
+    const reportUtil = contractReport.contractUtilizations.find(
+      u => u.contractId === contract.id,
+    );
+
+    expect(dashboardUtil).toBeDefined();
+    expect(reportUtil).toBeDefined();
+
+    // Same consumed minutes — both use ALL tracked time (PD-104-002).
+    expect(reportUtil!.consumedMinutes).toBe(dashboardUtil!.consumedMinutes);
+
+    // Same pro-rated capacity — both use the same AnalyticsService calculation (BR-105-017).
+    expect(reportUtil!.contractedMinutes).toBe(dashboardUtil!.contractedMinutes);
+
+    // Same utilization percentage — single shared calculation, no divergence (F-104-002).
+    expect(reportUtil!.utilizationPercentage).toBe(dashboardUtil!.utilizationPercentage);
+
+    // Exact values (480/4800 = 10%); verifying both sides agree and are correct.
+    expect(reportUtil!.consumedMinutes).toBe(480);
+    expect(reportUtil!.contractedMinutes).toBe(4800); // full 16/16 overlap
+    expect(reportUtil!.utilizationPercentage).toBeCloseTo(10, 4); // 480/4800 × 100
   });
 });

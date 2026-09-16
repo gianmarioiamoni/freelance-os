@@ -143,12 +143,13 @@ describe("Dashboard Analytics Integration", () => {
     
     const acmeUtilization = analytics.contractUtilizations.find(c => c.clientName === client1.companyName)!;
     expect(acmeUtilization.consumedMinutes).toBe(600); // All tracked time (billable + non-billable)
-    // BR-105-017: contractedMinutes is now pro-rated — assert it is non-null and positive
-    expect(acmeUtilization.contractedMinutes).not.toBeNull();
-    expect(acmeUtilization.contractedMinutes).toBeGreaterThan(0);
+    // BR-105-017: contractedMinutes is pro-rated. contract1 has validFrom = first of last month
+    // (before period start) and validTo = null (ongoing → contractInclusiveEnd = periodEnd).
+    // Overlap = full current-month period → pro-rata = monthlyContractedMinutes × 1.0 = 4800.
+    expect(acmeUtilization.contractedMinutes).toBe(4800); // exact: full overlap
     // BR-105-016: isOngoing ≡ validTo === null. contract1 has validTo: null → ongoing.
     expect(acmeUtilization.isOngoing).toBe(true);
-    expect(acmeUtilization.utilizationPercentage).not.toBeNull();
+    expect(acmeUtilization.utilizationPercentage).toBeCloseTo((600 / 4800) * 100, 4); // 12.5%
 
     const betaUtilization = analytics.contractUtilizations.find(c => c.clientName === "Beta Ltd")!;
     expect(betaUtilization.consumedMinutes).toBe(360);

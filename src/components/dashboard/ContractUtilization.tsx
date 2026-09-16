@@ -40,28 +40,45 @@ export function ContractUtilization({ utilizations }: ContractUtilizationProps):
               : null;
             const utilizationPercentage = AnalyticsService.formatPercentage(utilization.utilizationPercentage);
             
+            // BR-105-016: isOngoing ≡ validTo === null (contract ongoing status).
+            // BR-105-016: contractedMinutes !== null ≡ finite capacity available.
+            // These two properties are INDEPENDENT. Display logic must respect both:
+            //   - Capacity/utilization display is governed by contractedMinutes (not isOngoing).
+            //   - Ongoing status is surfaced as an independent label.
+            const hasFiniteCapacity = utilization.contractedMinutes !== null;
+
             return (
               <div key={utilization.contractId} className="space-y-2">
                 <div className="space-y-1">
-                  <h3 className="font-medium text-sm">{utilization.clientName}</h3>
-                  
-                  {utilization.isOngoing ? (
-                    <div className="text-sm">
-                      <span aria-label={`${consumedHours} consumed, ongoing contract`}>
-                        <strong>{consumedHours}</strong> → <span className="text-muted-foreground">Ongoing</span>
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-medium text-sm">{utilization.clientName}</h3>
+                    {utilization.isOngoing && (
+                      <span className="text-xs text-muted-foreground" aria-label="ongoing contract">
+                        Ongoing
                       </span>
-                    </div>
-                  ) : (
+                    )}
+                  </div>
+
+                  {hasFiniteCapacity ? (
+                    // Finite capacity: show consumed / contracted and percentage.
+                    // Applies to both ongoing+finite and finite+finite contracts.
                     <div className="text-sm">
                       <span aria-label={`${consumedHours} consumed of ${contractedHours} contracted, ${utilizationPercentage} utilization`}>
                         <strong>{consumedHours}</strong> / {contractedHours}
                         <span className="ml-2 text-muted-foreground">({utilizationPercentage})</span>
                       </span>
                     </div>
+                  ) : (
+                    // Null capacity (unlimited): show only consumed hours, no denominator.
+                    <div className="text-sm">
+                      <span aria-label={`${consumedHours} consumed, unlimited capacity`}>
+                        <strong>{consumedHours}</strong>
+                      </span>
+                    </div>
                   )}
                 </div>
 
-                {!utilization.isOngoing && (
+                {hasFiniteCapacity && (
                   <div 
                     className="h-2 bg-muted rounded-full overflow-hidden"
                     role="progressbar"
