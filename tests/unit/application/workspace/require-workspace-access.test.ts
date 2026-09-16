@@ -2,8 +2,8 @@
 import { describe, expect, it } from "vitest";
 
 import { requireWorkspaceAccess } from "@/application/workspace/require-workspace-access";
-import type { WorkspaceMemberRecord } from "@/domain/persistence-types";
-import type { WorkspaceMemberRepository } from "@/domain/repositories";
+import type { WorkspaceMemberRecord, WorkspaceRecord } from "@/domain/persistence-types";
+import type { WorkspaceMemberRepository, WorkspaceRepository } from "@/domain/repositories";
 import { UnauthorizedWorkspaceAccessError } from "@/domain/workspace-errors";
 
 function membership(
@@ -34,8 +34,56 @@ function membersLookingUp(
   };
 }
 
+function workspacesWith(
+  workspaces: WorkspaceRecord[],
+): WorkspaceRepository {
+  return {
+    createWorkspace: async () => {
+      throw new Error("not used");
+    },
+    getWorkspaceById: async (workspaceId) =>
+      workspaces.find((w) => w.id === workspaceId) ?? null,
+    updateWorkspace: async () => {
+      throw new Error("not used");
+    },
+  };
+}
+
+function workspaceRecord(
+  overrides: Partial<WorkspaceRecord> = {},
+): WorkspaceRecord {
+  return {
+    id: "workspace-owned",
+    name: "Owned Studio",
+    timezone: "Europe/Rome",
+    currency: "EUR",
+    createdAt: new Date("2026-01-01T00:00:00.000Z"),
+    updatedAt: new Date("2026-01-01T00:00:00.000Z"),
+    ...overrides,
+  };
+}
+
 describe("requireWorkspaceAccess", () => {
-  it("returns the authorized context for a valid membership", async () => {
+  it("returns the authorized context with timezone for a valid membership", async () => {
+    const record = membership({ role: "MEMBER" });
+    const members = membersLookingUp((workspaceId, userId) =>
+      workspaceId === record.workspaceId && userId === record.userId
+        ? record
+        : null,
+    );
+    const workspaces = workspacesWith([workspaceRecord({ timezone: "America/Los_Angeles" })]);
+
+    await expect(
+      requireWorkspaceAccess("user-1", "workspace-owned", members, workspaces),
+    ).resolves.toEqual({
+      workspaceId: "workspace-owned",
+      userId: "user-1",
+      role: "MEMBER",
+      timezone: "America/Los_Angeles",
+    });
+  });
+
+  it("defaults timezone to UTC when no workspaces repository is provided", async () => {
     const record = membership({ role: "MEMBER" });
     const members = membersLookingUp((workspaceId, userId) =>
       workspaceId === record.workspaceId && userId === record.userId
@@ -49,6 +97,7 @@ describe("requireWorkspaceAccess", () => {
       workspaceId: "workspace-owned",
       userId: "user-1",
       role: "MEMBER",
+      timezone: "UTC",
     });
   });
 

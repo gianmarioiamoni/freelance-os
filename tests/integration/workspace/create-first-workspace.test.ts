@@ -40,10 +40,11 @@ describe("createFirstWorkspace", () => {
       workspaceId: created.workspace.id,
       userId: "auth-user-1",
       role: "OWNER",
+      timezone: "Europe/Rome",
     });
 
     await expect(
-      resolveWorkspaceContext("auth-user-1", repositories.members),
+      resolveWorkspaceContext("auth-user-1", repositories.members, repositories.workspaces),
     ).resolves.toEqual({
       status: "resolved",
       context: created.context,

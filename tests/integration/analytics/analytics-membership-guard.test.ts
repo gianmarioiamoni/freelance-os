@@ -40,7 +40,7 @@ describe("AnalyticsService membership guard", () => {
       "owner-123"
     );
 
-    const context = toWorkspaceContext(membership as WorkspaceMemberRecord);
+    const context = toWorkspaceContext(membership as WorkspaceMemberRecord, "UTC");
     const period = getCurrentMonthPeriod();
 
     // Should not throw
@@ -67,6 +67,7 @@ describe("AnalyticsService membership guard", () => {
     const fakeContext: WorkspaceContext = {
       workspaceId: workspace.id,
       userId: "intruder-789",
+      timezone: "UTC",
       role: "OWNER", // Role doesn't matter; membership check is authoritative
     };
 
@@ -84,6 +85,7 @@ describe("AnalyticsService membership guard", () => {
       workspaceId: randomUUID(),
       userId: "user-123",
       role: "OWNER",
+      timezone: "UTC",
     };
 
     const period = getCurrentMonthPeriod();
@@ -110,6 +112,7 @@ describe("AnalyticsService membership guard", () => {
       workspaceId: workspace.id,
       userId: "intruder-111",
       role: "OWNER",
+      timezone: "UTC",
     };
 
     await expect(
@@ -134,6 +137,7 @@ describe("AnalyticsService membership guard", () => {
       workspaceId: workspace.id,
       userId: "intruder-222",
       role: "OWNER",
+      timezone: "UTC",
     };
 
     const period = getCurrentMonthPeriod();
@@ -160,6 +164,7 @@ describe("AnalyticsService membership guard", () => {
       workspaceId: workspace.id,
       userId: "intruder-333",
       role: "OWNER",
+      timezone: "UTC",
     };
 
     const period = getCurrentMonthPeriod();
@@ -186,6 +191,7 @@ describe("AnalyticsService membership guard", () => {
       workspaceId: workspace.id,
       userId: "intruder-444",
       role: "OWNER",
+      timezone: "UTC",
     };
 
     const period = getCurrentMonthPeriod();

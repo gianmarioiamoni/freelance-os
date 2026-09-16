@@ -82,29 +82,31 @@ describe("workspace membership resolution", () => {
     });
 
     await expect(
-      requireWorkspaceAccess("member-user", owned.id, repositories.members),
+      requireWorkspaceAccess("member-user", owned.id, repositories.members, repositories.workspaces),
     ).resolves.toEqual({
       workspaceId: owned.id,
       userId: "member-user",
       role: "OWNER",
+      timezone: "Europe/Rome",
     });
 
     await expect(
-      requireWorkspaceAccess("member-user", foreign.id, repositories.members),
+      requireWorkspaceAccess("member-user", foreign.id, repositories.members, repositories.workspaces),
     ).rejects.toBeInstanceOf(UnauthorizedWorkspaceAccessError);
 
     await expect(
-      resolveWorkspaceContext("onboarding-user", repositories.members),
+      resolveWorkspaceContext("onboarding-user", repositories.members, repositories.workspaces),
     ).resolves.toEqual({ status: "onboarding_required" });
 
     await expect(
-      resolveWorkspaceContext("member-user", repositories.members),
+      resolveWorkspaceContext("member-user", repositories.members, repositories.workspaces),
     ).resolves.toEqual({
       status: "resolved",
       context: {
         workspaceId: owned.id,
         userId: "member-user",
         role: "OWNER",
+        timezone: "Europe/Rome",
       },
     });
   });

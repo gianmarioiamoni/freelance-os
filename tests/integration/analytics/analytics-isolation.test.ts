@@ -16,12 +16,14 @@ describe("Analytics Workspace Isolation", () => {
       workspaceId: workspaceA.workspaceId,
       userId: workspaceA.userId,
       role: "OWNER",
+      timezone: "UTC",
     };
 
     const contextB: WorkspaceContext = {
       workspaceId: workspaceB.workspaceId,
       userId: workspaceB.userId,
       role: "OWNER",
+      timezone: "UTC",
     };
 
     // Create time entries in workspace A
@@ -97,6 +99,7 @@ describe("Analytics Workspace Isolation", () => {
       workspaceId: workspace.workspaceId,
       userId: workspace.userId,
       role: "OWNER",
+      timezone: "UTC",
     };
 
     // Record time entry for client
@@ -134,6 +137,7 @@ describe("Analytics Workspace Isolation", () => {
       workspaceId: workspace.workspaceId,
       userId: workspace.userId,
       role: "OWNER",
+      timezone: "UTC",
     };
 
     const analytics = new AnalyticsService(
@@ -173,6 +177,7 @@ describe("Analytics Workspace Isolation", () => {
       workspaceId: workspace.workspaceId,
       userId: workspace.userId,
       role: "OWNER",
+      timezone: "UTC",
     };
 
     // Record both billable and non-billable time
@@ -217,6 +222,7 @@ describe("Analytics Workspace Isolation", () => {
       workspaceId: workspace.workspaceId,
       userId: workspace.userId,
       role: "OWNER",
+      timezone: "UTC",
     };
 
     // Record time entry
@@ -252,6 +258,7 @@ describe("Analytics Workspace Isolation", () => {
       workspaceId: workspace.workspaceId,
       userId: workspace.userId,
       role: "OWNER",
+      timezone: "UTC",
     };
 
     // Record future time entry
@@ -287,6 +294,7 @@ describe("Analytics Workspace Isolation", () => {
       workspaceId: workspace.workspaceId,
       userId: workspace.userId,
       role: "OWNER",
+      timezone: "UTC",
     };
 
     // Create multiple days of data

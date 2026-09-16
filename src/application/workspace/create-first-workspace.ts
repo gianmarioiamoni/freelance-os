@@ -79,7 +79,7 @@ export async function createFirstWorkspace(
       workspace,
       membership,
       settings,
-      context: toWorkspaceContext(membership),
+      context: toWorkspaceContext(membership, workspace.timezone),
     };
   });
 }

@@ -76,11 +76,13 @@ describe("workspace authorization and isolation", () => {
         ownerId,
         created.workspace.id,
         repositories.members,
+        repositories.workspaces,
       ),
     ).resolves.toEqual({
       workspaceId: created.workspace.id,
       userId: ownerId,
       role: "OWNER",
+      timezone: expect.any(String),
     });
 
     await expect(
@@ -88,11 +90,13 @@ describe("workspace authorization and isolation", () => {
         memberId,
         created.workspace.id,
         repositories.members,
+        repositories.workspaces,
       ),
     ).resolves.toEqual({
       workspaceId: created.workspace.id,
       userId: memberId,
       role: "MEMBER",
+      timezone: expect.any(String),
     });
   });
 
@@ -132,6 +136,7 @@ describe("workspace authorization and isolation", () => {
       workspaceId: workspaceA.workspace.id,
       userId: userA,
       role: "OWNER",
+      timezone: expect.any(String),
     });
     expect(authorized.workspace).toMatchObject({
       id: workspaceA.workspace.id,
@@ -164,6 +169,7 @@ describe("workspace authorization and isolation", () => {
     const resolution = await resolveWorkspaceContext(
       userId,
       repositories.members,
+      repositories.workspaces,
     );
 
     expect(resolution).toEqual({ status: "ambiguous_membership" });
@@ -190,6 +196,7 @@ describe("workspace authorization and isolation", () => {
     const resolution = await resolveWorkspaceContext(
       userId,
       repositories.members,
+      repositories.workspaces,
     );
 
     expect(resolution).toEqual({ status: "onboarding_required" });

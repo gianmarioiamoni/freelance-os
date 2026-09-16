@@ -29,6 +29,7 @@ describe("Analytics Product Decisions Verification", () => {
         workspaceId: context.workspaceId,
         userId: context.userId,
         role: "OWNER" as const,
+        timezone: "UTC",
       };
 
       // Create an active client
@@ -135,6 +136,7 @@ describe("Analytics Product Decisions Verification", () => {
         workspaceId: context.workspaceId,
         userId: context.userId,
         role: "OWNER" as const,
+        timezone: "UTC",
       };
 
       // Create and immediately archive a client
@@ -181,6 +183,7 @@ describe("Analytics Product Decisions Verification", () => {
         workspaceId: context.workspaceId,
         userId: context.userId,
         role: "OWNER" as const,
+        timezone: "UTC",
       };
 
       const client = await repositories.clients.getClient(context.workspaceId, context.clientId);
@@ -242,6 +245,7 @@ describe("Analytics Product Decisions Verification", () => {
         workspaceId: context.workspaceId,
         userId: context.userId,
         role: "OWNER" as const,
+        timezone: "UTC",
       };
 
       const client = await repositories.clients.getClient(context.workspaceId, context.clientId);
@@ -297,6 +301,7 @@ describe("Analytics Product Decisions Verification", () => {
         workspaceId: context.workspaceId,
         userId: context.userId,
         role: "OWNER" as const,
+        timezone: "UTC",
       };
 
       const client = await repositories.clients.getClient(context.workspaceId, context.clientId);
@@ -341,6 +346,7 @@ describe("Analytics Product Decisions Verification", () => {
         workspaceId: context.workspaceId,
         userId: context.userId,
         role: "OWNER" as const,
+        timezone: "UTC",
       };
 
       const client = await repositories.clients.getClient(context.workspaceId, context.clientId);
@@ -402,6 +408,7 @@ describe("Analytics Product Decisions Verification", () => {
         workspaceId: context.workspaceId,
         userId: context.userId,
         role: "OWNER" as const,
+        timezone: "UTC",
       };
 
       const client = await repositories.clients.getClient(context.workspaceId, context.clientId);
@@ -427,6 +434,7 @@ describe("Analytics Product Decisions Verification", () => {
         workspaceId: context.workspaceId,
         userId: context.userId,
         role: "OWNER" as const,
+        timezone: "UTC",
       };
 
       // Test that February entries (28/29 days) don't leak into other months.
@@ -462,6 +470,7 @@ describe("Analytics Product Decisions Verification", () => {
         workspaceId: context.workspaceId,
         userId: context.userId,
         role: "OWNER" as const,
+        timezone: "UTC",
       };
 
       const client = await repositories.clients.getClient(context.workspaceId, context.clientId);
@@ -503,6 +512,7 @@ describe("Analytics Product Decisions Verification", () => {
         workspaceId: context.workspaceId,
         userId: context.userId,
         role: "OWNER" as const,
+        timezone: "UTC",
       };
 
       const client = await repositories.clients.getClient(context.workspaceId, context.clientId);
@@ -545,6 +555,7 @@ describe("Analytics Product Decisions Verification", () => {
         workspaceId: context.workspaceId,
         userId: context.userId,
         role: "OWNER" as const,
+        timezone: "UTC",
       };
 
       // Create two clients

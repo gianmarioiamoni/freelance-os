@@ -32,6 +32,7 @@ describe("workspace-aware application boundary", () => {
     const before = await resolveWorkspaceContext(
       session.user.id,
       repositories.members,
+      repositories.workspaces,
     );
 
     expect(before).toEqual({ status: "onboarding_required" });
@@ -47,6 +48,7 @@ describe("workspace-aware application boundary", () => {
     const after = await resolveWorkspaceContext(
       session.user.id,
       repositories.members,
+      repositories.workspaces,
     );
 
     expect(after).toEqual({

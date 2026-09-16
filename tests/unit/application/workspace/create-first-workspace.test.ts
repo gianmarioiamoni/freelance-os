@@ -163,6 +163,7 @@ describe("createFirstWorkspace", () => {
       workspaceId: "workspace-1",
       userId: "user-1",
       role: "OWNER",
+      timezone: "Europe/Rome",
     });
   });
 

@@ -19,6 +19,7 @@ const resolved = {
     workspaceId: "workspace-1",
     userId: "user-1",
     role: "OWNER" as const,
+    timezone: "UTC",
   },
 };
 

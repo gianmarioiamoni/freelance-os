@@ -26,6 +26,7 @@ describe("Dashboard Analytics Integration", () => {
       workspaceId: context.workspaceId,
       userId: context.userId,
       role: "OWNER" as const,
+        timezone: "UTC",
     };
     
     const analytics = await analyticsService.getCurrentMonthAnalytics(workspaceContext);
@@ -43,6 +44,7 @@ describe("Dashboard Analytics Integration", () => {
       workspaceId: context.workspaceId,
       userId: context.userId,
       role: "OWNER" as const,
+        timezone: "UTC",
     };
 
     // Use existing client from workspace graph fixture
@@ -157,6 +159,7 @@ describe("Dashboard Analytics Integration", () => {
       workspaceId: context.workspaceId,
       userId: context.userId,
       role: "OWNER" as const,
+        timezone: "UTC",
     };
 
     // Create another workspace with time entries
@@ -184,6 +187,7 @@ describe("Dashboard Analytics Integration", () => {
       workspaceId: context.workspaceId,
       userId: context.userId,
       role: "OWNER" as const,
+        timezone: "UTC",
     };
 
     // Create time entry outside current month

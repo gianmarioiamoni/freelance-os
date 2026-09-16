@@ -18,6 +18,7 @@ const mockContext: WorkspaceContext = {
   workspaceId: "workspace-123",
   userId: "user-1",
   role: "OWNER",
+  timezone: "UTC",
 };
 
 const mockMembership: WorkspaceMemberRecord = {

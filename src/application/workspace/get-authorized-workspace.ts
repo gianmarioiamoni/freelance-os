@@ -33,6 +33,7 @@ export async function getAuthorizedWorkspace(
     userId,
     requestedWorkspaceId,
     dependencies.members,
+    dependencies.workspaces,
   );
   const workspace = await dependencies.workspaces.getWorkspaceById(
     context.workspaceId,

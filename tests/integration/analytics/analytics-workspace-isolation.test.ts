@@ -29,12 +29,14 @@ describe("Analytics Workspace Isolation", () => {
         workspaceId: workspaceA.workspaceId,
         userId: workspaceA.userId,
         role: "OWNER" as const,
+        timezone: "UTC",
       };
 
       const workspaceBContext = {
         workspaceId: workspaceB.workspaceId,
         userId: workspaceB.userId,
         role: "OWNER" as const,
+        timezone: "UTC",
       };
 
       // Add time entries to workspace B only
@@ -66,6 +68,7 @@ describe("Analytics Workspace Isolation", () => {
         workspaceId: workspaceA.workspaceId,
         userId: workspaceA.userId,
         role: "OWNER" as const,
+        timezone: "UTC",
       };
 
       // Create a distinctly named client in workspace B
@@ -105,6 +108,7 @@ describe("Analytics Workspace Isolation", () => {
         workspaceId: workspaceA.workspaceId,
         userId: workspaceA.userId,
         role: "OWNER" as const,
+        timezone: "UTC",
       };
 
       // Create time entry in workspace B
@@ -128,12 +132,14 @@ describe("Analytics Workspace Isolation", () => {
         workspaceId: workspaceA.workspaceId,
         userId: workspaceA.userId,
         role: "OWNER" as const,
+        timezone: "UTC",
       };
 
       const workspaceBContext = {
         workspaceId: workspaceB.workspaceId,
         userId: workspaceB.userId,
         role: "OWNER" as const,
+        timezone: "UTC",
       };
 
       // Create clients with identical names in both workspaces
@@ -187,6 +193,7 @@ describe("Analytics Workspace Isolation", () => {
         workspaceId: workspaceA.workspaceId,
         userId: workspaceA.userId,
         role: "OWNER" as const,
+        timezone: "UTC",
       };
 
       // Add time entry to workspace B to ensure data exists
@@ -205,6 +212,7 @@ describe("Analytics Workspace Isolation", () => {
         workspaceId: workspaceB.workspaceId,
         userId: workspaceB.userId,
         role: "OWNER" as const,
+        timezone: "UTC",
       };
       const analyticsB = await analyticsService.getCurrentMonthAnalytics(workspaceBContext);
       expect(analyticsB.totalMinutes).toBe(480);
@@ -223,6 +231,7 @@ describe("Analytics Workspace Isolation", () => {
         workspaceId: "invalid-workspace-id",
         userId: workspaceA.userId,
         role: "OWNER" as const,
+        timezone: "UTC",
       };
 
       // A malformed identifier fails closed: it must never be silently reduced to
@@ -240,6 +249,7 @@ describe("Analytics Workspace Isolation", () => {
         workspaceId: randomUUID(),
         userId: workspaceA.userId,
         role: "OWNER" as const,
+        timezone: "UTC",
       };
 
       await expect(
@@ -252,6 +262,7 @@ describe("Analytics Workspace Isolation", () => {
         workspaceId: null as unknown as string,
         userId: workspaceA.userId,
         role: "OWNER" as const,
+        timezone: "UTC",
       };
 
       await expect(async () => {

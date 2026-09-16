@@ -13,29 +13,41 @@ import {
 
 describe("analytics-periods", () => {
   describe("getCurrentMonthPeriod", () => {
-    it("should return current month period", () => {
-      // Mock current date to September 2026
-      const mockDate = new Date("2026-09-15");
+    it("ends today, not the last day of the month (BR-105-015)", () => {
+      // Workspace-local date: 2026-09-15 (mid-month)
       vi.useFakeTimers();
-      vi.setSystemTime(mockDate);
+      vi.setSystemTime(new Date("2026-09-15T10:00:00.000Z"));
 
-      const period = getCurrentMonthPeriod();
+      const period = getCurrentMonthPeriod("UTC");
 
       expect(period.startDate).toEqual(new Date("2026-09-01"));
-      expect(period.endDate).toEqual(new Date("2026-09-30"));
+      // BR-105-015: ends today, not 2026-09-30
+      expect(period.endDate).toEqual(new Date("2026-09-15"));
 
       vi.useRealTimers();
     });
 
-    it("should handle leap year February", () => {
-      const mockDate = new Date("2024-02-15"); // 2024 is a leap year
+    it("ends today on the first day of the month", () => {
       vi.useFakeTimers();
-      vi.setSystemTime(mockDate);
+      vi.setSystemTime(new Date("2026-09-01T00:30:00.000Z"));
 
-      const period = getCurrentMonthPeriod();
+      const period = getCurrentMonthPeriod("UTC");
+
+      expect(period.startDate).toEqual(new Date("2026-09-01"));
+      expect(period.endDate).toEqual(new Date("2026-09-01"));
+
+      vi.useRealTimers();
+    });
+
+    it("ends today in leap year February (not last day)", () => {
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date("2024-02-15T12:00:00.000Z"));
+
+      const period = getCurrentMonthPeriod("UTC");
 
       expect(period.startDate).toEqual(new Date("2024-02-01"));
-      expect(period.endDate).toEqual(new Date("2024-02-29"));
+      // BR-105-015: ends today (Feb 15), not Feb 29
+      expect(period.endDate).toEqual(new Date("2024-02-15"));
 
       vi.useRealTimers();
     });

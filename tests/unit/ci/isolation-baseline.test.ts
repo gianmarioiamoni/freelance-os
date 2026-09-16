@@ -46,7 +46,7 @@ describe("isolation and authorization regression baseline", () => {
 
     expect(requireAccess).toContain('describe("requireWorkspaceAccess"');
     expect(requireAccess).toContain(
-      "returns the authorized context for a valid membership",
+      "returns the authorized context with timezone for a valid membership",
     );
     expect(requireAccess).toContain(
       "denies a user who is not a member of the requested workspace",
@@ -120,7 +120,7 @@ describe("isolation and authorization regression baseline", () => {
       "returns onboarding required when the user has no memberships",
     );
     expect(resolution).toContain(
-      "resolves the single membership into a workspace context",
+      "resolves the single membership into a workspace context with timezone",
     );
     expect(resolution).toContain(
       "fails closed when multiple memberships exist",

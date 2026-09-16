@@ -93,6 +93,7 @@ describe("getAuthorizedWorkspace", () => {
         workspaceId: "workspace-owned",
         userId: "user-1",
         role: "MEMBER",
+        timezone: "Europe/Rome",
       },
       workspace,
     });

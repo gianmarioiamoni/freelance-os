@@ -18,6 +18,7 @@ const context: WorkspaceContext = {
   workspaceId: "workspace-trusted",
   userId: "user-1",
   role: "OWNER",
+  timezone: "UTC",
 };
 
 function calendarDate(value: string): Date {

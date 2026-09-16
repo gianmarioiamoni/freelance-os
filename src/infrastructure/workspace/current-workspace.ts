@@ -32,6 +32,7 @@ export const resolveSessionWorkspace = cache(
       resolution: await resolveWorkspaceContext(
         session.user.id,
         createRepositories().members,
+        createRepositories().workspaces,
       ),
     };
   },
