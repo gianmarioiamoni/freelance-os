@@ -44,9 +44,10 @@ export function MonthlyAnalytics({ analytics }: MonthlyAnalyticsProps): JSX.Elem
               {nonBillableHours}
               <span className="ml-2 text-base font-normal text-muted-foreground">
                 ({AnalyticsService.formatPercentage(
-                  analytics.totalMinutes > 0 
-                    ? ((analytics.nonBillableMinutes / analytics.totalMinutes) * 100)
-                    : null
+                  AnalyticsService.calculateBillablePercentage(
+                    analytics.nonBillableMinutes,
+                    analytics.totalMinutes
+                  )
                 )})
               </span>
             </dd>
@@ -54,8 +55,8 @@ export function MonthlyAnalytics({ analytics }: MonthlyAnalyticsProps): JSX.Elem
 
           <div className="space-y-1">
             <dt className="text-sm font-medium text-muted-foreground">Daily Average</dt>
-            <dd className="text-2xl font-bold" aria-label={`${AnalyticsService.formatDuration(Math.round(analytics.totalMinutes / 30))} daily average`}>
-              {AnalyticsService.formatDuration(Math.round(analytics.totalMinutes / 30))}
+            <dd className="text-2xl font-bold" aria-label={`${AnalyticsService.formatDuration(AnalyticsService.calculateDailyAverage(analytics.totalMinutes, analytics.period))} daily average`}>
+              {AnalyticsService.formatDuration(AnalyticsService.calculateDailyAverage(analytics.totalMinutes, analytics.period))}
               <span className="ml-2 text-base font-normal text-muted-foreground">
                 per day
               </span>

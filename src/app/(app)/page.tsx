@@ -10,7 +10,10 @@ export default async function HomePage(): Promise<JSX.Element> {
   try {
     const context = await getCurrentWorkspaceContext();
     const repositories = createRepositories();
-    const analyticsService = new AnalyticsService(repositories.analytics);
+    const analyticsService = new AnalyticsService(
+      repositories.analytics,
+      repositories.members
+    );
     
     const analytics = await analyticsService.getCurrentMonthAnalytics(context);
     

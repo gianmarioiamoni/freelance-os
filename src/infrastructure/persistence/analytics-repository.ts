@@ -9,6 +9,7 @@ import type {
 import type { AnalyticsRepository } from "@/domain/repositories";
 import { withPersistenceErrors } from "@/infrastructure/persistence/map-prisma-error";
 import type { PrismaExecutor } from "@/infrastructure/persistence/prisma-executor";
+import { AnalyticsService } from "@/application/analytics/analytics-service";
 
 export function createAnalyticsRepository(db: PrismaExecutor): AnalyticsRepository {
   return {
@@ -45,7 +46,10 @@ export function createAnalyticsRepository(db: PrismaExecutor): AnalyticsReposito
         const totalMinutes = totalResult._sum.durationMinutes ?? 0;
         const billableMinutes = billableResult._sum.durationMinutes ?? 0;
         const nonBillableMinutes = totalMinutes - billableMinutes;
-        const billablePercentage = totalMinutes > 0 ? (billableMinutes / totalMinutes) * 100 : null;
+        const billablePercentage = AnalyticsService.calculateBillablePercentage(
+          billableMinutes,
+          totalMinutes
+        );
 
         // Get client allocations and contract utilizations
         const [clientAllocations, contractUtilizations] = await Promise.all([
@@ -282,7 +286,10 @@ async function getClientAllocations(
       const client = clientMap.get(total.clientId);
       const clientMinutes = total._sum.durationMinutes ?? 0;
       const billableMinutes = billableMap.get(total.clientId) ?? 0;
-      const percentage = totalMinutes > 0 ? (clientMinutes / totalMinutes) * 100 : null;
+      const percentage = AnalyticsService.calculateAllocationPercentage(
+        clientMinutes,
+        totalMinutes
+      );
 
       return {
         clientId: total.clientId,
@@ -347,9 +354,10 @@ async function getContractUtilizations(
       const consumedMinutes = consumption._sum.durationMinutes ?? 0;
       const contractedMinutes = contract.monthlyContractedMinutes;
       const isOngoing = contractedMinutes === null;
-      const utilizationPercentage = contractedMinutes && contractedMinutes > 0 
-        ? (consumedMinutes / contractedMinutes) * 100 
-        : null;
+      const utilizationPercentage = AnalyticsService.calculateUtilizationPercentage(
+        consumedMinutes,
+        contractedMinutes
+      );
 
       return {
         contractId: contract.id,

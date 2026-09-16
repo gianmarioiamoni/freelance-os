@@ -15,7 +15,10 @@ describe("Dashboard Analytics Integration", () => {
 
   beforeEach(async () => {
     context = await createWorkspaceGraph(repositories, "Dashboard Test");
-    analyticsService = new AnalyticsService(repositories.analytics);
+    analyticsService = new AnalyticsService(
+      repositories.analytics,
+      repositories.members
+    );
   });
 
   it("returns empty analytics for new workspace", async () => {

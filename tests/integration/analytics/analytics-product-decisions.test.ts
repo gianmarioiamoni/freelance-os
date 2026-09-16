@@ -17,7 +17,10 @@ describe("Analytics Product Decisions Verification", () => {
 
   beforeEach(async () => {
     context = await createWorkspaceGraph(repositories, "Product Decisions Test");
-    analyticsService = new AnalyticsService(repositories.analytics);
+    analyticsService = new AnalyticsService(
+      repositories.analytics,
+      repositories.members
+    );
   });
 
   describe("PD-104-001: Archived Clients - Analytics INCLUDE archived client time", () => {

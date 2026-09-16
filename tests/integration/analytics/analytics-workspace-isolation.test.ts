@@ -4,6 +4,7 @@ import { randomUUID } from "node:crypto";
 import { beforeEach, describe, expect, it } from "vitest";
 import { AnalyticsService } from "@/application/analytics/analytics-service";
 import { InvalidPersistenceStateError } from "@/domain/persistence-errors";
+import { UnauthorizedWorkspaceAccessError } from "@/domain/workspace-errors";
 import { currentMonthDay } from "../current-month-dates";
 import { createWorkspaceGraph } from "../persistence/fixtures";
 import { repositories } from "../persistence/helpers";
@@ -16,7 +17,10 @@ describe("Analytics Workspace Isolation", () => {
   beforeEach(async () => {
     workspaceA = await createWorkspaceGraph(repositories, "Workspace A");
     workspaceB = await createWorkspaceGraph(repositories, "Workspace B");
-    analyticsService = new AnalyticsService(repositories.analytics);
+    analyticsService = new AnalyticsService(
+      repositories.analytics,
+      repositories.members
+    );
   });
 
   describe("Cross-workspace data leakage prevention", () => {
@@ -231,19 +235,16 @@ describe("Analytics Workspace Isolation", () => {
         analyticsService.getCurrentMonthAnalytics(malformedContext),
       ).rejects.toMatchObject({ code: "INVALID_PERSISTENCE_STATE" });
 
-      // A well-formed but unknown workspace is a different case: the scoped queries
-      // match no rows, so analytics are legitimately empty.
+      // A well-formed but unknown workspace is rejected by the membership guard (P105-02).
       const unknownContext = {
         workspaceId: randomUUID(),
         userId: workspaceA.userId,
         role: "OWNER" as const,
       };
 
-      const analytics = await analyticsService.getCurrentMonthAnalytics(unknownContext);
-
-      expect(analytics.totalMinutes).toBe(0);
-      expect(analytics.clientAllocations).toHaveLength(0);
-      expect(analytics.contractUtilizations).toHaveLength(0);
+      await expect(
+        analyticsService.getCurrentMonthAnalytics(unknownContext)
+      ).rejects.toThrow(UnauthorizedWorkspaceAccessError);
     });
 
     it("handles null/undefined workspace ID safely", async () => {

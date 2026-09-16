@@ -9,13 +9,22 @@ import type {
   ClientAllocation,
   ContractUtilization,
 } from "@/domain/analytics-types";
-import type { AnalyticsRepository } from "@/domain/repositories";
+import type { AnalyticsRepository, WorkspaceMemberRepository } from "@/domain/repositories";
 import type { WorkspaceContext } from "@/application/workspace/workspace-context";
+import type { WorkspaceMemberRecord } from "@/domain/persistence-types";
+import { UnauthorizedWorkspaceAccessError } from "@/domain/workspace-errors";
 
 const mockContext: WorkspaceContext = {
   workspaceId: "workspace-123",
   userId: "user-1",
   role: "OWNER",
+};
+
+const mockMembership: WorkspaceMemberRecord = {
+  workspaceId: "workspace-123",
+  userId: "user-1",
+  role: "OWNER",
+  createdAt: new Date(),
 };
 
 const mockPeriod: AnalyticsPeriod = {
@@ -70,7 +79,7 @@ const mockDailyAnalytics: DailyAnalytics[] = [
 
 describe("AnalyticsService", () => {
   describe("getCurrentMonthAnalytics", () => {
-    it("should get analytics for the current month", async () => {
+    it("should get analytics for the current month when authorized", async () => {
       const mockAnalyticsRepository: AnalyticsRepository = {
         getMonthlyAnalytics: vi.fn().mockResolvedValue(mockMonthlyAnalytics),
         getDailyAnalytics: vi.fn(),
@@ -78,14 +87,48 @@ describe("AnalyticsService", () => {
         getContractUtilizations: vi.fn(),
       };
 
-      const service = new AnalyticsService(mockAnalyticsRepository);
+      const mockMembersRepository: WorkspaceMemberRepository = {
+        getMember: vi.fn().mockResolvedValue(mockMembership),
+        addMember: vi.fn(),
+        listMembers: vi.fn(),
+        listMembershipsByUserId: vi.fn(),
+      };
+
+      const service = new AnalyticsService(mockAnalyticsRepository, mockMembersRepository);
       const result = await service.getCurrentMonthAnalytics(mockContext);
 
       expect(result).toEqual(mockMonthlyAnalytics);
+      expect(mockMembersRepository.getMember).toHaveBeenCalledWith(
+        mockContext.workspaceId,
+        mockContext.userId
+      );
       expect(mockAnalyticsRepository.getMonthlyAnalytics).toHaveBeenCalledWith(
         mockContext.workspaceId,
         expect.any(Object)
       );
+    });
+
+    it("should reject unauthorized access", async () => {
+      const mockAnalyticsRepository: AnalyticsRepository = {
+        getMonthlyAnalytics: vi.fn(),
+        getDailyAnalytics: vi.fn(),
+        getClientAllocations: vi.fn(),
+        getContractUtilizations: vi.fn(),
+      };
+
+      const mockMembersRepository: WorkspaceMemberRepository = {
+        getMember: vi.fn().mockResolvedValue(null),
+        addMember: vi.fn(),
+        listMembers: vi.fn(),
+        listMembershipsByUserId: vi.fn(),
+      };
+
+      const service = new AnalyticsService(mockAnalyticsRepository, mockMembersRepository);
+
+      await expect(service.getCurrentMonthAnalytics(mockContext)).rejects.toThrow(
+        UnauthorizedWorkspaceAccessError
+      );
+      expect(mockAnalyticsRepository.getMonthlyAnalytics).not.toHaveBeenCalled();
     });
   });
 
@@ -98,7 +141,14 @@ describe("AnalyticsService", () => {
         getContractUtilizations: vi.fn(),
       };
 
-      const service = new AnalyticsService(mockAnalyticsRepository);
+      const mockMembersRepository: WorkspaceMemberRepository = {
+        getMember: vi.fn().mockResolvedValue(mockMembership),
+        addMember: vi.fn(),
+        listMembers: vi.fn(),
+        listMembershipsByUserId: vi.fn(),
+      };
+
+      const service = new AnalyticsService(mockAnalyticsRepository, mockMembersRepository);
       const result = await service.getMonthlyAnalytics(mockContext, mockPeriod);
 
       expect(result).toEqual(mockMonthlyAnalytics);
@@ -121,7 +171,14 @@ describe("AnalyticsService", () => {
         endDate: new Date("2026-09-01"), // end before start
       };
 
-      const service = new AnalyticsService(mockAnalyticsRepository);
+      const mockMembersRepository: WorkspaceMemberRepository = {
+        getMember: vi.fn().mockResolvedValue(mockMembership),
+        addMember: vi.fn(),
+        listMembers: vi.fn(),
+        listMembershipsByUserId: vi.fn(),
+      };
+
+      const service = new AnalyticsService(mockAnalyticsRepository, mockMembersRepository);
       
       await expect(service.getMonthlyAnalytics(mockContext, invalidPeriod))
         .rejects.toThrow(AnalyticsError);
@@ -139,7 +196,14 @@ describe("AnalyticsService", () => {
         getContractUtilizations: vi.fn(),
       };
 
-      const service = new AnalyticsService(mockAnalyticsRepository);
+      const mockMembersRepository: WorkspaceMemberRepository = {
+        getMember: vi.fn().mockResolvedValue(mockMembership),
+        addMember: vi.fn(),
+        listMembers: vi.fn(),
+        listMembershipsByUserId: vi.fn(),
+      };
+
+      const service = new AnalyticsService(mockAnalyticsRepository, mockMembersRepository);
       const result = await service.getDailyAnalytics(mockContext, mockPeriod);
 
       expect(result).toEqual(mockDailyAnalytics);
@@ -162,7 +226,14 @@ describe("AnalyticsService", () => {
         endDate: new Date("2026-09-01"),
       };
 
-      const service = new AnalyticsService(mockAnalyticsRepository);
+      const mockMembersRepository: WorkspaceMemberRepository = {
+        getMember: vi.fn().mockResolvedValue(mockMembership),
+        addMember: vi.fn(),
+        listMembers: vi.fn(),
+        listMembershipsByUserId: vi.fn(),
+      };
+
+      const service = new AnalyticsService(mockAnalyticsRepository, mockMembersRepository);
       
       await expect(service.getDailyAnalytics(mockContext, invalidPeriod))
         .rejects.toThrow(AnalyticsError);
@@ -197,7 +268,14 @@ describe("AnalyticsService", () => {
         getContractUtilizations: vi.fn(),
       };
 
-      const service = new AnalyticsService(mockAnalyticsRepository);
+      const mockMembersRepository: WorkspaceMemberRepository = {
+        getMember: vi.fn().mockResolvedValue(mockMembership),
+        addMember: vi.fn(),
+        listMembers: vi.fn(),
+        listMembershipsByUserId: vi.fn(),
+      };
+
+      const service = new AnalyticsService(mockAnalyticsRepository, mockMembersRepository);
       const result = await service.getClientAllocations(mockContext, mockPeriod);
 
       expect(result).toEqual(clientAllocations);
@@ -225,7 +303,14 @@ describe("AnalyticsService", () => {
         getContractUtilizations: vi.fn().mockResolvedValue(utilizations),
       };
 
-      const service = new AnalyticsService(mockAnalyticsRepository);
+      const mockMembersRepository: WorkspaceMemberRepository = {
+        getMember: vi.fn().mockResolvedValue(mockMembership),
+        addMember: vi.fn(),
+        listMembers: vi.fn(),
+        listMembershipsByUserId: vi.fn(),
+      };
+
+      const service = new AnalyticsService(mockAnalyticsRepository, mockMembersRepository);
       const result = await service.getContractUtilizations(mockContext, mockPeriod);
 
       expect(result).toEqual(utilizations);
@@ -250,7 +335,14 @@ describe("AnalyticsService", () => {
         getContractUtilizations: vi.fn().mockResolvedValue(utilizations),
       };
 
-      const service = new AnalyticsService(mockAnalyticsRepository);
+      const mockMembersRepository: WorkspaceMemberRepository = {
+        getMember: vi.fn().mockResolvedValue(mockMembership),
+        addMember: vi.fn(),
+        listMembers: vi.fn(),
+        listMembershipsByUserId: vi.fn(),
+      };
+
+      const service = new AnalyticsService(mockAnalyticsRepository, mockMembersRepository);
       const result = await service.getContractUtilizations(mockContext, mockPeriod);
 
       expect(result).toEqual(utilizations);

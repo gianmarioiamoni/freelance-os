@@ -6,9 +6,10 @@ import type {
   ClientAllocation,
   ContractUtilization,
 } from "@/domain/analytics-types";
-import type { AnalyticsRepository } from "@/domain/repositories";
+import type { AnalyticsRepository, WorkspaceMemberRepository } from "@/domain/repositories";
 import type { WorkspaceContext } from "@/application/workspace/workspace-context";
-import { getCurrentMonthPeriod, isValidPeriod } from "@/lib/analytics-periods";
+import { getCurrentMonthPeriod, getPeriodDays, isValidPeriod } from "@/lib/analytics-periods";
+import { UnauthorizedWorkspaceAccessError } from "@/domain/workspace-errors";
 
 /**
  * Shared analytics calculation service providing deterministic analytics for dashboard,
@@ -20,14 +21,32 @@ import { getCurrentMonthPeriod, isValidPeriod } from "@/lib/analytics-periods";
  * - Use ALL tracked time for contract utilization per PD-104-002
  * - Use integer minutes for precision (BR-104-010)
  * - Handle zero denominators gracefully (BR-104-011)
+ * 
+ * P105-02: Service-level workspace membership guard added (F-104-014).
  */
 export class AnalyticsService {
-  constructor(private analytics: AnalyticsRepository) {}
+  constructor(
+    private analytics: AnalyticsRepository,
+    private members: WorkspaceMemberRepository,
+  ) {}
+
+  /**
+   * Verifies workspace membership for the analytics request.
+   * Fails closed if the caller is not a member of the target workspace.
+   * P105-02: Service-level guard per F-104-014.
+   */
+  private async requireMembership(context: WorkspaceContext): Promise<void> {
+    const membership = await this.members.getMember(context.workspaceId, context.userId);
+    if (!membership) {
+      throw new UnauthorizedWorkspaceAccessError();
+    }
+  }
 
   /**
    * Gets monthly analytics for the current month (default per PD-104-003)
    */
   async getCurrentMonthAnalytics(context: WorkspaceContext): Promise<MonthlyAnalytics> {
+    await this.requireMembership(context);
     const period = getCurrentMonthPeriod();
     return this.getMonthlyAnalytics(context, period);
   }
@@ -39,6 +58,8 @@ export class AnalyticsService {
     context: WorkspaceContext, 
     period: AnalyticsPeriod
   ): Promise<MonthlyAnalytics> {
+    await this.requireMembership(context);
+    
     if (!isValidPeriod(period)) {
       throw new AnalyticsError("Invalid period: start date must be <= end date");
     }
@@ -53,6 +74,8 @@ export class AnalyticsService {
     context: WorkspaceContext,
     period: AnalyticsPeriod
   ): Promise<DailyAnalytics[]> {
+    await this.requireMembership(context);
+    
     if (!isValidPeriod(period)) {
       throw new AnalyticsError("Invalid period: start date must be <= end date");
     }
@@ -68,6 +91,8 @@ export class AnalyticsService {
     context: WorkspaceContext,
     period: AnalyticsPeriod
   ): Promise<ClientAllocation[]> {
+    await this.requireMembership(context);
+    
     if (!isValidPeriod(period)) {
       throw new AnalyticsError("Invalid period: start date must be <= end date");
     }
@@ -83,6 +108,8 @@ export class AnalyticsService {
     context: WorkspaceContext,
     period: AnalyticsPeriod
   ): Promise<ContractUtilization[]> {
+    await this.requireMembership(context);
+    
     if (!isValidPeriod(period)) {
       throw new AnalyticsError("Invalid period: start date must be <= end date");
     }
@@ -91,8 +118,9 @@ export class AnalyticsService {
   }
 
   /**
-   * Calculates billable percentage from minutes
-   * Returns null for zero denominator per BR-104-011, BR-104-012
+   * Calculates billable percentage from minutes.
+   * Returns null for zero denominator per BR-104-011, BR-104-012.
+   * P105-02: Shared calculation, called from repository and components.
    */
   static calculateBillablePercentage(billableMinutes: number, totalMinutes: number): number | null {
     if (totalMinutes === 0) {
@@ -102,8 +130,21 @@ export class AnalyticsService {
   }
 
   /**
-   * Calculates utilization percentage from consumed and contracted minutes
-   * Returns null for unlimited contracts per PD-104-004
+   * Calculates allocation percentage (part / total).
+   * Returns null for zero denominator.
+   * P105-02: Shared calculation for client allocation percentages.
+   */
+  static calculateAllocationPercentage(partMinutes: number, totalMinutes: number): number | null {
+    if (totalMinutes === 0) {
+      return null;
+    }
+    return (partMinutes / totalMinutes) * 100;
+  }
+
+  /**
+   * Calculates utilization percentage from consumed and contracted minutes.
+   * Returns null for unlimited contracts per PD-104-004.
+   * P105-02: Shared calculation, called from repository.
    */
   static calculateUtilizationPercentage(
     consumedMinutes: number, 
@@ -113,6 +154,15 @@ export class AnalyticsService {
       return null;
     }
     return (consumedMinutes / contractedMinutes) * 100;
+  }
+
+  /**
+   * Calculates daily average from total minutes and period length.
+   * P105-02: Replaces hardcoded /30 divisor (F-104-001).
+   */
+  static calculateDailyAverage(totalMinutes: number, period: AnalyticsPeriod): number {
+    const days = getPeriodDays(period);
+    return Math.round(totalMinutes / days);
   }
 
   /**

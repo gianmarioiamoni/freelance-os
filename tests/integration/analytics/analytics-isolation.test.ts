@@ -53,7 +53,10 @@ describe("Analytics Workspace Isolation", () => {
       billable: true,
     });
 
-    const analytics = new AnalyticsService(repositories.analytics);
+    const analytics = new AnalyticsService(
+      repositories.analytics,
+      repositories.members
+    );
     const period = getDateRangePeriod(date("2026-09-01"), date("2026-09-02"));
 
     // Get analytics for both workspaces
@@ -109,7 +112,10 @@ describe("Analytics Workspace Isolation", () => {
     // Archive the client
     await repositories.clients.archiveClient(workspace.workspaceId, workspace.clientId);
 
-    const analytics = new AnalyticsService(repositories.analytics);
+    const analytics = new AnalyticsService(
+      repositories.analytics,
+      repositories.members
+    );
     const period = getDateRangePeriod(date("2026-09-01"), date("2026-09-01"));
 
     const result = await analytics.getMonthlyAnalytics(context, period);
@@ -130,7 +136,10 @@ describe("Analytics Workspace Isolation", () => {
       role: "OWNER",
     };
 
-    const analytics = new AnalyticsService(repositories.analytics);
+    const analytics = new AnalyticsService(
+      repositories.analytics,
+      repositories.members
+    );
     const period = getDateRangePeriod(date("2026-08-01"), date("2026-08-31"));
 
     const result = await analytics.getMonthlyAnalytics(context, period);
@@ -185,7 +194,10 @@ describe("Analytics Workspace Isolation", () => {
       billable: false,
     });
 
-    const analytics = new AnalyticsService(repositories.analytics);
+    const analytics = new AnalyticsService(
+      repositories.analytics,
+      repositories.members
+    );
     const period = getDateRangePeriod(date("2026-09-01"), date("2026-09-01"));
 
     const result = await analytics.getMonthlyAnalytics(context, period);
@@ -217,7 +229,10 @@ describe("Analytics Workspace Isolation", () => {
       billable: true,
     });
 
-    const analytics = new AnalyticsService(repositories.analytics);
+    const analytics = new AnalyticsService(
+      repositories.analytics,
+      repositories.members
+    );
     const period = getDateRangePeriod(date("2026-09-01"), date("2026-09-01"));
 
     const result = await analytics.getMonthlyAnalytics(context, period);
@@ -252,7 +267,10 @@ describe("Analytics Workspace Isolation", () => {
       billable: true,
     });
 
-    const analytics = new AnalyticsService(repositories.analytics);
+    const analytics = new AnalyticsService(
+      repositories.analytics,
+      repositories.members
+    );
     const period = getDateRangePeriod(futureDate, futureDate);
 
     const result = await analytics.getMonthlyAnalytics(context, period);
@@ -290,7 +308,10 @@ describe("Analytics Workspace Isolation", () => {
       billable: false,
     });
 
-    const analytics = new AnalyticsService(repositories.analytics);
+    const analytics = new AnalyticsService(
+      repositories.analytics,
+      repositories.members
+    );
     const period = getDateRangePeriod(date("2026-09-01"), date("2026-09-02"));
 
     const result = await analytics.getDailyAnalytics(context, period);
