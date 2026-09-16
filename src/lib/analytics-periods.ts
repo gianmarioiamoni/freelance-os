@@ -188,7 +188,14 @@ export function formatPeriodDisplay(period: AnalyticsPeriod): string {
     startMonth === endMonth &&
     startYear === endYear;
 
-  if (isFullMonth) {
+  // Partial current month: starts on the 1st, ends within the same month
+  // (e.g. current-month periods that end today per PD-105-002).
+  const isCurrentMonthPeriod =
+    period.startDate.getUTCDate() === 1 &&
+    startMonth === endMonth &&
+    startYear === endYear;
+
+  if (isFullMonth || isCurrentMonthPeriod) {
     const monthNames = [
       "January", "February", "March", "April", "May", "June",
       "July", "August", "September", "October", "November", "December",

@@ -37,6 +37,10 @@ function getNextDate(date: Date): string {
   return next.toISOString().split('T')[0];
 }
 
+function getTodayISO(): string {
+  return new Date().toISOString().split('T')[0];
+}
+
 function getPreviousWeek(weekStart: Date): string {
   const prev = new Date(weekStart);
   prev.setDate(prev.getDate() - 7);
@@ -97,7 +101,7 @@ export default async function TimeTrackingPage({
               </Link>
             </Button>
             <Button asChild variant="outline" size="sm">
-              <Link href={`/time-tracking?date=${selectedDate.toISOString().split('T')[0]}`}>
+              <Link href={`/time-tracking?date=${getTodayISO()}`}>
                 Daily View
               </Link>
             </Button>

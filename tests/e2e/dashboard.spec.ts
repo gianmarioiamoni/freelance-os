@@ -253,9 +253,9 @@ test.describe("Dashboard Analytics E2E Journey", () => {
       page.getByLabel("5h consumed of 40h contracted, 13% utilization"),
     ).toBeVisible();
 
-    // PD-104-004: uncapped contract reports "Ongoing" instead of a percentage
+    // PD-104-004: uncapped contract reports consumed hours without a denominator
     await expect(
-      page.getByLabel("8h consumed, ongoing contract"),
+      page.getByLabel("8h consumed, unlimited capacity"),
     ).toBeVisible();
     await expect(page.getByText("Ongoing")).toBeVisible();
   });

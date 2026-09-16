@@ -1,7 +1,112 @@
 // src/app/(app)/reports/page.tsx
-import { PlaceholderPage } from "@/components/placeholder/PlaceholderPage";
+import { AnalyticsService } from "@/application/analytics/analytics-service";
+import { ReportingService } from "@/application/reporting/reporting-service";
+import { ErrorState } from "@/components/states/ErrorState";
+import { createRepositories } from "@/infrastructure/persistence/create-repositories";
+import { getCurrentWorkspaceContext } from "@/infrastructure/workspace/current-workspace";
+import { AnnualOverviewTable } from "@/features/reporting/AnnualOverviewTable";
+import { ContractReportTable } from "@/features/reporting/ContractReportTable";
+import { HoursByClientTable } from "@/features/reporting/HoursByClientTable";
+import { PeriodSelector } from "@/features/reporting/PeriodSelector";
+import {
+  parseReportPeriodParam,
+  toReportingPeriodKind,
+  PERIOD_LABELS,
+} from "@/features/reporting/reporting-types";
 import type { JSX } from "react";
 
-export default function ReportsPage(): JSX.Element {
-  return <PlaceholderPage title="Reports" />;
+type ReportsPageProps = {
+  searchParams: Promise<{
+    period?: string;
+    start?: string;
+    end?: string;
+  }>;
+};
+
+export default async function ReportsPage({
+  searchParams,
+}: ReportsPageProps): Promise<JSX.Element> {
+  // Authorization and workspace resolution — outside any try block (P105-05 criterion).
+  const context = await getCurrentWorkspaceContext();
+  const params = await searchParams;
+  const periodParam = parseReportPeriodParam(params);
+  const periodKind = toReportingPeriodKind(periodParam);
+
+  const repositories = createRepositories();
+  const analyticsService = new AnalyticsService(
+    repositories.analytics,
+    repositories.members,
+  );
+  const reportingService = new ReportingService(analyticsService);
+
+  const now = new Date();
+  const currentYear = now.getFullYear();
+
+  try {
+    const [hoursByClient, contractReport, annualOverview] = await Promise.all([
+      reportingService.getHoursByClient(context, periodKind, now),
+      reportingService.getContractReport(context, periodKind, now),
+      reportingService.getAnnualOverview(context, currentYear, now),
+    ]);
+
+    const periodLabel =
+      periodParam.kind === "custom"
+        ? `${periodParam.start} — ${periodParam.end}`
+        : PERIOD_LABELS[periodParam.kind];
+
+    return (
+      <div className="grid gap-8 p-4 md:p-6 lg:p-8">
+        <header className="grid gap-1">
+          <h1>Reports</h1>
+          <p className="text-muted-foreground">
+            Operational reporting — {periodLabel}
+          </p>
+        </header>
+
+        <PeriodSelector current={periodParam} />
+
+        <section aria-labelledby="hours-by-client-heading">
+          <h2 id="hours-by-client-heading" className="sr-only">
+            Hours by Client
+          </h2>
+          <HoursByClientTable
+            clientAllocations={hoursByClient.clientAllocations}
+          />
+        </section>
+
+        <section aria-labelledby="contract-report-heading">
+          <h2 id="contract-report-heading" className="sr-only">
+            Contract Report
+          </h2>
+          <ContractReportTable
+            contractUtilizations={contractReport.contractUtilizations}
+          />
+        </section>
+
+        <section aria-labelledby="annual-overview-heading">
+          <h2 id="annual-overview-heading" className="sr-only">
+            Annual Overview
+          </h2>
+          <AnnualOverviewTable
+            months={annualOverview.months}
+            year={currentYear}
+          />
+        </section>
+      </div>
+    );
+  } catch (error) {
+    console.error("Failed to load reporting data:", error);
+    return (
+      <div className="grid gap-8 p-4 md:p-6 lg:p-8">
+        <header className="grid gap-1">
+          <h1>Reports</h1>
+        </header>
+        <PeriodSelector current={periodParam} />
+        <ErrorState
+          title="Unable to load report"
+          message="An error occurred while loading your reporting data. Please try refreshing the page."
+        />
+      </div>
+    );
+  }
 }
