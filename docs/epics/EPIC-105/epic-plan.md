@@ -16,15 +16,23 @@ PLANNING:              COMPLETE
 PRODUCT DECISIONS:     6 BLOCKING — ALL RESOLVED BY THE PRODUCT OWNER
                        6 NON-BLOCKING — DOCUMENTED DEFAULTS ACCEPTED
 BLOCKING DECISIONS:    NONE OUTSTANDING
-IMPLEMENTATION:        IN PROGRESS — P105-03 IS NEXT
+IMPLEMENTATION:        IN PROGRESS — P105-04 IS NEXT
 P105-01:               COMPLETE — commit 134800f
 P105-02:               COMPLETE — commit 756649d
+P105-03:               COMPLETE — commits 428f6e4 + 6822600 (corrective)
 OBD CLOSED:            NONE
 OBD DEPENDENCY:        OBD-012 OPEN — GATES ROLLOVER / EXPIRY SEMANTICS ONLY
 EPIC-104 FINDINGS:     NONE RESOLVED BY THIS PLAN, NONE REOPENED
                        F-104-001, F-104-002, F-104-014 ADDRESSED IN P105-02 —
                        CLOSURE IS THE ENGINEERING REVIEW'S CALL (§16.1)
 EPIC-105 FINDINGS:     F-105-001 OPEN — PRE-EXISTING E2E FAILURE (§16.4)
+                       F-105-002 CLOSED — verified by final P105-03 Engineering Review
+                       F-105-003 CLOSED — verified by final P105-03 Engineering Review
+                       F-105-004 CLOSED — verified by final P105-03 Engineering Review
+                       F-105-005 CLOSED — verified by final P105-03 Engineering Review
+                       F-105-006 CLOSED — verified by final P105-03 Engineering Review
+                       F-105-007 CLOSED — verified by final P105-03 Engineering Review
+                       F-105-008 OPEN — NON-BLOCKING comment nit (§16.4)
 ```
 
 This plan was produced entirely from the documentation synchronized by
@@ -976,6 +984,7 @@ P105-04 to a no-rollover pro-rata calculation.
 - **Dependencies:** P105-02. Decisions applied: PD-105-002, PD-105-003,
   PD-105-009, PD-105-010 — all resolved.
 - **Expected commit:** `feat(analytics): add reporting period and weekly aggregation capabilities`
+- **Status:** **COMPLETE** — commits `428f6e4` (initial) + `6822600` (corrective, all F-105-002 through F-105-007 remediated). Final Engineering Review verdict: PASS WITH FINDINGS (F-105-008 non-blocking). Verified gates: Unit 266/266, Integration 165/165, Lint PASS, Typecheck PASS, Build PASS.
 
 ### P105-04 — Reporting application capability
 
@@ -1134,11 +1143,11 @@ contract fields versus snapshots (OBD-016 / P102-F-001).
 ## 13. Commit Plan
 
 ```text
-docs: establish EPIC-105 reporting plan                                        P105-00
-test(analytics): decouple analytics integration tests from the current month    P105-01
-refactor(analytics): consolidate shared analytics calculations                  P105-02
-feat(analytics): add reporting period and weekly aggregation capabilities       P105-03
-feat(reporting): add workspace-scoped reporting queries                         P105-04
+docs: establish EPIC-105 reporting plan                                        P105-00  COMPLETE
+test(analytics): decouple analytics integration tests from the current month    P105-01  COMPLETE  134800f
+refactor(analytics): consolidate shared analytics calculations                  P105-02  COMPLETE  756649d
+feat(analytics): add reporting period and weekly aggregation capabilities       P105-03  COMPLETE  428f6e4 + 6822600 (corrective)
+feat(reporting): add workspace-scoped reporting queries                         P105-04  NEXT
 feat(reporting): add reports surface with period selection                      P105-05
 test(reporting): add reporting integration, E2E, and performance evidence       P105-06
 docs(reporting): synchronize EPIC-105 documentation                             P105-07
@@ -1360,20 +1369,16 @@ and evidence. Classification records impact on the plan.
 #### F-105-P-003 — the week convention lives in a route file and is local-clock based
 
 - **Severity:** Medium
-- **Status:** Open
+- **Status:** **CLOSED — resolved in P105-03, verified by final Engineering Review**
 - **Description:** `getWeekStart` in `src/app/(app)/time-tracking/page.tsx`
-  implements a Monday-start week from the server's local clock, and
-  `loadTimeEntriesForWeek` derives the week end by adding six days. None
-  of this is in the shared layer, and `analytics-periods.ts` has no week
+  implemented a Monday-start week from the server's local clock, and
+  `loadTimeEntriesForWeek` derived the week end by adding six days. None
+  of this was in the shared layer, and `analytics-periods.ts` had no week
   concept at all.
-- **Impact:** Weekly reporting would either duplicate the convention —
-  reproducing the F-104-002 class of defect for week boundaries — or
-  diverge from the weekly timesheet users already see, breaking the §15
-  exit criterion for weekly figures.
-- **Recommended resolution / owner:** Engineering — promote the
-  convention into `src/lib/analytics-periods.ts` in P105-03 under
-  PD-105-009, resolved against `Workspace.timezone` per BR-105-014; do
-  not re-implement it in Reporting.
+- **Resolution:** Local `getWeekStart` removed from `time-tracking/page.tsx`.
+  `getWeekStartFromDate` added to `src/lib/analytics-periods.ts` using
+  UTC-midnight arithmetic (Monday-start, PD-105-009). Time-tracking now
+  imports and consumes the shared utility. Commit `6822600`.
 
 #### F-105-P-004 — `docs/testing-strategy.md` §11 still requires revenue reporting tests
 
@@ -1473,6 +1478,48 @@ Findings raised by an implementation phase rather than by planning.
 They follow the EPIC-104 convention: `F-105-NNN` for implementation and
 review findings, `F-105-P-NNN` for planning findings.
 
+#### F-105-002 — missing weekly aggregation (raised by P105-03 Engineering Review)
+
+- **Severity:** Blocking
+- **Status:** **CLOSED — remediated in corrective commit `6822600`, verified by final P105-03 Engineering Review**
+- **Description:** Initial P105-03 delivery (`428f6e4`) omitted `WeeklyAnalytics`, `ReportingPeriodKind`, and `AnalyticsService.getWeeklyAnalytics`, all of which are explicitly in the approved P105-03 scope.
+- **Resolution:** `WeeklyAnalytics` and `ReportingPeriodKind` added to `src/domain/analytics-types.ts`. `getWeeklyAnalytics` added to `AnalyticsService`, composed from `getDailyAnalytics` with no new SQL. Membership guard and workspace isolation preserved. 10 integration tests added in `tests/integration/analytics/analytics-weekly.test.ts` proving weekly totals equal daily row sums, empty-week semantics, workspace isolation, membership rejection, and invalid-period rejection.
+
+#### F-105-003 — local `getWeekStart` remained in `time-tracking/page.tsx` (raised by P105-03 Engineering Review)
+
+- **Severity:** Blocking
+- **Status:** **CLOSED — remediated in corrective commit `6822600`, verified by final P105-03 Engineering Review**
+- **Description:** Initial P105-03 delivery left a local `getWeekStart` implementation using `Date#setDate` (local-clock) in `src/app/(app)/time-tracking/page.tsx`, duplicating the Monday-week convention that should be exclusively in the shared layer.
+- **Resolution:** Local function removed; two call sites now use `getWeekStartFromDate` imported from `@/lib/analytics-periods`. The shared helper uses UTC-midnight arithmetic consistent with the period constructors. Commit `6822600`.
+
+#### F-105-004 — missing integration proof of persisted `Workspace.timezone` (raised by P105-03 Engineering Review)
+
+- **Severity:** Blocking
+- **Status:** **CLOSED — remediated in corrective commit `6822600`, verified by final P105-03 Engineering Review**
+- **Description:** Initial P105-03 delivery had no integration test proving the production chain: persisted `Workspace.timezone` → `resolveWorkspaceContext` → `WorkspaceContext.timezone` → `AnalyticsService` → period boundary.
+- **Resolution:** `tests/integration/analytics/analytics-timezone-propagation.test.ts` added. Clock pinned to `2026-09-16T01:00:00Z` via `vi.useFakeTimers`. Workspace with `timezone: "America/New_York"` persisted via repository; context resolved via the real `resolveWorkspaceContext` call (not manually constructed); period end asserted as `2026-09-15` (workspace-local today); UTC Sep 16 entry excluded. Sanity test confirms UTC workspace sees Sep 16. Commit `6822600`.
+
+#### F-105-005 — duplicate `createRepositories()` in `current-workspace.ts` (raised by P105-03 Engineering Review)
+
+- **Severity:** Non-blocking (efficiency)
+- **Status:** **CLOSED — remediated in corrective commit `6822600`, verified by final P105-03 Engineering Review**
+- **Description:** `src/infrastructure/workspace/current-workspace.ts` called `createRepositories()` twice, creating two Prisma client instances per request.
+- **Resolution:** Single `const repos = createRepositories()` instance used for both `repos.members` and `repos.workspaces`. Commit `6822600`.
+
+#### F-105-006 — optional `workspaces` parameter permitted silent UTC fallback (raised by P105-03 Engineering Review)
+
+- **Severity:** Non-blocking (design risk)
+- **Status:** **CLOSED — remediated in corrective commit `6822600`, verified by final P105-03 Engineering Review**
+- **Description:** `requireWorkspaceAccess` accepted `workspaces?: WorkspaceRepository`, making the timezone fallback to `"UTC"` possible on any call site that omitted the argument.
+- **Resolution:** Parameter made required (`workspaces: WorkspaceRepository`). Conditional branch removed; workspace record always fetched. All affected integration and unit test callers updated to pass the repository. No production call site required the optional form. Commit `6822600`.
+
+#### F-105-007 — stale comment in `current-month-dates.ts` (raised by P105-03 Engineering Review)
+
+- **Severity:** Non-blocking (documentation)
+- **Status:** **CLOSED — remediated in corrective commit `6822600`, verified by final P105-03 Engineering Review**
+- **Description:** `tests/integration/current-month-dates.ts` contained a comment describing `Workspace.timezone` authority and through-today semantics as future P105-03 work.
+- **Resolution:** Comment updated to describe the delivered P105-03 behavior (BR-105-014, BR-105-015). Commit `6822600`.
+
 #### F-105-001 — pre-existing E2E failure in the time-tracking journey
 
 - **Severity:** Medium — blocks the E2E release gate from P105-05, with
@@ -1529,6 +1576,15 @@ review findings, `F-105-P-NNN` for planning findings.
   The finding is closed only by the phase that resolves it, under its
   own review, and only once the full suite passes with 0 failed and
   0 skipped.
+
+#### F-105-008 — test-comment arithmetic description imprecise (raised by final P105-03 Engineering Review)
+
+- **Severity:** Non-blocking (documentation/test comment)
+- **Status:** **OPEN — non-blocking**
+- **Location:** `tests/integration/analytics/analytics-weekly.test.ts`, assertion comment around `totalMinutes = 1080`
+- **Description:** The comment reads `// 480 + 360 + 240`, collapsing Wednesday's two separate records (300 billable + 60 non-billable = 360) without stating that `360` is the combined total. The assertion `toBe(1080)` is arithmetically correct and the test passes. This is a readability nit only; no semantic defect.
+- **Impact:** None on correctness. A future reader may be momentarily confused by the entry count versus the comment.
+- **Recommended resolution / owner:** Engineering — correct the comment inline during any phase that touches this file, or during P105-07 documentation cleanup. No corrective commit required.
 
 #### Test-environment note — orphaned Playwright `webServer` on port 3000 (resolved)
 
