@@ -2005,9 +2005,9 @@ last_completed:
 
 next:
   epic: MVP-Integration
-  phase: planning
-  objective: MVP Integration Epic (§17)
-  implementation: mvp-integration-planning
+  phase: P-INT-01
+  objective: MVP Integration Epic (§17) — PLANNING COMPLETE; see docs/epics/MVP-INTEGRATION/epic-plan.md
+  implementation: mvp-integration-P-INT-01
 ```
 
 ------------------------------------------------------------------------
