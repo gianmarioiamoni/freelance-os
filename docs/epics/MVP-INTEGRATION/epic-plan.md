@@ -549,9 +549,16 @@ The defect is in `SignOutButton.tsx`: it uses `authClient.signOut()` (async, awa
 - `revalidatePath("/alerts")` — may introduce slight overhead per mutation. Acceptable: alert evaluation already runs in the same action.
 - `SignOutButton` router change — must ensure the fix does not break Google OAuth sign-out flow (which may use a different navigation path).
 
-**Expected commit:** `fix(integration): resolve GAP-INT-001 revalidatePath and GAP-INT-004 sign-out race`
+**Commit:** `fix(integration): close high-priority integration gaps` (P-INT-02)
 
 **Findings policy:** Any regression found must block merge.
+
+**P-INT-02 Results (2026-09-18):**
+- GAP-INT-001 ✅ FIXED: `revalidatePath("/")`, `revalidatePath("/reports")`, `revalidatePath("/alerts")` added after `triggerAlertEvaluation` and before `redirect()` in all three TimeEntry actions. Order: persistence → alert evaluation → revalidation → redirect.
+- GAP-INT-004 ✅ FIXED: `SignOutButton.tsx` now uses `useRouter().push("/sign-in")` instead of `window.location.assign`. Playwright can now observe the navigation as a promise-based event; race condition eliminated.
+- GAP-INT-002 ✅ NOT CONFIRMED: No changes made. ARCHIVED client filtering confirmed correct.
+- Tests added: `tests/unit/features/time-entries/time-entry-action-revalidation.test.ts` — 5 unit tests verifying revalidatePath calls for all three actions and ordering relative to redirect.
+- Test suite: 388 passed / 0 failed (38 files). Lint: 0 errors. Typecheck: clean. Build: clean.
 
 ---
 
@@ -840,10 +847,10 @@ Test: "MVP integration journey: auth → workspace → client → contract → t
 ```yaml
 epic: MVP-INTEGRATION
 phase: P-INT-02
-status: P-INT-01 COMPLETE — P-INT-02 READY
+status: P-INT-02 COMPLETE — P-INT-03 READY
 created: 2026-09-17
-updated: 2026-09-17
-author: P-INT-01 discovery session
+updated: 2026-09-18
+author: P-INT-02 implementation session
 product_decisions:
   PD-INT-001: APPROVED — timezone NOT modifiable after workspace creation (deferred for MVP)
   PD-INT-002: APPROVED — unread badge on Alerts nav YES
@@ -851,19 +858,26 @@ product_decisions:
   PD-INT-004: APPROVED — cross-domain E2E is a RELEASE GATE
   PD-INT-005: APPROVED — flaky auth E2E must be resolved (root cause = TEST DEFECT)
 gaps:
-  GAP-INT-001: CONFIRMED — HIGH — revalidatePath missing for "/" "/reports" "/alerts" in all 3 TimeEntry actions
+  GAP-INT-001: ✅ FIXED (P-INT-02) — revalidatePath("/") revalidatePath("/reports") revalidatePath("/alerts") added after persistence+alert evaluation in all 3 TimeEntry actions
   GAP-INT-002: NOT CONFIRMED — no fix required — ARCHIVED clients correctly filtered in load-time-entries.ts and validated server-side
   GAP-INT-003: OPEN — HIGH — no cross-domain E2E (P-INT-04)
-  GAP-INT-004: ROOT CAUSE IDENTIFIED — TEST DEFECT — window.location.assign race in SignOutButton after authClient.signOut()
+  GAP-INT-004: ✅ FIXED (P-INT-02) — replaced window.location.assign with useRouter().push("/sign-in") in SignOutButton.tsx; eliminates navigation race observable by Playwright
   GAP-INT-005: OPEN — LOW — nav badge pending P-INT-03 implementation
 phases:
-  P-INT-01: Discovery & Verification — ✅ COMPLETE
-  P-INT-02: Integration Gap Fixes — READY (GAP-INT-001 revalidatePath + GAP-INT-004 SignOutButton fix)
+  P-INT-01: Discovery & Verification — ✅ COMPLETE (commit 35d1764)
+  P-INT-02: Integration Gap Fixes — ✅ COMPLETE
+    - GAP-INT-001: revalidatePath added to create/update/delete TimeEntry actions
+    - GAP-INT-004: SignOutButton uses useRouter().push — race eliminated
+    - GAP-INT-002: confirmed NOT REQUIRED — no changes
+    - tests: 388 passed (38 test files), 0 failures
+    - lint: 0 errors, 6 pre-existing warnings (unrelated)
+    - typecheck: clean
+    - build: clean
   P-INT-03: Nav Badge — READY (PD-INT-002 approved)
-  P-INT-04: Cross-Domain E2E Journey — READY (design complete, awaits P-INT-02/03)
+  P-INT-04: Cross-Domain E2E Journey — READY (design complete, awaits P-INT-03)
   P-INT-05: Engineering Review — PENDING
   P-INT-06: Documentation & Closure — PENDING
 next:
-  phase: P-INT-02
-  objective: Add revalidatePath to TimeEntry actions; fix SignOutButton navigation race
+  phase: P-INT-03
+  objective: Add unread notification count badge to Alerts nav item (PD-INT-002 approved)
 ```

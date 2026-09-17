@@ -16,6 +16,7 @@ import {
   parseDurationFromForm,
   type TimeEntryFormActionState,
 } from "@/features/time-entries/time-entry-form-state";
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 export async function updateTimeEntryAction(
@@ -72,6 +73,11 @@ export async function updateTimeEntryAction(
       values,
     };
   }
+
+  // Revalidate affected RSC routes after persistence + alert evaluation.
+  revalidatePath("/");
+  revalidatePath("/reports");
+  revalidatePath("/alerts");
 
   // Redirect outside the try block: redirect() signals via a thrown
   // NEXT_REDIRECT error that must not be caught by the handler above.

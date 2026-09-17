@@ -5,6 +5,7 @@ import { deleteTimeEntry } from "@/application/time-entries/delete-time-entry";
 import { TimeEntryNotFoundError } from "@/domain/time-entry-errors";
 import { getAuthenticatedTimeEntryContext } from "@/features/time-entries/authenticated-time-entry-context";
 import { triggerAlertEvaluation } from "@/features/time-entries/trigger-alert-evaluation";
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 export async function deleteTimeEntryAction(timeEntryId: string, workDate?: string): Promise<void> {
@@ -23,6 +24,11 @@ export async function deleteTimeEntryAction(timeEntryId: string, workDate?: stri
       throw error;
     }
   }
+
+  // Revalidate affected RSC routes after persistence + alert evaluation.
+  revalidatePath("/");
+  revalidatePath("/reports");
+  revalidatePath("/alerts");
 
   // Redirect outside the try block: redirect() signals via a thrown
   // NEXT_REDIRECT error that must not be caught by the handler above.
