@@ -11,6 +11,7 @@ import {
   ContractNotValidForDateError,
 } from "@/domain/time-entry-errors";
 import { getAuthenticatedTimeEntryContext } from "@/features/time-entries/authenticated-time-entry-context";
+import { triggerAlertEvaluation } from "@/features/time-entries/trigger-alert-evaluation";
 import {
   TIME_ENTRY_ARCHIVED_CLIENT_ERROR,
   TIME_ENTRY_CONTRACT_NOT_VALID_ERROR,
@@ -25,7 +26,7 @@ export async function createTimeEntryAction(
   _previousState: TimeEntryFormActionState,
   formData: FormData,
 ): Promise<TimeEntryFormActionState> {
-  const { context, clients, contracts, timeEntries } =
+  const { context, clients, contracts, timeEntries, alerts, notifications, members, settings, analytics } =
     await getAuthenticatedTimeEntryContext();
   const values = readTimeEntryFormValues(formData);
 
@@ -47,6 +48,9 @@ export async function createTimeEntryAction(
       contracts,
       timeEntries,
     );
+
+    // P106-03: trigger alert evaluation after successful TimeEntry creation (best-effort).
+    await triggerAlertEvaluation(context, { alerts, notifications, members, settings, analytics });
   } catch (error) {
     if (error instanceof InvalidTimeEntryInputError) {
       return {

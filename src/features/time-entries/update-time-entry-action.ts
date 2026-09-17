@@ -8,6 +8,7 @@ import {
   TimeEntryNotFoundError,
 } from "@/domain/time-entry-errors";
 import { getAuthenticatedTimeEntryContext } from "@/features/time-entries/authenticated-time-entry-context";
+import { triggerAlertEvaluation } from "@/features/time-entries/trigger-alert-evaluation";
 import {
   TIME_ENTRY_FIELD_ERROR_MESSAGES,
   TIME_ENTRY_NOT_FOUND_ERROR,
@@ -22,7 +23,8 @@ export async function updateTimeEntryAction(
   _previousState: TimeEntryFormActionState,
   formData: FormData,
 ): Promise<TimeEntryFormActionState> {
-  const { context, timeEntries } = await getAuthenticatedTimeEntryContext();
+  const { context, timeEntries, alerts, notifications, members, settings, analytics } =
+    await getAuthenticatedTimeEntryContext();
   const values = readTimeEntryFormValues(formData);
 
   try {
@@ -38,6 +40,9 @@ export async function updateTimeEntryAction(
       },
       timeEntries,
     );
+
+    // P106-03: trigger alert evaluation after successful TimeEntry update (best-effort).
+    await triggerAlertEvaluation(context, { alerts, notifications, members, settings, analytics });
   } catch (error) {
     if (error instanceof InvalidTimeEntryInputError) {
       return {
