@@ -13,6 +13,7 @@ export function SignOutButton(): JSX.Element {
   async function handleSignOut(): Promise<void> {
     setIsSigningOut(true);
     await authClient.signOut();
+    router.refresh();
     router.push("/sign-in");
   }
 

@@ -870,11 +870,11 @@ Test: "MVP integration journey: auth → workspace → client → contract → t
 
 ```yaml
 epic: MVP-INTEGRATION
-phase: P-INT-02
-status: P-INT-02 COMPLETE — P-INT-03 READY
+phase: P-INT-04
+status: P-INT-04 COMPLETE — RELEASE GATE PASSED — P-INT-05 READY
 created: 2026-09-17
 updated: 2026-09-18
-author: P-INT-02 implementation session
+author: P-INT-04 implementation session
 product_decisions:
   PD-INT-001: APPROVED — timezone NOT modifiable after workspace creation (deferred for MVP)
   PD-INT-002: APPROVED — unread badge on Alerts nav YES
@@ -884,24 +884,54 @@ product_decisions:
 gaps:
   GAP-INT-001: ✅ FIXED (P-INT-02) — revalidatePath("/") revalidatePath("/reports") revalidatePath("/alerts") added after persistence+alert evaluation in all 3 TimeEntry actions
   GAP-INT-002: NOT CONFIRMED — no fix required — ARCHIVED clients correctly filtered in load-time-entries.ts and validated server-side
-  GAP-INT-003: OPEN — HIGH — no cross-domain E2E (P-INT-04)
-  GAP-INT-004: ✅ FIXED (P-INT-02) — replaced window.location.assign with useRouter().push("/sign-in") in SignOutButton.tsx; eliminates navigation race observable by Playwright
-  GAP-INT-005: OPEN — LOW — nav badge pending P-INT-03 implementation
+  GAP-INT-003: ✅ FIXED (P-INT-04) — cross-domain E2E journey at tests/e2e/mvp-integration-journey.spec.ts; 3/3 green runs
+  GAP-INT-004: ✅ FIXED (P-INT-04) — residual auth race resolved: router.refresh() added before router.push("/sign-in") in SignOutButton.tsx; 3/3 green
+  GAP-INT-005: ✅ FIXED (P-INT-03) — unread badge on Alerts nav implemented
 phases:
   P-INT-01: Discovery & Verification — ✅ COMPLETE (commit 35d1764)
   P-INT-02: Integration Gap Fixes — ✅ COMPLETE
     - GAP-INT-001: revalidatePath added to create/update/delete TimeEntry actions
-    - GAP-INT-004: SignOutButton uses useRouter().push — race eliminated
+    - GAP-INT-004 (partial): SignOutButton uses useRouter().push — window.location.assign race eliminated
     - GAP-INT-002: confirmed NOT REQUIRED — no changes
     - tests: 388 passed (38 test files), 0 failures
     - lint: 0 errors, 6 pre-existing warnings (unrelated)
-    - typecheck: clean
-    - build: clean
-  P-INT-03: Nav Badge — READY (PD-INT-002 approved)
-  P-INT-04: Cross-Domain E2E Journey — READY (design complete, awaits P-INT-03)
+    - typecheck: clean; build: clean
+  P-INT-03: Nav Badge — ✅ COMPLETE (commit 74d6968)
+    - unread notification count badge on Alerts nav item (PD-INT-002)
+    - revalidatePath("/", "layout") in mark-notification-read-action.ts
+    - unit: 392 passed (39 files); integration: 223 passed (35 files); typecheck/lint/build: clean
+  P-INT-04: Cross-Domain E2E Journey — ✅ COMPLETE (RELEASE GATE PASSED)
+    file: tests/e2e/mvp-integration-journey.spec.ts
+    test: "should complete the authenticated MVP integration journey"
+    journey: Auth → Workspace → Client → Contract → TimeEntry → Dashboard → Reports → Alerts → mark-as-read → badge clears
+    downstream propagation assertions:
+      - Client → Contract: contract created via client detail page link
+      - Contract → TimeEntry: client/contract selectable in time-tracking form
+      - TimeEntry → Dashboard: 2h entry visible as "2h total hours tracked"
+      - TimeEntry → Reports: client in "Hours by Client"; contract in "Contract Report"
+      - TimeEntry → alert evaluation: 2h / 2h = 100% → CONTRACT_WARNING + CONTRACT_EXCEEDED
+      - Alert → Notification: notification list visible on /alerts
+      - Notification → badge: unread badge appears on Alerts nav item
+      - mark-as-read → persisted: buttons disappear; cards remain
+      - read notifications → badge cleared: badge absent after reload
+    application defect found and fixed (within scope):
+      - GAP-INT-004 residual: router.push("/sign-in") fired before session cleared → race condition
+      - fix: router.refresh() before router.push("/sign-in") in SignOutButton.tsx
+      - classification: APPLICATION DEFECT; fix within AC-INT-001 scope
+    pre-existing failures NOT in scope:
+      - time-tracking.spec.ts: 2 failures — hardcoded date now past (TEST DEFECT)
+      - analytics-isolation.test.ts: 1 failure — future time entries (pre-existing)
+    gate results:
+      - MVP integration journey: 3/3 green
+      - auth.spec.ts full suite: 6/7 → 7/7 green after fix
+      - full E2E: 56 passed, 2 pre-existing time-tracking failures
+      - unit: 392 passed (39 files)
+      - integration: 223 passed (35 files), 1 pre-existing failure
+      - typecheck: clean; lint: 0 errors
+    AC-INT-001 through AC-INT-016: ALL PASSED
   P-INT-05: Engineering Review — PENDING
   P-INT-06: Documentation & Closure — PENDING
 next:
-  phase: P-INT-03
-  objective: Add unread notification count badge to Alerts nav item (PD-INT-002 approved)
+  phase: P-INT-05
+  objective: Engineering review of full MVP Integration Epic (P-INT-01 through P-INT-04)
 ```
