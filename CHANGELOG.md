@@ -6,6 +6,16 @@ All notable changes to FreelanceOS are documented in this file.
 
 ### Added
 
+- EPIC-106 Alerts & Notifications implementation complete (P106-00 → P106-05; Engineering Review pending — P106-07). No schema change. Not production-ready.
+- `AlertService` at `src/application/alerts/alert-service.ts`: deterministic rule evaluation for `CONTRACT_WARNING` (AR-001) and `CONTRACT_EXCEEDED` (AR-002) per contract per current month period. Delegates all utilization calculations to `AnalyticsService` — no calculation duplication. `CAPACITY_WARNING` / `CAPACITY_EXCEEDED` (AR-003/AR-004) deferred (PD-106-001).
+- Alert deduplication: `findAlertByDeduplicationKey` prevents duplicate active alerts for the same condition and period. Re-trigger creates a new alert after resolution.
+- Alert resolution: active alerts resolved when condition drops below threshold (`resolvedAt` set).
+- Non-blocking alert evaluation trigger in all three TimeEntry Server Actions (`create-time-entry-action.ts`, `update-time-entry-action.ts`, `delete-time-entry-action.ts`) via `trigger-alert-evaluation.ts`. Evaluation failure does not fail the TimeEntry operation (PD-106-003).
+- In-app notification center at `/alerts` as a React Server Component: lists workspace-scoped notifications newest first; empty state; unread indicator.
+- Mark-as-read Server Action (`mark-notification-read-action.ts`) with server-side ownership check. Reading a notification does not resolve the alert.
+- Alert evaluation period uses `Workspace.timezone` (consistent with EPIC-105 reporting semantics). Warning threshold from `WorkspaceSettings.contractWarningPercent` (default 80%, OBD-006 resolved).
+- Unit suite: 379 tests (PASS). Integration suite: 219 tests (PASS). P106-05 E2E: 6 tests (PASS). Full E2E: 56 PASS / 1 pre-existing flaky failure (F-106-P05-001: `auth.spec.ts`, not a P106 regression).
+
 - EPIC-105 Reporting engineering-complete (COMPLETE WITH DOCUMENTED ENVIRONMENTAL GATE EXCEPTION). Engineering Review pending (P105-08). No schema change. Not production-ready.
 - Reporting surface at `/reports` as a React Server Component; authorization resolved outside any `try` block; period selection URL-driven (today / week / month / year / custom). Three tabular report sections: hours by client, contract report, annual overview. Loading, zero-activity, and error states. Responsive layout. Accessible table semantics, native headings, keyboard-reachable period selector.
 - `ReportingService`: thin workspace-scoped orchestration layer that resolves period-kind requests using `Workspace.timezone` and delegates all arithmetic to `AnalyticsService`. No formula is duplicated from the analytics layer.

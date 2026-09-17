@@ -1,6 +1,6 @@
 # FreelanceOS — System Architecture
 
-**Status:** Architecture Baseline — Authentication, workspace, testing/CI, UI foundation, client management, contract management, time tracking, and analytics/dashboard implemented (EPIC-003, EPIC-004, EPIC-005, EPIC-006, EPIC-101, EPIC-102, EPIC-103, EPIC-104)  
+**Status:** Architecture Baseline — Authentication, workspace, testing/CI, UI foundation, client management, contract management, time tracking, analytics/dashboard, reporting, and alert evaluation with in-app notification center implemented (EPIC-003, EPIC-004, EPIC-005, EPIC-006, EPIC-101, EPIC-102, EPIC-103, EPIC-104, EPIC-105, EPIC-106)  
 **Scope:** MVP  
 **Architectural style:** Modular Monolith  
 **Primary runtime:** Next.js / TypeScript  
@@ -471,10 +471,25 @@ Evaluate deterministic rules such as:
 
 - contract utilization warning;
 - contract exceeded;
-- capacity warning;
-- capacity exceeded.
+- capacity warning (DEFERRED — PD-106-001);
+- capacity exceeded (DEFERRED — PD-106-001).
 
 The alert engine should consume analytics/application services rather than duplicate calculations.
+
+### Implemented by EPIC-106
+
+`AlertService` at `src/application/alerts/alert-service.ts` evaluates AR-001 (`CONTRACT_WARNING`) and AR-002 (`CONTRACT_EXCEEDED`) per contract per current month period. Delegates utilization calculation to `AnalyticsService.getContractUtilizations()`. Reads threshold from `WorkspaceSettings.contractWarningPercent` (default 80%, OBD-006 resolved). Alert evaluation is triggered as a non-blocking side-effect from all three TimeEntry Server Actions (`create-time-entry-action.ts`, `update-time-entry-action.ts`, `delete-time-entry-action.ts`) via `trigger-alert-evaluation.ts` (PD-106-003). No cron, scheduler, Inngest, or background monitoring introduced.
+
+Dependency chain:
+```text
+AlertService
+  → AnalyticsService → getContractUtilizations()
+  → WorkspaceSettingsRepository → getSettings()
+  → AlertRepository → createAlert / resolveAlert / findAlertByDeduplicationKey
+  → NotificationRepository → createNotification
+```
+
+Deduplication key: deterministic string scoped to `(type, workspaceId, contractId, periodStart)`. Active alert not duplicated; resolved alert triggers new alert on re-fire. Evaluation failure does not fail the triggering TimeEntry operation. Evaluation period uses `Workspace.timezone` (consistent with EPIC-105 reporting semantics).
 
 ---
 
@@ -485,9 +500,13 @@ The alert engine should consume analytics/application services rather than dupli
 - user-facing alert presentation;
 - read/unread state;
 - notification history;
-- optional future email delivery.
+- optional future email delivery (deferred — PD-106-002: in-app only for MVP).
 
 Alert generation and notification delivery remain separate concepts.
+
+### Implemented by EPIC-106
+
+`/alerts` RSC at `src/app/(app)/alerts/page.tsx` lists workspace-scoped notifications for the authenticated user, newest first. Components at `src/features/notifications/`: `NotificationList.tsx`, `NotificationCard.tsx`. Server query via `src/features/notifications/load-notifications.ts`. Mark-as-read via Server Action `src/features/notifications/mark-notification-read-action.ts` with server-side ownership check (`workspaceId` + `userId` guard). Reading a notification does not resolve the alert; alert resolution does not delete the notification — independent lifecycle objects.
 
 ---
 
@@ -901,7 +920,7 @@ src/features/               auth, workspace, clients, contracts, time-entries
 src/lib/                    navigation helper, cn, analytics periods
 ```
 
-`src/features/clients` is implemented (EPIC-101). `src/features/contracts` is implemented (EPIC-102). `src/features/time-entries` is implemented (EPIC-103) and serves the `/time-tracking` routes. EPIC-104 added `src/components/dashboard/` as presentation-only server components for the `/` dashboard; the calculation logic lives in the analytics application service, not in a feature folder. Remaining product feature folders (`reporting`, `alerts`, `billing`) are future work.
+`src/features/clients` is implemented (EPIC-101). `src/features/contracts` is implemented (EPIC-102). `src/features/time-entries` is implemented (EPIC-103) and serves the `/time-tracking` routes. EPIC-104 added `src/components/dashboard/` as presentation-only server components for the `/` dashboard; the calculation logic lives in the analytics application service, not in a feature folder. EPIC-106 added `src/features/notifications/` (notification center UI components and Server Action) and `src/application/alerts/` (AlertService, alert evaluation types, dedup key builder). Remaining product feature folders (`billing`) are future work.
 
 ## 14.3 UI system
 
@@ -1106,7 +1125,11 @@ ConsumedHours > ContractedHours
     → CONTRACT_EXCEEDED
 ```
 
-The engine should not duplicate hour calculations.
+The engine does not duplicate hour calculations.
+
+### Implemented by EPIC-106
+
+`AlertService.evaluateAlerts(context)` is the sole write path for alert creation and resolution. No browser can create alerts directly. AR-001 and AR-002 implemented. AR-003/AR-004 deferred (PD-106-001). Workspace isolation: every alert carries `workspaceId`; all repository queries include `workspaceId`. Evaluation is on-write (TimeEntry mutations), not scheduled (PD-106-003). Null `contractedMinutes` suppresses alert (unlimited contract — follows BR-104-011).
 
 ---
 
@@ -1119,7 +1142,7 @@ Alert
   ↓
 Notification
   ↓
-In-app notification center
+In-app notification center (/alerts RSC)
 ```
 
 Future:
@@ -1132,6 +1155,10 @@ Notification
 ```
 
 Email delivery should be an infrastructure adapter, not embedded into alert business rules.
+
+### Implemented by EPIC-106
+
+In-app notification center at `/alerts` (RSC). No email, Slack, or push delivery. One notification created per workspace member per alert event (MVP: single-member workspace; fan-out deferred to OBD-009 resolution). `listNotificationsForUser(workspaceId, userId)` scoped by both identifiers — no cross-tenant access. `markNotificationRead` verifies `workspaceId` + `userId` ownership server-side before update.
 
 ---
 

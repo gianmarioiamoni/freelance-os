@@ -1,6 +1,6 @@
 # FreelanceOS --- Testing Strategy
 
-**Status:** Testing and CI foundation implemented — EPIC-005 complete; UI test baseline added by EPIC-006; client coverage added by EPIC-101; contract coverage added by EPIC-102; time-tracking coverage added by EPIC-103; analytics and dashboard coverage added by EPIC-104\
+**Status:** Testing and CI foundation implemented — EPIC-005 complete; UI test baseline added by EPIC-006; client coverage added by EPIC-101; contract coverage added by EPIC-102; time-tracking coverage added by EPIC-103; analytics and dashboard coverage added by EPIC-104; reporting coverage added by EPIC-105; alert evaluation and notification center coverage added by EPIC-106\
 **Document:** `docs/testing-strategy.md`\
 **Scope:** Release 0 Foundation + Release 1 MVP\
 **Canonical format:** Markdown
@@ -117,10 +117,12 @@ E2E / CI contract is unchanged. Review:
 Current suite totals — **three separate suites, never combined**:
 
 ``` text
-Unit          216   pnpm test                            (vitest)
-Integration   148   pnpm test:integration                (vitest.integration.config.mts)
-E2E            37   CI=true pnpm test:e2e --workers=1     (0 failed, 0 skipped)
+Unit          379   pnpm test                            (vitest)
+Integration   219   pnpm test:integration                (vitest.integration.config.mts)
+E2E            57   CI=true pnpm test:e2e --workers=1     (56 pass / 1 pre-existing flaky — F-106-P05-001)
 ```
+
+Suite totals at EPIC-105 closure (for reference): 331 unit / 187 integration / 51 E2E.
 
 The integration suite is a separate `vitest` project with its own
 config and its own required CI step. The earlier combined figure
@@ -872,6 +874,20 @@ rendering, tabular semantics, accessibility, responsive layout, and
 error recovery. Suite totals at EPIC-105 closure: 331 unit /
 187 integration / 51 E2E (reported separately).
 
+### Implemented by EPIC-106
+
+EPIC-106 adds alert evaluation, deduplication, resolution, and notification center coverage. All suites remain separate; totals at EPIC-106 P106-05 closure: 379 unit / 219 integration / 57 E2E (56 pass / 1 pre-existing flaky — F-106-P05-001).
+
+Added by EPIC-106:
+
+- unit — `tests/unit/application/alerts/alert-service.test.ts` (AR-001/AR-002 evaluation, deduplication, resolution, re-trigger, membership guard, null-capacity suppression) and `tests/unit/application/alerts/alert-dedup-key.test.ts` (deterministic key construction per alert type); `tests/unit/time-entries/trigger-alert-evaluation.test.ts` (non-blocking trigger, error isolation);
+- integration — `tests/integration/alerts/time-entry-alert-trigger.test.ts` (TimeEntry create/update/delete → alert evaluated against real DB), `tests/integration/alerts/notification-center.test.ts` (mark-as-read, workspace isolation, ownership check), `tests/integration/alerts/alert-service-integration.test.ts` (full evaluation lifecycle: threshold, deduplication, resolution, re-trigger, workspace isolation, null-capacity contract);
+- E2E — `tests/e2e/alerts.spec.ts`: 6 tests covering create TimeEntries to threshold → notification visible in `/alerts` → mark-as-read → UI reflects state; empty state; workspace isolation.
+
+Alert evaluation coverage proves AR-001 fires at `>= contractWarningPercent`, AR-002 fires at `>= 100%`, null `contractedMinutes` suppresses alert, active alert is not duplicated, resolved condition resolves alert, re-trigger creates new alert. Workspace isolation (two workspaces, no cross-alert) is integration-proven.
+
+F-106-P05-001: `auth.spec.ts` — "should register, stay authenticated, and sign out" — 1 E2E failure. Classified PRE-EXISTING / FLAKY. Reproduced at commit `95eaede` (pre-P106-05). Not a P106 regression.
+
 Example:
 
 ``` text
@@ -1364,7 +1380,7 @@ non-billable hours       verified (EPIC-104)
 client allocation        verified (EPIC-104)
 contract utilization     verified (EPIC-104)
 estimated revenue        not implemented — deferred
-alerts                   not implemented — R1-E06
+alerts                   implemented — EPIC-106 (CONTRACT_WARNING, CONTRACT_EXCEEDED)
 ```
 
 Dashboard values must agree with report calculations.
