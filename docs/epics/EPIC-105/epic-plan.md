@@ -24,7 +24,7 @@ P105-04:               COMPLETE — commits e1a1a42 + caf6f96 (corrective)
 P105-05:               COMPLETE — commit 59d28fa
 P105-06:               COMPLETE WITH DOCUMENTED ENVIRONMENTAL GATE EXCEPTION — commit 8faed35
 P105-07:               COMPLETE — documentation synchronization (this commit)
-P105-08:               PENDING — Engineering Review
+P105-08:               COMPLETE — see docs/epics/EPIC-105/engineering-review.md
 OBD CLOSED:            NONE
 OBD DEPENDENCY:        OBD-012 OPEN — GATES ROLLOVER / EXPIRY SEMANTICS ONLY
 EPIC-104 FINDINGS:     F-104-002 CLOSED — P105-02, shared percentage arithmetic
@@ -1764,8 +1764,8 @@ EPIC-105 — Reporting
 PLANNING: COMPLETE
 BLOCKING PRODUCT DECISIONS: NONE — ALL SIX RESOLVED
 OPEN DEPENDENCY: OBD-012 (rollover / expiry semantics only)
-IMPLEMENTATION: READY — P105-01 FIRST
-ENGINEERING REVIEW: NOT CREATED
+IMPLEMENTATION: COMPLETE — P105-07 DONE
+ENGINEERING REVIEW: COMPLETE — see docs/epics/EPIC-105/engineering-review.md
 ```
 
 Next artifact: the P105-01 commit
