@@ -182,6 +182,10 @@ export type NotificationRepository = {
     notificationId: string,
     readAt: Date,
   ): Promise<NotificationRecord>;
+  countUnreadNotificationsForUser(
+    workspaceId: string,
+    userId: string,
+  ): Promise<number>;
 };
 
 export type AnalyticsRepository = {

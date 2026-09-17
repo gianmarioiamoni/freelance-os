@@ -4,6 +4,7 @@ import { getAuthorizedWorkspace } from "@/application/workspace/get-authorized-w
 import { getAccountDisplayLabel } from "@/components/app-shell/account-label";
 import { AppShell } from "@/components/app-shell/AppShell";
 import { ErrorState } from "@/components/states/ErrorState";
+import { loadUnreadNotificationCount } from "@/features/notifications/load-notifications";
 import { getServerAuthSession } from "@/infrastructure/auth/session";
 import { createRepositories } from "@/infrastructure/persistence/create-repositories";
 import { getCurrentWorkspaceContext } from "@/infrastructure/workspace/current-workspace";
@@ -41,6 +42,8 @@ export default async function AppLayout({
     return <ErrorState message="This workspace is not available." />;
   }
 
+  const unreadAlertCount = await loadUnreadNotificationCount();
+
   return (
     <AppShell
       workspaceName={workspaceName}
@@ -48,6 +51,7 @@ export default async function AppLayout({
         session.user.name,
         session.user.email,
       )}
+      unreadAlertCount={unreadAlertCount}
     >
       {children}
     </AppShell>

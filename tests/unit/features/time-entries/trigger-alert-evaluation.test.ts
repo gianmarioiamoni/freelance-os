@@ -53,6 +53,7 @@ function makeRepositories(overrides: Partial<{
     getNotification: vi.fn().mockResolvedValue(null),
     listNotificationsForUser: vi.fn().mockResolvedValue([]),
     markNotificationRead: vi.fn().mockResolvedValue({ id: "notif-1" }),
+    countUnreadNotificationsForUser: vi.fn().mockResolvedValue(0),
     ...overrides.notifications,
   };
 

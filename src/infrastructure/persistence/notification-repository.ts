@@ -46,6 +46,14 @@ export function createNotificationRepository(
       });
     },
 
+    countUnreadNotificationsForUser(workspaceId: string, userId: string) {
+      return withPersistenceErrors(async () =>
+        db.notification.count({
+          where: { workspaceId, userId, readAt: null },
+        }),
+      );
+    },
+
     markNotificationRead(workspaceId: string, notificationId: string, readAt: Date) {
       return withPersistenceErrors(async () => {
         const result = await db.notification.updateMany({

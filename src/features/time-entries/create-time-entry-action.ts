@@ -100,6 +100,7 @@ export async function createTimeEntryAction(
   }
 
   // Revalidate affected RSC routes after persistence + alert evaluation.
+  revalidatePath("/", "layout");
   revalidatePath("/");
   revalidatePath("/reports");
   revalidatePath("/alerts");

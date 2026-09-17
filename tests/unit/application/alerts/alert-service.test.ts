@@ -120,6 +120,7 @@ function makeMockNotifications(overrides: Partial<NotificationRepository> = {}):
     getNotification: vi.fn().mockResolvedValue(null),
     listNotificationsForUser: vi.fn().mockResolvedValue([]),
     markNotificationRead: vi.fn().mockResolvedValue(makeNotification({ readAt: new Date() })),
+    countUnreadNotificationsForUser: vi.fn().mockResolvedValue(0),
     ...overrides,
   };
 }

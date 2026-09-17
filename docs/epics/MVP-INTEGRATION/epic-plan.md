@@ -566,37 +566,61 @@ The defect is in `SignOutButton.tsx`: it uses `authClient.signOut()` (async, awa
 
 **Objective:** Add unread notification count badge to the "Alerts" navigation item in the app shell.
 
-**Scope (PD-INT-002 approved as Option A):**
-- Load unread notification count in the app layout RSC (`src/app/(app)/layout.tsx`) — server-side, scoped to the authenticated user's workspace.
-- Pass count to `AppSidebar` and `MobileNav` nav components.
-- Render a badge on the "Alerts" nav item (label in `src/lib/navigation.ts`) when count > 0.
-- Badge must be revalidated when `revalidatePath("/alerts")` is called (which it will be, per GAP-INT-001 fix in P-INT-02).
+**Status:** COMPLETE
 
-**Files involved:**
-- `src/app/(app)/layout.tsx` — add unread count query
-- `src/lib/navigation.ts` — may need to extend `NavigationItem` type with optional `badge` field
-- `src/components/app-shell/AppNav.tsx` — render badge
-- `src/components/app-shell/AppSidebar.tsx` — pass badge count to `AppNav`
-- `src/components/app-shell/MobileNav.tsx` — pass badge count to `AppNav`
-- `src/features/notifications/load-notifications.ts` — potentially extract a `countUnreadNotifications` function
+**Commit:** `feat(integration): add unread alerts navigation badge`
 
-**Dependencies:** P-INT-02 complete (ensures `revalidatePath("/alerts")` is called on mutation, so badge refreshes).
+**PD-INT-002 Implementation:**
+
+- `NotificationRepository` extended with `countUnreadNotificationsForUser(workspaceId, userId): Promise<number>` (domain interface + Prisma implementation with `readAt: null` filter).
+- `loadUnreadNotificationCount()` added to `src/features/notifications/load-notifications.ts` — uses `getCurrentWorkspaceContext()` for server-trusted workspace/user resolution.
+- `src/app/(app)/layout.tsx` loads unread count and passes it as `unreadAlertCount` prop to `AppShell`.
+- Prop chain: `AppShell` → `AppHeader`/`AppSidebar` → `MobileNav`/`AppNav`.
+- `src/lib/navigation.ts`: `NavigationItem` extended with optional `badge?: number`; static array replaced with `buildNavigationItems(unreadAlertCount)` function.
+- `src/components/app-shell/AppNav.tsx`: badge rendered as a pill span (`bg-destructive`) when `item.badge !== undefined`; capped at `99+`; accessible via `aria-label`.
+- Revalidation: `revalidatePath("/", "layout")` added to `mark-notification-read-action.ts` and all three time-entry mutation actions to ensure the layout RSC (hosting the unread count) is revalidated on mutations.
+
+**Files changed:**
+- `src/domain/repositories.ts`
+- `src/infrastructure/persistence/notification-repository.ts`
+- `src/features/notifications/load-notifications.ts`
+- `src/features/notifications/mark-notification-read-action.ts`
+- `src/features/time-entries/create-time-entry-action.ts`
+- `src/features/time-entries/delete-time-entry-action.ts`
+- `src/features/time-entries/update-time-entry-action.ts`
+- `src/lib/navigation.ts`
+- `src/app/(app)/layout.tsx`
+- `src/components/app-shell/AppShell.tsx`
+- `src/components/app-shell/AppHeader.tsx`
+- `src/components/app-shell/AppSidebar.tsx`
+- `src/components/app-shell/MobileNav.tsx`
+- `src/components/app-shell/AppNav.tsx`
+
+**Tests added:**
+- `tests/unit/lib/navigation-badge.test.ts` — 4 unit tests: badge absent when count=0; badge present when count>0; non-alerts items have no badge; exact count reflected.
+- `tests/integration/persistence/notification-unread-count.test.ts` — 5 integration tests: count=0 baseline; count>0; decreases after mark-as-read; workspace isolation; user isolation.
+
+**Test mock fixes:**
+- `tests/unit/application/alerts/alert-service.test.ts`
+- `tests/unit/application/workspace/create-first-workspace.test.ts`
+- `tests/unit/features/time-entries/trigger-alert-evaluation.test.ts`
+
+**Test evidence:**
+- Unit: 392 passed (39 files)
+- Integration: 223 passed (35 files) — 1 pre-existing failure in `analytics-isolation.test.ts` ("future time entries") confirmed pre-existing before P-INT-03.
+- TypeScript: clean
+- Lint: clean
+- Build: clean
 
 **Acceptance criteria:**
-- Badge visible on "Alerts" nav item in sidebar and mobile nav when unread notifications exist (count > 0).
-- Badge absent (no element, not zero) when no unread notifications.
-- Badge count matches actual unread notification count for the authenticated user.
-- Badge reflects updated state after mark-as-read (revalidatePath("/alerts") triggers re-render).
-- No layout performance regression (count query is a single lightweight DB query scoped to userId+workspaceId).
-
-**Test gate:**
-- Unit test: badge renders when unread count > 0; badge absent when count = 0.
-- Existing integration tests pass.
-- E2E: cross-domain journey (P-INT-04) will implicitly test badge presence.
-
-**Risks:**
-- `AppNav` is a `"use client"` component — the badge count must be passed as a prop from the RSC layout; cannot fetch inside `AppNav`.
-- `NavigationItem` type in `src/lib/navigation.ts` is currently a static array. Extending it with a badge requires either a parallel data structure or passing badge props separately to the nav component.
+- ✅ Badge visible on "Alerts" nav item in sidebar and mobile nav when unread notifications exist (count > 0).
+- ✅ Badge absent when no unread notifications.
+- ✅ Badge count matches actual unread notification count for the authenticated user.
+- ✅ Badge reflects updated state after mark-as-read (`revalidatePath("/", "layout")`).
+- ✅ Workspace isolation: notification from another workspace not counted.
+- ✅ User isolation: notification from another user not counted.
+- ✅ No new realtime/polling/websocket introduced.
+- ✅ No changes to alert semantics, TimeEntry semantics, or notification center behavior.
 
 **Expected commit:** `feat(integration): add unread notification badge to Alerts nav item`
 

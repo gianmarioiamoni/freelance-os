@@ -6,16 +6,18 @@ import type { JSX } from "react";
 type AppHeaderProps = {
   accountLabel: string;
   workspaceName: string;
+  unreadAlertCount: number;
 };
 
 export function AppHeader({
   accountLabel,
   workspaceName,
+  unreadAlertCount,
 }: AppHeaderProps): JSX.Element {
   return (
     <header className="sticky top-0 z-40 border-b bg-background">
       <div className="flex h-14 items-center gap-3 px-4">
-        <MobileNav />
+        <MobileNav unreadAlertCount={unreadAlertCount} />
         <p className="shrink-0 text-sm font-semibold tracking-tight">
           FreelanceOS
         </p>

@@ -15,7 +15,11 @@ import { Menu } from "lucide-react";
 import { useState } from "react";
 import type { JSX } from "react";
 
-export function MobileNav(): JSX.Element {
+type MobileNavProps = {
+  unreadAlertCount: number;
+};
+
+export function MobileNav({ unreadAlertCount }: MobileNavProps): JSX.Element {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -39,7 +43,7 @@ export function MobileNav(): JSX.Element {
           </SheetDescription>
         </SheetHeader>
         <nav aria-label="Application" className="px-3 pb-6">
-          <AppNav onNavigate={() => setIsOpen(false)} />
+          <AppNav onNavigate={() => setIsOpen(false)} unreadAlertCount={unreadAlertCount} />
         </nav>
       </SheetContent>
     </Sheet>

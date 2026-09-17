@@ -14,17 +14,25 @@ export type NavigationItem = {
   href: string;
   label: string;
   icon: LucideIcon;
+  badge?: number;
 };
 
-export const navigationItems: NavigationItem[] = [
-  { href: "/", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/clients", label: "Clients", icon: Building2 },
-  { href: "/contracts", label: "Contracts", icon: FileText },
-  { href: "/time-tracking", label: "Time Tracking", icon: Clock },
-  { href: "/reports", label: "Reports", icon: BarChart3 },
-  { href: "/alerts", label: "Alerts", icon: Bell },
-  { href: "/settings", label: "Settings", icon: Settings },
-];
+export function buildNavigationItems(unreadAlertCount: number): NavigationItem[] {
+  return [
+    { href: "/", label: "Dashboard", icon: LayoutDashboard },
+    { href: "/clients", label: "Clients", icon: Building2 },
+    { href: "/contracts", label: "Contracts", icon: FileText },
+    { href: "/time-tracking", label: "Time Tracking", icon: Clock },
+    { href: "/reports", label: "Reports", icon: BarChart3 },
+    {
+      href: "/alerts",
+      label: "Alerts",
+      icon: Bell,
+      badge: unreadAlertCount > 0 ? unreadAlertCount : undefined,
+    },
+    { href: "/settings", label: "Settings", icon: Settings },
+  ];
+}
 
 export function isNavigationItemActive(
   pathname: string,

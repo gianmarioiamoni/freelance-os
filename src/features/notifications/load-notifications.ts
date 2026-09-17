@@ -9,3 +9,10 @@ export async function loadNotificationsForCurrentUser(): Promise<NotificationRec
 
   return notifications.listNotificationsForUser(context.workspaceId, context.userId);
 }
+
+export async function loadUnreadNotificationCount(): Promise<number> {
+  const context = await getCurrentWorkspaceContext();
+  const { notifications } = createRepositories();
+
+  return notifications.countUnreadNotificationsForUser(context.workspaceId, context.userId);
+}

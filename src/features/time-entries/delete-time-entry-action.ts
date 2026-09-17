@@ -26,6 +26,7 @@ export async function deleteTimeEntryAction(timeEntryId: string, workDate?: stri
   }
 
   // Revalidate affected RSC routes after persistence + alert evaluation.
+  revalidatePath("/", "layout");
   revalidatePath("/");
   revalidatePath("/reports");
   revalidatePath("/alerts");

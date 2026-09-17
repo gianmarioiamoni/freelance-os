@@ -2,17 +2,19 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { isNavigationItemActive, navigationItems } from "@/lib/navigation";
+import { buildNavigationItems, isNavigationItemActive } from "@/lib/navigation";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { JSX } from "react";
 
 type AppNavProps = {
   onNavigate?: () => void;
+  unreadAlertCount?: number;
 };
 
-export function AppNav({ onNavigate }: AppNavProps): JSX.Element {
+export function AppNav({ onNavigate, unreadAlertCount = 0 }: AppNavProps): JSX.Element {
   const pathname = usePathname();
+  const navigationItems = buildNavigationItems(unreadAlertCount);
 
   return (
     <ul className="flex flex-col gap-1">
@@ -35,7 +37,15 @@ export function AppNav({ onNavigate }: AppNavProps): JSX.Element {
               )}
             >
               <Icon aria-hidden="true" className="size-4 shrink-0" />
-              {item.label}
+              <span className="flex-1">{item.label}</span>
+              {item.badge !== undefined && (
+                <span
+                  aria-label={`${item.badge} unread`}
+                  className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-destructive px-1 text-[0.65rem] font-semibold leading-none text-destructive-foreground"
+                >
+                  {item.badge > 99 ? "99+" : item.badge}
+                </span>
+              )}
             </Link>
           </li>
         );

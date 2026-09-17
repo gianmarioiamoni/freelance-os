@@ -54,5 +54,6 @@ export async function markNotificationReadAction(
   }
 
   revalidatePath("/alerts");
+  revalidatePath("/", "layout");
   return null;
 }

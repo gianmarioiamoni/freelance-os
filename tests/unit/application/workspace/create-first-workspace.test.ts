@@ -102,6 +102,7 @@ function createMemoryDependencies(
       getNotification: unused,
       listNotificationsForUser: unused,
       markNotificationRead: unused,
+      countUnreadNotificationsForUser: unused,
     },
     analytics: {
       getMonthlyAnalytics: unused,
