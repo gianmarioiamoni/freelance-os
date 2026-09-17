@@ -1,6 +1,6 @@
 // src/infrastructure/persistence/alert-repository.ts
 import { RecordNotFoundError } from "@/domain/persistence-errors";
-import type { CreateAlertInput } from "@/domain/persistence-types";
+import type { AlertType, CreateAlertInput } from "@/domain/persistence-types";
 import type { AlertRepository } from "@/domain/repositories";
 import { withPersistenceErrors } from "@/infrastructure/persistence/map-prisma-error";
 import { mapAlert } from "@/infrastructure/persistence/mappers";
@@ -41,6 +41,26 @@ export function createAlertRepository(db: PrismaExecutor): AlertRepository {
         const row = await db.alert.findUnique({
           where: {
             workspaceId_deduplicationKey: { workspaceId, deduplicationKey },
+          },
+        });
+        return row ? mapAlert(row) : null;
+      });
+    },
+
+    async findActiveAlertByContractAndType(
+      workspaceId: string,
+      contractId: string,
+      type: AlertType,
+      periodStart: Date,
+    ) {
+      return withPersistenceErrors(async () => {
+        const row = await db.alert.findFirst({
+          where: {
+            workspaceId,
+            contractId,
+            type,
+            periodStart,
+            resolvedAt: null,
           },
         });
         return row ? mapAlert(row) : null;

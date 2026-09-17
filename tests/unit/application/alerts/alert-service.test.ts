@@ -108,6 +108,7 @@ function makeMockAlerts(overrides: Partial<AlertRepository> = {}): AlertReposito
     createAlert: vi.fn().mockResolvedValue(makeAlert()),
     getAlert: vi.fn().mockResolvedValue(null),
     findAlertByDeduplicationKey: vi.fn().mockResolvedValue(null),
+    findActiveAlertByContractAndType: vi.fn().mockResolvedValue(null),
     resolveAlert: vi.fn().mockResolvedValue(makeAlert({ resolvedAt: new Date() })),
     ...overrides,
   };
@@ -389,7 +390,7 @@ describe("AlertService.evaluateContractAlerts", () => {
       const { service, mocks } = makeService({
         utilizations: [makeUtilization({ utilizationPercentage: 79 })],
         alerts: {
-          findAlertByDeduplicationKey: vi.fn().mockResolvedValue(activeAlert),
+          findActiveAlertByContractAndType: vi.fn().mockResolvedValue(activeAlert),
           resolveAlert: vi.fn().mockResolvedValue(makeAlert({ resolvedAt: new Date() })),
         },
       });
@@ -402,21 +403,42 @@ describe("AlertService.evaluateContractAlerts", () => {
       );
     });
 
+    it("uses semantic lookup (findActiveAlertByContractAndType) for resolution, not dedup key", async () => {
+      const activeAlert = makeAlert({ resolvedAt: null });
+      const { service, mocks } = makeService({
+        utilizations: [makeUtilization({ utilizationPercentage: 79 })],
+        alerts: {
+          findActiveAlertByContractAndType: vi.fn().mockResolvedValue(activeAlert),
+          // findAlertByDeduplicationKey should NOT be called during resolution
+          findAlertByDeduplicationKey: vi.fn().mockResolvedValue(null),
+          resolveAlert: vi.fn().mockResolvedValue(makeAlert({ resolvedAt: new Date() })),
+        },
+      });
+      await service.evaluateContractAlerts(context);
+      expect(mocks.alerts.findActiveAlertByContractAndType).toHaveBeenCalledWith(
+        context.workspaceId,
+        contractId,
+        "CONTRACT_WARNING",
+        expect.any(Date),
+      );
+    });
+
     it("does not resolve when no active alert exists and condition is below threshold", async () => {
       const { service, mocks } = makeService({
         utilizations: [makeUtilization({ utilizationPercentage: 50 })],
-        alerts: { findAlertByDeduplicationKey: vi.fn().mockResolvedValue(null) },
+        alerts: { findActiveAlertByContractAndType: vi.fn().mockResolvedValue(null) },
       });
       const result = await service.evaluateContractAlerts(context);
       expect(result.contractResults[0].warning.action).toBe("none");
       expect(mocks.alerts.resolveAlert).not.toHaveBeenCalled();
     });
 
-    it("does not resolve an already-resolved alert", async () => {
-      const resolvedAlert = makeAlert({ resolvedAt: new Date("2026-09-09T00:00:00.000Z") });
+    it("does not resolve when only a resolved alert exists (semantic lookup returns null)", async () => {
+      // findActiveAlertByContractAndType filters resolvedAt IS NULL at DB level —
+      // if only resolved alerts exist, it returns null and no resolution happens.
       const { service, mocks } = makeService({
         utilizations: [makeUtilization({ utilizationPercentage: 50 })],
-        alerts: { findAlertByDeduplicationKey: vi.fn().mockResolvedValue(resolvedAlert) },
+        alerts: { findActiveAlertByContractAndType: vi.fn().mockResolvedValue(null) },
       });
       const result = await service.evaluateContractAlerts(context);
       expect(result.contractResults[0].warning.action).toBe("none");
@@ -460,6 +482,153 @@ describe("AlertService.evaluateContractAlerts", () => {
     });
   });
 
+  // ---------------------------------------------------------------------------
+  // F-106-P07-001 — Re-triggered alert resolution
+  // ---------------------------------------------------------------------------
+
+  describe("F-106-P07-001: re-triggered alert (timestamp-suffixed key) must be resolved", () => {
+    const retriggerKey = `${buildContractAlertDedupKey("CONTRACT_WARNING", context.workspaceId, contractId, period.startDate)}:1726000000000`;
+
+    it("resolves a re-triggered alert (timestamp-suffixed dedup key) when condition drops", async () => {
+      // Step 6→7: re-triggered alert is active with a timestamp-suffixed key
+      const retriggeredAlert = makeAlert({
+        id: "alert-retrigger",
+        deduplicationKey: retriggerKey,
+        resolvedAt: null,
+      });
+
+      const { service, mocks } = makeService({
+        utilizations: [makeUtilization({ utilizationPercentage: 79 })],
+        alerts: {
+          // Semantic lookup finds the re-triggered alert (resolvedAt IS NULL)
+          findActiveAlertByContractAndType: vi.fn().mockResolvedValue(retriggeredAlert),
+          resolveAlert: vi.fn().mockResolvedValue(makeAlert({ id: "alert-retrigger", resolvedAt: new Date() })),
+        },
+      });
+
+      const result = await service.evaluateContractAlerts(context);
+
+      // The re-triggered alert MUST be resolved (F-106-P07-001 core case)
+      expect(result.contractResults[0].warning.action).toBe("resolved");
+      expect(mocks.alerts.resolveAlert).toHaveBeenCalledWith(
+        context.workspaceId,
+        "alert-retrigger",
+        expect.any(Date),
+      );
+    });
+
+    it("full lifecycle: warning → resolved → re-trigger → re-trigger resolved", async () => {
+      // Simulate the 8-step lifecycle in sequence using the service in a stateful way.
+      // We drive the mock to reflect each state transition.
+
+      // State: no active alert, condition at 79% → action: none
+      const step1Mocks = makeMockAlerts({
+        findActiveAlertByContractAndType: vi.fn().mockResolvedValue(null),
+        findAlertByDeduplicationKey: vi.fn().mockResolvedValue(null),
+      });
+      const svc1 = new AlertService(step1Mocks, makeMockNotifications(), makeMockMembers(), makeMockSettings(), makeMockAnalyticsService([makeUtilization({ utilizationPercentage: 79 })]));
+      const r1 = await svc1.evaluateContractAlerts(context);
+      expect(r1.contractResults[0].warning.action).toBe("none");
+
+      // State: condition rises to 80% — first alert created with base key
+      const baseAlert = makeAlert({ id: "alert-1", resolvedAt: null });
+      const step2Mocks = makeMockAlerts({
+        findAlertByDeduplicationKey: vi.fn().mockResolvedValue(null),
+        createAlert: vi.fn().mockResolvedValue(baseAlert),
+      });
+      const svc2 = new AlertService(step2Mocks, makeMockNotifications(), makeMockMembers(), makeMockSettings(), makeMockAnalyticsService([makeUtilization({ utilizationPercentage: 80 })]));
+      const r2 = await svc2.evaluateContractAlerts(context);
+      expect(r2.contractResults[0].warning.action).toBe("created");
+
+      // State: condition drops — base alert resolved
+      const step3Mocks = makeMockAlerts({
+        findActiveAlertByContractAndType: vi.fn().mockResolvedValue(baseAlert),
+        resolveAlert: vi.fn().mockResolvedValue(makeAlert({ id: "alert-1", resolvedAt: new Date() })),
+      });
+      const svc3 = new AlertService(step3Mocks, makeMockNotifications(), makeMockMembers(), makeMockSettings(), makeMockAnalyticsService([makeUtilization({ utilizationPercentage: 79 })]));
+      const r3 = await svc3.evaluateContractAlerts(context);
+      expect(r3.contractResults[0].warning.action).toBe("resolved");
+
+      // State: condition rises again — re-trigger with timestamp-suffixed key
+      const resolvedBaseAlert = makeAlert({ id: "alert-1", resolvedAt: new Date("2026-09-10T10:00:00.000Z") });
+      const retriggeredAlert = makeAlert({ id: "alert-retrigger", deduplicationKey: retriggerKey, resolvedAt: null });
+      const step4Mocks = makeMockAlerts({
+        findAlertByDeduplicationKey: vi.fn().mockResolvedValue(resolvedBaseAlert),
+        createAlert: vi.fn().mockResolvedValue(retriggeredAlert),
+      });
+      const svc4 = new AlertService(step4Mocks, makeMockNotifications(), makeMockMembers(), makeMockSettings(), makeMockAnalyticsService([makeUtilization({ utilizationPercentage: 85 })]));
+      const r4 = await svc4.evaluateContractAlerts(context);
+      expect(r4.contractResults[0].warning.action).toBe("created");
+      // Verify the re-triggered alert has a timestamp-suffixed key
+      const [, createInput] = (step4Mocks.createAlert as ReturnType<typeof vi.fn>).mock.calls[0] as [string, { deduplicationKey: string }];
+      const baseKey = buildContractAlertDedupKey("CONTRACT_WARNING", context.workspaceId, contractId, period.startDate);
+      expect(createInput.deduplicationKey).not.toBe(baseKey);
+      expect(createInput.deduplicationKey).toMatch(/^cw:.+:\d+$/);
+
+      // State: condition drops again — THE SECOND (re-triggered) ALERT MUST BE RESOLVED
+      const step5Mocks = makeMockAlerts({
+        findActiveAlertByContractAndType: vi.fn().mockResolvedValue(retriggeredAlert),
+        resolveAlert: vi.fn().mockResolvedValue(makeAlert({ id: "alert-retrigger", resolvedAt: new Date() })),
+      });
+      const svc5 = new AlertService(step5Mocks, makeMockNotifications(), makeMockMembers(), makeMockSettings(), makeMockAnalyticsService([makeUtilization({ utilizationPercentage: 79 })]));
+      const r5 = await svc5.evaluateContractAlerts(context);
+      expect(r5.contractResults[0].warning.action).toBe("resolved");
+      expect(step5Mocks.resolveAlert).toHaveBeenCalledWith(
+        context.workspaceId,
+        "alert-retrigger", // the re-triggered alert, not the original
+        expect.any(Date),
+      );
+    });
+
+    it("workspace isolation: resolution does not bleed across workspaces", async () => {
+      const ws2Alert = makeAlert({ id: "alert-ws2", workspaceId: "ws-2", resolvedAt: null });
+      const ws1Alert = makeAlert({ id: "alert-ws1", resolvedAt: null });
+
+      // ws-1 context should only resolve ws-1's alert
+      const alertsMock = makeMockAlerts({
+        findActiveAlertByContractAndType: vi.fn().mockImplementation(
+          (wid: string) => Promise.resolve(wid === context.workspaceId ? ws1Alert : ws2Alert),
+        ),
+        resolveAlert: vi.fn().mockResolvedValue(makeAlert({ resolvedAt: new Date() })),
+      });
+
+      const svc = new AlertService(alertsMock, makeMockNotifications(), makeMockMembers(), makeMockSettings(), makeMockAnalyticsService([makeUtilization({ utilizationPercentage: 79 })]));
+      await svc.evaluateContractAlerts(context);
+
+      expect(alertsMock.findActiveAlertByContractAndType).toHaveBeenCalledWith(
+        context.workspaceId, // ws-1 only
+        expect.any(String),
+        expect.any(String),
+        expect.any(Date),
+      );
+      expect(alertsMock.resolveAlert).toHaveBeenCalledWith(
+        context.workspaceId,
+        ws1Alert.id,
+        expect.any(Date),
+      );
+    });
+
+    it("no new alert or notification is created during resolution of re-triggered alert", async () => {
+      const retriggeredAlert = makeAlert({
+        id: "alert-retrigger",
+        deduplicationKey: retriggerKey,
+        resolvedAt: null,
+      });
+      const { service, mocks } = makeService({
+        utilizations: [makeUtilization({ utilizationPercentage: 79 })],
+        alerts: {
+          findActiveAlertByContractAndType: vi.fn().mockResolvedValue(retriggeredAlert),
+          resolveAlert: vi.fn().mockResolvedValue(makeAlert({ resolvedAt: new Date() })),
+        },
+      });
+
+      await service.evaluateContractAlerts(context);
+
+      expect(mocks.alerts.createAlert).not.toHaveBeenCalled();
+      expect(mocks.notifications.createNotification).not.toHaveBeenCalled();
+    });
+  });
+
   describe("result counters", () => {
     it("increments alertsCreated and notificationsCreated on new alert", async () => {
       const { service } = makeService({
@@ -474,7 +643,7 @@ describe("AlertService.evaluateContractAlerts", () => {
       const activeAlert = makeAlert({ resolvedAt: null });
       const { service } = makeService({
         utilizations: [makeUtilization({ utilizationPercentage: 50 })],
-        alerts: { findAlertByDeduplicationKey: vi.fn().mockResolvedValue(activeAlert) },
+        alerts: { findActiveAlertByContractAndType: vi.fn().mockResolvedValue(activeAlert) },
       });
       const result = await service.evaluateContractAlerts(context);
       expect(result.alertsResolved).toBeGreaterThanOrEqual(1);

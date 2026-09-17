@@ -418,27 +418,33 @@ No other regressions detected across all quality gates.
 |---|---|
 | **ID** | F-106-P07-001 |
 | **Severity** | NON-BLOCKING |
-| **Status** | OPEN |
-| **Component** | `AlertService.evaluateContractRule` / `resolveIfActive` |
+| **Status** | **CLOSED** |
+| **Component** | `AlertService.resolveIfActive` / `AlertRepository` |
+| **Fixed in** | P106-08 — commit `fix(alerts): resolve re-triggered alerts correctly` |
 
-**Evidence:**
+**Root cause:**
 
-After a re-trigger, the new active alert is created with a timestamp-suffixed dedup key (e.g., `cw:{ws}:{c}:{date}:{timestamp}`). When the condition subsequently drops below threshold, `evaluateContractRule` calls `resolveIfActive(context, baseKey)` where `baseKey = cw:{ws}:{c}:{date}`. The repository lookup `findAlertByDeduplicationKey(workspaceId, baseKey)` returns `null` because no record matches `baseKey` — the active alert has the timestamp-suffixed key. Result: the re-triggered alert is never resolved; it remains permanently active for the rest of the period.
+`resolveIfActive` called `findAlertByDeduplicationKey(workspaceId, baseKey)`. Re-triggered alerts are created with a timestamp-suffixed key (`cw:{ws}:{c}:{date}:{timestamp}`), so the base-key lookup returned `null` and the re-triggered alert was never resolved.
 
-This also means deduplication on the re-triggered path will behave correctly (active alert found on next positive evaluation), but resolution will silently fail, and the alert remains active indefinitely.
+**Fix:**
 
-**Impact:**
+Added `findActiveAlertByContractAndType(workspaceId, contractId, type, periodStart)` to `AlertRepository` (interface + Prisma implementation). This method queries by semantic identity (`workspaceId`, `contractId`, `type`, `periodStart`, `resolvedAt IS NULL`), independent of the deduplication key. `resolveIfActive` now uses this semantic lookup instead of the dedup-key lookup. Deduplication key remains unchanged; unique constraint is not modified.
 
-- Re-triggered alerts are orphaned in an active state that cannot be resolved through normal lifecycle.
-- Affects only the secondary lifecycle path (trigger → resolve → retrigger → condition drops). The primary paths (trigger → condition persists → dedup; trigger → condition drops → resolve) are unaffected.
-- For MVP, this is unlikely to be encountered frequently (requires: threshold crossed, then relieved, then crossed again, then relieved again within the same period).
-- No data corruption; no security impact; no cross-workspace leakage.
+**Files modified:**
+- `src/domain/repositories.ts` — added `findActiveAlertByContractAndType` to `AlertRepository` type
+- `src/infrastructure/persistence/alert-repository.ts` — implemented via `db.alert.findFirst` with semantic filter
+- `src/application/alerts/alert-service.ts` — `resolveIfActive` rewritten to use semantic lookup
+- `tests/unit/application/alerts/alert-service.test.ts` — added F-106-P07-001 test suite (5 new cases); updated resolution mocks
 
-**Recommendation:**
+**Test evidence:**
 
-`resolveIfActive` should query for the most recent active alert on the contract for the period (by `contractId + periodStart + type + resolvedAt IS NULL`) rather than relying solely on the dedup key lookup. Alternatively, a DB query returning the active alert by natural key (`workspaceId + contractId + type + periodStart + resolvedAt IS NULL`) would be more robust.
+- Full lifecycle test (8-step: trigger → resolve → re-trigger → re-trigger resolved) passes.
+- Re-triggered alert (timestamp-suffixed key) is correctly resolved when condition drops.
+- No new alert or notification created during resolution.
+- Workspace isolation preserved.
+- `pnpm test` — 384/384 passed. `pnpm typecheck` — clean. `pnpm build` — clean.
 
-**Owner:** P106-08 (or next available bug-fix phase).
+**Owner:** P106-08 — CLOSED.
 
 ---
 
@@ -495,9 +501,9 @@ PASS WITH FINDINGS
 
 EPIC-106 is correctly implemented and production-usable at MVP scale. All primary lifecycle paths, deduplication, workspace isolation, ON-WRITE triggers, and the notification center function as specified. All quality gates pass with no blocking issues.
 
-Two NON-BLOCKING findings remain open:
+One NON-BLOCKING finding remains open; one has been closed:
 
-- **F-106-P07-001** (OPEN): Re-triggered alert lifecycle gap — re-triggered alerts cannot be resolved when condition subsequently drops. Affects a secondary lifecycle path. Recommended for the next bug-fix phase.
+- **F-106-P07-001** (CLOSED — P106-08): Re-triggered alert resolution corrected. Semantic lookup added to `AlertRepository`; resolution is now independent of deduplication key.
 - **F-106-P04-001** (ACCEPTED): Unbounded notification list — previously accepted for MVP.
 
 No blocking correctness, security, authorization, data-integrity, or architecture issues were found.

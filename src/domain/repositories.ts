@@ -2,6 +2,7 @@
 import type {
   AddWorkspaceMemberInput,
   AlertRecord,
+  AlertType,
   ClientRecord,
   ClientStatus,
   ContractRecord,
@@ -142,6 +143,19 @@ export type AlertRepository = {
   findAlertByDeduplicationKey(
     workspaceId: string,
     deduplicationKey: string,
+  ): Promise<AlertRecord | null>;
+  /**
+   * Returns the currently-active (resolvedAt IS NULL) alert for the given
+   * semantic identity: (workspaceId, contractId, type, periodStart).
+   *
+   * Used by resolution logic so it is independent of the specific deduplication
+   * key (which may be timestamp-suffixed after a re-trigger).
+   */
+  findActiveAlertByContractAndType(
+    workspaceId: string,
+    contractId: string,
+    type: AlertType,
+    periodStart: Date,
   ): Promise<AlertRecord | null>;
   resolveAlert(
     workspaceId: string,

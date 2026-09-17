@@ -212,7 +212,7 @@ export class AlertService {
     );
 
     if (!conditionMet) {
-      return this.resolveIfActive(context, baseKey);
+      return this.resolveIfActive(context, utilization.contractId, type, period.startDate);
     }
 
     // Condition met — find existing alert by base key
@@ -242,19 +242,28 @@ export class AlertService {
   }
 
   /**
-   * Resolves the active alert for the given deduplication key, if one exists.
-   * If no active alert is found, returns { action: "none" }.
+   * Resolves the semantically-active alert for the given contract/type/period,
+   * regardless of which deduplication key was used at creation time (base or
+   * timestamp-suffixed re-trigger key).
+   *
+   * F-106-P07-001 fix: resolution is independent of the deduplication key so
+   * that re-triggered alerts (timestamp-suffixed key) are correctly resolved
+   * when the condition subsequently drops below threshold.
    */
   private async resolveIfActive(
     context: WorkspaceContext,
-    dedupKey: string,
+    contractId: string,
+    type: "CONTRACT_WARNING" | "CONTRACT_EXCEEDED",
+    periodStart: Date,
   ): Promise<AlertConditionOutcome> {
-    const existing = await this.alerts.findAlertByDeduplicationKey(
+    const existing = await this.alerts.findActiveAlertByContractAndType(
       context.workspaceId,
-      dedupKey,
+      contractId,
+      type,
+      periodStart,
     );
 
-    if (existing === null || existing.resolvedAt !== null) {
+    if (existing === null) {
       return { action: "none" };
     }
 
