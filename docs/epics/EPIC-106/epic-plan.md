@@ -3,7 +3,7 @@
 **Epic:** EPIC-106\
 **Release:** Release 1 — MVP\
 **MASTER_PLAN identifier:** R1-E06 — Alerts & Notifications (`MASTER_PLAN.md` §16)\
-**Status:** DOCUMENTATION SYNC COMPLETE — ENGINEERING REVIEW NEXT\
+**Status:** COMPLETE / CLOSED — Engineering Review PASS\
 **Dependencies:** EPIC-002, EPIC-003, EPIC-004, EPIC-005, EPIC-006, EPIC-101, EPIC-102, EPIC-103, EPIC-104, EPIC-105\
 **Previous Epic:** EPIC-105 Reporting (`docs/epics/EPIC-105/engineering-review.md`, commit `03ff14e`)
 
@@ -19,7 +19,10 @@ P106-03:               COMPLETE — commit 012f6da
 P106-04:               COMPLETE — commit 95eaede
 P106-05:               COMPLETE — commit 72d9f1d
 P106-06:               COMPLETE — documentation sync
-P106-07:               NEXT — Engineering Review
+P106-07:               COMPLETE — commit 13a48a0
+P106-08:               COMPLETE — commit 47f82ec
+P106-09:               COMPLETE — commit b421e60
+P106-10:               COMPLETE — EPIC CLOSURE
 ```
 
 ---
@@ -737,13 +740,46 @@ P106-01 is removed from the MVP phase breakdown. `monthlyCapacityMinutes` is not
 
 ---
 
-### P106-07 — Engineering Review
+### P106-07 — Engineering Review ✅ COMPLETE
 
+- **Commit:** `13a48a0` — `docs(alerts): EPIC-106 engineering review`
 - **Objective:** Produce `docs/epics/EPIC-106/engineering-review.md`.
-- **Scope:** Verdict, per-suite gate evidence, findings, OBD relevance, production-readiness limitations.
-- **Non-goals:** feature work during review.
-- **Expected commit:** `docs(alerts): EPIC-106 engineering review`
-- **Dependencies:** P106-06.
+- **Delivered:** `docs/epics/EPIC-106/engineering-review.md` — verdict, per-suite gate evidence, findings, OBD relevance, production-readiness limitations.
+- **Verdict:** PASS (initial — F-106-P07-001 blocking, subsequent correction in P106-08)
+- **Dependencies:** P106-06 COMPLETE.
+
+---
+
+### P106-08 — Corrective fix: resolveIfActive semantic lookup ✅ COMPLETE
+
+- **Commit:** `47f82ec` — `fix(alerts): resolve re-triggered alerts correctly`
+- **Objective:** Fix F-106-P07-001 — `resolveIfActive` used deduplication key lookup instead of semantic lookup, preventing correct resolution of re-triggered alerts.
+- **Delivered:** `resolveIfActive` now uses semantic lookup: `workspaceId + contractId + type + periodStart + resolvedAt IS NULL` instead of `deduplicationKey`.
+- **Finding resolved:** F-106-P07-001 CLOSED.
+- **Dependencies:** P106-07 COMPLETE.
+
+---
+
+### P106-09 — Engineering Review verification ✅ COMPLETE
+
+- **Commit:** `b421e60` — `docs(alerts): close EPIC-106 engineering review`
+- **Objective:** Verify P106-08 correction; confirm Engineering Review PASS.
+- **Delivered:** `docs/epics/EPIC-106/engineering-review.md` updated — F-106-P07-001 CLOSED; final verdict PASS.
+- **Gate evidence:**
+  - F-106-P07-001: CLOSED (semantic lookup verified)
+  - F-106-P04-001: ACCEPTED — MVP (unbounded list, non-blocking)
+  - F-106-P05-001: PRE-EXISTING / FLAKY / ACCEPTED
+  - Engineering Review: PASS — 0 blocking findings
+- **Dependencies:** P106-08 COMPLETE.
+
+---
+
+### P106-10 — EPIC Closure ✅ COMPLETE
+
+- **Commit:** `docs(alerts): close EPIC-106 and synchronize roadmap`
+- **Objective:** Formally close EPIC-106; synchronize MASTER_PLAN, CHANGELOG, README, epic-plan.
+- **Delivered:** documentation closure only — no code or test changes.
+- **Dependencies:** P106-09 COMPLETE.
 
 ---
 
@@ -794,8 +830,9 @@ P106-01 is removed from the MVP phase breakdown. `monthlyCapacityMinutes` is not
 
 | ID | Description | Severity | Status |
 | --- | --- | --- | --- |
-| F-106-P05-001 | `auth.spec.ts` — "should register, stay authenticated, and sign out" — 1 E2E failure | PRE-EXISTING / FLAKY | Open — not a P106 regression; reproduced at commit `95eaede` (pre-P106-05); do not close unless independently confirmed fixed |
-| F-106-P04-001 | Unbounded notification list (no pagination) | NON-BLOCKING | Accepted for MVP; pagination deliberately out of scope |
+| F-106-P07-001 | `resolveIfActive` used deduplication key instead of semantic lookup — re-triggered alerts not correctly resolved | BLOCKING | CLOSED — fixed in P106-08 (commit `47f82ec`); semantic lookup verified in P106-09 |
+| F-106-P05-001 | `auth.spec.ts` — "should register, stay authenticated, and sign out" — 1 E2E failure | PRE-EXISTING / FLAKY | ACCEPTED — not a P106 regression; reproduced at commit `95eaede` (pre-P106-05) |
+| F-106-P04-001 | Unbounded notification list (no pagination) | NON-BLOCKING | ACCEPTED — MVP; pagination deliberately out of scope |
 
 ### Inherited open findings (not owned by EPIC-106)
 
@@ -846,8 +883,8 @@ EPIC-106 is DONE when:
 - [x] `/alerts` page functional RSC with notification list. — commit `95eaede`
 - [x] Workspace isolation integration-proven. — commit `72d9f1d`
 - [x] All gates pass (lint, typecheck, unit, integration, E2E, build). — 379/379 unit, 219/219 integration, 6/6 P106-05 E2E, build PASS
-- [ ] `docs/epics/EPIC-106/engineering-review.md` produced. — P106-07 NEXT
-- [ ] `MASTER_PLAN.md` updated to reflect EPIC-106 COMPLETE. — pending Engineering Review verdict
+- [x] `docs/epics/EPIC-106/engineering-review.md` produced. — commit `13a48a0`; final verdict commit `b421e60`
+- [x] `MASTER_PLAN.md` updated to reflect EPIC-106 COMPLETE. — P106-10
 - [x] No analytics calculation duplicated. — `AlertService` delegates to `AnalyticsService`
 - [x] No `use client` on RSC pages. — verified `/alerts/page.tsx`
 
@@ -905,6 +942,7 @@ Implementation begins with P106-02 (AlertService). No migration required (P106-0
 
 ```text
 EPIC-106 — Alerts & Notifications
+STATUS: COMPLETE / CLOSED
 PLANNING: COMPLETE
 PRODUCT DECISIONS: RESOLVED
   PD-106-001: DEFERRED — CAPACITY_WARNING/CAPACITY_EXCEEDED out of MVP scope
@@ -917,9 +955,17 @@ P106-03: COMPLETE — commit 012f6da
 P106-04: COMPLETE — commit 95eaede
 P106-05: COMPLETE — commit 72d9f1d
 P106-06: COMPLETE — documentation sync
-P106-07: NEXT — Engineering Review
-OPEN FINDINGS: F-106-P05-001 (pre-existing/flaky), F-106-P04-001 (unbounded list, non-blocking)
+P106-07: COMPLETE — commit 13a48a0
+P106-08: COMPLETE — commit 47f82ec
+P106-09: COMPLETE — commit b421e60
+P106-10: COMPLETE — EPIC CLOSURE
+FINDINGS:
+  F-106-P07-001: CLOSED (fixed P106-08)
+  F-106-P04-001: ACCEPTED — MVP
+  F-106-P05-001: PRE-EXISTING / FLAKY / ACCEPTED
+BLOCKING FINDINGS: 0
 OPEN DEPENDENCIES: OBD-009 (fan-out), OBD-012 (no rollover, carries from EPIC-105)
 IMPLEMENTATION: COMPLETE
-ENGINEERING REVIEW: NOT CREATED — P106-07 NEXT
+ENGINEERING REVIEW: PASS — docs/epics/EPIC-106/engineering-review.md
+NEXT EPIC: MVP Integration Epic (§17 MASTER_PLAN.md)
 ```

@@ -135,8 +135,8 @@ context is recovered from repository documentation.
 ## Overall
 
 ``` text
-STATUS: EPIC-105 COMPLETE WITH DOCUMENTED ENVIRONMENTAL GATE EXCEPTION
-NEXT: R1-E05 Engineering Review (P105-08)
+STATUS: EPIC-106 COMPLETE — Engineering Review PASS
+NEXT: MVP Integration Epic (§17)
 ```
 
 ## Completed planning artifacts
@@ -155,7 +155,7 @@ docs/
 ``` text
 Application implementation: STARTED
 Foundation implementation: EPIC-001 COMPLETE; EPIC-002 COMPLETE; EPIC-003 COMPLETE; EPIC-004 COMPLETE; EPIC-005 COMPLETE; EPIC-006 COMPLETE
-MVP implementation: EPIC-101 COMPLETE; EPIC-102 COMPLETE; EPIC-103 COMPLETE; EPIC-104 COMPLETE; EPIC-105 COMPLETE
+MVP implementation: EPIC-101 COMPLETE; EPIC-102 COMPLETE; EPIC-103 COMPLETE; EPIC-104 COMPLETE; EPIC-105 COMPLETE; EPIC-106 COMPLETE
 Production deployment: NOT STARTED
 Authentication: IMPLEMENTED — see docs/epics/EPIC-003/engineering-review.md
 Workspace / authorization: IMPLEMENTED — see docs/epics/EPIC-004/engineering-review.md
@@ -165,7 +165,8 @@ Client management: IMPLEMENTED — see docs/epics/EPIC-101/engineering-review.md
 Contract management: IMPLEMENTED — see docs/epics/EPIC-102/engineering-review.md
 Time tracking: IMPLEMENTED — see docs/epics/EPIC-103/engineering-review.md
 Analytics / dashboard: IMPLEMENTED — see docs/epics/EPIC-104/engineering-review.md
-Reporting: IMPLEMENTED — see docs/epics/EPIC-105/engineering-review.md (pending P105-08)
+Reporting: IMPLEMENTED — see docs/epics/EPIC-105/engineering-review.md
+Alerts & notifications: IMPLEMENTED — see docs/epics/EPIC-106/engineering-review.md
 ```
 
 EPIC-104 completed the shared analytics layer and the authenticated
@@ -190,7 +191,7 @@ Commits: 134800f (P105-01) · 756649d (P105-02) · 428f6e4 + 6822600 (P105-03)
          e1a1a42 (P105-04 initial) · caf6f96 (P105-04 corrective) · 59d28fa (P105-05)
          8faed35 (P105-06)
 Verdict: COMPLETE WITH DOCUMENTED ENVIRONMENTAL GATE EXCEPTION
-Engineering status: COMPLETE (P105-08 Engineering Review pending)
+Engineering status: COMPLETE
 Blocking findings: NONE
 Production readiness: NO
 Tests: 331 unit / 187 integration / 51 E2E (suite totals, reported separately)
@@ -201,6 +202,16 @@ Environmental exceptions: two inherited F-104-006 clock-sensitive E2E failures
                           (analytics-isolation.test.ts, unchanged from prior phases).
                           Both fail only when the test runner's local clock
                           crosses midnight while the server runs UTC.
+
+EPIC-106 — Alerts & Notifications
+Commits: 6daf2cd (P106-02) · 012f6da (P106-03) · 95eaede (P106-04) · 72d9f1d (P106-05)
+         069cb2c (P106-06) · 13a48a0 (P106-07) · 47f82ec (P106-08) · b421e60 (P106-09)
+Verdict: COMPLETE — Engineering Review PASS
+Engineering status: COMPLETE
+Blocking findings: NONE (F-106-P07-001 CLOSED)
+Production readiness: NO
+Tests: 379 unit / 219 integration / 57 E2E (suite totals, reported separately)
+Gates: lint PASS; typecheck PASS; build PASS
 ```
 
 Present after EPIC-104:
@@ -1977,25 +1988,26 @@ releases:
     status: future
 
 last_completed:
-  epic: EPIC-105
-  objective: Reporting
-  verdict: complete-with-documented-environmental-gate-exception
+  epic: EPIC-106
+  objective: Alerts & Notifications
+  verdict: complete-engineering-review-pass
   engineering_status: complete
   blocking_findings: none
   production_readiness: false
   tests:
-    unit: 331
-    integration: 187
-    e2e: 51
-  environmental_exceptions:
-    - inherited F-104-006 clock-sensitive E2E failures (2 tests, time-tracking.spec.ts)
-    - inherited F-104-006 clock-sensitive integration failure (1 test, analytics-isolation.test.ts)
+    unit: 379
+    integration: 219
+    e2e: 57
+  findings:
+    - F-106-P07-001 CLOSED (resolveIfActive semantic lookup fixed P106-08)
+    - F-106-P04-001 ACCEPTED MVP (unbounded notification list)
+    - F-106-P05-001 PRE-EXISTING / FLAKY / ACCEPTED (auth.spec.ts)
 
 next:
-  epic: EPIC-105
-  phase: engineering-review
-  objective: P105-08 Engineering Review
-  implementation: epic-105-complete
+  epic: MVP-Integration
+  phase: planning
+  objective: MVP Integration Epic (§17)
+  implementation: mvp-integration-planning
 ```
 
 ------------------------------------------------------------------------

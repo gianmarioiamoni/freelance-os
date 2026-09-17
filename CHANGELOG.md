@@ -6,7 +6,7 @@ All notable changes to FreelanceOS are documented in this file.
 
 ### Added
 
-- EPIC-106 Alerts & Notifications implementation complete (P106-00 → P106-05; Engineering Review pending — P106-07). No schema change. Not production-ready.
+- EPIC-106 Alerts & Notifications COMPLETE / CLOSED — Engineering Review PASS. P106-00 → P106-09 complete. F-106-P07-001 CLOSED (P106-08: resolveIfActive semantic lookup fix). F-106-P04-001 ACCEPTED — MVP. F-106-P05-001 PRE-EXISTING / FLAKY / ACCEPTED. No schema change. Not production-ready.
 - `AlertService` at `src/application/alerts/alert-service.ts`: deterministic rule evaluation for `CONTRACT_WARNING` (AR-001) and `CONTRACT_EXCEEDED` (AR-002) per contract per current month period. Delegates all utilization calculations to `AnalyticsService` — no calculation duplication. `CAPACITY_WARNING` / `CAPACITY_EXCEEDED` (AR-003/AR-004) deferred (PD-106-001).
 - Alert deduplication: `findAlertByDeduplicationKey` prevents duplicate active alerts for the same condition and period. Re-trigger creates a new alert after resolution.
 - Alert resolution: active alerts resolved when condition drops below threshold (`resolvedAt` set).
