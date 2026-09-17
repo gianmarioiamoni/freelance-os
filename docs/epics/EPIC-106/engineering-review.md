@@ -1,9 +1,10 @@
 # EPIC-106 Engineering Review
 
-**Phase:** P106-07  
+**Phase:** P106-09 (Engineering Review Closure)  
 **Reviewer:** Engineering Review Agent  
 **Date:** 2026-09-17  
-**Review Basis:** Commits 6daf2cd → 069cb2c (P106-02 through P106-06)
+**Review Basis:** Commits 6daf2cd → 47f82ec (P106-02 through P106-08)  
+**Prior Review:** P106-07 — Verdict: PASS WITH FINDINGS (F-106-P07-001 OPEN)
 
 ---
 
@@ -62,12 +63,13 @@ Out of scope (explicitly deferred/excluded):
 
 | Gate | Result | Details |
 |---|---|---|
-| `pnpm test` (unit) | ✅ PASS | 379/379 |
+| `pnpm test` (unit) | ✅ PASS | 379/379 (P106-07) → 384/384 (P106-08, +5 F-106-P07-001 cases) |
 | `pnpm test:integration` | ✅ PASS | 219/219 |
 | `pnpm test:e2e --grep alerts` | ✅ PASS | 6/6 |
 | `pnpm lint` | ✅ PASS | 0 errors, 6 pre-existing warnings |
 | `pnpm typecheck` | ✅ PASS | 0 errors |
 | `pnpm build` | ✅ PASS | production build clean |
+| `pnpm test` (P106-09 closure) | ✅ PASS | 384/384 — no regressions |
 
 ---
 
@@ -494,20 +496,41 @@ Added `findActiveAlertByContractAndType(workspaceId, contractId, type, periodSta
 ## 15. Final Verdict
 
 ```
-PASS WITH FINDINGS
+PASS — ENGINEERING REVIEW CLOSED
 ```
 
-**Rationale:**
+**Rationale (P106-09 closure):**
 
-EPIC-106 is correctly implemented and production-usable at MVP scale. All primary lifecycle paths, deduplication, workspace isolation, ON-WRITE triggers, and the notification center function as specified. All quality gates pass with no blocking issues.
+F-106-P07-001 is confirmed **CLOSED** as of commit `47f82ec`. The semantic lookup (`findActiveAlertByContractAndType`) correctly resolves re-triggered alerts regardless of deduplication key. All lifecycle paths are now covered. No regressions introduced.
 
-One NON-BLOCKING finding remains open; one has been closed:
+All findings are resolved or accepted:
 
-- **F-106-P07-001** (CLOSED — P106-08): Re-triggered alert resolution corrected. Semantic lookup added to `AlertRepository`; resolution is now independent of deduplication key.
-- **F-106-P04-001** (ACCEPTED): Unbounded notification list — previously accepted for MVP.
+- **F-106-P07-001** — **CLOSED** (P106-08 / commit `47f82ec`): Re-triggered alert resolution corrected. Semantic lookup independent of deduplication key. 5 targeted unit tests added. 384/384 pass.
+- **F-106-P04-001** — **ACCEPTED (MVP)**: Unbounded notification list. No change; acceptance stands.
+- **F-106-P05-001** — **ACCEPTED (PRE-EXISTING)**: Auth E2E flaky test. Unrelated to EPIC-106 scope.
 
-No blocking correctness, security, authorization, data-integrity, or architecture issues were found.
+No blocking correctness, security, authorization, data-integrity, or architecture issues. EPIC-106 is technically complete and ready for formal Epic Closure (P106-10).
 
 ---
 
-*Engineering review produced at commit `069cb2c` (P106-06 documentation sync).*
+## 16. P106-09 Regression Verification Summary
+
+| Area | Status |
+|---|---|
+| Alert creation | ✅ Unchanged |
+| Alert deduplication | ✅ Unchanged — unique constraint + base-key lookup intact |
+| Re-trigger | ✅ Unchanged — timestamp-suffixed key creation preserved |
+| CONTRACT_WARNING semantics | ✅ Unchanged |
+| CONTRACT_EXCEEDED semantics | ✅ Unchanged |
+| `>= 100` dual-alert behavior | ✅ Unchanged |
+| Notification creation | ✅ Unchanged |
+| Mark-as-read | ✅ Unchanged |
+| Workspace isolation | ✅ Unchanged |
+| ON-WRITE trigger | ✅ Unchanged |
+| Repository abstraction | ✅ Extended (additive only — `findActiveAlertByContractAndType`) |
+
+No regressions detected across all 384 unit tests.
+
+---
+
+*Engineering review produced at P106-07 (commit `069cb2c`) · Closure confirmed at P106-09 (commit `47f82ec`).*
