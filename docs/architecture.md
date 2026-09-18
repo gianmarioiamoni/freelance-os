@@ -1443,26 +1443,41 @@ preview
 production
 ```
 
-Secrets must be environment-specific.
+Secrets must be environment-specific. Never commit real values. Never prefix these names with `NEXT_PUBLIC_`.
 
-Examples:
+Required production (set on Vercel; values are external — this repository does not invent them):
 
 ```text
 DATABASE_URL
-TEST_DATABASE_URL
 BETTER_AUTH_SECRET
 BETTER_AUTH_URL
 GOOGLE_CLIENT_ID
 GOOGLE_CLIENT_SECRET
-AUTH_EMAIL_DELIVERY
 RESEND_API_KEY
 AUTH_EMAIL_FROM
+```
+
+Optional (all environments). Unset in production → production mode when `NODE_ENV=production`:
+
+```text
+AUTH_EMAIL_DELIVERY
+```
+
+Local / test (never set on Vercel):
+
+```text
+TEST_DATABASE_URL
+```
+
+E2E-only (Playwright `pnpm start`; never set on Vercel):
+
+```text
 AUTH_E2E_RUNTIME
 ```
 
 Only the secrets required by the current release should exist.
 
-`AUTH_E2E_RUNTIME` is Playwright-only and must never be set on Vercel. AI credentials should not be introduced into MVP environments if AI is not enabled.
+AI credentials should not be introduced into MVP environments if AI is not enabled.
 
 ---
 

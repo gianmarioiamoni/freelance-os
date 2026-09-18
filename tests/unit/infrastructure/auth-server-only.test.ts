@@ -69,6 +69,17 @@ describe("Better Auth server/client boundary", () => {
     expect(example).not.toMatch(/AUTH_EMAIL_FROM=".{8,}"/);
   });
 
+  it("classifies production, optional, local/test, and E2E-only variables", () => {
+    const example = source(".env.example");
+    expect(example).toMatch(/Required production/);
+    expect(example).toMatch(/Optional \(all environments\)/);
+    expect(example).toMatch(/Local \/ test \(never set on Vercel\)/);
+    expect(example).toMatch(/E2E-only \(never set on Vercel\)/);
+    expect(example).toMatch(/Secrets — never commit real values/);
+    expect(example).toMatch(/TEST_DATABASE_URL/);
+    expect(example).toMatch(/AUTH_E2E_RUNTIME/);
+  });
+
   it("does not override Better Auth account-linking defaults", () => {
     const authSource = source("src/infrastructure/auth/auth.ts");
     expect(authSource).not.toMatch(/accountLinking/);
