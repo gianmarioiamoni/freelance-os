@@ -419,3 +419,19 @@ Proceed with P-INT-06 (README / CHANGELOG / MASTER_PLAN synchronization and Epic
 2. Fix `analytics-isolation.test.ts` UTC normalization in test data (FINDING-INT-001)
 3. Add `waitForURL` to `auth.spec.ts` sign-out test (FINDING-INT-002)
 4. Investigate password-reset E2E test email delivery (FINDING-INT-003)
+
+---
+
+## 14. Epic Closure (P-INT-06)
+
+MVP Integration Epic **COMPLETE / CLOSED**.
+
+This review verdict is accepted as the final Engineering Review for the Epic:
+
+- Verdict: **PASS WITH FINDINGS**
+- Blocking findings: **NONE**
+- MVP integration release gate: **PASSED**
+- FINDING-INT-002 and FINDING-INT-003 remain **OPEN** (non-blocking) and are deferred to QA / Production Certification
+- FINDING-P04-003 and FINDING-INT-001 remain **PRE-EXISTING** (non-blocking) and are deferred to QA / Production Certification
+
+Next roadmap phase: **QA — MVP QA Gate** (`MASTER_PLAN.md` §31).

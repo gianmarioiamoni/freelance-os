@@ -1,6 +1,6 @@
 # FreelanceOS — System Architecture
 
-**Status:** Architecture Baseline — Authentication, workspace, testing/CI, UI foundation, client management, contract management, time tracking, analytics/dashboard, reporting, and alert evaluation with in-app notification center implemented (EPIC-003, EPIC-004, EPIC-005, EPIC-006, EPIC-101, EPIC-102, EPIC-103, EPIC-104, EPIC-105, EPIC-106)  
+**Status:** Architecture Baseline — Authentication, workspace, testing/CI, UI foundation, client management, contract management, time tracking, analytics/dashboard, reporting, alert evaluation with in-app notification center, and MVP Integration COMPLETE / CLOSED (EPIC-003, EPIC-004, EPIC-005, EPIC-006, EPIC-101, EPIC-102, EPIC-103, EPIC-104, EPIC-105, EPIC-106, MVP-INTEGRATION)  
 **Scope:** MVP  
 **Architectural style:** Modular Monolith  
 **Primary runtime:** Next.js / TypeScript  
@@ -508,6 +508,10 @@ Alert generation and notification delivery remain separate concepts.
 
 `/alerts` RSC at `src/app/(app)/alerts/page.tsx` lists workspace-scoped notifications for the authenticated user, newest first. Components at `src/features/notifications/`: `NotificationList.tsx`, `NotificationCard.tsx`. Server query via `src/features/notifications/load-notifications.ts`. Mark-as-read via Server Action `src/features/notifications/mark-notification-read-action.ts` with server-side ownership check (`workspaceId` + `userId` guard). Reading a notification does not resolve the alert; alert resolution does not delete the notification — independent lifecycle objects.
 
+### Implemented by MVP Integration
+
+The app-shell Alerts nav item shows an unread count badge loaded in the authenticated layout via `loadUnreadNotificationCount()` (`readAt IS NULL`, workspace- and user-scoped). `buildNavigationItems(unreadAlertCount)` supplies the badge. Mark-as-read and TimeEntry mutations call `revalidatePath("/", "layout")` so the layout RSC refreshes the count. At 100% utilization, `CONTRACT_WARNING` and `CONTRACT_EXCEEDED` may both create notifications (FINDING-P04-002 ACCEPTED).
+
 ---
 
 ## 5.10 Dashboard
@@ -784,6 +788,8 @@ EPIC-102 does not change this runtime architecture. Contract mutations use Serve
 EPIC-103 does not change this runtime architecture. TimeEntry mutations use Server Actions that resolve `WorkspaceContext` and call application services. TimeEntry reads use RSC loaders through the same services. `timeEntryId`, `clientId`, and `contractId` are resource ids, not tenant grants. Query `date`, `view`, and `start` are view state; `clientId` and `contractId` on `/time-tracking/new` are form preselects only. The hidden `workDate` field on the edit form is redirect context only; the update service never receives it. Review: `docs/epics/EPIC-103/engineering-review.md`.
 
 **Server Action constraint:** `redirect()` and `notFound()` signal by throwing (`NEXT_REDIRECT`, `NEXT_NOT_FOUND`). They must be called outside any `try`/`catch` that maps errors to user-facing state, otherwise a successful mutation reports a false failure. EPIC-103 F-103-001 was exactly this defect and was corrected in the three TimeEntry Server Actions. This constraint is documentation-only; no lint rule enforces it.
+
+**TimeEntry mutation cache order (MVP Integration):** persistence → `triggerAlertEvaluation` (best-effort) → `revalidatePath("/", "layout")` → `revalidatePath("/")` → `revalidatePath("/reports")` → `revalidatePath("/alerts")` → `redirect(...)`. Sign-out uses `router.refresh()` then `router.push("/sign-in")`.
 
 Next.js 15.5.25 does not provide the `proxy.ts` request-interception convention. `middleware.ts` is deprecated by project convention and is not used. Server-side session validation in the authenticated layout is the authoritative boundary. Client auth state is a projection of that session.
 
@@ -1158,7 +1164,7 @@ Email delivery should be an infrastructure adapter, not embedded into alert busi
 
 ### Implemented by EPIC-106
 
-In-app notification center at `/alerts` (RSC). No email, Slack, or push delivery. One notification created per workspace member per alert event (MVP: single-member workspace; fan-out deferred to OBD-009 resolution). `listNotificationsForUser(workspaceId, userId)` scoped by both identifiers — no cross-tenant access. `markNotificationRead` verifies `workspaceId` + `userId` ownership server-side before update.
+In-app notification center at `/alerts` (RSC). No email, Slack, or push delivery. One notification created per workspace member per alert event (MVP: single-member workspace; fan-out deferred to OBD-009 resolution). `listNotificationsForUser(workspaceId, userId)` scoped by both identifiers — no cross-tenant access. `markNotificationRead` verifies `workspaceId` + `userId` ownership server-side before update. Unread count is also projected onto the Alerts navigation badge from the authenticated layout RSC (MVP Integration).
 
 ---
 

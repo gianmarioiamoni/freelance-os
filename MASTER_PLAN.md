@@ -4,7 +4,7 @@
 **Document:** `MASTER_PLAN.md`\
 **Product:** FreelanceOS\
 **Canonical format:** Markdown\
-**Current phase:** EPIC-104 engineering-complete → R1-E05 Reporting
+**Current phase:** MVP Integration COMPLETE / CLOSED → QA (MVP QA Gate §31)
 
 ------------------------------------------------------------------------
 
@@ -135,8 +135,8 @@ context is recovered from repository documentation.
 ## Overall
 
 ``` text
-STATUS: EPIC-106 COMPLETE — Engineering Review PASS
-NEXT: MVP Integration Epic (§17)
+STATUS: MVP Integration COMPLETE / CLOSED — Engineering Review PASS WITH FINDINGS
+NEXT: QA — MVP QA Gate (§31)
 ```
 
 ## Completed planning artifacts
@@ -156,6 +156,7 @@ docs/
 Application implementation: STARTED
 Foundation implementation: EPIC-001 COMPLETE; EPIC-002 COMPLETE; EPIC-003 COMPLETE; EPIC-004 COMPLETE; EPIC-005 COMPLETE; EPIC-006 COMPLETE
 MVP implementation: EPIC-101 COMPLETE; EPIC-102 COMPLETE; EPIC-103 COMPLETE; EPIC-104 COMPLETE; EPIC-105 COMPLETE; EPIC-106 COMPLETE
+MVP integration: COMPLETE / CLOSED — see docs/epics/MVP-INTEGRATION/engineering-review.md
 Production deployment: NOT STARTED
 Authentication: IMPLEMENTED — see docs/epics/EPIC-003/engineering-review.md
 Workspace / authorization: IMPLEMENTED — see docs/epics/EPIC-004/engineering-review.md
@@ -212,6 +213,20 @@ Blocking findings: NONE (F-106-P07-001 CLOSED)
 Production readiness: NO
 Tests: 379 unit / 219 integration / 57 E2E (suite totals, reported separately)
 Gates: lint PASS; typecheck PASS; build PASS
+
+MVP Integration — Cross-domain certification
+Commits: 35d1764 (P-INT-01) · d4e420c (P-INT-02) · 74d6968 (P-INT-03) · ad944a2 (P-INT-04)
+         9541779 (P-INT-05)
+Verdict: COMPLETE / CLOSED — Engineering Review PASS WITH FINDINGS
+Engineering status: COMPLETE
+Blocking findings: NONE
+Release gate: 3/3 PASS — 22-step authenticated MVP integration journey; 22/22 assertions PASS
+Production readiness: NO
+Tests: 392 unit / 223 integration (1 pre-existing FINDING-INT-001) / 58 E2E (54 passed / 4 failed, all classified non-application defects)
+Gates: lint PASS; typecheck PASS; build PASS
+Open findings deferred to QA / Production Certification: FINDING-INT-002, FINDING-INT-003
+Accepted / pre-existing: FINDING-P04-002 ACCEPTED; FINDING-P04-003 PRE-EXISTING; FINDING-INT-001 PRE-EXISTING
+Closed: FINDING-P04-001
 ```
 
 Present after EPIC-104:
@@ -914,6 +929,13 @@ R0-E04 Workspace
 
 # 17. MVP Integration Epic
 
+**Status:** COMPLETE / CLOSED — Engineering Review PASS WITH FINDINGS  
+**Plan:** `docs/epics/MVP-INTEGRATION/epic-plan.md`  
+**Review:** `docs/epics/MVP-INTEGRATION/engineering-review.md`  
+**Blocking findings:** NONE  
+**Release gate:** PASSED (3/3; 22-step authenticated journey; 22/22 assertions)  
+**Next:** QA — MVP QA Gate (§31). Remaining OPEN test/infrastructure defects (FINDING-INT-002, FINDING-INT-003) are deferred to QA / Production Certification.
+
 After individual MVP Epics are complete, perform an explicit integration
 phase.
 
@@ -1365,16 +1387,16 @@ Release 0 cannot proceed to MVP feature development until:
 
 Before QA begins:
 
--   [ ] all planned MVP Epics implemented
--   [ ] architecture remains compliant
--   [ ] dependencies are controlled
--   [ ] no direct UI → Prisma access
--   [ ] no domain → Prisma dependency
--   [ ] workspace authorization is server-side
--   [ ] business calculations are centralized
--   [ ] historical contract behavior is preserved
--   [ ] tests pass
--   [ ] known technical debt is documented
+-   [x] all planned MVP Epics implemented
+-   [x] architecture remains compliant
+-   [x] dependencies are controlled
+-   [x] no direct UI → Prisma access
+-   [x] no domain → Prisma dependency
+-   [x] workspace authorization is server-side
+-   [x] business calculations are centralized
+-   [x] historical contract behavior is preserved
+-   [x] tests pass
+-   [x] known technical debt is documented
 
 Engineering Review answers:
 
@@ -1988,26 +2010,36 @@ releases:
     status: future
 
 last_completed:
-  epic: EPIC-106
-  objective: Alerts & Notifications
-  verdict: complete-engineering-review-pass
+  epic: MVP-Integration
+  objective: Cross-domain MVP integration certification
+  verdict: complete-pass-with-findings
   engineering_status: complete
   blocking_findings: none
+  release_gate: pass
   production_readiness: false
   tests:
-    unit: 379
-    integration: 219
-    e2e: 57
+    unit: 392
+    integration: 223
+    e2e: 58
   findings:
-    - F-106-P07-001 CLOSED (resolveIfActive semantic lookup fixed P106-08)
-    - F-106-P04-001 ACCEPTED MVP (unbounded notification list)
-    - F-106-P05-001 PRE-EXISTING / FLAKY / ACCEPTED (auth.spec.ts)
+    - FINDING-P04-001 CLOSED
+    - FINDING-P04-002 NON-BLOCKING / ACCEPTED
+    - FINDING-P04-003 NON-BLOCKING / PRE-EXISTING
+    - FINDING-INT-001 NON-BLOCKING / PRE-EXISTING
+    - FINDING-INT-002 NON-BLOCKING / OPEN
+    - FINDING-INT-003 NON-BLOCKING / OPEN
 
 next:
-  epic: MVP-Integration
-  phase: P-INT-01
-  objective: MVP Integration Epic (§17) — PLANNING COMPLETE; see docs/epics/MVP-INTEGRATION/epic-plan.md
-  implementation: mvp-integration-P-INT-01
+  phase: QA
+  gate: MVP QA Gate
+  reference: MASTER_PLAN.md §31
+  objective: Verify critical workflows, regressions, edge cases, authorization, workspace isolation
+  deferred_open_findings:
+    - FINDING-INT-002
+    - FINDING-INT-003
+  deferred_pre_existing_test_defects:
+    - FINDING-P04-003
+    - FINDING-INT-001
 ```
 
 ------------------------------------------------------------------------

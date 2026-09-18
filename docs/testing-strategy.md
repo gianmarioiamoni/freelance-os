@@ -1,6 +1,6 @@
 # FreelanceOS --- Testing Strategy
 
-**Status:** Testing and CI foundation implemented — EPIC-005 complete; UI test baseline added by EPIC-006; client coverage added by EPIC-101; contract coverage added by EPIC-102; time-tracking coverage added by EPIC-103; analytics and dashboard coverage added by EPIC-104; reporting coverage added by EPIC-105; alert evaluation and notification center coverage added by EPIC-106\
+**Status:** Testing and CI foundation implemented — EPIC-005 complete; UI test baseline added by EPIC-006; client coverage added by EPIC-101; contract coverage added by EPIC-102; time-tracking coverage added by EPIC-103; analytics and dashboard coverage added by EPIC-104; reporting coverage added by EPIC-105; alert evaluation and notification center coverage added by EPIC-106; MVP Integration COMPLETE / CLOSED — release-gate cross-domain journey certified\
 **Document:** `docs/testing-strategy.md`\
 **Scope:** Release 0 Foundation + Release 1 MVP\
 **Canonical format:** Markdown
@@ -117,11 +117,14 @@ E2E / CI contract is unchanged. Review:
 Current suite totals — **three separate suites, never combined**:
 
 ``` text
-Unit          379   pnpm test                            (vitest)
-Integration   219   pnpm test:integration                (vitest.integration.config.mts)
-E2E            57   CI=true pnpm test:e2e --workers=1     (56 pass / 1 pre-existing flaky — F-106-P05-001)
+Unit          392   pnpm test                            (vitest)
+Integration   223   pnpm test:integration                (223 passed / 1 pre-existing — FINDING-INT-001)
+E2E            58   CI=true pnpm test:e2e --workers=1     (54 passed / 4 failed — all classified non-application defects)
 ```
 
+MVP Integration release gate: `tests/e2e/mvp-integration-journey.spec.ts` — 3/3 PASS; 22/22 assertions. Blocking findings: NONE.
+
+Suite totals at EPIC-106 closure (for reference): 379 unit / 219 integration / 57 E2E.
 Suite totals at EPIC-105 closure (for reference): 331 unit / 187 integration / 51 E2E.
 
 The integration suite is a separate `vitest` project with its own
@@ -887,6 +890,27 @@ Added by EPIC-106:
 Alert evaluation coverage proves AR-001 fires at `>= contractWarningPercent`, AR-002 fires at `>= 100%`, null `contractedMinutes` suppresses alert, active alert is not duplicated, resolved condition resolves alert, re-trigger creates new alert. Workspace isolation (two workspaces, no cross-alert) is integration-proven.
 
 F-106-P05-001: `auth.spec.ts` — "should register, stay authenticated, and sign out" — 1 E2E failure. Classified PRE-EXISTING / FLAKY. Reproduced at commit `95eaede` (pre-P106-05). Not a P106 regression.
+
+### Implemented by MVP Integration
+
+MVP Integration added the cross-domain release-gate journey and nav-badge / revalidation coverage. Review: `docs/epics/MVP-INTEGRATION/engineering-review.md`. Verdict: PASS WITH FINDINGS. Blocking findings: NONE. Release gate PASSED.
+
+Added by MVP Integration:
+
+- unit — `tests/unit/features/time-entries/time-entry-action-revalidation.test.ts`; `tests/unit/lib/navigation-badge.test.ts`
+- integration — `tests/integration/persistence/notification-unread-count.test.ts`
+- E2E — `tests/e2e/mvp-integration-journey.spec.ts` (`@release-gate`): Auth → Workspace → Client → Contract → TimeEntry → Dashboard → Reports → Alerts → mark-as-read → badge clear
+
+Classified suite exceptions at MVP Integration closure (not application defects; not closed here):
+
+| ID | Status | Type | Deferred to |
+|---|---|---|---|
+| FINDING-P04-003 | PRE-EXISTING | TEST DEFECT (`time-tracking.spec.ts` hardcoded `"9/17/2026"`) | QA / Production Certification |
+| FINDING-INT-001 | PRE-EXISTING | TEST DEFECT (`analytics-isolation.test.ts` UTC normalization) | QA / Production Certification |
+| FINDING-INT-002 | OPEN | TEST DEFECT (`auth.spec.ts` sign-out missing `waitForURL`) | QA / Production Certification |
+| FINDING-INT-003 | OPEN | TEST INFRASTRUCTURE (password-reset email delivery) | QA / Production Certification |
+
+FINDING-P04-001 (application sign-out race) is CLOSED. FINDING-P04-002 (dual notification at 100% utilization) is ACCEPTED.
 
 Example:
 
