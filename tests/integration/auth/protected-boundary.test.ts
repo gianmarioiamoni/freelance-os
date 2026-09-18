@@ -14,7 +14,7 @@ import { registerUser, signInHeaders, uniqueEmail } from "./helpers";
 
 describe("protected server boundary", () => {
   it("rejects unauthenticated access to application routes", () => {
-    expect(getUnauthenticatedRedirectPath("/")).toBe(SIGN_IN_PATH);
+    expect(getUnauthenticatedRedirectPath("/")).toBeNull();
     expect(getUnauthenticatedRedirectPath("/dashboard")).toBe(SIGN_IN_PATH);
     expect(getUnauthenticatedRedirectPath("/clients")).toBe(SIGN_IN_PATH);
     expect(getUnauthenticatedRedirectPath("/onboarding")).toBe(SIGN_IN_PATH);

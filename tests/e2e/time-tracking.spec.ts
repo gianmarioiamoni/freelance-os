@@ -359,7 +359,7 @@ test("should enforce workspace isolation in browser", async ({ page }) => {
 
   // Sign out and create second workspace with different user
   await page.getByRole("button", { name: "Sign out" }).click();
-  await expect(page).toHaveURL(/\/sign-in/);
+  await expect(page).toHaveURL("/");
 
   const email2 = uniqueE2EEmail("e2e-isolation-2");
   await registerAndCreateFirstWorkspace(page, {

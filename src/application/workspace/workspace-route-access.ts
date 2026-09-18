@@ -2,6 +2,7 @@
 import {
   DEFAULT_AUTHENTICATED_PATH,
   isAuthPagePath,
+  isPublicPagePath,
 } from "@/application/auth/route-access";
 import type { WorkspaceResolutionResult } from "@/application/workspace/resolve-workspace-context";
 
@@ -19,7 +20,7 @@ export function isWorkspaceGatePath(pathname: string): boolean {
 
 export function isWorkspaceBoundPath(pathname: string): boolean {
   return (
-    pathname !== "/" &&
+    !isPublicPagePath(pathname) &&
     !isAuthPagePath(pathname) &&
     !isWorkspaceGatePath(pathname)
   );

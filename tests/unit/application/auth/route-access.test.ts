@@ -7,6 +7,8 @@ import {
   getAuthenticatedAuthPageRedirectPath,
   getUnauthenticatedRedirectPath,
   isAuthPagePath,
+  isPublicPagePath,
+  LANDING_PATH,
   RESET_PASSWORD_PATH,
   SIGN_IN_PATH,
   SIGN_UP_PATH,
@@ -18,13 +20,16 @@ describe("auth route access", () => {
     expect(isAuthPagePath(SIGN_UP_PATH)).toBe(true);
     expect(isAuthPagePath(FORGOT_PASSWORD_PATH)).toBe(true);
     expect(isAuthPagePath(RESET_PASSWORD_PATH)).toBe(true);
-    expect(isAuthPagePath("/")).toBe(false);
+    expect(isAuthPagePath(LANDING_PATH)).toBe(false);
     expect(isAuthPagePath("/dashboard")).toBe(false);
     expect(isAuthPagePath("/onboarding")).toBe(false);
+    expect(isPublicPagePath(LANDING_PATH)).toBe(true);
+    expect(isPublicPagePath("/dashboard")).toBe(false);
+    expect(isPublicPagePath(SIGN_IN_PATH)).toBe(false);
     expect(getUnauthenticatedRedirectPath(SIGN_IN_PATH)).toBeNull();
     expect(getUnauthenticatedRedirectPath(FORGOT_PASSWORD_PATH)).toBeNull();
     expect(getUnauthenticatedRedirectPath(RESET_PASSWORD_PATH)).toBeNull();
-    expect(getUnauthenticatedRedirectPath("/")).toBe(SIGN_IN_PATH);
+    expect(getUnauthenticatedRedirectPath(LANDING_PATH)).toBeNull();
     expect(getUnauthenticatedRedirectPath("/dashboard")).toBe(SIGN_IN_PATH);
     expect(getUnauthenticatedRedirectPath("/settings")).toBe(SIGN_IN_PATH);
     expect(getUnauthenticatedRedirectPath("/onboarding")).toBe(SIGN_IN_PATH);
@@ -37,8 +42,10 @@ describe("auth route access", () => {
     expect(getAuthenticatedAuthPageRedirectPath(FORGOT_PASSWORD_PATH)).toBe(
       DEFAULT_AUTHENTICATED_PATH,
     );
-    expect(getAuthenticatedAuthPageRedirectPath(RESET_PASSWORD_PATH)).toBeNull();
-    expect(getAuthenticatedAuthPageRedirectPath("/")).toBeNull();
+    expect(
+      getAuthenticatedAuthPageRedirectPath(RESET_PASSWORD_PATH),
+    ).toBeNull();
+    expect(getAuthenticatedAuthPageRedirectPath(LANDING_PATH)).toBeNull();
     expect(getAuthenticatedAuthPageRedirectPath("/dashboard")).toBeNull();
   });
 });

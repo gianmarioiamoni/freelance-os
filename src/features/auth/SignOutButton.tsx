@@ -1,6 +1,7 @@
 // src/features/auth/SignOutButton.tsx
 "use client";
 
+import { LANDING_PATH } from "@/application/auth/route-access";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/infrastructure/auth/auth-client";
 import { useRouter } from "next/navigation";
@@ -14,7 +15,7 @@ export function SignOutButton(): JSX.Element {
     setIsSigningOut(true);
     await authClient.signOut();
     router.refresh();
-    router.push("/sign-in");
+    router.push(LANDING_PATH);
   }
 
   return (

@@ -56,7 +56,13 @@ test("should keep unauthenticated users out of onboarding and application routes
   await expect(page.getByRole("heading", { name: "Sign in" })).toBeVisible();
 
   await page.goto("/");
-  await expect(page).toHaveURL(/\/sign-in$/);
+  await expect(page).toHaveURL("/");
+  await expect(
+    page.getByRole("heading", { level: 1, name: "FreelanceOS" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("navigation", { name: "Application" }),
+  ).toHaveCount(0);
 
   await page.goto("/dashboard");
   await expect(page).toHaveURL(/\/sign-in$/);
@@ -65,7 +71,12 @@ test("should keep unauthenticated users out of onboarding and application routes
   await expect(page).toHaveURL(/\/sign-in$/);
 
   await page.goto("/?workspaceId=00000000-0000-0000-0000-000000000001");
-  await expect(page).toHaveURL(/\/sign-in$/);
+  await expect(
+    page.getByRole("navigation", { name: "Application" }),
+  ).toHaveCount(0);
+  await expect(
+    page.getByRole("heading", { level: 1, name: "FreelanceOS" }),
+  ).toBeVisible();
 });
 
 test("should send authenticated users without a workspace to onboarding", async ({

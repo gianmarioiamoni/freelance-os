@@ -16,7 +16,7 @@ const APPLICATION_NAV_LINKS = [
 test("should keep the application shell behind authentication", async ({
   page,
 }) => {
-  await page.goto("/");
+  await page.goto("/dashboard");
 
   await expect(page).toHaveTitle("FreelanceOS");
   await expect(page).toHaveURL(/\/sign-in$/);

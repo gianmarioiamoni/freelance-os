@@ -8,7 +8,7 @@ function uniqueEmail(): string {
 }
 
 test("should redirect unauthenticated users to sign-in", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/dashboard");
 
   await expect(page).toHaveURL(/\/sign-in$/);
   await expect(page.getByText("FreelanceOS", { exact: true })).toBeVisible();
@@ -57,11 +57,15 @@ test("should register, stay authenticated, and sign out", async ({ page }) => {
   ).toHaveCount(0);
 
   await page.getByRole("button", { name: "Sign out" }).click();
-  await expect(page).toHaveURL(/\/sign-in$/);
-  await expect(page.getByText("FreelanceOS", { exact: true })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Sign in" })).toBeVisible();
+  await expect(page).toHaveURL("/");
+  await expect(
+    page.getByRole("heading", { level: 1, name: "FreelanceOS" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("navigation", { name: "Application" }),
+  ).toHaveCount(0);
 
-  await page.goto("/");
+  await page.goto("/dashboard");
   await expect(page).toHaveURL(/\/sign-in$/);
 
   await page.getByLabel("Email").fill(email);

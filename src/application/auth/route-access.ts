@@ -1,4 +1,5 @@
 // src/application/auth/route-access.ts
+export const LANDING_PATH = "/";
 export const SIGN_IN_PATH = "/sign-in";
 export const SIGN_UP_PATH = "/sign-up";
 export const FORGOT_PASSWORD_PATH = "/forgot-password";
@@ -22,10 +23,14 @@ export function isAuthPagePath(pathname: string): boolean {
   return AUTH_PAGE_PATHS.has(pathname);
 }
 
+export function isPublicPagePath(pathname: string): boolean {
+  return pathname === LANDING_PATH;
+}
+
 export function getUnauthenticatedRedirectPath(
   pathname: string,
 ): string | null {
-  if (isAuthPagePath(pathname)) {
+  if (isAuthPagePath(pathname) || isPublicPagePath(pathname)) {
     return null;
   }
 
