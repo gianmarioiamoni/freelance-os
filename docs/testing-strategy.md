@@ -1,6 +1,6 @@
 # FreelanceOS --- Testing Strategy
 
-**Status:** Testing and CI foundation implemented — EPIC-005 complete; UI test baseline added by EPIC-006; client coverage added by EPIC-101; contract coverage added by EPIC-102; time-tracking coverage added by EPIC-103; analytics and dashboard coverage added by EPIC-104; reporting coverage added by EPIC-105; alert evaluation and notification center coverage added by EPIC-106; MVP Integration COMPLETE / CLOSED — release-gate cross-domain journey certified; MVP QA Gate PASS WITH FINDINGS; Documentation Gate COMPLETE; production readiness NO\
+**Status:** Testing and CI foundation implemented — EPIC-005 complete; UI test baseline added by EPIC-006; client coverage added by EPIC-101; contract coverage added by EPIC-102; time-tracking coverage added by EPIC-103; analytics and dashboard coverage added by EPIC-104; reporting coverage added by EPIC-105; alert evaluation and notification center coverage added by EPIC-106; MVP Integration COMPLETE / CLOSED — release-gate cross-domain journey certified; MVP QA Gate PASS WITH FINDINGS; Documentation Gate COMPLETE; UX Gate PASS WITH FINDINGS (`docs/ux/ux-review.md`); production readiness NO\
 **Document:** `docs/testing-strategy.md`\
 **Scope:** Release 0 Foundation + Release 1 MVP\
 **Canonical format:** Markdown
@@ -1665,8 +1665,9 @@ rather than native `h2` (F-104-012).
 This is an accessibility baseline, not WCAG certification, and the
 dashboard portion of it is weaker than its test count suggests. No
 automated accessibility scan (for example axe-core) exists in the
-repository. Formal UX Review and a real accessibility audit remain
-later lifecycle activities.
+repository. Formal UX Review for the MVP is complete
+(`docs/ux/ux-review.md`, PASS WITH FINDINGS). A real accessibility
+audit remains a later activity.
 
 Later product screens still need accessibility coverage when they
 exist:

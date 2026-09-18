@@ -6,6 +6,7 @@ All notable changes to FreelanceOS are documented in this file.
 
 ### Added
 
+- MVP UX Gate PASS WITH FINDINGS (`docs/ux/ux-review.md`). Blocking findings: NONE. Production readiness: NO. Next: UX Polish. Findings: FINDING-UX-001 … FINDING-UX-009 OPEN / NON-BLOCKING. Prior QA findings unchanged.
 - MVP QA Gate PASS WITH FINDINGS (`docs/qa/qa-report.md`). Documentation Gate COMPLETE (`MASTER_PLAN.md` §32). Blocking findings: NONE. Production readiness: NO. Next: UX Gate (§33).
 - Automated QA evidence: lint 0 errors / 6 pre-existing warnings; typecheck PASS; unit 392/392; integration 224/224 (host TZ); build PASS; E2E 58/58; release-gate 5 pass / 1 flaky failure (FINDING-QA-001); focused release-gate PASS; isolated release-gate 3/3 PASS.
 - Findings after QA: FINDING-P04-001 CLOSED; FINDING-P04-002 ACCEPTED / BY DESIGN; FINDING-P04-003 CLOSED; FINDING-INT-001 OPEN / CONFIRMED (TEST DEFECT under America/Los_Angeles); FINDING-INT-002 OPEN / NOT REPRODUCED; FINDING-INT-003 OPEN / NOT REPRODUCED; FINDING-QA-001 OPEN NON-BLOCKING TEST DEFECT / FLAKY; FINDING-QA-002 OPEN NON-BLOCKING APPLICATION DEFECT (`getDateRangePeriod` custom-range timezone shift west of UTC); F-104-007 PRE-EXISTING / NON-BLOCKING.
