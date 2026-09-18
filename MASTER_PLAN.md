@@ -4,7 +4,7 @@
 **Document:** `MASTER_PLAN.md`\
 **Product:** FreelanceOS\
 **Canonical format:** Markdown\
-**Current phase:** EPIC-107 implementation, Engineering Review, production-like validation, and epic certification COMPLETE. MASTER_PLAN §34 executed on `a0ad65f` — RELEASE BLOCKED (`docs/release/production-validation.md`). Next: §35 Production Certification. Production readiness: NO.
+**Current phase:** EPIC-107 implementation, Engineering Review, production-like validation, and epic certification COMPLETE. MASTER_PLAN §34 revalidated on `81a22dd` — RELEASE BLOCKED (`docs/release/production-validation.md`). Next: §35 Production Certification. Production readiness: NO.
 
 ------------------------------------------------------------------------
 
@@ -1616,7 +1616,7 @@ FINDING-QA-002 remains OPEN.
 
 # 34. Production Validation Gate
 
-**Status:** EXECUTED — **RELEASE BLOCKED**. Evidence: `docs/release/production-validation.md`. Candidate: `a0ad65f` (2026-09-18). Local `pnpm build` + `pnpm start`. No hosted target. Product Owner approval is a §35 field and is NOT PROVIDED.
+**Status:** EXECUTED — **RELEASE BLOCKED**. Evidence: `docs/release/production-validation.md`. Candidate: `81a22dd` (2026-09-18 revalidation; previous `a0ad65f`). Local `pnpm build` + `pnpm start`. No hosted target. Product Owner approval is a §35 field and is NOT PROVIDED.
 
 Validate the exact build that will be deployed.
 
@@ -1627,7 +1627,7 @@ Minimum:
 -   [x] database migration — PASS (`freelance_os` up to date)
 -   [x] authentication — PASS WITH FINDINGS (mailer/Google incomplete)
 -   [x] complete MVP workflow — PASS on `pnpm start`
--   [x] critical E2E regression — executed on `next start`: 43/66; failures = F-004
+-   [x] critical E2E regression — executed on `next start`: 43 passed / 25 failed (68 tests); failures = F-004
 -   [x] reports — PASS
 -   [x] alerts — PASS
 -   [x] notifications — PASS
@@ -2090,8 +2090,8 @@ The exact parallelization will be determined during each Epic plan.
 
 # 47. Current Next Action
 
-MASTER_PLAN §34 Production Validation has been executed on candidate
-`a0ad65f`. Evidence: `docs/release/production-validation.md`. Gate
+MASTER_PLAN §34 Production Validation has been revalidated on candidate
+`81a22dd`. Evidence: `docs/release/production-validation.md`. Gate
 outcome: **RELEASE BLOCKED**. Production readiness: NO. Product Owner
 approval: **NOT PROVIDED**.
 
@@ -2171,12 +2171,12 @@ last_completed:
   documentation_gate: COMPLETE
   blocking_findings: none
   production_readiness: false
-  candidate: a0ad65f
+  candidate: 81a22dd
   tests:
     unit: 398
     integration: 224
     e2e_dev_historical: 66-pass
-    e2e_next_start: 43-pass-23-fail-F-004
+    e2e_next_start: 43-pass-25-fail-of-68-F-004
     release_gate: 5-pass-1-flaky
     focused_release_gate: pass
     isolated_release_gate: 3/3

@@ -422,8 +422,9 @@ This Epic’s own production-like validation is recorded in
 `docs/epics/EPIC-107/production-validation.md` (P107-06 — PASS WITH FINDINGS;
 full MASTER_PLAN §34 was **not** completed by that phase).
 
-MASTER_PLAN §34 was later executed on candidate `a0ad65f`. Evidence:
-`docs/release/production-validation.md`. Outcome: **RELEASE BLOCKED**.
+MASTER_PLAN §34 was later executed on candidate `a0ad65f` and revalidated
+on `81a22dd`. Evidence: `docs/release/production-validation.md`. Outcome:
+**RELEASE BLOCKED**.
 
 Do not start Production Certification in this Epic plan.
 
