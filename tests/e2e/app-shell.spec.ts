@@ -119,3 +119,58 @@ test("should show authenticated shell identity, navigation, and skip link", asyn
   ).toBeVisible();
   await expect(page.getByText("Europe/Rome")).toBeVisible();
 });
+
+test("should link the authenticated wordmark to the dashboard on desktop and mobile", async ({
+  page,
+}) => {
+  await registerAndCreateFirstWorkspace(page, {
+    email: uniqueE2EEmail("e2e-shell-wordmark"),
+    name: "Wordmark Account",
+    workspaceName: "Wordmark Workspace",
+  });
+
+  await page
+    .getByRole("navigation", { name: "Application" })
+    .getByRole("link", { name: "Clients" })
+    .click();
+  await expect(page).toHaveURL(/\/clients$/);
+
+  const desktopWordmark = page
+    .getByRole("banner")
+    .getByRole("link", { name: "FreelanceOS" });
+  await expect(desktopWordmark).toBeVisible();
+  await expect(desktopWordmark).toHaveAttribute("href", "/dashboard");
+  await expect(
+    page
+      .getByRole("navigation", { name: "Application" })
+      .getByRole("link", { name: "Dashboard" }),
+  ).toHaveAttribute("href", "/dashboard");
+
+  await desktopWordmark.click();
+  await expect(page).toHaveURL("/dashboard");
+  await expect(
+    page.getByRole("heading", { level: 1, name: "Dashboard" }),
+  ).toBeVisible();
+
+  await page.setViewportSize({ width: 375, height: 812 });
+  await page.goto("/settings");
+  await expect(page).toHaveURL(/\/settings$/);
+
+  const mobileWordmark = page
+    .getByRole("banner")
+    .getByRole("link", { name: "FreelanceOS" });
+  await expect(mobileWordmark).toBeVisible();
+  await expect(mobileWordmark).toHaveAttribute("href", "/dashboard");
+
+  await mobileWordmark.click();
+  await expect(page).toHaveURL("/dashboard");
+  await expect(
+    page.getByRole("heading", { level: 1, name: "Dashboard" }),
+  ).toBeVisible();
+
+  await page.getByRole("button", { name: "Sign out" }).click();
+  await expect(page).toHaveURL("/");
+  await expect(
+    page.getByRole("heading", { level: 1, name: "FreelanceOS" }),
+  ).toBeVisible();
+});

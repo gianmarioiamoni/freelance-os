@@ -59,6 +59,28 @@ test("should render the public landing for unauthenticated visitors", async ({
   await expect(page.getByText("No time entries yet")).toHaveCount(0);
 });
 
+test("should keep the public landing wordmark on the public landing", async ({
+  page,
+}) => {
+  await page.goto("/");
+
+  const wordmark = page
+    .getByRole("banner")
+    .getByRole("link", { name: "FreelanceOS" });
+  await expect(wordmark).toBeVisible();
+  await expect(wordmark).toHaveAttribute("href", "/");
+
+  await wordmark.click();
+  await expect(page).toHaveURL("/");
+  await expect(
+    page.getByRole("heading", { level: 1, name: "FreelanceOS" }),
+  ).toBeVisible();
+  await expect(page).not.toHaveURL(/\/dashboard/);
+  await expect(
+    page.getByRole("navigation", { name: "Application" }),
+  ).toHaveCount(0);
+});
+
 test("should send landing CTAs to sign-in and sign-up", async ({ page }) => {
   await page.goto("/");
   await page.getByRole("banner").getByRole("link", { name: "Sign in" }).click();
