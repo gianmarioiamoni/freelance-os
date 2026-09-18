@@ -19,7 +19,7 @@ export type NavigationItem = {
 
 export function buildNavigationItems(unreadAlertCount: number): NavigationItem[] {
   return [
-    { href: "/", label: "Dashboard", icon: LayoutDashboard },
+    { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { href: "/clients", label: "Clients", icon: Building2 },
     { href: "/contracts", label: "Contracts", icon: FileText },
     { href: "/time-tracking", label: "Time Tracking", icon: Clock },
@@ -38,9 +38,5 @@ export function isNavigationItemActive(
   pathname: string,
   href: string,
 ): boolean {
-  if (href === "/") {
-    return pathname === "/";
-  }
-
   return pathname === href || pathname.startsWith(`${href}/`);
 }

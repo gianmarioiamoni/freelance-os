@@ -59,7 +59,7 @@ test(
     });
 
     // Landed on Dashboard — workspace context established
-    await expect(page).toHaveURL("/");
+    await expect(page).toHaveURL("/dashboard");
     await expect(
       page.getByRole("heading", { name: /dashboard/i }),
     ).toBeVisible();
@@ -112,7 +112,7 @@ test(
     // AC-INT-006  — TimeEntry → Dashboard propagation
     // -----------------------------------------------------------------------
     await page.getByRole("link", { name: "Dashboard" }).click();
-    await expect(page).toHaveURL("/");
+    await expect(page).toHaveURL("/dashboard");
     await expect(page.getByText("Monthly Summary", { exact: true })).toBeVisible();
 
     // 2h entry must appear — total hours > 0

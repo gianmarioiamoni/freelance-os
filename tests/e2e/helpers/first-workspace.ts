@@ -52,5 +52,5 @@ export async function registerAndCreateFirstWorkspace(
   });
   await expect(page).toHaveURL(/\/onboarding$/);
   await createFirstWorkspace(page, { name: options.workspaceName });
-  await expect(page).toHaveURL("/");
+  await expect(page).toHaveURL("/dashboard");
 }

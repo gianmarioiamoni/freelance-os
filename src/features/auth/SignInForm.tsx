@@ -1,6 +1,7 @@
 // src/features/auth/SignInForm.tsx
 "use client";
 
+import { DEFAULT_AUTHENTICATED_PATH } from "@/application/auth/route-access";
 import { Button } from "@/components/ui/button";
 import { GoogleSignInButton } from "@/features/auth/GoogleSignInButton";
 import { authClient } from "@/infrastructure/auth/auth-client";
@@ -32,7 +33,7 @@ export function SignInForm(): JSX.Element {
       return;
     }
 
-    window.location.assign("/");
+    window.location.assign(DEFAULT_AUTHENTICATED_PATH);
   }
 
   return (

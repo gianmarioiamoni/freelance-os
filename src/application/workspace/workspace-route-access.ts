@@ -18,7 +18,11 @@ export function isWorkspaceGatePath(pathname: string): boolean {
 }
 
 export function isWorkspaceBoundPath(pathname: string): boolean {
-  return !isAuthPagePath(pathname) && !isWorkspaceGatePath(pathname);
+  return (
+    pathname !== "/" &&
+    !isAuthPagePath(pathname) &&
+    !isWorkspaceGatePath(pathname)
+  );
 }
 
 export function getWorkspaceResolutionPath(

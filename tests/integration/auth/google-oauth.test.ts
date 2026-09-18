@@ -26,7 +26,7 @@ describe("Google OAuth authentication", () => {
     const result = await auth.api.signInSocial({
       body: {
         provider: "google",
-        callbackURL: "/",
+        callbackURL: "/dashboard",
         disableRedirect: true,
       },
     });

@@ -29,8 +29,8 @@ async function setupDashboardWithData(page: Page): Promise<void> {
     billable: true,
   });
 
-  await page.goto("/");
-  await expect(page).toHaveURL("/");
+  await page.goto("/dashboard");
+  await expect(page).toHaveURL("/dashboard");
 }
 
 async function waitForAnalytics(page: Page): Promise<void> {

@@ -79,7 +79,7 @@ test.describe("navigation entry", () => {
       workspaceName: "Reports Nav Workspace",
     });
     // Start from dashboard.
-    await expect(page).toHaveURL("/");
+    await expect(page).toHaveURL("/dashboard");
     await page.getByRole("link", { name: "Reports" }).click();
     await expect(page).toHaveURL("/reports");
     await waitForReportsPage(page);
@@ -471,7 +471,7 @@ test.describe("error recovery", () => {
 
     // Navigate to dashboard.
     await page.getByRole("link", { name: "Dashboard" }).click();
-    await expect(page).toHaveURL("/");
+    await expect(page).toHaveURL("/dashboard");
 
     // Navigate back to reports.
     await page.getByRole("link", { name: "Reports" }).click();

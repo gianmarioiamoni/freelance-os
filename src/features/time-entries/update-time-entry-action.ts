@@ -76,7 +76,7 @@ export async function updateTimeEntryAction(
 
   // Revalidate affected RSC routes after persistence + alert evaluation.
   revalidatePath("/", "layout");
-  revalidatePath("/");
+  revalidatePath("/dashboard");
   revalidatePath("/reports");
   revalidatePath("/alerts");
 

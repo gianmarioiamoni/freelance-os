@@ -28,6 +28,7 @@ describe("workspace route access", () => {
     expect(isWorkspaceGatePath(ONBOARDING_PATH)).toBe(true);
     expect(isWorkspaceGatePath(WORKSPACE_UNAVAILABLE_PATH)).toBe(true);
     expect(isWorkspaceGatePath(DEFAULT_AUTHENTICATED_PATH)).toBe(false);
+    expect(isWorkspaceBoundPath("/")).toBe(false);
     expect(isWorkspaceBoundPath(DEFAULT_AUTHENTICATED_PATH)).toBe(true);
     expect(isWorkspaceBoundPath("/clients")).toBe(true);
     expect(isWorkspaceBoundPath(ONBOARDING_PATH)).toBe(false);
@@ -51,7 +52,10 @@ describe("workspace route access", () => {
   });
 
   it("keeps a single membership on workspace-bound application routes", () => {
-    expect(getWorkspaceBoundaryRedirect("/", resolved)).toBeNull();
+    expect(getWorkspaceBoundaryRedirect("/", resolved)).toBe(
+      DEFAULT_AUTHENTICATED_PATH,
+    );
+    expect(getWorkspaceBoundaryRedirect(DEFAULT_AUTHENTICATED_PATH, resolved)).toBeNull();
     expect(getWorkspaceBoundaryRedirect("/clients", resolved)).toBeNull();
     expect(getWorkspaceBoundaryRedirect(ONBOARDING_PATH, resolved)).toBe(
       DEFAULT_AUTHENTICATED_PATH,

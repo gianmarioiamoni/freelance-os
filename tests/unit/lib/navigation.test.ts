@@ -3,9 +3,10 @@ import { isNavigationItemActive } from "@/lib/navigation";
 import { describe, expect, it } from "vitest";
 
 describe("isNavigationItemActive", () => {
-  it("should treat only the exact root path as the dashboard", () => {
-    expect(isNavigationItemActive("/", "/")).toBe(true);
-    expect(isNavigationItemActive("/clients", "/")).toBe(false);
+  it("should treat only the dashboard path as the dashboard", () => {
+    expect(isNavigationItemActive("/dashboard", "/dashboard")).toBe(true);
+    expect(isNavigationItemActive("/", "/dashboard")).toBe(false);
+    expect(isNavigationItemActive("/clients", "/dashboard")).toBe(false);
   });
 
   it("should treat a section path and its nested routes as active", () => {

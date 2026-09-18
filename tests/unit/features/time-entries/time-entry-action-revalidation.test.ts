@@ -2,7 +2,7 @@
 /**
  * P-INT-02 / GAP-INT-001
  * Verify that create/update/delete TimeEntry actions call revalidatePath
- * for /, /reports, and /alerts after persistence and alert evaluation.
+ * for /dashboard, /reports, and /alerts after persistence and alert evaluation.
  */
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -55,7 +55,7 @@ import type { TimeEntryFormValues } from "@/features/time-entries/time-entry-for
 // Helpers
 // ---------------------------------------------------------------------------
 
-const EXPECTED_PATHS = ["/", "/reports", "/alerts"] as const;
+const EXPECTED_PATHS = ["/dashboard", "/reports", "/alerts"] as const;
 
 function makeContext() {
   return {
@@ -108,11 +108,12 @@ describe("TimeEntry action revalidation (GAP-INT-001)", () => {
   });
 
   describe("createTimeEntryAction", () => {
-    it("calls revalidatePath for /, /reports, /alerts on success", async () => {
+    it("calls revalidatePath for /dashboard, /reports, /alerts on success", async () => {
       await expect(
         createTimeEntryAction(PREVIOUS_STATE, makeFormData()),
       ).rejects.toThrow("NEXT_REDIRECT");
 
+      expect(revalidatePath).toHaveBeenCalledWith("/", "layout");
       for (const path of EXPECTED_PATHS) {
         expect(revalidatePath).toHaveBeenCalledWith(path);
       }
@@ -134,11 +135,12 @@ describe("TimeEntry action revalidation (GAP-INT-001)", () => {
   });
 
   describe("updateTimeEntryAction", () => {
-    it("calls revalidatePath for /, /reports, /alerts on success", async () => {
+    it("calls revalidatePath for /dashboard, /reports, /alerts on success", async () => {
       await expect(
         updateTimeEntryAction("entry-1", PREVIOUS_STATE, makeFormData()),
       ).rejects.toThrow("NEXT_REDIRECT");
 
+      expect(revalidatePath).toHaveBeenCalledWith("/", "layout");
       for (const path of EXPECTED_PATHS) {
         expect(revalidatePath).toHaveBeenCalledWith(path);
       }
@@ -146,11 +148,12 @@ describe("TimeEntry action revalidation (GAP-INT-001)", () => {
   });
 
   describe("deleteTimeEntryAction", () => {
-    it("calls revalidatePath for /, /reports, /alerts on success", async () => {
+    it("calls revalidatePath for /dashboard, /reports, /alerts on success", async () => {
       await expect(
         deleteTimeEntryAction("entry-1", "2026-09-18"),
       ).rejects.toThrow("NEXT_REDIRECT");
 
+      expect(revalidatePath).toHaveBeenCalledWith("/", "layout");
       for (const path of EXPECTED_PATHS) {
         expect(revalidatePath).toHaveBeenCalledWith(path);
       }

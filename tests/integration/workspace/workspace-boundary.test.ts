@@ -55,7 +55,10 @@ describe("workspace-aware application boundary", () => {
       status: "resolved",
       context: created.context,
     });
-    expect(getWorkspaceBoundaryRedirect("/", after)).toBeNull();
-    expect(getWorkspaceBoundaryRedirect("/onboarding", after)).toBe("/");
+    expect(getWorkspaceBoundaryRedirect("/", after)).toBe("/dashboard");
+    expect(getWorkspaceBoundaryRedirect("/dashboard", after)).toBeNull();
+    expect(getWorkspaceBoundaryRedirect("/onboarding", after)).toBe(
+      "/dashboard",
+    );
   });
 });

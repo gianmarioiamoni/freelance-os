@@ -15,6 +15,7 @@ import { registerUser, signInHeaders, uniqueEmail } from "./helpers";
 describe("protected server boundary", () => {
   it("rejects unauthenticated access to application routes", () => {
     expect(getUnauthenticatedRedirectPath("/")).toBe(SIGN_IN_PATH);
+    expect(getUnauthenticatedRedirectPath("/dashboard")).toBe(SIGN_IN_PATH);
     expect(getUnauthenticatedRedirectPath("/clients")).toBe(SIGN_IN_PATH);
     expect(getUnauthenticatedRedirectPath("/onboarding")).toBe(SIGN_IN_PATH);
     expect(getUnauthenticatedRedirectPath(SIGN_IN_PATH)).toBeNull();
@@ -29,8 +30,10 @@ describe("protected server boundary", () => {
 
     const session = await getAuthSessionFromHeaders(headers);
 
-    expect(getUnauthenticatedRedirectPath("/")).toBe(SIGN_IN_PATH);
+    expect(getUnauthenticatedRedirectPath("/dashboard")).toBe(SIGN_IN_PATH);
     expect(session?.user.id).toBe(userId);
-    expect(getAuthenticatedAuthPageRedirectPath(SIGN_IN_PATH)).toBe("/");
+    expect(getAuthenticatedAuthPageRedirectPath(SIGN_IN_PATH)).toBe(
+      "/dashboard",
+    );
   });
 });

@@ -28,7 +28,7 @@ test("should complete first-workspace onboarding into the authenticated applicat
 
   await createFirstWorkspace(page, { name: "Studio Iamoni" });
 
-  await expect(page).toHaveURL("/");
+  await expect(page).toHaveURL("/dashboard");
   await expect(
     page.getByRole("heading", { level: 1, name: "Dashboard" }),
   ).toBeVisible();
@@ -45,7 +45,7 @@ test("should complete first-workspace onboarding into the authenticated applicat
   ).toBeVisible();
 
   await page.goto("/onboarding");
-  await expect(page).toHaveURL("/");
+  await expect(page).toHaveURL("/dashboard");
 });
 
 test("should keep unauthenticated users out of onboarding and application routes", async ({
@@ -56,6 +56,9 @@ test("should keep unauthenticated users out of onboarding and application routes
   await expect(page.getByRole("heading", { name: "Sign in" })).toBeVisible();
 
   await page.goto("/");
+  await expect(page).toHaveURL(/\/sign-in$/);
+
+  await page.goto("/dashboard");
   await expect(page).toHaveURL(/\/sign-in$/);
 
   await page.goto("/clients");
@@ -73,6 +76,9 @@ test("should send authenticated users without a workspace to onboarding", async 
   await expect(page).toHaveURL(/\/onboarding$/);
 
   await page.goto("/");
+  await expect(page).toHaveURL(/\/onboarding$/);
+
+  await page.goto("/dashboard");
   await expect(page).toHaveURL(/\/onboarding$/);
 
   await page.goto("/clients");

@@ -53,7 +53,7 @@ test.describe("Dashboard Analytics E2E Journey", () => {
     });
     
     // 2. Verify we land on dashboard (should be default route)
-    await expect(page).toHaveURL("/");
+    await expect(page).toHaveURL("/dashboard");
     await waitForAnalyticsDisplay(page);
 
     // 3. Verify current-month default period is reflected in the page title
@@ -74,7 +74,7 @@ test.describe("Dashboard Analytics E2E Journey", () => {
 
     // 6. Navigate back to dashboard
     await page.getByRole("link", { name: "Dashboard" }).click();
-    await expect(page).toHaveURL("/");
+    await expect(page).toHaveURL("/dashboard");
     await waitForAnalyticsDisplay(page);
 
     // 7. Verify summary metrics display
@@ -147,7 +147,7 @@ test.describe("Dashboard Analytics E2E Journey", () => {
     await expect(page).toHaveURL(/\/sign-in$/);
     
     // Verify cannot access dashboard without authentication
-    await page.goto("/");
+    await page.goto("/dashboard");
     await expect(page).toHaveURL(/\/sign-in$/);
   });
 
@@ -184,7 +184,7 @@ test.describe("Dashboard Analytics E2E Journey", () => {
     ).toBeVisible();
 
     // PD-104-001: archived client time remains included in analytics
-    await page.goto("/");
+    await page.goto("/dashboard");
     await waitForAnalyticsDisplay(page);
 
     await expect(page.getByLabel("6h total hours tracked")).toBeVisible();
@@ -244,7 +244,7 @@ test.describe("Dashboard Analytics E2E Journey", () => {
       billable: true,
     });
 
-    await page.goto("/");
+    await page.goto("/dashboard");
     await waitForAnalyticsDisplay(page);
     await expect(page.getByText("Contract Utilization", { exact: true })).toBeVisible();
 
@@ -282,7 +282,7 @@ test.describe("Dashboard Analytics E2E Journey", () => {
     await expect(page).toHaveURL(/\/time-tracking/);
 
     await page.getByRole("link", { name: "Dashboard" }).click();
-    await expect(page).toHaveURL("/");
+    await expect(page).toHaveURL("/dashboard");
     
     // Should still load properly
     await waitForAnalyticsDisplay(page);
@@ -305,7 +305,7 @@ test.describe("Dashboard Analytics E2E Journey", () => {
     });
 
     const startTime = Date.now();
-    await page.goto("/");
+    await page.goto("/dashboard");
     await waitForAnalyticsDisplay(page);
     const loadTime = Date.now() - startTime;
 
@@ -321,7 +321,7 @@ test.describe("Dashboard Analytics E2E Journey", () => {
       await page.getByRole("link", { name: "Time Tracking" }).click();
       await expect(page).toHaveURL(/\/time-tracking/);
       await page.getByRole("link", { name: "Dashboard" }).click();
-      await expect(page).toHaveURL("/");
+      await expect(page).toHaveURL("/dashboard");
       await waitForAnalyticsDisplay(page);
     }
 

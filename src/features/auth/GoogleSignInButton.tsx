@@ -1,6 +1,7 @@
 // src/features/auth/GoogleSignInButton.tsx
 "use client";
 
+import { DEFAULT_AUTHENTICATED_PATH } from "@/application/auth/route-access";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/infrastructure/auth/auth-client";
 import { useState, type JSX } from "react";
@@ -21,7 +22,7 @@ export function GoogleSignInButton({
 
     const { error } = await authClient.signIn.social({
       provider: "google",
-      callbackURL: "/",
+      callbackURL: DEFAULT_AUTHENTICATED_PATH,
     });
 
     setIsSubmitting(false);
