@@ -210,6 +210,10 @@ Failed tests concentrated on `registerAndCreateFirstWorkspace` (`/sign-up` did n
 
 Auth spec unauthenticated `getByText("FreelanceOS", { exact: true })` strict-mode duplicate is consistent with an unexpected post-redirect document during the same burst; it is not treated as a new product defect.
 
+### Post-D-004 residual E2E (not a §34 rerun)
+
+Historical unisolated `next start`: **43 passed / 25 failed / 68**. After `AUTH_E2E_RUNTIME` isolation: **63 passed / 5 failed / 68** (auth burst gone). Residual 5 classified and fixed outside this §34 run: **68 passed / 0 failed / 68** on `CI=true pnpm test:e2e:start`. F-004 (Better Auth production rate-limit auth burst) is **RESOLVED**. Canonical CI remains `pnpm dev`. See `docs/release/release-gate-resolution.md` §12.
+
 ---
 
 ## Current runtime health

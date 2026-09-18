@@ -80,7 +80,7 @@ export function ClientDetail({
         </Button>
         {isActive && !isConfirmingArchive ? (
           <Button asChild variant="destructive">
-            <Link href={`/clients/${client.id}?confirm=archive`}>Archive</Link>
+            <a href={`/clients/${client.id}?confirm=archive`}>Archive</a>
           </Button>
         ) : null}
       </div>

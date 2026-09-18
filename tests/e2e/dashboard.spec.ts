@@ -6,6 +6,7 @@ import {
   createClientWithContract,
   createTimeEntry,
 } from "./helpers/analytics-fixtures";
+import { submitAndFollowActionRedirect } from "./helpers/server-action";
 
 // Helper function to wait for analytics to load
 async function waitForAnalyticsDisplay(page: Page): Promise<void> {
@@ -182,9 +183,17 @@ test.describe("Dashboard Analytics E2E Journey", () => {
 
     // Archive the client from its detail page
     await page.goto(clientUrl);
+    await expect(
+      page.getByRole("heading", { level: 1, name: "Beta Ltd" }),
+    ).toBeVisible();
     await page.getByRole("link", { name: "Archive", exact: true }).click();
+    await expect(page).toHaveURL(/confirm=archive/);
     await expect(page.getByText("Archive this client?")).toBeVisible();
-    await page.getByRole("button", { name: "Confirm archive" }).click();
+    await submitAndFollowActionRedirect(
+      page,
+      page.getByRole("button", { name: "Confirm archive" }),
+      /\/clients\/[0-9a-f-]{36}$/,
+    );
     await expect(
       page.getByText("Archived", { exact: true }).first(),
     ).toBeVisible();

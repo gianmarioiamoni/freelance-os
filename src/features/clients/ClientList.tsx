@@ -8,7 +8,6 @@ import {
 } from "@/components/ui/card";
 import { formatClientStatus } from "@/features/clients/client-status";
 import type { ClientRecord } from "@/domain/persistence-types";
-import Link from "next/link";
 import type { JSX } from "react";
 
 type ClientListProps = {
@@ -23,12 +22,12 @@ export function ClientList({ clients }: ClientListProps): JSX.Element {
           <Card>
             <CardHeader>
               <CardTitle>
-                <Link
+                <a
                   href={`/clients/${client.id}`}
                   className="underline-offset-4 hover:underline"
                 >
                   {client.companyName}
-                </Link>
+                </a>
               </CardTitle>
               <CardDescription>{formatClientStatus(client.status)}</CardDescription>
             </CardHeader>

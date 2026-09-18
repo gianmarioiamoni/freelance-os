@@ -13,7 +13,6 @@ import {
   formatValidityInterval,
   type ContractListItem,
 } from "@/features/contracts/contract-display";
-import Link from "next/link";
 import type { JSX } from "react";
 
 type ContractListProps = {
@@ -28,12 +27,12 @@ export function ContractList({ items }: ContractListProps): JSX.Element {
           <Card>
             <CardHeader>
               <CardTitle>
-                <Link
+                <a
                   href={`/contracts/${item.contract.id}`}
                   className="underline-offset-4 hover:underline"
                 >
                   {item.clientName}
-                </Link>
+                </a>
               </CardTitle>
               <CardDescription>
                 {formatApplicabilityLabel(item.applicability)}

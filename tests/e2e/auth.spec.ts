@@ -15,7 +15,9 @@ test("should redirect unauthenticated users to sign-in", async ({ page }) => {
   await page.goto("/dashboard");
 
   await expect(page).toHaveURL(/\/sign-in$/);
-  await expect(page.getByText("FreelanceOS", { exact: true })).toBeVisible();
+  await expect(
+    page.getByRole("paragraph").filter({ hasText: /^FreelanceOS$/ }),
+  ).toBeVisible();
   await expect(page.getByRole("heading", { name: "Sign in" })).toBeVisible();
 });
 
@@ -140,7 +142,9 @@ test("should recover a password from the email/password flow", async ({
   await page.goto("/sign-in");
   await page.getByRole("link", { name: "Forgot password?" }).click();
   await expect(page).toHaveURL(/\/forgot-password$/);
-  await expect(page.getByText("FreelanceOS", { exact: true })).toBeVisible();
+  await expect(
+    page.getByRole("paragraph").filter({ hasText: /^FreelanceOS$/ }),
+  ).toBeVisible();
   await expect(
     page.getByRole("heading", { name: "Forgot password" }),
   ).toBeVisible();

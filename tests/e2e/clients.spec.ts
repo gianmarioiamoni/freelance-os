@@ -5,6 +5,7 @@ import {
   registerAndCreateFirstWorkspace,
   uniqueE2EEmail,
 } from "./helpers/first-workspace";
+import { submitAndFollowActionRedirect } from "./helpers/server-action";
 
 test("should create, edit, and archive a workspace client", async ({
   page,
@@ -33,10 +34,17 @@ test("should create, edit, and archive a workspace client", async ({
   await expect(
     page.getByRole("heading", { level: 1, name: "New client" }),
   ).toBeVisible();
+  await page.goto("/clients/new");
+  await expect(
+    page.getByRole("heading", { level: 1, name: "New client" }),
+  ).toBeVisible();
 
   await page.getByLabel("Company name").fill(originalName);
-  await page.getByRole("button", { name: "Create client" }).click();
-
+  await submitAndFollowActionRedirect(
+    page,
+    page.getByRole("button", { name: "Create client" }),
+    /\/clients\/[0-9a-f-]{36}$/,
+  );
   await expect(
     page.getByRole("heading", { level: 1, name: originalName }),
   ).toBeVisible();
@@ -45,6 +53,7 @@ test("should create, edit, and archive a workspace client", async ({
   await expect(page.getByRole("link", { name: originalName })).toBeVisible();
 
   await page.getByRole("link", { name: originalName }).click();
+  await expect(page).toHaveURL(/\/clients\/[0-9a-f-]{36}$/);
   await expect(
     page.getByRole("heading", { level: 1, name: originalName }),
   ).toBeVisible();
@@ -54,22 +63,35 @@ test("should create, edit, and archive a workspace client", async ({
   await expect(
     page.getByRole("heading", { level: 1, name: "Edit client" }),
   ).toBeVisible();
+  await page.goto(page.url());
+  await expect(
+    page.getByRole("heading", { level: 1, name: "Edit client" }),
+  ).toBeVisible();
 
   await page.getByLabel("Company name").fill(updatedName);
-  await page.getByRole("button", { name: "Save changes" }).click();
-
+  await submitAndFollowActionRedirect(
+    page,
+    page.getByRole("button", { name: "Save changes" }),
+    /\/clients\/[0-9a-f-]{36}$/,
+  );
   await expect(
     page.getByRole("heading", { level: 1, name: updatedName }),
   ).toBeVisible();
 
   await page.getByRole("link", { name: "Archive" }).click();
+  await expect(page).toHaveURL(/confirm=archive/);
   await expect(page.getByText("Archive this client?")).toBeVisible();
-  await page.getByRole("button", { name: "Confirm archive" }).click();
-
+  await submitAndFollowActionRedirect(
+    page,
+    page.getByRole("button", { name: "Confirm archive" }),
+    /\/clients\/[0-9a-f-]{36}$/,
+  );
   await expect(
     page.getByRole("heading", { level: 1, name: updatedName }),
   ).toBeVisible();
-  await expect(page.getByText("Archived", { exact: true }).first()).toBeVisible();
+  await expect(
+    page.getByText("Archived", { exact: true }).first(),
+  ).toBeVisible();
 
   await page.goto("/clients");
   await expect(
@@ -85,6 +107,7 @@ test("should create, edit, and archive a workspace client", async ({
   await expect(page.getByRole("link", { name: updatedName })).toBeVisible();
 
   await page.getByRole("link", { name: updatedName }).click();
+  await expect(page).toHaveURL(/\/clients\/[0-9a-f-]{36}$/);
   await expect(
     page.getByRole("heading", { level: 1, name: updatedName }),
   ).toBeVisible();

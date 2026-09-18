@@ -5,6 +5,7 @@ import {
   registerAndCreateFirstWorkspace,
   uniqueE2EEmail,
 } from "./helpers/first-workspace";
+import { submitAndFollowActionRedirect } from "./helpers/server-action";
 
 const CLIENT_NAME = "Contract Studio";
 const UNKNOWN_CONTRACT_ID = "00000000-0000-4000-8000-000000000099";
@@ -37,8 +38,19 @@ test("should create, edit, and isolate workspace contracts", async ({
 
   await page.getByRole("link", { name: "New client" }).click();
   await expect(page).toHaveURL(/\/clients\/new$/);
+  await expect(
+    page.getByRole("heading", { level: 1, name: "New client" }),
+  ).toBeVisible();
+  await page.reload();
+  await expect(
+    page.getByRole("heading", { level: 1, name: "New client" }),
+  ).toBeVisible();
   await page.getByLabel("Company name").fill(CLIENT_NAME);
-  await page.getByRole("button", { name: "Create client" }).click();
+  await submitAndFollowActionRedirect(
+    page,
+    page.getByRole("button", { name: "Create client" }),
+    /\/clients\/[0-9a-f-]{36}$/,
+  );
   await expect(
     page.getByRole("heading", { level: 1, name: CLIENT_NAME }),
   ).toBeVisible();
@@ -52,6 +64,10 @@ test("should create, edit, and isolate workspace contracts", async ({
   await expect(
     page.getByRole("heading", { level: 1, name: "New contract" }),
   ).toBeVisible();
+  await page.reload();
+  await expect(
+    page.getByRole("heading", { level: 1, name: "New contract" }),
+  ).toBeVisible();
 
   await page.getByLabel("Client").selectOption({ label: CLIENT_NAME });
   await page.getByLabel("Valid from").fill("2026-01-01");
@@ -62,10 +78,22 @@ test("should create, edit, and isolate workspace contracts", async ({
   await expect(
     page.getByText("Enter a rate greater than 0 with at most 4 decimal places."),
   ).toBeVisible();
+  await expect(page).toHaveURL(/\/contracts\/new$/);
 
+  await page.goto("/contracts/new");
+  await expect(
+    page.getByRole("heading", { level: 1, name: "New contract" }),
+  ).toBeVisible();
+  await page.getByLabel("Client").selectOption({ label: CLIENT_NAME });
+  await page.getByLabel("Valid from").fill("2026-01-01");
+  await page.getByLabel("Billing model").selectOption("HOURLY");
   await page.getByLabel("Rate").fill("80");
-  await page.getByRole("button", { name: "Create contract" }).click();
-  await expect(page).toHaveURL(/\/contracts\/[^/]+$/);
+  await page.getByLabel("Currency").selectOption("EUR");
+  await submitAndFollowActionRedirect(
+    page,
+    page.getByRole("button", { name: "Create contract" }),
+    /\/contracts\/[0-9a-f-]{36}$/,
+  );
   await expect(
     page.getByRole("heading", { level: 1, name: CLIENT_NAME }),
   ).toBeVisible();
@@ -80,17 +108,22 @@ test("should create, edit, and isolate workspace contracts", async ({
   await expect(page.getByText("2026-01-01 → Open-ended")).toBeVisible();
 
   await page.getByRole("link", { name: CLIENT_NAME }).click();
+  await expect(page).toHaveURL(/\/contracts\/[0-9a-f-]{36}$/);
   await page.getByRole("link", { name: "Edit" }).click();
   await expect(page).toHaveURL(/\/contracts\/[^/]+\/edit$/);
   await expect(
     page.getByRole("heading", { level: 1, name: "Edit contract" }),
   ).toBeVisible();
+  await page.goto(page.url());
   await expect(page.getByLabel("Client")).toHaveValue(CLIENT_NAME);
 
   await page.getByLabel("Rate").fill("95");
   await page.getByLabel("Valid to").fill("2027-01-01");
-  await page.getByRole("button", { name: "Save changes" }).click();
-  await expect(page).toHaveURL(/\/contracts\/[^/]+$/);
+  await submitAndFollowActionRedirect(
+    page,
+    page.getByRole("button", { name: "Save changes" }),
+    /\/contracts\/[0-9a-f-]{36}$/,
+  );
   await expect(page.getByText("95 EUR")).toBeVisible();
   await expect(page.getByText("2027-01-01")).toBeVisible();
 
@@ -99,13 +132,18 @@ test("should create, edit, and isolate workspace contracts", async ({
   await expect(page.getByText("2026-01-01 → 2027-01-01")).toBeVisible();
 
   await page.getByRole("link", { name: "New contract" }).click();
+  await expect(page).toHaveURL(/\/contracts\/new$/);
+  await page.goto("/contracts/new");
   await page.getByLabel("Client").selectOption({ label: CLIENT_NAME });
   await page.getByLabel("Valid from").fill("2027-01-01");
   await page.getByLabel("Billing model").selectOption("DAILY");
   await page.getByLabel("Rate").fill("500");
   await page.getByLabel("Currency").selectOption("EUR");
-  await page.getByRole("button", { name: "Create contract" }).click();
-  await expect(page).toHaveURL(/\/contracts\/[^/]+$/);
+  await submitAndFollowActionRedirect(
+    page,
+    page.getByRole("button", { name: "Create contract" }),
+    /\/contracts\/[0-9a-f-]{36}$/,
+  );
   await expect(page.getByText("Scheduled", { exact: true })).toBeVisible();
   await expect(page.getByText("Daily")).toBeVisible();
   await expect(page.getByText("500 EUR")).toBeVisible();
@@ -130,10 +168,16 @@ test("should create, edit, and isolate workspace contracts", async ({
 
   await page.goto("/clients");
   await page.getByRole("link", { name: CLIENT_NAME }).click();
+  await expect(page).toHaveURL(/\/clients\/[0-9a-f-]{36}$/);
   await expect(page.getByRole("heading", { name: "Contracts" })).toBeVisible();
   await page.getByRole("link", { name: "Archive" }).click();
+  await expect(page).toHaveURL(/confirm=archive/);
   await expect(page.getByText("Archive this client?")).toBeVisible();
-  await page.getByRole("button", { name: "Confirm archive" }).click();
+  await submitAndFollowActionRedirect(
+    page,
+    page.getByRole("button", { name: "Confirm archive" }),
+    /\/clients\/[0-9a-f-]{36}$/,
+  );
   await expect(page.getByText("Archived", { exact: true }).first()).toBeVisible();
   await expect(page.getByRole("link", { name: "New contract" })).toHaveCount(0);
   await expect(page.getByText("2026-01-01 → 2027-01-01")).toBeVisible();

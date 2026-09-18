@@ -1628,7 +1628,7 @@ Minimum:
 -   [x] database migration — PASS locally (`freelance_os` up to date); hosted PostgreSQL still required
 -   [x] authentication — PASS WITH FINDINGS on last §34 (mailer/Google were incomplete then; Resend + Google env model now recorded)
 -   [x] complete MVP workflow — PASS on last `pnpm start`
--   [x] critical E2E regression — last unisolated `next start`: 43/25 (F-004). After D-004 isolation: 63 passed / 5 failed of 68; residual failures are not auth-burst. Canonical CI remains `pnpm dev`. Re-verify in next §34
+-   [x] critical E2E regression — last unisolated `next start`: 43/25 (F-004). After D-004 isolation: 63 passed / 5 failed of 68; residual failures were not auth-burst and were later resolved: 68/68 on `CI=true pnpm test:e2e:start`. Canonical CI remains `pnpm dev`. Re-verify in next §34
 -   [x] reports — PASS
 -   [x] alerts — PASS
 -   [x] notifications — PASS

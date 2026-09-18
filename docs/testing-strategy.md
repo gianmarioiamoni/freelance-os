@@ -1,6 +1,6 @@
 # FreelanceOS --- Testing Strategy
 
-**Status:** Testing and CI foundation implemented — EPIC-005 complete; UI test baseline added by EPIC-006; client coverage added by EPIC-101; contract coverage added by EPIC-102; time-tracking coverage added by EPIC-103; analytics and dashboard coverage added by EPIC-104; reporting coverage added by EPIC-105; alert evaluation and notification center coverage added by EPIC-106; MVP Integration COMPLETE / CLOSED — release-gate cross-domain journey certified; MVP QA Gate PASS WITH FINDINGS; Documentation Gate COMPLETE; UX Gate PASS WITH FINDINGS; UX Polish COMPLETE (`docs/ux/ux-review.md` §18); EPIC-107 public-root and dashboard-routing E2E added (P107-03: targeted 26/26 PASS, broader 40/40 PASS); P107-05 E2E 66/66 PASS against `pnpm dev`; §34 Playwright against `next start` without E2E isolation 43 passed / 25 failed of 68 (historical F-004); D-004 isolates E2E `pnpm start` via `AUTH_E2E_RUNTIME` without changing production rate limits or E2E assertions; production readiness NO\
+**Status:** Testing and CI foundation implemented — EPIC-005 complete; UI test baseline added by EPIC-006; client coverage added by EPIC-101; contract coverage added by EPIC-102; time-tracking coverage added by EPIC-103; analytics and dashboard coverage added by EPIC-104; reporting coverage added by EPIC-105; alert evaluation and notification center coverage added by EPIC-106; MVP Integration COMPLETE / CLOSED — release-gate cross-domain journey certified; MVP QA Gate PASS WITH FINDINGS; Documentation Gate COMPLETE; UX Gate PASS WITH FINDINGS; UX Polish COMPLETE (`docs/ux/ux-review.md` §18); EPIC-107 public-root and dashboard-routing E2E added (P107-03: targeted 26/26 PASS, broader 40/40 PASS); P107-05 E2E 66/66 PASS against `pnpm dev`; §34 Playwright against `next start` without E2E isolation 43 passed / 25 failed of 68 (historical F-004); D-004 isolates E2E `pnpm start` via `AUTH_E2E_RUNTIME` (63/5/68 then 68/68); F-004 auth burst RESOLVED; production readiness NO\
 **Document:** `docs/testing-strategy.md`\
 **Scope:** Release 0 Foundation + Release 1 MVP\
 **Canonical format:** Markdown
@@ -255,8 +255,10 @@ Accepted limitations that remain:
 - EPIC-003 F-004: E2E isolation exists (`AUTH_E2E_RUNTIME` on
   `pnpm test:e2e:start`). Production Better Auth rate limits are unchanged.
   Vercel ignores the marker. Canonical CI remains `pnpm dev`. After isolation,
-  `next start` was 63 passed / 5 failed of 68 — remaining failures are not
-  the auth-burst pattern. Historical unisolated `next start` results remain
+  `next start` was 63 passed / 5 failed of 68 — remaining failures were not
+  the auth-burst pattern and were resolved separately (68/68 on
+  `CI=true pnpm test:e2e:start`). F-004 (production rate-limit auth burst) is
+  RESOLVED. Historical unisolated `next start` results remain
   in `docs/release/production-validation.md`.
 - EPIC-003 F-002: full Google consent/callback is not automated in CI
 
@@ -1904,7 +1906,8 @@ Implemented Foundation CI (EPIC-005) uses GitHub Actions
 workflow with `pnpm dev` and one worker.
 Production-like E2E is `pnpm test:e2e:start` (`pnpm start` after
 `pnpm build`, `AUTH_E2E_RUNTIME=true`). Production rate limits are
-unchanged. That path is not fully green (see release-gate-resolution §12).
+unchanged. Isolated `next start` after D-004: 63/5/68 then 68/68
+(see release-gate-resolution §12). Canonical CI remains `pnpm dev`.
 
 ------------------------------------------------------------------------
 

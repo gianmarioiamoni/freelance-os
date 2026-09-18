@@ -1,6 +1,8 @@
 // tests/e2e/helpers/analytics-fixtures.ts
 import { expect, type Page } from "@playwright/test";
 
+import { submitAndFollowActionRedirect } from "./server-action";
+
 /** First day of the current month, as the `yyyy-mm-dd` value the date inputs expect. */
 export function firstDayOfCurrentMonth(): string {
   const now = new Date();
@@ -44,6 +46,7 @@ export async function createContract(
 ): Promise<void> {
   await page.getByRole("link", { name: "New contract" }).click();
   await expect(page).toHaveURL(/\/contracts\/new/);
+  await page.goto(page.url());
 
   await page.getByLabel("Valid from").fill(options.validFrom ?? firstDayOfCurrentMonth());
   if (options.validTo) {
@@ -58,8 +61,11 @@ export async function createContract(
       .fill(options.monthlyContractedHours);
   }
 
-  await page.getByRole("button", { name: "Create contract" }).click();
-  await expect(page).toHaveURL(/\/contracts\/[0-9a-f-]{36}$/);
+  await submitAndFollowActionRedirect(
+    page,
+    page.getByRole("button", { name: "Create contract" }),
+    /\/contracts\/[0-9a-f-]{36}$/,
+  );
 }
 
 /** Creates a client plus one contract, returning the client detail URL. */

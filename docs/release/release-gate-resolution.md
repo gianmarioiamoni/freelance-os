@@ -381,7 +381,7 @@ Product Owner decisions D-001–D-004 were implemented in-repository after the c
 | D-001 Vercel | Configured (`vercel.json`). Hosted deploy not executed. **READY FOR DEPLOYMENT / EXTERNAL ACCESS REQUIRED.** |
 | D-002 Google OAuth | Remains in MVP. Provider still optional until credentials exist. Callback remains `${BETTER_AUTH_URL}/api/auth/callback/google`. Production origin not invented. |
 | D-003 Resend Free | Production adapter added behind `sendPasswordResetEmail`. Sends only when `RESEND_API_KEY` and `AUTH_EMAIL_FROM` are set. Verified domain is external. |
-| D-004 F-004 | E2E isolation implemented: `AUTH_E2E_RUNTIME=true` on `pnpm test:e2e:start` (`pnpm start`). Production Better Auth rate limits unchanged. Vercel ignores the marker. E2E assertions unchanged. Canonical CI remains `pnpm dev`. Isolated `next start` run: **63 passed / 5 failed / 68**. Auth-burst registration failures are gone. Residual failures are not solvable by rate-limit isolation without changing tests: `auth.spec.ts` `getByText("FreelanceOS")` vs `<title>`; client/contract/archive journeys where Next.js `<Link>` clicks did not navigate. **BLOCKER for defaulting CI to `next start`.** |
+| D-004 F-004 | E2E isolation implemented: `AUTH_E2E_RUNTIME=true` on `pnpm test:e2e:start` (`pnpm start`). Production Better Auth rate limits unchanged. Vercel ignores the marker. Canonical CI remains `pnpm dev`. Isolated `next start` after rate-limit isolation: **63 passed / 5 failed / 68**. Auth-burst registration failures are gone. Residual 5 were a different class (see below). After residual locator/navigation fixes: **68 passed / 0 failed / 68**. F-004 (Better Auth production rate-limit auth burst) is **RESOLVED**. Historical unisolated result remains **43 passed / 25 failed / 68**. |
 | D-005 | Not taken. Not implemented. |
 
 ### §34 validation checklist (next run)
@@ -400,8 +400,8 @@ Product Owner decisions D-001–D-004 were implemented in-repository after the c
 | 10. Reports | Previously PASS | Revalidate |
 | 11. Alerts | Previously PASS | Revalidate |
 | 12. Notifications | Previously PASS | Revalidate |
-| 13. `next start` | Local runtime + `pnpm test:e2e:start` | Revalidate; residual 5 E2E failures |
-| 14. Playwright | Isolation configured; assertions unchanged; canonical CI `pnpm dev` | Isolated start path 63/68; not fully green |
+| 13. `next start` | Local runtime + `pnpm test:e2e:start` | Revalidate; post-isolation evidence 63/5 then 68/68 |
+| 14. Playwright | Isolation configured; canonical CI `pnpm dev` | Isolated start path 68/68 after residual fixes; not a §34 rerun |
 | 15. Workspace isolation | Previously PASS on exercised paths | Revalidate |
 | 16. Runtime health | F-104-007 remains OPEN | Revalidate |
 
@@ -411,4 +411,17 @@ Product Owner decisions D-001–D-004 were implemented in-repository after the c
 RELEASE:                      NOT APPROVED
 PRODUCTION READINESS:         NO
 ```
+
+### D-004 residual failures (after 63/5/68)
+
+Historical unisolated `next start`: **43 passed / 25 failed / 68** (F-004 auth burst). After `AUTH_E2E_RUNTIME` isolation: **63 passed / 5 failed / 68**. Those 5 were not F-004. Classification and disposition:
+
+| Failure | Classification | Disposition |
+| --- | --- | --- |
+| `getByText("FreelanceOS")` matched `<title>` and AuthBrand `<p>` | TEST DEFECT | Locate the wordmark paragraph |
+| Client/contract list and archive `?confirm=archive` `<Link>` clicks did not commit the URL under `next start` Playwright | APPLICATION DEFECT (same-path search params) / TEST ENVIRONMENT (list client-side nav) | Native `<a>` for archive confirm and list titles |
+| Server-action `redirect()` (`x-action-redirect: …;push`) not consumed by the production client router | TEST TIMING/READINESS | Follow `x-action-redirect` then assert destination |
+
+After those fixes: **68 passed / 0 failed / 68** on `CI=true pnpm test:e2e:start`. This is evidence for the next §34 run, not a §34 execution. F-004 (rate-limit auth burst) is **RESOLVED**. Canonical CI remains `pnpm dev`.
+
 
