@@ -123,12 +123,6 @@ describe("ReportingService integration", () => {
 
   it("isolates contract data across workspaces", async () => {
     const otherGraph = await createWorkspaceGraph(repositories, "isolation-other");
-    const otherContext: WorkspaceContext = {
-      workspaceId: otherGraph.workspaceId,
-      userId: otherGraph.userId,
-      role: "OWNER",
-      timezone: "UTC",
-    };
 
     // Add a contract and time to the OTHER workspace within the period.
     // The default fixture contract has validTo: 2026-07-01, so we create a new client

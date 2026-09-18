@@ -23,7 +23,6 @@ const CLIENT_NAME = "Alert E2E Client";
 // We log 9h = 540 min → 90% → CONTRACT_WARNING fires
 const CONTRACT_HOURS = "10";
 const ABOVE_THRESHOLD_HOURS = "9"; // 9h = 540 min → 90%
-const BELOW_THRESHOLD_HOURS = "4"; // 4h = 240 min → 40%
 
 /**
  * Creates client + contract with monthlyContractedHours, returns to caller.

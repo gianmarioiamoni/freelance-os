@@ -26,8 +26,6 @@ function shouldShowOngoingLabel(util: Pick<ContractUtilization, "isOngoing">): b
   return util.isOngoing;
 }
 
-const validFrom = new Date("2026-01-01T00:00:00.000Z");
-
 describe("ContractUtilization display logic (BR-105-016, F-105-014)", () => {
   // Case 1: finite validity + finite capacity
   it("finite validity + finite capacity: shows capacity, no ongoing label", () => {

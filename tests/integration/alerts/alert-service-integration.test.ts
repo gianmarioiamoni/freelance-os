@@ -58,7 +58,7 @@ async function buildContract(
   return { client, contract };
 }
 
-function makeAlertService(context: WorkspaceContext) {
+function makeAlertService() {
   const analytics = new AnalyticsService(
     repositories.analytics,
     repositories.members,
@@ -107,7 +107,7 @@ describe("P106-05 — boundary conditions (integration)", () => {
 
       await logEntry(context, client.id, contract.id, 474);
 
-      const svc = makeAlertService(context);
+      const svc = makeAlertService();
       const result = await svc.evaluateContractAlerts(context);
 
       expect(result.alertsCreated).toBe(0);
@@ -129,7 +129,7 @@ describe("P106-05 — boundary conditions (integration)", () => {
 
       await logEntry(context, client.id, contract.id, 480);
 
-      const svc = makeAlertService(context);
+      const svc = makeAlertService();
       const result = await svc.evaluateContractAlerts(context);
 
       expect(result.alertsCreated).toBeGreaterThanOrEqual(1);
@@ -156,7 +156,7 @@ describe("P106-05 — boundary conditions (integration)", () => {
 
       await logEntry(context, client.id, contract.id, 540);
 
-      const svc = makeAlertService(context);
+      const svc = makeAlertService();
       const result = await svc.evaluateContractAlerts(context);
 
       const contractResult = result.contractResults.find(
@@ -175,7 +175,7 @@ describe("P106-05 — boundary conditions (integration)", () => {
 
       await logEntry(context, client.id, contract.id, 600);
 
-      const svc = makeAlertService(context);
+      const svc = makeAlertService();
       const result = await svc.evaluateContractAlerts(context);
 
       const contractResult = result.contractResults.find(
@@ -195,7 +195,7 @@ describe("P106-05 — boundary conditions (integration)", () => {
 
       await logEntry(context, client.id, contract.id, 700);
 
-      const svc = makeAlertService(context);
+      const svc = makeAlertService();
       const result = await svc.evaluateContractAlerts(context);
 
       const contractResult = result.contractResults.find(
@@ -214,7 +214,7 @@ describe("P106-05 — boundary conditions (integration)", () => {
       // Log max allowed duration — unlimited contract still produces no alert
       await logEntry(context, client.id, contract.id, 1440);
 
-      const svc = makeAlertService(context);
+      const svc = makeAlertService();
       const result = await svc.evaluateContractAlerts(context);
 
       expect(result.alertsCreated).toBe(0);
@@ -237,7 +237,7 @@ describe("P106-05 — deduplication (integration)", () => {
     const { client, contract } = await buildContract(context, 10);
     await logEntry(context, client.id, contract.id, 500); // 83%
 
-    const svc = makeAlertService(context);
+    const svc = makeAlertService();
     const result = await svc.evaluateContractAlerts(context);
 
     expect(result.alertsCreated).toBeGreaterThanOrEqual(1);
@@ -249,7 +249,7 @@ describe("P106-05 — deduplication (integration)", () => {
     const { client, contract } = await buildContract(context, 10);
     await logEntry(context, client.id, contract.id, 500); // 83%
 
-    const svc = makeAlertService(context);
+    const svc = makeAlertService();
     await svc.evaluateContractAlerts(context); // first
 
     const secondResult = await svc.evaluateContractAlerts(context); // second — same condition
@@ -267,12 +267,6 @@ describe("P106-05 — deduplication (integration)", () => {
     );
     // Only the original notification, not a duplicate
     const alertNotifs = notifications.filter((n) => n.type === "ALERT");
-    // CONTRACT_WARNING produces 1 notification; CONTRACT_EXCEEDED (if triggered) adds 1 more
-    const warningNotifs = alertNotifs.filter((n) =>
-      n.title.toLowerCase().includes("approach") ||
-      n.title.toLowerCase().includes("warning") ||
-      n.title.toLowerCase().includes("contract"),
-    );
     expect(alertNotifs.length).toBeLessThanOrEqual(2); // at most 1 per alert type, not doubled
     // Specifically: no new creation on second evaluation
     expect(secondResult.alertsCreated).toBe(0);
@@ -290,7 +284,7 @@ describe("P106-05 — resolution (integration)", () => {
 
     // Log 500 min (83%) → alert fires
     const entry = await logEntry(context, client.id, contract.id, 500);
-    const svc = makeAlertService(context);
+    const svc = makeAlertService();
     const firstResult = await svc.evaluateContractAlerts(context);
     expect(firstResult.alertsCreated).toBeGreaterThanOrEqual(1);
 
@@ -322,7 +316,7 @@ describe("P106-05 — resolution (integration)", () => {
     const { client, contract } = await buildContract(context, 10);
 
     const entry = await logEntry(context, client.id, contract.id, 500);
-    const svc = makeAlertService(context);
+    const svc = makeAlertService();
     await svc.evaluateContractAlerts(context); // alert created
 
     await deleteTimeEntry(context, entry.id, repositories.timeEntries);
@@ -339,7 +333,7 @@ describe("P106-05 — resolution (integration)", () => {
     const { client, contract } = await buildContract(context, 10);
 
     await logEntry(context, client.id, contract.id, 500);
-    const svc = makeAlertService(context);
+    const svc = makeAlertService();
     await svc.evaluateContractAlerts(context);
 
     const notifications = await repositories.notifications.listNotificationsForUser(
@@ -373,7 +367,7 @@ describe("P106-05 — re-trigger (integration)", () => {
 
     // Step 1: log above threshold → alert created
     const entry = await logEntry(context, client.id, contract.id, 500);
-    const svc = makeAlertService(context);
+    const svc = makeAlertService();
     const firstResult = await svc.evaluateContractAlerts(context);
     expect(firstResult.alertsCreated).toBeGreaterThanOrEqual(1);
 
@@ -423,7 +417,7 @@ describe("P106-05 — threshold override (integration)", () => {
 
     // 85% = 510 min — below 90% threshold, should NOT fire
     await logEntry(context, client.id, contract.id, 510);
-    const svc = makeAlertService(context);
+    const svc = makeAlertService();
     const result = await svc.evaluateContractAlerts(context);
 
     const contractResult = result.contractResults.find(
@@ -446,7 +440,7 @@ describe("P106-05 — workspace isolation (integration)", () => {
     const { client: clientA, contract: contractA } = await buildContract(contextA, 10);
     await logEntry(contextA, clientA.id, contractA.id, 500);
 
-    const svcA = makeAlertService(contextA);
+    const svcA = makeAlertService();
     await svcA.evaluateContractAlerts(contextA);
 
     const notifsA = await repositories.notifications.listNotificationsForUser(
@@ -473,7 +467,7 @@ describe("P106-05 — notification ownership and read state (integration)", () =
     const { client, contract } = await buildContract(context, 10);
     await logEntry(context, client.id, contract.id, 500);
 
-    const svc = makeAlertService(context);
+    const svc = makeAlertService();
     await svc.evaluateContractAlerts(context);
 
     const notifications = await repositories.notifications.listNotificationsForUser(
@@ -497,7 +491,7 @@ describe("P106-05 — notification ownership and read state (integration)", () =
     const { client, contract } = await buildContract(context, 10);
     await logEntry(context, client.id, contract.id, 500);
 
-    const svc = makeAlertService(context);
+    const svc = makeAlertService();
     await svc.evaluateContractAlerts(context);
 
     const notifications = await repositories.notifications.listNotificationsForUser(

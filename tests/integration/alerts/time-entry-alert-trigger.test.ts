@@ -63,7 +63,7 @@ async function setupClientAndContract(
   return { client, contract };
 }
 
-function makeAlertService(context: WorkspaceContext) {
+function makeAlertService() {
   const analyticsService = new AnalyticsService(repositories.analytics, repositories.members);
   return createAlertService(
     repositories.alerts,
@@ -131,7 +131,7 @@ describe("time-entry alert trigger (P106-03)", () => {
         analytics: repositories.analytics,
       });
 
-      const alertService = makeAlertService(context);
+      const alertService = makeAlertService();
       const result = await alertService.evaluateContractAlerts(context);
 
       // Second evaluation must deduplicate (not create another alert)
@@ -222,7 +222,7 @@ describe("time-entry alert trigger (P106-03)", () => {
       expect(result).toBeUndefined(); // best-effort, no throw
 
       // Check that alert was resolved via alertService directly
-      const alertService = makeAlertService(context);
+      const alertService = makeAlertService();
       const evalResult = await alertService.evaluateContractAlerts(context);
       // Already resolved — evaluating again should show no changes
       expect(evalResult.alertsCreated).toBe(0);
@@ -323,7 +323,7 @@ describe("time-entry alert trigger (P106-03)", () => {
       });
 
       // Further evaluation should show no alert creation (already resolved)
-      const alertService = makeAlertService(context);
+      const alertService = makeAlertService();
       const evalResult = await alertService.evaluateContractAlerts(context);
       expect(evalResult.alertsCreated).toBe(0);
     });
