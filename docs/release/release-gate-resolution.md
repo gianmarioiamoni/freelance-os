@@ -3,6 +3,7 @@
 **Gate:** `MASTER_PLAN.md` §34–§37  
 **Date:** 2026-09-18  
 **HEAD at analysis:** `88cc196423a50a03949c1115656b700c331ec30f`  
+**HEAD after D-001–D-004 implementation:** see git log for `feat(release): implement MVP production infrastructure`  
 **§34 candidate previously validated:** `81a22dd507ae3d320fba64ead71ab2871a50e833`  
 **Evidence:** `docs/release/production-validation.md`  
 **§35 Production Certification:** NOT RUN  
@@ -15,6 +16,8 @@ NEW EPIC:             NOT OPENED
 APPLICATION CHANGES:  NONE
 TESTS MODIFIED:       NONE
 ```
+
+The block above is the classification snapshot. D-001–D-004 were implemented later; see §12. Historical §34 results were not rewritten.
 
 This record classifies remaining §34 items. It does not grant release. It does not accept findings. It does not close historical findings.
 
@@ -357,10 +360,55 @@ RELEASE:                      NOT APPROVED
 
 ## 11. Current Decision
 
+Classification-time decision (unchanged historical record):
+
 ```text
 RELEASE BLOCKED
 ```
 
-Reason: mandatory §34 completeness gaps remain (deployment target unresolved; production reset completion unverified; Google offered without production credentials; `next start` E2E FAIL = F-004 without accepted disposition). No new §37 Release Blocker was confirmed. Product Owner approval is absent. Evidence does not prove `READY FOR RELEASE`.
+Reason at classification: mandatory §34 completeness gaps remain (deployment target unresolved; production reset completion unverified; Google offered without production credentials; `next start` E2E FAIL = F-004 without accepted disposition). No new §37 Release Blocker was confirmed. Product Owner approval is absent. Evidence does not prove `READY FOR RELEASE`.
 
 §35 must remain deferred. No new Epic. No speculative implementation.
+
+---
+
+## 12. D-001–D-004 implementation (2026-09-18)
+
+Product Owner decisions D-001–D-004 were implemented in-repository after the classification above. Historical §34 evidence was not rewritten. This is not a new §34 execution. D-005 was not implemented.
+
+| Decision | Status |
+| --- | --- |
+| D-001 Vercel | Configured (`vercel.json`). Hosted deploy not executed. **READY FOR DEPLOYMENT / EXTERNAL ACCESS REQUIRED.** |
+| D-002 Google OAuth | Remains in MVP. Provider still optional until credentials exist. Callback remains `${BETTER_AUTH_URL}/api/auth/callback/google`. Production origin not invented. |
+| D-003 Resend Free | Production adapter added behind `sendPasswordResetEmail`. Sends only when `RESEND_API_KEY` and `AUTH_EMAIL_FROM` are set. Verified domain is external. |
+| D-004 F-004 | E2E isolation implemented: `AUTH_E2E_RUNTIME=true` on `pnpm test:e2e:start` (`pnpm start`). Production Better Auth rate limits unchanged. Vercel ignores the marker. E2E assertions unchanged. Canonical CI remains `pnpm dev`. Isolated `next start` run: **63 passed / 5 failed / 68**. Auth-burst registration failures are gone. Residual failures are not solvable by rate-limit isolation without changing tests: `auth.spec.ts` `getByText("FreelanceOS")` vs `<title>`; client/contract/archive journeys where Next.js `<Link>` clicks did not navigate. **BLOCKER for defaulting CI to `next start`.** |
+| D-005 | Not taken. Not implemented. |
+
+### §34 validation checklist (next run)
+
+| Item | Implementation | Next §34 |
+| --- | --- | --- |
+| 1. Vercel deployment | Configured | Requires hosted deployment |
+| 2. Production env vars | Names documented | Requires external credentials |
+| 3. Production database | Prisma portable | Requires hosted PostgreSQL |
+| 4. Prisma migrations | `migrate deploy` in Vercel build | Requires production `DATABASE_URL` |
+| 5. Better Auth | Unchanged production semantics | Validate on hosted + local `pnpm start` |
+| 6. Google OAuth | Included; credentials not in repo | Requires `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` and matching callback origin |
+| 7. Resend | Adapter implemented | Requires `RESEND_API_KEY` and `AUTH_EMAIL_FROM` |
+| 8. Password reset completion | Request path ready | Requires delivered Resend email |
+| 9. Full MVP workflow | Previously PASS locally | Revalidate |
+| 10. Reports | Previously PASS | Revalidate |
+| 11. Alerts | Previously PASS | Revalidate |
+| 12. Notifications | Previously PASS | Revalidate |
+| 13. `next start` | Local runtime + `pnpm test:e2e:start` | Revalidate; residual 5 E2E failures |
+| 14. Playwright | Isolation configured; assertions unchanged; canonical CI `pnpm dev` | Isolated start path 63/68; not fully green |
+| 15. Workspace isolation | Previously PASS on exercised paths | Revalidate |
+| 16. Runtime health | F-104-007 remains OPEN | Revalidate |
+
+```text
+§34:                          MUST BE RE-RUN
+§35 PRODUCTION CERTIFICATION: DEFERRED
+RELEASE:                      NOT APPROVED
+PRODUCTION READINESS:         NO
+```
+

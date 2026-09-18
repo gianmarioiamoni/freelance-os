@@ -43,5 +43,8 @@ describe("Google OAuth provider configuration", () => {
     expect(getGoogleOAuthRedirectURL("http://localhost:3000")).toBe(
       "http://localhost:3000/api/auth/callback/google",
     );
+    expect(getGoogleOAuthRedirectURL("https://app.example.com")).toBe(
+      "https://app.example.com/api/auth/callback/google",
+    );
   });
 });

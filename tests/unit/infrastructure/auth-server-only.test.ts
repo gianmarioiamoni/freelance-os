@@ -49,6 +49,8 @@ describe("Better Auth server/client boundary", () => {
       expect(contents).not.toMatch(/GOOGLE_CLIENT_SECRET/);
       expect(contents).not.toMatch(/process\.env\.GOOGLE_/);
       expect(contents).not.toMatch(/from ["']@\/infrastructure\/email\//);
+      expect(contents).not.toMatch(/RESEND_API_KEY/);
+      expect(contents).not.toMatch(/AUTH_E2E_RUNTIME/);
     }
   });
 
@@ -61,6 +63,10 @@ describe("Better Auth server/client boundary", () => {
     expect(example).not.toMatch(/GOOGLE_CLIENT_ID=".{8,}"/);
     expect(example).not.toMatch(/GOOGLE_CLIENT_SECRET=".{8,}"/);
     expect(example).toMatch(/AUTH_EMAIL_DELIVERY=""/);
+    expect(example).toMatch(/RESEND_API_KEY=""/);
+    expect(example).toMatch(/AUTH_EMAIL_FROM=""/);
+    expect(example).not.toMatch(/RESEND_API_KEY=".{8,}"/);
+    expect(example).not.toMatch(/AUTH_EMAIL_FROM=".{8,}"/);
   });
 
   it("does not override Better Auth account-linking defaults", () => {
@@ -75,5 +81,11 @@ describe("Better Auth server/client boundary", () => {
     expect(source("src/infrastructure/auth/auth.ts")).toMatch(
       /revokeSessionsOnPasswordReset:\s*true/,
     );
+  });
+
+  it("does not hardcode disabled production rate limits", () => {
+    const authSource = source("src/infrastructure/auth/auth.ts");
+    expect(authSource).toContain("getBetterAuthRateLimitOptions");
+    expect(authSource).not.toMatch(/rateLimit:\s*\{\s*enabled:\s*false/);
   });
 });

@@ -6,7 +6,8 @@ All notable changes to FreelanceOS are documented in this file.
 
 ### Added
 
-- MASTER_PLAN §34 Production Validation revalidated on candidate `81a22dd` (local `pnpm build` + `pnpm start`; previous candidate `a0ad65f`). Evidence: `docs/release/production-validation.md`. Gate outcome: RELEASE BLOCKED. Production readiness: NO. Product Owner approval: NOT PROVIDED. §35 not run.
+- MVP production infrastructure for D-001–D-004: Vercel deployment configuration, Google OAuth kept in the MVP release, Resend Free password-reset delivery, and E2E isolation (`AUTH_E2E_RUNTIME` on `pnpm test:e2e:start`). Isolated `next start` E2E: 63 passed / 5 failed of 68. Hosted deploy and production credentials remain external. §34 not re-run. §35 not run.
+
 - Authenticated AppShell wordmark `FreelanceOS` is a Next.js link to `/dashboard`. Public landing wordmark remains `/`.
 - EPIC-107 Public Landing implementation and E2E complete (P107-01 … P107-03). Documentation synchronized (P107-04). Later: Engineering Review PASS WITH FINDINGS (P107-05); production-like validation PASS WITH FINDINGS (P107-06); epic certification RELEASE BLOCKED.
 - Public `/` landing for unauthenticated visitors: header with plain `FreelanceOS` wordmark, Sign Up / Sign In, hero, supporting statement, bordered How it works (Set up / Track / Understand), six MVP capability cards with native `<details>/<summary>` Read more. No logo asset, no site-wide dark mode, no additional hero CTA, no footer. Authenticated `/` never renders the landing.

@@ -6,6 +6,10 @@ import {
   capturePasswordResetEmail,
   type CapturedPasswordResetEmail,
 } from "@/infrastructure/email/password-reset-capture";
+import {
+  PRODUCTION_EMAIL_UNCONFIGURED_MESSAGE,
+  deliverProductionPasswordResetEmail,
+} from "@/infrastructure/email/resend-password-reset";
 
 export type PasswordResetEmailUser = {
   id: string;
@@ -19,10 +23,7 @@ export type PasswordResetEmailPayload = {
 };
 
 const DEVELOPMENT_DELIVERY_MESSAGE =
-  "Password reset email accepted by the development delivery adapter. No production email provider is configured.";
-
-const PRODUCTION_DELIVERY_MESSAGE =
-  "Password reset email was not delivered: no production email provider is configured.";
+  "Password reset email accepted by the development delivery adapter. No email is sent.";
 
 function toCapturedMessage(
   data: PasswordResetEmailPayload,
@@ -47,7 +48,7 @@ export async function sendPasswordResetEmail(
   }
 
   if (mode === "production") {
-    console.warn(PRODUCTION_DELIVERY_MESSAGE);
+    await deliverProductionPasswordResetEmail(data);
     return;
   }
 
@@ -56,5 +57,5 @@ export async function sendPasswordResetEmail(
 
 export const PASSWORD_RESET_DELIVERY_LOG_MESSAGES = {
   development: DEVELOPMENT_DELIVERY_MESSAGE,
-  production: PRODUCTION_DELIVERY_MESSAGE,
+  production: PRODUCTION_EMAIL_UNCONFIGURED_MESSAGE,
 } as const;

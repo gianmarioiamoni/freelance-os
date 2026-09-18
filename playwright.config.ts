@@ -7,6 +7,7 @@ const testDatabaseUrl = requireTestDatabaseUrl();
 const betterAuthUrl = process.env.BETTER_AUTH_URL ?? "http://localhost:3000";
 const betterAuthSecret =
   process.env.BETTER_AUTH_SECRET ?? "test-better-auth-secret-32-characters-min";
+const useProductionWebServer = process.env.E2E_WEB_SERVER === "start";
 
 process.env.DATABASE_URL = testDatabaseUrl;
 process.env.TEST_DATABASE_URL = testDatabaseUrl;
@@ -32,7 +33,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: "pnpm dev",
+    command: useProductionWebServer ? "pnpm start" : "pnpm dev",
     url: "http://localhost:3000",
     reuseExistingServer: false,
     timeout: 120_000,
@@ -47,6 +48,7 @@ export default defineConfig({
       AUTH_EMAIL_DELIVERY: "test",
       BETTER_AUTH_URL: betterAuthUrl,
       BETTER_AUTH_SECRET: betterAuthSecret,
+      ...(useProductionWebServer ? { AUTH_E2E_RUNTIME: "true" } : {}),
     },
   },
 });

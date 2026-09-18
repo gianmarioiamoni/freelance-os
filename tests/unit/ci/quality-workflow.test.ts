@@ -31,6 +31,8 @@ describe("CI quality workflow", () => {
     expect(workflow).not.toMatch(/GOOGLE_CLIENT_ID:/);
     expect(workflow).not.toMatch(/GOOGLE_CLIENT_SECRET:/);
     expect(workflow).not.toMatch(/EMAIL_PROVIDER/);
+    expect(workflow).not.toMatch(/RESEND_API_KEY/);
+    expect(workflow).not.toMatch(/AUTH_EMAIL_FROM/);
     expect(workflow).not.toMatch(/SMTP_/);
   });
 });
@@ -41,12 +43,19 @@ const playwrightConfig = readFileSync(
 );
 
 describe("Playwright CI contract", () => {
-  it("locks F-004 to pnpm dev with one CI worker", () => {
-    expect(playwrightConfig).toMatch(/command:\s*"pnpm dev"/);
+  it("keeps default E2E on pnpm dev and isolates next start via AUTH_E2E_RUNTIME", () => {
+    expect(playwrightConfig).toContain(
+      'const useProductionWebServer = process.env.E2E_WEB_SERVER === "start"',
+    );
+    expect(playwrightConfig).toContain(
+      'command: useProductionWebServer ? "pnpm start" : "pnpm dev"',
+    );
+    expect(playwrightConfig).toContain(
+      '...(useProductionWebServer ? { AUTH_E2E_RUNTIME: "true" } : {})',
+    );
+    expect(playwrightConfig).toContain('AUTH_EMAIL_DELIVERY: "test"');
     expect(playwrightConfig).toContain("workers: process.env.CI ? 1 : undefined");
     expect(playwrightConfig).toContain("reuseExistingServer: false");
-    expect(playwrightConfig).not.toMatch(/command:\s*"pnpm start"/);
-    expect(playwrightConfig).not.toMatch(/command:\s*"next start"/);
   });
 });
 

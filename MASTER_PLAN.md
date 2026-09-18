@@ -4,7 +4,7 @@
 **Document:** `MASTER_PLAN.md`\
 **Product:** FreelanceOS\
 **Canonical format:** Markdown\
-**Current phase:** EPIC-107 implementation, Engineering Review, production-like validation, and epic certification COMPLETE. MASTER_PLAN §34 revalidated — RELEASE BLOCKED (`docs/release/production-validation.md`). Remaining blockers classified (`docs/release/release-gate-resolution.md`). Next: Product Owner decisions D-001–D-004; §35 Production Certification DEFERRED. Production readiness: NO.
+**Current phase:** D-001–D-004 production infrastructure implemented (Vercel, Google OAuth in MVP, Resend Free, E2E `next start` isolation). MASTER_PLAN §34 last executed — RELEASE BLOCKED (`docs/release/production-validation.md`); that run predates this infrastructure. Next: §34 Production Validation re-run. §35 Production Certification DEFERRED. D-005 Product Owner approval: NOT PROVIDED. Production readiness: NO.
 
 ------------------------------------------------------------------------
 
@@ -275,7 +275,7 @@ Status: COMPLETE
 Verdict: PASS WITH FINDINGS
 Evidence: `docs/ux/ux-review.md`
 Blocking findings: NONE
-Next: EPIC-107 review/validation/certification COMPLETE; §34 EXECUTED — RELEASE BLOCKED; remaining gates classified (`docs/release/release-gate-resolution.md`); §35 DEFERRED
+Next: D-001–D-004 infrastructure implemented; §34 must be re-run; §35 DEFERRED
 
 UX Polish — after §33
 Status: COMPLETE
@@ -1018,7 +1018,7 @@ R0-E04 Workspace
 **Release gate (QA):** 5 pass / 1 flaky failure (FINDING-QA-001); focused PASS; isolated 3/3 PASS  
 **UX Gate:** COMPLETE — PASS WITH FINDINGS (`docs/ux/ux-review.md`). Blocking findings: NONE.  
 **UX Polish:** COMPLETE — `docs/ux/ux-review.md` §18.  
-**Next:** EPIC-107 COMPLETE through epic certification (RELEASE BLOCKED). MASTER_PLAN §34 EXECUTED — RELEASE BLOCKED (`docs/release/production-validation.md`). Remaining blockers classified (`docs/release/release-gate-resolution.md`). §35 DEFERRED. Production readiness: NO.
+**Next:** D-001–D-004 production infrastructure implemented. MASTER_PLAN §34 last executed — RELEASE BLOCKED (`docs/release/production-validation.md`). Re-run §34 against the Vercel-configured candidate. §35 DEFERRED. Production readiness: NO.
 
 After individual MVP Epics are complete, perform an explicit integration
 phase.
@@ -1617,24 +1617,24 @@ FINDING-QA-002 remains OPEN.
 
 # 34. Production Validation Gate
 
-**Status:** EXECUTED — **RELEASE BLOCKED**. Evidence: `docs/release/production-validation.md`. Gate classification: `docs/release/release-gate-resolution.md`. Candidate: `81a22dd` (2026-09-18 revalidation; previous `a0ad65f`). Local `pnpm build` + `pnpm start`. No hosted target. Product Owner approval is a §35 field and is NOT PROVIDED. §35 DEFERRED.
+**Status:** LAST EXECUTED — **RELEASE BLOCKED**. Evidence: `docs/release/production-validation.md`. Gate classification: `docs/release/release-gate-resolution.md`. Candidate at last run: `81a22dd` (2026-09-18 revalidation). D-001–D-004 infrastructure is now in-repository; hosted Vercel deploy was not executed in that run. Product Owner approval is a §35 field and is NOT PROVIDED. §35 DEFERRED.
 
 Validate the exact build that will be deployed.
 
 Minimum:
 
--   [x] production build — PASS
--   [x] deployment configuration — recorded: local `pnpm start`; hosted target absent
--   [x] database migration — PASS (`freelance_os` up to date)
--   [x] authentication — PASS WITH FINDINGS (mailer/Google incomplete)
--   [x] complete MVP workflow — PASS on `pnpm start`
--   [x] critical E2E regression — executed on `next start`: 43 passed / 25 failed (68 tests); failures = F-004
+-   [x] production build — PASS (last §34)
+-   [x] deployment configuration — Vercel recorded (`vercel.json`); hosted deploy not executed; READY FOR DEPLOYMENT / EXTERNAL ACCESS REQUIRED
+-   [x] database migration — PASS locally (`freelance_os` up to date); hosted PostgreSQL still required
+-   [x] authentication — PASS WITH FINDINGS on last §34 (mailer/Google were incomplete then; Resend + Google env model now recorded)
+-   [x] complete MVP workflow — PASS on last `pnpm start`
+-   [x] critical E2E regression — last unisolated `next start`: 43/25 (F-004). After D-004 isolation: 63 passed / 5 failed of 68; residual failures are not auth-burst. Canonical CI remains `pnpm dev`. Re-verify in next §34
 -   [x] reports — PASS
 -   [x] alerts — PASS
 -   [x] notifications — PASS
 -   [x] security baseline — PASS on exercised paths
--   [x] environment variables — PARTIAL (Google unset; production mailer unset)
--   [x] no release-blocking defects — no new §37 Release Blocker; gate still RELEASE BLOCKED
+-   [x] environment variables — model complete; production values EXTERNAL
+-   [x] no release-blocking defects — no new §37 Release Blocker; gate still RELEASE BLOCKED until next §34
 
 The methodology requires Production Validation to validate exactly what
 will be deployed and concludes with either:

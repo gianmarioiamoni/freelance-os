@@ -1,6 +1,6 @@
 # FreelanceOS --- Testing Strategy
 
-**Status:** Testing and CI foundation implemented — EPIC-005 complete; UI test baseline added by EPIC-006; client coverage added by EPIC-101; contract coverage added by EPIC-102; time-tracking coverage added by EPIC-103; analytics and dashboard coverage added by EPIC-104; reporting coverage added by EPIC-105; alert evaluation and notification center coverage added by EPIC-106; MVP Integration COMPLETE / CLOSED — release-gate cross-domain journey certified; MVP QA Gate PASS WITH FINDINGS; Documentation Gate COMPLETE; UX Gate PASS WITH FINDINGS; UX Polish COMPLETE (`docs/ux/ux-review.md` §18); EPIC-107 public-root and dashboard-routing E2E added (P107-03: targeted 26/26 PASS, broader 40/40 PASS); P107-05 E2E 66/66 PASS against `pnpm dev`; §34 Playwright against `next start` 43 passed / 25 failed of 68 (F-004; logo-change targeted 11/11 PASS on `pnpm dev`); production readiness NO\
+**Status:** Testing and CI foundation implemented — EPIC-005 complete; UI test baseline added by EPIC-006; client coverage added by EPIC-101; contract coverage added by EPIC-102; time-tracking coverage added by EPIC-103; analytics and dashboard coverage added by EPIC-104; reporting coverage added by EPIC-105; alert evaluation and notification center coverage added by EPIC-106; MVP Integration COMPLETE / CLOSED — release-gate cross-domain journey certified; MVP QA Gate PASS WITH FINDINGS; Documentation Gate COMPLETE; UX Gate PASS WITH FINDINGS; UX Polish COMPLETE (`docs/ux/ux-review.md` §18); EPIC-107 public-root and dashboard-routing E2E added (P107-03: targeted 26/26 PASS, broader 40/40 PASS); P107-05 E2E 66/66 PASS against `pnpm dev`; §34 Playwright against `next start` without E2E isolation 43 passed / 25 failed of 68 (historical F-004); D-004 isolates E2E `pnpm start` via `AUTH_E2E_RUNTIME` without changing production rate limits or E2E assertions; production readiness NO\
 **Document:** `docs/testing-strategy.md`\
 **Scope:** Release 0 Foundation + Release 1 MVP\
 **Canonical format:** Markdown
@@ -37,11 +37,13 @@ migration chain to disposable PostgreSQL 17 (`freelanceos_test`),
 then runs lint, typecheck, unit tests, integration tests, build,
 and deterministic Playwright auth E2E. CI sets a test auth secret
 and `AUTH_EMAIL_DELIVERY=test`. Playwright CI uses `pnpm dev` with
-one worker; `next start` enables Better Auth production rate limits
-that collide across auth journeys on a shared CI IP. It does not
-require Google credentials, a production mailer, or production
-secrets. Full Google consent/callback remains a non-CI/manual
-limitation.
+one worker when `CI` is set. Production-like E2E (`pnpm test:e2e:start`)
+runs `pnpm start` after `pnpm build` with `AUTH_E2E_RUNTIME=true`.
+That marker isolates Better Auth rate limits in the E2E process only.
+Production `next start` without the marker keeps Better Auth production
+rate limits. CI does not require Google credentials, a production mailer,
+or production secrets. Full Google consent/callback remains a
+non-CI/manual limitation.
 
 EPIC-003 Phase 6 certified this authentication coverage. Review:
 `docs/epics/EPIC-003/engineering-review.md`.
@@ -57,8 +59,9 @@ authorization. Playwright covers register → create workspace →
 application, invalid onboarding input, unauthenticated denial,
 and that a browser-supplied `workspaceId` query is not
 authorization. Role permission semantics (OBD-009) remain
-untested by design. Playwright CI still uses `pnpm dev` with
-one worker (F-004). Review:
+untested by design. Playwright CI uses `pnpm dev` with
+one worker. Production-like `pnpm test:e2e:start` uses `AUTH_E2E_RUNTIME`
+(D-004). Review:
 `docs/epics/EPIC-004/engineering-review.md`.
 
 EPIC-005 formalizes this stack as the Testing & CI Foundation.
@@ -201,8 +204,10 @@ Isolated E2E database contract:
 - Missing `TEST_DATABASE_URL` fails before E2E starts.
 - `freelance_os` is rejected. The database name must end in `_test`.
 - `playwright.config.ts` injects that isolated URL as `DATABASE_URL`
-  only into the E2E `webServer` process. An existing `pnpm dev`
-  server is not reused (`reuseExistingServer: false`).
+  only into the E2E `webServer` process. Default `webServer.command` is
+  `pnpm dev`. `E2E_WEB_SERVER=start` / `pnpm test:e2e:start` uses
+  `pnpm start` after a prior `pnpm build`. An existing server
+  is not reused (`reuseExistingServer: false`).
 - The password-reset helper reads `TEST_DATABASE_URL`, not the
   development `DATABASE_URL`.
 
@@ -220,7 +225,8 @@ CI E2E contract (locked by `tests/unit/ci/quality-workflow.test.ts`):
 - GitHub Actions `.github/workflows/quality.yml`
 - PostgreSQL 17 service, database `freelanceos_test`
 - `DATABASE_URL` and `TEST_DATABASE_URL` both point at that database
-- `pnpm dev` (not `next start`)
+- `pnpm dev` (canonical CI)
+- `pnpm test:e2e:start` is the D-004 production-like path (`pnpm start` + `AUTH_E2E_RUNTIME=true`)
 - one Playwright worker when `CI` is set
 - no `prisma db push`
 - lint, typecheck, unit, integration, build, then Playwright E2E
@@ -246,8 +252,12 @@ Accepted limitations that remain:
 - G-006: CI style gate is lint; there is no `format:check`
 - G-002: E2E uses unique emails on the isolated `*_test` database;
   no E2E truncate framework
-- EPIC-003 F-004: one CI worker is the formalized contract, not a
-  new defect
+- EPIC-003 F-004: E2E isolation exists (`AUTH_E2E_RUNTIME` on
+  `pnpm test:e2e:start`). Production Better Auth rate limits are unchanged.
+  Vercel ignores the marker. Canonical CI remains `pnpm dev`. After isolation,
+  `next start` was 63 passed / 5 failed of 68 — remaining failures are not
+  the auth-burst pattern. Historical unisolated `next start` results remain
+  in `docs/release/production-validation.md`.
 - EPIC-003 F-002: full Google consent/callback is not automated in CI
 
 - Create `freelanceos_test` (or another database whose name ends in
@@ -1891,8 +1901,10 @@ production-like build
 Implemented Foundation CI (EPIC-005) uses GitHub Actions
 `.github/workflows/quality.yml`. The style gate is `pnpm lint`
 (G-006: no `format:check`). Playwright E2E runs in the same
-workflow with `pnpm dev` and one worker. The exact production E2E
-environment and future parallelism remain open (TD-008 / TD-009).
+workflow with `pnpm dev` and one worker.
+Production-like E2E is `pnpm test:e2e:start` (`pnpm start` after
+`pnpm build`, `AUTH_E2E_RUNTIME=true`). Production rate limits are
+unchanged. That path is not fully green (see release-gate-resolution §12).
 
 ------------------------------------------------------------------------
 

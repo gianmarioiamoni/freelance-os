@@ -1,6 +1,6 @@
 # FreelanceOS — System Architecture
 
-**Status:** Architecture Baseline — Authentication, workspace, testing/CI, UI foundation, client management, contract management, time tracking, analytics/dashboard, reporting, alert evaluation with in-app notification center, and MVP Integration COMPLETE / CLOSED (EPIC-003, EPIC-004, EPIC-005, EPIC-006, EPIC-101, EPIC-102, EPIC-103, EPIC-104, EPIC-105, EPIC-106, MVP-INTEGRATION). MVP QA Gate PASS WITH FINDINGS. Documentation Gate COMPLETE. UX Gate PASS WITH FINDINGS. UX Polish COMPLETE. EPIC-107 Public Landing COMPLETE (P107-05 Engineering Review PASS WITH FINDINGS; P107-06 production-like validation PASS WITH FINDINGS; epic certification RELEASE BLOCKED). MASTER_PLAN §34 revalidated on `81a22dd` — RELEASE BLOCKED (`docs/release/production-validation.md`). Public `/` landing; authenticated Dashboard at `/dashboard`. Production readiness: NO.  
+**Status:** Architecture Baseline — Authentication, workspace, testing/CI, UI foundation, client management, contract management, time tracking, analytics/dashboard, reporting, alert evaluation with in-app notification center, and MVP Integration COMPLETE / CLOSED (EPIC-003, EPIC-004, EPIC-005, EPIC-006, EPIC-101, EPIC-102, EPIC-103, EPIC-104, EPIC-105, EPIC-106, MVP-INTEGRATION). MVP QA Gate PASS WITH FINDINGS. Documentation Gate COMPLETE. UX Gate PASS WITH FINDINGS. UX Polish COMPLETE. EPIC-107 Public Landing COMPLETE. MASTER_PLAN §34 last executed — RELEASE BLOCKED (`docs/release/production-validation.md`). D-001 Vercel, D-002 Google OAuth, D-003 Resend Free, and D-004 E2E isolation are recorded; hosted production URL is not invented. Public `/` landing; authenticated Dashboard at `/dashboard`. Production readiness: NO.  
 **Scope:** MVP  
 **Architectural style:** Modular Monolith  
 **Primary runtime:** Next.js / TypeScript  
@@ -779,15 +779,15 @@ Better Auth 1.7.4 is the pinned authentication adapter. Persistence, a server-on
 
 Password recovery uses Better Auth's `requestPasswordReset` / `resetPassword` API and the existing `verification` table (`reset-password:${token}`). Recovery tokens expire after the library default of one hour and are consumed on use. `emailAndPassword.revokeSessionsOnPasswordReset` is enabled, so a successful reset deletes the user's Better Auth sessions. Public recovery pages are `/forgot-password` and `/reset-password`. Authenticated visitors are redirected away from `/forgot-password` but may remain on `/reset-password` so a valid token can be used.
 
-Email delivery is an Infrastructure boundary (`sendPasswordResetEmail`). No production email provider is selected. `AUTH_EMAIL_DELIVERY` selects `development` (acknowledge only), `test` (in-process capture for automated tests), or `production` (warn that no provider is configured and do not send). Reset tokens, reset URLs, passwords, and session tokens are never written to application logs. This is not production email delivery.
+Email delivery is an Infrastructure boundary (`sendPasswordResetEmail`). `AUTH_EMAIL_DELIVERY` selects `development` (acknowledge only), `test` (in-process capture for automated tests), or `production` (Resend Free). Production send requires `RESEND_API_KEY` and `AUTH_EMAIL_FROM`. If either is missing, production mode warns and does not send. The production sender domain is an external Resend configuration; it is not frozen in the repository. Reset tokens, reset URLs, passwords, and session tokens are never written to application logs.
 
-Google OAuth uses `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`. The provider is registered only when both values are present. The callback is Better Auth's catch-all handler at `/api/auth/callback/google`, derived from `BETTER_AUTH_URL` and the default `/api/auth` base path. Client code never receives the client secret.
+Google OAuth remains in the MVP release. It uses `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`. The provider is registered only when both values are present. The callback is Better Auth's catch-all handler at `/api/auth/callback/google`, derived from `BETTER_AUTH_URL` and the default `/api/auth` base path. Production `BETTER_AUTH_URL` is the Vercel origin once that hostname exists; the repository does not invent it. Client code never receives the client secret.
 
 Account linking uses Better Auth 1.7.4 defaults. Implicit linking stays enabled, but the library requires the existing local user to have `emailVerified: true` before linking a Google identity to an email/password user. Phase 2 registration does not verify email, so an existing unverified email/password account is not silently merged with a later Google sign-in for the same email. FreelanceOS does not override that library security default.
 
 Protected application routes live in the `(app)` route group, including `/dashboard`. The authenticated layout reads the Better Auth server session and the server-resolved workspace membership. Unauthenticated requests to those routes redirect to `/sign-in`. Unauthenticated `/` is public and does not redirect to `/sign-in`. Authenticated visitors to `/` never see the landing: they follow `getWorkspaceResolutionPath` to `/dashboard`, `/onboarding`, or `/workspace-unavailable`. Authenticated visitors with no membership are sent to `/onboarding`. Authenticated visitors with exactly one membership enter `(app)`. Authenticated visitors with more than one membership are sent to `/workspace-unavailable`. Authenticated visitors to `/sign-in`, `/sign-up`, and `/forgot-password` follow that same workspace resolution. `/reset-password` remains reachable while authenticated so a recovery token can be completed. Sign-in, sign-up, and Google `callbackURL` use `DEFAULT_AUTHENTICATED_PATH` (`/dashboard`). Sign-out uses `router.refresh()` then `router.push("/")`. Password-reset success remains `/sign-in`.
 
-Authentication integration tests run against the isolated PostgreSQL test database. Deterministic Playwright coverage exercises email/password, protected routes, logout, and password recovery. CI applies the migration chain and runs those suites without Google credentials or a production email provider. Playwright CI uses the Next.js development server so Better Auth production rate limits do not make auth journeys flaky. Full Google consent/callback is a documented non-CI limitation.
+Authentication integration tests run against the isolated PostgreSQL test database. Deterministic Playwright coverage exercises email/password, protected routes, logout, and password recovery. CI applies the migration chain and runs those suites without Google credentials or a production email provider. Canonical Playwright CI starts `pnpm dev`. Production-like E2E is `pnpm build` then `E2E_WEB_SERVER=start` / `pnpm test:e2e:start`, which injects `AUTH_E2E_RUNTIME=true` so Better Auth uses non-production rate-limit defaults in that process only. The marker is ignored when `VERCEL=1` or `VERCEL_ENV=production`. Production Better Auth rate-limit defaults are unchanged. Residual `next start` failures after rate-limit isolation are documented in `docs/release/release-gate-resolution.md` §12. Full Google consent/callback is a documented non-CI limitation.
 
 EPIC-005 does not change this runtime architecture. Playwright E2E requires `TEST_DATABASE_URL`, refuses `freelance_os`, and injects the isolated `*_test` URL only into the E2E process. An existing `pnpm dev` server is not reused. Review: `docs/epics/EPIC-005/engineering-review.md`.
 
@@ -1395,23 +1395,31 @@ Do not use E2E tests to replace unit tests for deterministic business rules.
 
 # 27. Deployment Architecture
 
-Initial target:
+MVP production target (D-001): **Vercel**.
 
 ```text
                     Internet
                        │
                        ▼
-                  Vercel / Web
+                     Vercel
                        │
                  Next.js app
                        │
              ┌─────────┴─────────┐
              ▼                   ▼
-        PostgreSQL          External services
-                              (future)
+        PostgreSQL            Resend
+                           (password reset)
 ```
 
-The exact hosting provider for PostgreSQL is an implementation/deployment decision to be finalized during Foundation.
+Recorded Vercel configuration (`vercel.json`):
+
+- framework: Next.js
+- install: `pnpm install --frozen-lockfile`
+- build: `prisma generate`, `prisma migrate deploy`, then `pnpm build`
+
+Local production-like runtime remains `pnpm build` then `pnpm start`. Hosted deployment requires a Vercel project, production environment variables, and a hosted PostgreSQL `DATABASE_URL`. Those are external. This repository does not invent a production hostname.
+
+The exact hosting provider for PostgreSQL remains deferred.
 
 Candidate managed PostgreSQL providers include:
 
@@ -1441,16 +1449,20 @@ Examples:
 
 ```text
 DATABASE_URL
-AUTH_SECRET
+TEST_DATABASE_URL
+BETTER_AUTH_SECRET
+BETTER_AUTH_URL
 GOOGLE_CLIENT_ID
 GOOGLE_CLIENT_SECRET
-EMAIL_PROVIDER_KEY
-AI_PROVIDER_KEY
+AUTH_EMAIL_DELIVERY
+RESEND_API_KEY
+AUTH_EMAIL_FROM
+AUTH_E2E_RUNTIME
 ```
 
 Only the secrets required by the current release should exist.
 
-AI credentials should not be introduced into MVP environments if AI is not enabled.
+`AUTH_E2E_RUNTIME` is Playwright-only and must never be set on Vercel. AI credentials should not be introduced into MVP environments if AI is not enabled.
 
 ---
 
@@ -1576,8 +1588,8 @@ ADRs should record:
 | Unit testing | Vitest 4.1.11 |
 | E2E testing | Playwright 1.63.0 |
 | Package manager | pnpm 10.22.0 |
-| Deployment | Vercel candidate |
-| Email | Delivery boundary implemented for password recovery; production provider TBD |
+| Deployment | Vercel |
+| Email | Resend Free for password-reset delivery |
 | AI | External LLM provider, future release |
 
 Foundation pins currently in use: Next.js 15.5.25, React 19.1.0, TypeScript 5.9.3, Prisma 6.19.3, Better Auth 1.7.4, PostgreSQL 17.
@@ -1655,8 +1667,8 @@ The architecture baseline is accepted when:
 The following are intentionally not frozen yet:
 
 - exact PostgreSQL hosting provider;
-- exact email provider;
-- exact deployment configuration;
+- production hostname / Vercel project;
+- verified Resend sending domain;
 - database schema/index design;
 - audit-log implementation;
 - holiday/vacation architecture;
