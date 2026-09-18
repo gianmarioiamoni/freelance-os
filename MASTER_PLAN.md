@@ -4,7 +4,7 @@
 **Document:** `MASTER_PLAN.md`\
 **Product:** FreelanceOS\
 **Canonical format:** Markdown\
-**Current phase:** UX Polish COMPLETE → Production Validation (§34)
+**Current phase:** EPIC-107 Public Landing PLANNING COMPLETE → implementation (`docs/epics/EPIC-107/epic-plan.md`). Production Validation (§34) DEFERRED.
 
 ------------------------------------------------------------------------
 
@@ -135,8 +135,9 @@ context is recovered from repository documentation.
 ## Overall
 
 ``` text
-STATUS: UX Polish COMPLETE
-NEXT: Production Validation (§34)
+STATUS: UX Polish COMPLETE; EPIC-107 Public Landing PLANNING COMPLETE
+NEXT: EPIC-107 implementation (P107-01)
+Production Validation (§34): DEFERRED until EPIC-107 and its validation are complete
 ```
 
 ## Completed planning artifacts
@@ -170,6 +171,7 @@ Time tracking: IMPLEMENTED — see docs/epics/EPIC-103/engineering-review.md
 Analytics / dashboard: IMPLEMENTED — see docs/epics/EPIC-104/engineering-review.md
 Reporting: IMPLEMENTED — see docs/epics/EPIC-105/engineering-review.md
 Alerts & notifications: IMPLEMENTED — see docs/epics/EPIC-106/engineering-review.md
+Public landing: PLANNING COMPLETE — see docs/epics/EPIC-107/epic-plan.md
 ```
 
 EPIC-104 completed the shared analytics layer and the authenticated
@@ -271,7 +273,7 @@ Status: COMPLETE
 Verdict: PASS WITH FINDINGS
 Evidence: `docs/ux/ux-review.md`
 Blocking findings: NONE
-Next: UX Polish COMPLETE — Production Validation (§34)
+Next: UX Polish COMPLETE — EPIC-107 Public Landing PLANNING COMPLETE; Production Validation (§34) DEFERRED
 
 UX Polish — after §33
 Status: COMPLETE
@@ -1012,7 +1014,7 @@ R0-E04 Workspace
 **Release gate (QA):** 5 pass / 1 flaky failure (FINDING-QA-001); focused PASS; isolated 3/3 PASS  
 **UX Gate:** COMPLETE — PASS WITH FINDINGS (`docs/ux/ux-review.md`). Blocking findings: NONE.  
 **UX Polish:** COMPLETE — `docs/ux/ux-review.md` §18.  
-**Next:** Production Validation (§34). Open/non-blocking findings remain and are carried forward.
+**Next:** EPIC-107 Public Landing (`docs/epics/EPIC-107/epic-plan.md`). Production Validation (§34) is DEFERRED until that Epic and its validation are complete. Open/non-blocking findings remain and are carried forward.
 
 After individual MVP Epics are complete, perform an explicit integration
 phase.
@@ -1046,6 +1048,35 @@ Reports
 This is not a new feature Epic.
 
 It is the integration and validation step required before release gates.
+
+------------------------------------------------------------------------
+
+# 17A. R1-E07 --- Public Landing
+
+**Status:** PLANNING COMPLETE — IMPLEMENTATION NOT STARTED  
+**Plan:** `docs/epics/EPIC-107/epic-plan.md`  
+**Identifier:** EPIC-107 / R1-E07  
+**HEAD at planning:** `791c879`  
+**Production Validation:** DEFERRED until this Epic and its validation are complete
+
+Discovery after UX Polish: unauthenticated `/` redirects to `/sign-in`. There is no public landing and no `/dashboard` route. The authenticated dashboard lives at `/`.
+
+This is a dedicated MVP product-surface Epic (public landing) plus authenticated route migration (`/` → `/dashboard`). It is not a Documentation, UX, or Production Validation gate.
+
+## Objective
+
+Public `/` landing with Sign Up / Sign In entry points. Authenticated dashboard at `/dashboard`. Authenticated `/` redirects to `/dashboard` (or workspace-gate). Sign-out lands on `/`. Wordmark-only contained inverted treatment. No new brand asset. No site-wide dark mode. No authenticated-app restyle.
+
+## Dependencies
+
+``` text
+Authentication (EPIC-003)
+Workspace (EPIC-004)
+UI Foundation (EPIC-006)
+Analytics & Dashboard (EPIC-104)
+MVP Integration COMPLETE
+UX Polish COMPLETE
+```
 
 ------------------------------------------------------------------------
 
@@ -1434,9 +1465,10 @@ isolated.
 18. Documentation synchronization
 19. UX Review
 20. UX Polish
-21. Production Validation
-22. Production Certification
-23. Release
+21. Public Landing (EPIC-107 / R1-E07) — inserted after UX Polish; required before Production Validation
+22. Production Validation
+23. Production Certification
+24. Release
 
 This order minimizes downstream rework.
 
@@ -1574,6 +1606,8 @@ FINDING-QA-002 remains OPEN.
 ------------------------------------------------------------------------
 
 # 34. Production Validation Gate
+
+**Status:** NOT STARTED — DEFERRED until EPIC-107 Public Landing and its validation are complete. Do not execute this gate in the landing planning or implementation chats.
 
 Validate the exact build that will be deployed.
 
@@ -1928,6 +1962,7 @@ EPIC-103 — Time Tracking
 EPIC-104 — Analytics & Dashboard
 EPIC-105 — Reporting
 EPIC-106 — Alerts & Notifications
+EPIC-107 — Public Landing
 ```
 
 Release 2+ identifiers will be assigned when those releases enter active
@@ -2049,16 +2084,21 @@ The exact parallelization will be determined during each Epic plan.
 UX Polish is complete. Evidence: `docs/ux/ux-review.md` §18. Blocking
 findings: NONE. Production readiness: NO.
 
+EPIC-107 Public Landing planning is complete. Evidence:
+`docs/epics/EPIC-107/epic-plan.md`. Production Validation (§34) is
+DEFERRED until EPIC-107 implementation and its validation are complete.
+
 Next actions:
 
 ``` text
 1. Open a new Cursor chat
-2. Execute Production Validation — MASTER_PLAN.md §34
+2. Execute P107-01 — feat(app): move dashboard to /dashboard
+   (docs/epics/EPIC-107/epic-plan.md §20)
 ```
 
-Do not start Production Certification in the Validation chat.
-Open/non-blocking findings remain and are carried forward
-(FINDING-UX-004, FINDING-QA-002, FINDING-INT-001/002/003,
+Do not start Production Validation or Production Certification in the
+P107 implementation chats. Open/non-blocking findings remain and are
+carried forward (FINDING-UX-004, FINDING-QA-002, FINDING-INT-001/002/003,
 FINDING-QA-001, F-104-007).
 
 This follows the methodology's rule that each Phase gets a focused
@@ -2149,10 +2189,13 @@ last_completed:
     - FINDING-UX-009 CLOSED
 
 next:
-  phase: Production Validation
-  gate: Production Validation
-  reference: MASTER_PLAN.md §34
-  objective: Validate the exact build that will be deployed.
+  phase: EPIC-107 Public Landing implementation
+  epic: EPIC-107
+  gate: none — implementation P107-01
+  reference: docs/epics/EPIC-107/epic-plan.md
+  production_validation: deferred
+  production_validation_reference: MASTER_PLAN.md §34
+  objective: Move authenticated dashboard to /dashboard; then add public landing at /.
   open_non_blocking_findings:
     - FINDING-INT-001
     - FINDING-INT-002
