@@ -5,13 +5,9 @@ import {
   SIGN_UP_PATH,
 } from "@/application/auth/route-access";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { LANDING_CAPABILITIES } from "@/features/landing/capabilities";
+import { LANDING_HOW_IT_WORKS } from "@/features/landing/how-it-works";
+import { LandingCapabilityCard } from "@/features/landing/LandingCapabilityCard";
 import { Wordmark } from "@/features/landing/Wordmark";
 import Link from "next/link";
 import type { JSX } from "react";
@@ -50,6 +46,29 @@ export function LandingPage(): JSX.Element {
             A workspace for freelance operations: clients, contracts, time
             tracking, analytics, reports, and alerts.
           </p>
+          <p className="text-sm text-muted-foreground">
+            Keep clients, contracts, time and operational insight in one
+            workspace.
+          </p>
+        </section>
+        <section
+          className="mt-16 space-y-6"
+          aria-labelledby="landing-how-it-works"
+        >
+          <h2 id="landing-how-it-works">How it works</h2>
+          <ol className="grid list-none gap-6 p-0 sm:grid-cols-3">
+            {LANDING_HOW_IT_WORKS.map((item) => (
+              <li key={item.step} className="space-y-1">
+                <p className="text-sm font-semibold tracking-tight text-muted-foreground">
+                  {item.step}
+                </p>
+                <h3>{item.title}</h3>
+                <p className="text-sm text-muted-foreground">
+                  {item.description}
+                </p>
+              </li>
+            ))}
+          </ol>
         </section>
         <section
           className="mt-16 space-y-6"
@@ -58,14 +77,10 @@ export function LandingPage(): JSX.Element {
           <h2 id="landing-capabilities">Capabilities</h2>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {LANDING_CAPABILITIES.map((capability) => (
-              <Card key={capability.title} size="sm">
-                <CardHeader>
-                  <CardTitle>
-                    <h3>{capability.title}</h3>
-                  </CardTitle>
-                  <CardDescription>{capability.description}</CardDescription>
-                </CardHeader>
-              </Card>
+              <LandingCapabilityCard
+                key={capability.title}
+                capability={capability}
+              />
             ))}
           </div>
         </section>

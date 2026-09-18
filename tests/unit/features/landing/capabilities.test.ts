@@ -13,5 +13,8 @@ describe("landing capabilities", () => {
       "Reports",
       "Alerts",
     ]);
+    expect(
+      LANDING_CAPABILITIES.every((capability) => capability.detail.length > 0),
+    ).toBe(true);
   });
 });
