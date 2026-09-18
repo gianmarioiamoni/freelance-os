@@ -4,7 +4,7 @@
 **Document:** `MASTER_PLAN.md`\
 **Product:** FreelanceOS\
 **Canonical format:** Markdown\
-**Current phase:** EPIC-107 implementation, Engineering Review, production-like validation, and epic certification COMPLETE. MASTER_PLAN §34 revalidated on `81a22dd` — RELEASE BLOCKED (`docs/release/production-validation.md`). Next: §35 Production Certification. Production readiness: NO.
+**Current phase:** EPIC-107 implementation, Engineering Review, production-like validation, and epic certification COMPLETE. MASTER_PLAN §34 revalidated — RELEASE BLOCKED (`docs/release/production-validation.md`). Remaining blockers classified (`docs/release/release-gate-resolution.md`). Next: Product Owner decisions D-001–D-004; §35 Production Certification DEFERRED. Production readiness: NO.
 
 ------------------------------------------------------------------------
 
@@ -136,8 +136,9 @@ context is recovered from repository documentation.
 
 ``` text
 STATUS: UX Polish COMPLETE; EPIC-107 Public Landing COMPLETE through P107-06 and epic certification; MASTER_PLAN §34 executed — RELEASE BLOCKED
-NEXT: §35 Production Certification
+NEXT: Product Owner decisions for remaining §34 gates (`docs/release/release-gate-resolution.md`); §35 DEFERRED
 Production Validation (§34): EXECUTED — RELEASE BLOCKED — docs/release/production-validation.md
+Release gate resolution: docs/release/release-gate-resolution.md
 Production readiness: NO
 ```
 
@@ -274,7 +275,7 @@ Status: COMPLETE
 Verdict: PASS WITH FINDINGS
 Evidence: `docs/ux/ux-review.md`
 Blocking findings: NONE
-Next: EPIC-107 review/validation/certification COMPLETE; §34 EXECUTED — RELEASE BLOCKED; next §35 Production Certification
+Next: EPIC-107 review/validation/certification COMPLETE; §34 EXECUTED — RELEASE BLOCKED; remaining gates classified (`docs/release/release-gate-resolution.md`); §35 DEFERRED
 
 UX Polish — after §33
 Status: COMPLETE
@@ -1017,7 +1018,7 @@ R0-E04 Workspace
 **Release gate (QA):** 5 pass / 1 flaky failure (FINDING-QA-001); focused PASS; isolated 3/3 PASS  
 **UX Gate:** COMPLETE — PASS WITH FINDINGS (`docs/ux/ux-review.md`). Blocking findings: NONE.  
 **UX Polish:** COMPLETE — `docs/ux/ux-review.md` §18.  
-**Next:** EPIC-107 COMPLETE through epic certification (RELEASE BLOCKED). MASTER_PLAN §34 EXECUTED — RELEASE BLOCKED (`docs/release/production-validation.md`). Next: §35. Production readiness: NO.
+**Next:** EPIC-107 COMPLETE through epic certification (RELEASE BLOCKED). MASTER_PLAN §34 EXECUTED — RELEASE BLOCKED (`docs/release/production-validation.md`). Remaining blockers classified (`docs/release/release-gate-resolution.md`). §35 DEFERRED. Production readiness: NO.
 
 After individual MVP Epics are complete, perform an explicit integration
 phase.
@@ -1063,7 +1064,7 @@ It is the integration and validation step required before release gates.
 **HEAD at P107-03:** `2ee06fb`  
 **Engineering Review:** COMPLETE — PASS WITH FINDINGS (P107-05)  
 **Epic production-like validation:** COMPLETE — PASS WITH FINDINGS (P107-06)  
-**MASTER_PLAN §34:** EXECUTED — RELEASE BLOCKED — `docs/release/production-validation.md`  
+**MASTER_PLAN §34:** EXECUTED — RELEASE BLOCKED — `docs/release/production-validation.md`. Remaining blockers classified — `docs/release/release-gate-resolution.md`. §35 DEFERRED.  
 **Production readiness:** NO
 
 At planning: unauthenticated `/` redirected to `/sign-in`. There was no public landing and no `/dashboard` route. The authenticated dashboard lived at `/`.
@@ -1616,7 +1617,7 @@ FINDING-QA-002 remains OPEN.
 
 # 34. Production Validation Gate
 
-**Status:** EXECUTED — **RELEASE BLOCKED**. Evidence: `docs/release/production-validation.md`. Candidate: `81a22dd` (2026-09-18 revalidation; previous `a0ad65f`). Local `pnpm build` + `pnpm start`. No hosted target. Product Owner approval is a §35 field and is NOT PROVIDED.
+**Status:** EXECUTED — **RELEASE BLOCKED**. Evidence: `docs/release/production-validation.md`. Gate classification: `docs/release/release-gate-resolution.md`. Candidate: `81a22dd` (2026-09-18 revalidation; previous `a0ad65f`). Local `pnpm build` + `pnpm start`. No hosted target. Product Owner approval is a §35 field and is NOT PROVIDED. §35 DEFERRED.
 
 Validate the exact build that will be deployed.
 
@@ -2092,8 +2093,9 @@ The exact parallelization will be determined during each Epic plan.
 
 MASTER_PLAN §34 Production Validation has been revalidated on candidate
 `81a22dd`. Evidence: `docs/release/production-validation.md`. Gate
-outcome: **RELEASE BLOCKED**. Production readiness: NO. Product Owner
-approval: **NOT PROVIDED**.
+outcome: **RELEASE BLOCKED**. Remaining blockers classified:
+`docs/release/release-gate-resolution.md`. Production readiness: NO.
+Product Owner approval: **NOT PROVIDED**.
 
 EPIC-107 Engineering Review, production-like validation, and epic
 certification already exist and are not re-opened here.
@@ -2101,15 +2103,17 @@ certification already exist and are not re-opened here.
 Next actions:
 
 ``` text
-1. Open a new Cursor chat
-2. Execute MASTER_PLAN §35 Production Certification against
-   docs/release/production-validation.md
+1. Product Owner decisions D-001–D-004
+   (docs/release/release-gate-resolution.md §8)
+2. Environment / external dependencies only after those decisions
+3. MASTER_PLAN §35 Production Certification remains DEFERRED
 ```
 
 §35 cannot grant release while §34 is RELEASE BLOCKED and Product Owner
-approval is absent. Open/non-blocking findings remain and are carried
-forward (FINDING-UX-004, FINDING-QA-002, FINDING-INT-001/002/003,
-FINDING-QA-001, F-104-007, F-104-010 / 011 / 012).
+approval is absent. Do not run §35 in the next chat. Open/non-blocking
+findings remain and are carried forward (FINDING-UX-004, FINDING-QA-002,
+FINDING-INT-001/002/003, FINDING-QA-001, F-104-007, F-104-010 / 011 /
+012).
 
 This follows the methodology's rule that each Phase gets a focused
 Cursor chat, a defined commit expectation, review, approval, and then
@@ -2202,15 +2206,15 @@ last_completed:
     - FINDING-UX-009 CLOSED
 
 next:
-  phase: Production Certification
+  phase: Release Gate Resolution
   epic: none
-  gate: MASTER_PLAN §35
-  reference: docs/release/production-validation.md
+  gate: MASTER_PLAN §34 remaining items
+  reference: docs/release/release-gate-resolution.md
   production_validation: RELEASE BLOCKED
   production_validation_reference: MASTER_PLAN.md §34
   production_readiness: false
   product_owner_approval: NOT PROVIDED
-  objective: Run §35 Production Certification. Do not grant release without Product Owner approval and remaining §34 mandatory open items.
+  objective: Resolve Product Owner decisions D-001–D-004 and environment dependencies. Do not run §35. Do not grant release.
   open_non_blocking_findings:
     - FINDING-INT-001
     - FINDING-INT-002
