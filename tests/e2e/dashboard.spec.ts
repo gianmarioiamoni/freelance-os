@@ -145,7 +145,13 @@ test.describe("Dashboard Analytics E2E Journey", () => {
     // 13. Test sign-out behavior
     await page.getByRole("button", { name: "Sign out" }).click();
     await expect(page).toHaveURL("/");
-    
+    await expect(
+      page.getByRole("heading", { level: 1, name: "FreelanceOS" }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("navigation", { name: "Application" }),
+    ).toHaveCount(0);
+
     // Verify cannot access dashboard without authentication
     await page.goto("/dashboard");
     await expect(page).toHaveURL(/\/sign-in$/);

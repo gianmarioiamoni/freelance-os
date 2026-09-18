@@ -46,9 +46,14 @@ test("should show authenticated shell identity, navigation, and skip link", asyn
   await expect(applicationNav).toBeVisible();
 
   for (const name of APPLICATION_NAV_LINKS) {
-    await expect(applicationNav.getByRole("link", { name })).toBeVisible();
+    const navLink = applicationNav.getByRole("link", { name });
+    await expect(navLink).toBeVisible();
+    expect(await navLink.getAttribute("href")).not.toBe("/");
   }
 
+  await expect(
+    applicationNav.getByRole("link", { name: "Dashboard" }),
+  ).toHaveAttribute("href", "/dashboard");
   await expect(
     applicationNav.getByRole("link", { name: "Dashboard" }),
   ).toHaveAttribute("aria-current", "page");

@@ -52,6 +52,11 @@ test("should render the public landing for unauthenticated visitors", async ({
     await expect(page.getByRole("heading", { name })).toBeVisible();
     await expect(page.getByText(`Read more about ${name}`)).toBeVisible();
   }
+
+  await expect(page).not.toHaveURL(/\/sign-in$/);
+  await expect(page.getByRole("button", { name: "Sign out" })).toHaveCount(0);
+  await expect(page.getByText("Monthly Summary", { exact: true })).toHaveCount(0);
+  await expect(page.getByText("No time entries yet")).toHaveCount(0);
 });
 
 test("should send landing CTAs to sign-in and sign-up", async ({ page }) => {
@@ -81,8 +86,29 @@ test("should redirect authenticated workspace users from the landing to the dash
     page.getByRole("heading", { level: 1, name: "Dashboard" }),
   ).toBeVisible();
   await expect(
-    page.getByRole("navigation", { name: "Application" }),
+    page.getByRole("heading", { level: 1, name: "FreelanceOS" }),
+  ).toHaveCount(0);
+  await expect(
+    page.getByRole("heading", { name: "How it works" }),
+  ).toHaveCount(0);
+  await expect(
+    page.getByRole("heading", { name: "Capabilities" }),
+  ).toHaveCount(0);
+
+  const applicationNav = page.getByRole("navigation", { name: "Application" });
+  await expect(applicationNav).toBeVisible();
+  await expect(page.getByText("Landing Workspace")).toBeVisible();
+  await expect(
+    applicationNav.getByRole("link", { name: "Dashboard" }),
+  ).toHaveAttribute("href", "/dashboard");
+
+  await page.goto("/dashboard");
+  await expect(page).toHaveURL("/dashboard");
+  await expect(
+    page.getByRole("heading", { level: 1, name: "Dashboard" }),
   ).toBeVisible();
+  await expect(applicationNav).toBeVisible();
+  await expect(page.getByText("Landing Workspace")).toBeVisible();
 });
 
 test("should keep the landing usable at 390px", async ({ page }) => {

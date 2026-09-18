@@ -37,6 +37,7 @@ test("should complete first-workspace onboarding into the authenticated applicat
   ).toBeVisible();
 
   await page.goto("/?workspaceId=00000000-0000-0000-0000-000000000001");
+  await expect(page).toHaveURL("/dashboard");
   await expect(
     page.getByRole("heading", { level: 1, name: "Dashboard" }),
   ).toBeVisible();

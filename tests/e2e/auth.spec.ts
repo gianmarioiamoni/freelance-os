@@ -1,6 +1,10 @@
 // tests/e2e/auth.spec.ts
 import { expect, test } from "@playwright/test";
 
+import {
+  registerAndCreateFirstWorkspace,
+  uniqueE2EEmail,
+} from "./helpers/first-workspace";
 import { findPasswordResetTokenForEmail } from "./helpers/password-reset";
 
 function uniqueEmail(): string {
@@ -75,6 +79,47 @@ test("should register, stay authenticated, and sign out", async ({ page }) => {
   await expect(
     page.getByRole("heading", { name: "Create your workspace" }),
   ).toBeVisible();
+});
+
+test("should send a signed-in workspace user to the dashboard", async ({
+  page,
+}) => {
+  const email = uniqueE2EEmail("e2e-auth-dashboard");
+  const password = "ValidPass1!";
+
+  await registerAndCreateFirstWorkspace(page, {
+    email,
+    name: "Dashboard Auth User",
+    workspaceName: "Dashboard Auth Workspace",
+  });
+  await expect(page).toHaveURL("/dashboard");
+
+  await page.getByRole("button", { name: "Sign out" }).click();
+  await expect(page).toHaveURL("/");
+  await expect(
+    page.getByRole("heading", { level: 1, name: "FreelanceOS" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("navigation", { name: "Application" }),
+  ).toHaveCount(0);
+
+  await page.goto("/sign-in");
+  await page.getByLabel("Email").fill(email);
+  await page.getByLabel("Password").fill(password);
+  await page.getByRole("button", { name: "Sign in" }).click();
+  await expect(page).toHaveURL("/dashboard");
+  await expect(
+    page.getByRole("heading", { level: 1, name: "Dashboard" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("navigation", { name: "Application" }),
+  ).toBeVisible();
+  await expect(page.getByText("Dashboard Auth Workspace")).toBeVisible();
+
+  await page.goto("/sign-in");
+  await expect(page).toHaveURL("/dashboard");
+  await page.goto("/sign-up");
+  await expect(page).toHaveURL("/dashboard");
 });
 
 test("should recover a password from the email/password flow", async ({
