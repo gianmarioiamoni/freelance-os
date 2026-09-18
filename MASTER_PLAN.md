@@ -4,7 +4,7 @@
 **Document:** `MASTER_PLAN.md`\
 **Product:** FreelanceOS\
 **Canonical format:** Markdown\
-**Current phase:** EPIC-107 Public Landing PLANNING COMPLETE → implementation (`docs/epics/EPIC-107/epic-plan.md`). Production Validation (§34) DEFERRED.
+**Current phase:** EPIC-107 Public Landing documentation COMPLETE (P107-04). Next: P107-05 Engineering Review (`docs/epics/EPIC-107/epic-plan.md`). Production Validation (§34) DEFERRED. Production readiness: NO.
 
 ------------------------------------------------------------------------
 
@@ -135,9 +135,10 @@ context is recovered from repository documentation.
 ## Overall
 
 ``` text
-STATUS: UX Polish COMPLETE; EPIC-107 Public Landing PLANNING COMPLETE
-NEXT: EPIC-107 implementation (P107-01)
+STATUS: UX Polish COMPLETE; EPIC-107 Public Landing implementation, E2E, and documentation COMPLETE (P107-01 … P107-04); Engineering Review NOT STARTED
+NEXT: P107-05 Engineering Review
 Production Validation (§34): DEFERRED until EPIC-107 and its validation are complete
+Production readiness: NO
 ```
 
 ## Completed planning artifacts
@@ -171,7 +172,7 @@ Time tracking: IMPLEMENTED — see docs/epics/EPIC-103/engineering-review.md
 Analytics / dashboard: IMPLEMENTED — see docs/epics/EPIC-104/engineering-review.md
 Reporting: IMPLEMENTED — see docs/epics/EPIC-105/engineering-review.md
 Alerts & notifications: IMPLEMENTED — see docs/epics/EPIC-106/engineering-review.md
-Public landing: PLANNING COMPLETE — see docs/epics/EPIC-107/epic-plan.md
+Public landing: IMPLEMENTED — documentation COMPLETE (P107-04); Engineering Review NOT STARTED — see docs/epics/EPIC-107/epic-plan.md
 ```
 
 EPIC-104 completed the shared analytics layer and the authenticated
@@ -273,7 +274,7 @@ Status: COMPLETE
 Verdict: PASS WITH FINDINGS
 Evidence: `docs/ux/ux-review.md`
 Blocking findings: NONE
-Next: UX Polish COMPLETE — EPIC-107 Public Landing PLANNING COMPLETE; Production Validation (§34) DEFERRED
+Next: UX Polish COMPLETE — EPIC-107 Public Landing documentation COMPLETE (P107-04); next P107-05 Engineering Review; Production Validation (§34) DEFERRED
 
 UX Polish — after §33
 Status: COMPLETE
@@ -313,7 +314,8 @@ Present after EPIC-104:
     `src/lib/analytics-periods.ts`
 -   the authenticated dashboard at `/` — a React Server Component that
     replaced the EPIC-006 structural placeholder; no `/dashboard`
-    route exists
+    route existed at EPIC-104 close. EPIC-107 later moved the dashboard
+    to `/dashboard` and made `/` the public landing.
 -   monthly summary, client allocation, and contract utilization
     surfaces with empty and error states
 -   archived-client time included in analytics and labelled
@@ -847,9 +849,10 @@ A normal workday entry should be recordable in less than one minute.
 
 IMPLEMENTED — engineering complete (PASS WITH FINDINGS). Review:
 `docs/epics/EPIC-104/engineering-review.md`. Blocking findings: none.
-Production readiness is not claimed. The dashboard is the
-authenticated default landing route `/`; no `/dashboard` route was
-created. Estimated revenue and current alerts were removed from this
+Production readiness is not claimed. EPIC-104 delivered the dashboard
+as the authenticated default route `/`. EPIC-107 moved it to
+`/dashboard` under the existing `(app)` layout and made `/` the public
+landing. Estimated revenue and current alerts were removed from this
 Epic's scope (see the scope reconciliation below). Weekly aggregation,
 timezone-aware period boundaries, loading skeletons, a custom
 date-range UI, and a measured query-performance baseline are not
@@ -1014,7 +1017,7 @@ R0-E04 Workspace
 **Release gate (QA):** 5 pass / 1 flaky failure (FINDING-QA-001); focused PASS; isolated 3/3 PASS  
 **UX Gate:** COMPLETE — PASS WITH FINDINGS (`docs/ux/ux-review.md`). Blocking findings: NONE.  
 **UX Polish:** COMPLETE — `docs/ux/ux-review.md` §18.  
-**Next:** EPIC-107 Public Landing (`docs/epics/EPIC-107/epic-plan.md`). Production Validation (§34) is DEFERRED until that Epic and its validation are complete. Open/non-blocking findings remain and are carried forward.
+**Next:** EPIC-107 Public Landing Engineering Review (P107-05) (`docs/epics/EPIC-107/epic-plan.md`). Production Validation (§34) is DEFERRED until that Epic and its validation are complete. Open/non-blocking findings remain and are carried forward. Production readiness: NO.
 
 After individual MVP Epics are complete, perform an explicit integration
 phase.
@@ -1053,19 +1056,24 @@ It is the integration and validation step required before release gates.
 
 # 17A. R1-E07 --- Public Landing
 
-**Status:** PLANNING COMPLETE — IMPLEMENTATION NOT STARTED  
+**Status:** DOCUMENTATION COMPLETE (P107-04) — implementation and E2E COMPLETE; Epic OPEN pending Engineering Review  
 **Plan:** `docs/epics/EPIC-107/epic-plan.md`  
 **Identifier:** EPIC-107 / R1-E07  
 **HEAD at planning:** `791c879`  
-**Production Validation:** DEFERRED until this Epic and its validation are complete
+**HEAD at P107-03:** `2ee06fb`  
+**Engineering Review:** NOT STARTED (P107-05)  
+**Production Validation:** DEFERRED until this Epic and its validation are complete  
+**Production readiness:** NO
 
-Discovery after UX Polish: unauthenticated `/` redirects to `/sign-in`. There is no public landing and no `/dashboard` route. The authenticated dashboard lives at `/`.
+At planning: unauthenticated `/` redirected to `/sign-in`. There was no public landing and no `/dashboard` route. The authenticated dashboard lived at `/`.
 
-This is a dedicated MVP product-surface Epic (public landing) plus authenticated route migration (`/` → `/dashboard`). It is not a Documentation, UX, or Production Validation gate.
+Implemented (P107-01 … P107-03): public `/` landing; authenticated dashboard at `/dashboard` under existing `(app)` / AppShell; authenticated `/` never renders the landing (one workspace → `/dashboard`; none → `/onboarding`; ambiguous → `/workspace-unavailable`); sign-out → `/`; unauthenticated `/dashboard` → `/sign-in`; post-auth destination `/dashboard`; reset-password success remains `/sign-in`. Wordmark-only plain `FreelanceOS` text. No brand asset. No site-wide dark mode. No authenticated-app restyle.
+
+This is a dedicated MVP product-surface Epic (public landing) plus authenticated route migration (`/` → `/dashboard`). It is not a Documentation Gate, UX Gate, or Production Validation phase. The Epic is not CLOSED.
 
 ## Objective
 
-Public `/` landing with Sign Up / Sign In entry points. Authenticated dashboard at `/dashboard`. Authenticated `/` redirects to `/dashboard` (or workspace-gate). Sign-out lands on `/`. Wordmark-only contained inverted treatment. No new brand asset. No site-wide dark mode. No authenticated-app restyle.
+Public `/` landing with Sign Up / Sign In entry points. Authenticated dashboard at `/dashboard`. Authenticated `/` redirects to `/dashboard` (or workspace-gate). Sign-out lands on `/`. Wordmark-only plain text. No new brand asset. No site-wide dark mode. No authenticated-app restyle.
 
 ## Dependencies
 
@@ -2084,22 +2092,23 @@ The exact parallelization will be determined during each Epic plan.
 UX Polish is complete. Evidence: `docs/ux/ux-review.md` §18. Blocking
 findings: NONE. Production readiness: NO.
 
-EPIC-107 Public Landing planning is complete. Evidence:
-`docs/epics/EPIC-107/epic-plan.md`. Production Validation (§34) is
-DEFERRED until EPIC-107 implementation and its validation are complete.
+EPIC-107 Public Landing implementation and E2E are complete through
+P107-03. Evidence: `docs/epics/EPIC-107/epic-plan.md`. HEAD at P107-03:
+`2ee06fb`. Production Validation (§34) is DEFERRED until EPIC-107
+Engineering Review and its validation are complete.
 
 Next actions:
 
 ``` text
 1. Open a new Cursor chat
-2. Execute P107-01 — feat(app): move dashboard to /dashboard
+2. Execute P107-05 — docs(landing): EPIC-107 engineering review
    (docs/epics/EPIC-107/epic-plan.md §20)
 ```
 
 Do not start Production Validation or Production Certification in the
-P107 implementation chats. Open/non-blocking findings remain and are
-carried forward (FINDING-UX-004, FINDING-QA-002, FINDING-INT-001/002/003,
-FINDING-QA-001, F-104-007).
+P107 chats. The Epic remains OPEN. Open/non-blocking findings remain and
+are carried forward (FINDING-UX-004, FINDING-QA-002, FINDING-INT-001/002/003,
+FINDING-QA-001, F-104-007, F-104-010 / 011 / 012).
 
 This follows the methodology's rule that each Phase gets a focused
 Cursor chat, a defined commit expectation, review, approval, and then
@@ -2189,13 +2198,14 @@ last_completed:
     - FINDING-UX-009 CLOSED
 
 next:
-  phase: EPIC-107 Public Landing implementation
+  phase: EPIC-107 Public Landing Engineering Review
   epic: EPIC-107
-  gate: none — implementation P107-01
+  gate: none — P107-05 Engineering Review
   reference: docs/epics/EPIC-107/epic-plan.md
   production_validation: deferred
   production_validation_reference: MASTER_PLAN.md §34
-  objective: Move authenticated dashboard to /dashboard; then add public landing at /.
+  production_readiness: false
+  objective: Produce EPIC-107 engineering review. Do not start Production Validation.
   open_non_blocking_findings:
     - FINDING-INT-001
     - FINDING-INT-002

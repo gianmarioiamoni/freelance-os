@@ -1,6 +1,6 @@
 # FreelanceOS --- Testing Strategy
 
-**Status:** Testing and CI foundation implemented — EPIC-005 complete; UI test baseline added by EPIC-006; client coverage added by EPIC-101; contract coverage added by EPIC-102; time-tracking coverage added by EPIC-103; analytics and dashboard coverage added by EPIC-104; reporting coverage added by EPIC-105; alert evaluation and notification center coverage added by EPIC-106; MVP Integration COMPLETE / CLOSED — release-gate cross-domain journey certified; MVP QA Gate PASS WITH FINDINGS; Documentation Gate COMPLETE; UX Gate PASS WITH FINDINGS; UX Polish COMPLETE (`docs/ux/ux-review.md` §18); production readiness NO\
+**Status:** Testing and CI foundation implemented — EPIC-005 complete; UI test baseline added by EPIC-006; client coverage added by EPIC-101; contract coverage added by EPIC-102; time-tracking coverage added by EPIC-103; analytics and dashboard coverage added by EPIC-104; reporting coverage added by EPIC-105; alert evaluation and notification center coverage added by EPIC-106; MVP Integration COMPLETE / CLOSED — release-gate cross-domain journey certified; MVP QA Gate PASS WITH FINDINGS; Documentation Gate COMPLETE; UX Gate PASS WITH FINDINGS; UX Polish COMPLETE (`docs/ux/ux-review.md` §18); EPIC-107 public-root and dashboard-routing E2E added (P107-03: targeted 26/26 PASS, broader 40/40 PASS); production readiness NO\
 **Document:** `docs/testing-strategy.md`\
 **Scope:** Release 0 Foundation + Release 1 MVP\
 **Canonical format:** Markdown
@@ -165,7 +165,9 @@ billable percentage and utilization percentage differ), and PD-104-003
 Dashboard E2E covers the authenticated journey from sign-in to
 analytics display, archived-client behaviour on the dashboard, the
 empty state, responsive layout at 375 / 768 / 1024 / 1440 / 2560 px,
-and that an unauthenticated request to `/` lands on `/sign-in`.
+and that an unauthenticated request to the dashboard lands on
+`/sign-in`. At EPIC-104 that dashboard URL was `/`. EPIC-107 moved it
+to `/dashboard`; unauthenticated `/` is now the public landing.
 
 Accessibility E2E coverage is **partial, and must not be cited as an
 accessibility audit** (F-104-010, open). Genuinely verified: the
@@ -506,6 +508,7 @@ Primary targets:
 ``` text
 Authentication
 Workspace onboarding
+Public landing
 Client creation
 Contract creation
 Time registration
@@ -927,6 +930,27 @@ Evidence: `docs/qa/qa-report.md`. Verdict: PASS WITH FINDINGS. Blocking findings
 | FINDING-QA-001 | OPEN | TEST DEFECT / FLAKY | Release-gate 5 pass / 1 flaky failure |
 | FINDING-QA-002 | OPEN | APPLICATION DEFECT | `getDateRangePeriod` custom-range TZ shift west of UTC |
 | F-104-007 | PRE-EXISTING | APPLICATION | Dashboard `NEXT_REDIRECT` logs; redirects still work |
+
+### Implemented by EPIC-107
+
+EPIC-107 added public-root and dashboard-routing coverage. It does not close inherited findings. FINDING-QA-001 was not reproduced in P107-03; it remains OPEN.
+
+Added / updated by P107-03 (`2ee06fb`):
+
+- E2E — `tests/e2e/landing.spec.ts` (public `/`, CTAs, authenticated `/` → `/dashboard`, 390px, skip link / single `h1`, capability disclosure)
+- E2E — `tests/e2e/auth.spec.ts` (protected `/dashboard` → `/sign-in`; sign-out → `/`; workspace sign-in → `/dashboard`; reset-password success → `/sign-in`)
+- E2E — `tests/e2e/onboarding.spec.ts` (no-workspace `/` → `/onboarding`; unauthenticated `/` remains landing; `/?workspaceId=…` does not grant access)
+- E2E — `tests/e2e/dashboard.spec.ts` and `tests/e2e/app-shell.spec.ts` (`/dashboard` AppShell, Dashboard `href="/dashboard"`, sign-out → landing)
+
+P107-03 evidence:
+
+``` text
+Targeted E2E   26/26 PASS   landing, auth, onboarding, dashboard, app-shell
+Broader E2E    40/40 PASS   alerts, clients, reports, time-tracking,
+                            mvp-integration, dashboard-accessibility, contracts
+```
+
+Ambiguous membership `/` → `/workspace-unavailable` is not a dedicated E2E fixture; it remains covered by workspace-route-access unit tests and authorization-isolation integration tests. Google callback destination is `/dashboard` in `tests/integration/auth/google-oauth.test.ts`; full Google consent is not E2E-automated.
 
 Example:
 
@@ -1397,12 +1421,14 @@ rendered or asserted, because no billing calculation exists yet.
 ### Implemented by EPIC-104
 
 `tests/e2e/dashboard.spec.ts` and
-`tests/e2e/dashboard-accessibility.spec.ts` cover the `/` dashboard,
+`tests/e2e/dashboard-accessibility.spec.ts` cover the `/dashboard`
+surface (moved from `/` by EPIC-107),
 with fixtures built by `tests/e2e/helpers/analytics-fixtures.ts`.
 Verified: monthly totals, billable and non-billable hours, client
 allocation, contract utilization, archived-client labelling, the empty
-state, responsive layout, and the unauthenticated redirect to
-`/sign-in`.
+state, responsive layout, and the unauthenticated redirect from
+`/dashboard` to `/sign-in`. Public `/` is covered by
+`tests/e2e/landing.spec.ts`.
 
 Estimated revenue and alerts are **not** verified because they are not
 implemented: revenue is an explicit EPIC-104 non-goal and alerts

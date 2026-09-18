@@ -1,6 +1,6 @@
 # FreelanceOS — System Architecture
 
-**Status:** Architecture Baseline — Authentication, workspace, testing/CI, UI foundation, client management, contract management, time tracking, analytics/dashboard, reporting, alert evaluation with in-app notification center, and MVP Integration COMPLETE / CLOSED (EPIC-003, EPIC-004, EPIC-005, EPIC-006, EPIC-101, EPIC-102, EPIC-103, EPIC-104, EPIC-105, EPIC-106, MVP-INTEGRATION). MVP QA Gate PASS WITH FINDINGS. Documentation Gate COMPLETE. UX Gate PASS WITH FINDINGS. UX Polish COMPLETE. Production readiness: NO.  
+**Status:** Architecture Baseline — Authentication, workspace, testing/CI, UI foundation, client management, contract management, time tracking, analytics/dashboard, reporting, alert evaluation with in-app notification center, and MVP Integration COMPLETE / CLOSED (EPIC-003, EPIC-004, EPIC-005, EPIC-006, EPIC-101, EPIC-102, EPIC-103, EPIC-104, EPIC-105, EPIC-106, MVP-INTEGRATION). MVP QA Gate PASS WITH FINDINGS. Documentation Gate COMPLETE. UX Gate PASS WITH FINDINGS. UX Polish COMPLETE. EPIC-107 Public Landing implementation and E2E COMPLETE; documentation COMPLETE (P107-04); Engineering Review NOT STARTED. Public `/` landing; authenticated Dashboard at `/dashboard`. Production readiness: NO.  
 **Scope:** MVP  
 **Architectural style:** Modular Monolith  
 **Primary runtime:** Next.js / TypeScript  
@@ -535,12 +535,11 @@ Analytics services
 Domain / persistence
 ```
 
-### Implemented by EPIC-104
+### Implemented by EPIC-104 and moved by EPIC-107
 
-The dashboard is the authenticated default landing route `/`
-(`src/app/(app)/page.tsx`), labelled `Dashboard` in
-`src/lib/navigation.ts`. It replaced the EPIC-006 structural
-placeholder. There is no `/dashboard` route.
+EPIC-104 delivered the authenticated dashboard as a React Server Component at `/` (`src/app/(app)/page.tsx`). EPIC-107 moved it to `/dashboard` (`src/app/(app)/dashboard/page.tsx`) under the existing `(app)` layout. There is no nested `dashboard/layout.tsx`. `(app)/page.tsx` was removed. `/` is the public landing (`src/app/(public)/page.tsx`) and is not inside `(app)`.
+
+The dashboard is labelled `Dashboard` in `src/lib/navigation.ts` (`href: "/dashboard"`).
 
 - It is a **React Server Component** with no client island, which is
   the correct default for a read-only analytics surface.
@@ -558,7 +557,7 @@ placeholder. There is no `/dashboard` route.
   route-level `(app)/loading.tsx` inherited from EPIC-006 — per-section
   skeletons are specified but **not** implemented (F-104-008).
 
-The route is dynamic (`ƒ /` in the build route table) because
+The route is dynamic (`ƒ /dashboard` in the build route table) because
 authentication reads `headers()`. This is intentional and correct for
 an authenticated workspace-scoped surface and must not be changed. The
 page-level `try`/`catch` currently intercepts Next.js control-flow
@@ -566,6 +565,16 @@ signals including `NEXT_REDIRECT`; the redirect still reaches the user
 because `(app)/layout.tsx` performs the same workspace resolution
 outside any handler and wins. Recorded as F-104-007, confirmed and
 non-blocking.
+
+### Public landing (EPIC-107)
+
+`(public)/layout.tsx` is not AppShell. If a session is present it
+`redirect`s through `resolveSessionWorkspace` + `getWorkspaceResolutionPath`
+(one workspace → `/dashboard`; none → `/onboarding`; ambiguous →
+`/workspace-unavailable`). Unauthenticated visitors remain on `/` and
+see the landing: header wordmark plus Sign Up / Sign In, hero, How it
+works, and six capability cards. No `proxy.ts` or `middleware.ts` is
+used.
 
 ---
 
@@ -776,7 +785,7 @@ Google OAuth uses `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`. The provider is
 
 Account linking uses Better Auth 1.7.4 defaults. Implicit linking stays enabled, but the library requires the existing local user to have `emailVerified: true` before linking a Google identity to an email/password user. Phase 2 registration does not verify email, so an existing unverified email/password account is not silently merged with a later Google sign-in for the same email. FreelanceOS does not override that library security default.
 
-Protected application routes live in the `(app)` route group. The authenticated layout reads the Better Auth server session and the server-resolved workspace membership. Unauthenticated requests redirect to `/sign-in`. Authenticated visitors with no membership are sent to `/onboarding`. Authenticated visitors with exactly one membership enter `(app)`. Authenticated visitors with more than one membership are sent to `/workspace-unavailable`. Authenticated visitors to `/sign-in`, `/sign-up`, and `/forgot-password` follow that same workspace resolution. `/reset-password` remains reachable while authenticated so a recovery token can be completed.
+Protected application routes live in the `(app)` route group, including `/dashboard`. The authenticated layout reads the Better Auth server session and the server-resolved workspace membership. Unauthenticated requests to those routes redirect to `/sign-in`. Unauthenticated `/` is public and does not redirect to `/sign-in`. Authenticated visitors to `/` never see the landing: they follow `getWorkspaceResolutionPath` to `/dashboard`, `/onboarding`, or `/workspace-unavailable`. Authenticated visitors with no membership are sent to `/onboarding`. Authenticated visitors with exactly one membership enter `(app)`. Authenticated visitors with more than one membership are sent to `/workspace-unavailable`. Authenticated visitors to `/sign-in`, `/sign-up`, and `/forgot-password` follow that same workspace resolution. `/reset-password` remains reachable while authenticated so a recovery token can be completed. Sign-in, sign-up, and Google `callbackURL` use `DEFAULT_AUTHENTICATED_PATH` (`/dashboard`). Sign-out uses `router.refresh()` then `router.push("/")`. Password-reset success remains `/sign-in`.
 
 Authentication integration tests run against the isolated PostgreSQL test database. Deterministic Playwright coverage exercises email/password, protected routes, logout, and password recovery. CI applies the migration chain and runs those suites without Google credentials or a production email provider. Playwright CI uses the Next.js development server so Better Auth production rate limits do not make auth journeys flaky. Full Google consent/callback is a documented non-CI limitation.
 
@@ -792,7 +801,7 @@ EPIC-103 does not change this runtime architecture. TimeEntry mutations use Serv
 
 **Server Action constraint:** `redirect()` and `notFound()` signal by throwing (`NEXT_REDIRECT`, `NEXT_NOT_FOUND`). They must be called outside any `try`/`catch` that maps errors to user-facing state, otherwise a successful mutation reports a false failure. EPIC-103 F-103-001 was exactly this defect and was corrected in the three TimeEntry Server Actions. This constraint is documentation-only; no lint rule enforces it.
 
-**TimeEntry mutation cache order (MVP Integration):** persistence → `triggerAlertEvaluation` (best-effort) → `revalidatePath("/", "layout")` → `revalidatePath("/")` → `revalidatePath("/reports")` → `revalidatePath("/alerts")` → `redirect(...)`. Sign-out uses `router.refresh()` then `router.push("/sign-in")`.
+**TimeEntry mutation cache order (MVP Integration, path updated by EPIC-107):** persistence → `triggerAlertEvaluation` (best-effort) → `revalidatePath("/", "layout")` → `revalidatePath("/dashboard")` → `revalidatePath("/reports")` → `revalidatePath("/alerts")` → `redirect(...)`. Layout revalidation on `/` remains so the AppShell unread badge refreshes. Sign-out uses `router.refresh()` then `router.push("/")`.
 
 Next.js 15.5.25 does not provide the `proxy.ts` request-interception convention. `middleware.ts` is deprecated by project convention and is not used. Server-side session validation in the authenticated layout is the authoritative boundary. Client auth state is a projection of that session.
 
@@ -925,11 +934,11 @@ src/components/page/        PageHeader / PageContent
 src/components/states/      LoadingState / ErrorState / EmptyState
 src/components/placeholder/ structural placeholder pages
 src/components/dashboard/   analytics dashboard presentation (EPIC-104)
-src/features/               auth, workspace, clients, contracts, time-entries
+src/features/               auth, workspace, clients, contracts, time-entries, landing, notifications
 src/lib/                    navigation helper, cn, analytics periods
 ```
 
-`src/features/clients` is implemented (EPIC-101). `src/features/contracts` is implemented (EPIC-102). `src/features/time-entries` is implemented (EPIC-103) and serves the `/time-tracking` routes. EPIC-104 added `src/components/dashboard/` as presentation-only server components for the `/` dashboard; the calculation logic lives in the analytics application service, not in a feature folder. EPIC-106 added `src/features/notifications/` (notification center UI components and Server Action) and `src/application/alerts/` (AlertService, alert evaluation types, dedup key builder). Remaining product feature folders (`billing`) are future work.
+`src/features/clients` is implemented (EPIC-101). `src/features/contracts` is implemented (EPIC-102). `src/features/time-entries` is implemented (EPIC-103) and serves the `/time-tracking` routes. EPIC-104 added `src/components/dashboard/` as presentation-only server components for the dashboard; EPIC-107 serves that surface at `/dashboard`. The calculation logic lives in the analytics application service, not in a feature folder. EPIC-107 added `src/features/landing/` and the `(public)` route group for `/`. EPIC-106 added `src/features/notifications/` (notification center UI components and Server Action) and `src/application/alerts/` (AlertService, alert evaluation types, dedup key builder). Remaining product feature folders (`billing`) are future work.
 
 ## 14.3 UI system
 
@@ -954,7 +963,7 @@ Desktop: skip link, header (product mark, workspace name, account label, Sign ou
 
 Mobile: header menu button opens a Sheet with Application nav.
 
-`/` is the authenticated Dashboard product surface (EPIC-104): monthly summary, client allocation, and contract utilization, rendered as a Server Component from the shared analytics service. It is no longer a structural placeholder. `/clients` is a product surface: ACTIVE list, archived view, create, detail, and edit. `/contracts` is a product surface: list, create, detail, and edit. `/time-tracking` is a product surface. `/alerts` is the in-app notification center (page title Alerts). `/settings` is a read-only Account / Workspace / Alerts information surface. It does not mutate timezone, currency, or thresholds. Timezone remains immutable after workspace creation. `(auth)` and `(public-auth)` layouts show the FreelanceOS wordmark. `(app)/loading.tsx`, `error.tsx`, and `not-found.tsx` render the shared state primitives; the dashboard uses the route-level loading surface only, with no per-section skeletons (F-104-008).
+`/` is the public landing (EPIC-107): `(public)` layout, no AppShell. Authenticated visitors are redirected via workspace resolution and never see the landing. `/dashboard` is the authenticated Dashboard product surface (EPIC-104, route moved by EPIC-107): monthly summary, client allocation, and contract utilization, rendered as a Server Component from the shared analytics service inside `(app)` / AppShell. `/clients` is a product surface: ACTIVE list, archived view, create, detail, and edit. `/contracts` is a product surface: list, create, detail, and edit. `/time-tracking` is a product surface. `/alerts` is the in-app notification center (page title Alerts). `/settings` is a read-only Account / Workspace / Alerts information surface. It does not mutate timezone, currency, or thresholds. Timezone remains immutable after workspace creation. `(auth)` and `(public-auth)` layouts show the FreelanceOS wordmark. `(app)/loading.tsx`, `error.tsx`, and `not-found.tsx` render the shared state primitives; the dashboard uses the route-level loading surface only, with no per-section skeletons (F-104-008).
 
 ## 14.5 Responsive design
 

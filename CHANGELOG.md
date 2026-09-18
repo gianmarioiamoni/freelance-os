@@ -6,7 +6,13 @@ All notable changes to FreelanceOS are documented in this file.
 
 ### Added
 
-- MVP UX Polish COMPLETE. Read-only Settings surface (account, workspace, contract warning threshold). FreelanceOS branding on authentication layouts. Closed FINDING-UX-001, UX-002, UX-003, UX-005, UX-006, UX-007, UX-008, UX-009. FINDING-UX-004 remains OPEN. FINDING-QA-002 remains OPEN. Next: Production Validation (`MASTER_PLAN.md` §34).
+- EPIC-107 Public Landing implementation and E2E complete (P107-01 … P107-03). Documentation synchronized (P107-04). Engineering Review not started. Production Validation not started. Production readiness: NO.
+- Public `/` landing for unauthenticated visitors: header with plain `FreelanceOS` wordmark, Sign Up / Sign In, hero, supporting statement, bordered How it works (Set up / Track / Understand), six MVP capability cards with native `<details>/<summary>` Read more. No logo asset, no site-wide dark mode, no additional hero CTA, no footer. Authenticated `/` never renders the landing.
+- Authenticated Dashboard moved to `/dashboard` under the existing `(app)` layout / AppShell. No nested dashboard layout. `(app)/page.tsx` removed.
+- Sign-in, sign-up, and Google callback land on `/dashboard` (workspace-gate still sends no-membership users to `/onboarding`). Sign-out lands on `/` (`router.refresh()` then `router.push("/")`). Reset-password success remains `/sign-in`. Unauthenticated `/dashboard` redirects to `/sign-in`.
+- P107-03 E2E: targeted 26/26 PASS (landing, auth, onboarding, dashboard, app-shell); broader 40/40 PASS. FINDING-QA-001 was not reproduced; it remains OPEN.
+
+- MVP UX Polish COMPLETE. Read-only Settings surface (account, workspace, contract warning threshold). FreelanceOS branding on authentication layouts. Closed FINDING-UX-001, UX-002, UX-003, UX-005, UX-006, UX-007, UX-008, UX-009. FINDING-UX-004 remains OPEN. FINDING-QA-002 remains OPEN. Next at polish close: Production Validation (`MASTER_PLAN.md` §34), later deferred for EPIC-107.
 - MVP UX Gate PASS WITH FINDINGS (`docs/ux/ux-review.md`). Blocking findings: NONE. Production readiness: NO. Findings: FINDING-UX-001 … FINDING-UX-009 recorded at the gate; subsequent UX Polish closed all except FINDING-UX-004. Prior QA findings unchanged.
 - MVP QA Gate PASS WITH FINDINGS (`docs/qa/qa-report.md`). Documentation Gate COMPLETE (`MASTER_PLAN.md` §32). Blocking findings: NONE. Production readiness: NO. Next: UX Gate (§33).
 - Automated QA evidence: lint 0 errors / 6 pre-existing warnings; typecheck PASS; unit 392/392; integration 224/224 (host TZ); build PASS; E2E 58/58; release-gate 5 pass / 1 flaky failure (FINDING-QA-001); focused release-gate PASS; isolated release-gate 3/3 PASS.

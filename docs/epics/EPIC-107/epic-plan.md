@@ -3,7 +3,7 @@
 **Epic:** EPIC-107  
 **Release:** Release 1 — MVP  
 **MASTER_PLAN identifier:** R1-E07 — Public Landing (`MASTER_PLAN.md` §17A)  
-**Status:** PLANNING COMPLETE — IMPLEMENTATION NOT STARTED  
+**Status:** DOCUMENTATION COMPLETE (P107-04) — implementation and E2E COMPLETE; Engineering Review NOT STARTED  
 **Dependencies:** EPIC-003, EPIC-004, EPIC-006, EPIC-104, MVP-INTEGRATION, UX Polish  
 **Previous:** UX Polish COMPLETE (`791c879`)  
 **Next after this Epic:** Production Validation (`MASTER_PLAN.md` §34) — **DEFERRED until this Epic and its validation are complete**
@@ -12,13 +12,18 @@
 PLANNING:              COMPLETE
 PRODUCT DECISIONS:     RESOLVED (PD-LANDING-001 … PD-LANDING-006)
 BLOCKING DECISIONS:    NONE
-IMPLEMENTATION:        NOT STARTED
+IMPLEMENTATION:        COMPLETE (P107-01 … P107-03)
+DOCUMENTATION:         COMPLETE (P107-04)
+ENGINEERING REVIEW:    NOT STARTED (P107-05)
 PRODUCTION VALIDATION: DEFERRED
 PRODUCTION CERTIFICATION: NOT STARTED
 ```
 
 HEAD at planning: `791c87944163e4fb2262de13309e0effe19f9e38`  
+HEAD at P107-03: `2ee06fb45ce25cc2a0bf2ad61a072b2c7795eb6a`  
 UX Polish commit: `feat(ux): polish MVP settings and authentication branding`
+
+The Epic remains OPEN. Do not start Production Validation or Production Certification.
 
 This Epic is a dedicated product-surface + route-migration Epic. It is not a Documentation Gate, UX Gate, or Production Validation phase.
 
@@ -32,7 +37,7 @@ Introduce a public landing page at `/` and move the authenticated dashboard to `
 
 ## 2. Business Context
 
-Unauthenticated `/` currently server-redirects to `/sign-in`. Authenticated `/` is the dashboard. There is no public product entry, no `/dashboard` route, and no logo asset.
+Unauthenticated `/` previously server-redirected to `/sign-in`. Authenticated `/` was the dashboard. There was no public product entry, no `/dashboard` route, and no logo asset.
 
 The Product Owner requires a public landing that is clearly the same product as the authenticated app: Geist, light canvas, whitespace, shadcn/ui, restrained hierarchy. Wordmark only.
 
@@ -47,7 +52,7 @@ The Product Owner requires a public landing that is clearly the same product as 
 - Authenticated visitors to `/` redirect to `/dashboard` (workspace-resolved) or the existing workspace-gate path
 - Sign-out destination `/`
 - Route-access, navigation, auth redirects, cache revalidation, tests, and E2E updates required by the route change
-- Contained inverted wordmark on the landing only (`bg-foreground` / `text-background` or equivalent existing tokens)
+- Contained landing header wordmark: plain `FreelanceOS` text only (`font-semibold tracking-tight`); no logo asset
 - Landing copy limited to existing capabilities: Clients, Contracts, Time Tracking, Analytics/Dashboard, Reports, Alerts
 
 ### Out of scope
@@ -68,7 +73,7 @@ The Product Owner requires a public landing that is clearly the same product as 
 
 | Non-goal | Rationale |
 | --- | --- |
-| Dark mode | Contained inverted wordmark only |
+| Dark mode | No site-wide dark mode; landing wordmark is plain text |
 | New brand asset | PO: wordmark only |
 | Authenticated UI restyle | Must remain visually unchanged |
 | Capability claims beyond MVP | Landing may describe only implemented surfaces |
@@ -86,11 +91,11 @@ The Product Owner requires a public landing that is clearly the same product as 
 | PD-LANDING-003 | Authenticated `GET /` never renders the landing. Redirect via workspace resolution: resolved → `/dashboard`; onboarding → `/onboarding`; ambiguous → `/workspace-unavailable`. | RESOLVED |
 | PD-LANDING-004 | Sign-out lands on `/`. Protected-route intercept and password-reset completion remain `/sign-in`. | RESOLVED |
 | PD-LANDING-005 | Minimum landing sections: header, hero + CTAs, capability list (six existing capabilities), footer. | RESOLVED |
-| PD-LANDING-006 | Wordmark-only. Contained inverted treatment: dark/black surface + white `FreelanceOS`. Existing tokens. No `.dark` on `<html>`. Auth and AppShell wordmarks stay light-canvas. | RESOLVED |
+| PD-LANDING-006 | Wordmark-only. Final treatment: plain `FreelanceOS` text, foreground color, `font-semibold`, `tracking-tight`. No chip, background, border, icon, or asset. No site-wide dark mode. Auth and AppShell wordmarks stay light-canvas. | RESOLVED |
 
 ### PD-LANDING-004 evidence
 
-Current sign-out is `authClient.signOut()` → `router.refresh()` → `router.push("/sign-in")`. Reset-password success also assigns `/sign-in`. Unauthenticated protected routes use `SIGN_IN_PATH`. E2E and UX Polish treat post-sign-out `/sign-in` as the public face because `/` is currently the authenticated app.
+At planning, sign-out was `authClient.signOut()` → `router.refresh()` → `router.push("/sign-in")`. Reset-password success also assigned `/sign-in`. Unauthenticated protected routes used `SIGN_IN_PATH`. E2E and UX Polish treated post-sign-out `/sign-in` as the public face because `/` was the authenticated app.
 
 After PD-LANDING-001, `/` is the public product entry with Sign In / Sign Up. Signing out to `/sign-in` would skip that entry. Signing out to `/` matches the Product Owner direction and the new public root.
 
@@ -104,6 +109,8 @@ Do not treat FINDING-INT-002 / FINDING-QA-001 as closed by this destination chan
 ---
 
 ## 6. Current vs target routing
+
+Implemented as of P107-02 (`c446585` and follow-ups). The Target column is the live topology.
 
 | Path | Current | Target |
 | --- | --- | --- |
@@ -209,7 +216,7 @@ Do not revalidate reporting period logic. FINDING-QA-002 remains untouched.
 | `buildNavigationItems` Dashboard `href` | `/` → `/dashboard` |
 | `isNavigationItemActive` | Treat `/dashboard` like other sections |
 | AppHeader / workspace-gate / AuthBrand | No visual change |
-| Landing header | Public Sign In / Sign Up; inverted wordmark |
+| Landing header | Public Sign In / Sign Up; plain wordmark |
 | AppShell | Unchanged aside from Dashboard href |
 
 ---
@@ -258,10 +265,11 @@ No final marketing copy. Implementation uses short factual labels.
 
 | Section | Purpose | Content bound |
 | --- | --- | --- |
-| Header | Identity + entry | Inverted wordmark; Sign In; Sign Up |
-| Hero | What this is + primary action | Product name; one-line operations statement; primary Sign Up; secondary Sign In |
-| Capabilities | What exists | Clients; Contracts; Time Tracking; Analytics / Dashboard; Reports; Alerts. Card or simple list. No illustrations required. |
-| Footer | Secondary entry | Wordmark or name; Sign In; Sign Up |
+| Header | Identity + entry | Plain wordmark; Sign In; Sign Up (header Account nav only; no extra hero CTA) |
+| Hero | What this is | Product name `h1`; operations statement; supporting statement |
+| How it works | Three steps | One bordered Card; 01 Set up; 02 Track; 03 Understand. Stacks on mobile. |
+| Capabilities | What exists | Clients; Contracts; Time Tracking; Analytics / Dashboard; Reports; Alerts. Native `<details>/<summary>` Read more. |
+| Footer | Not implemented | No footer. No duplicated wordmark. |
 
 Forbidden claims: billing, revenue, invoicing, payments, AI, integrations, Slack, email notifications.
 
@@ -274,8 +282,8 @@ Visual system: Geist, light canvas, existing Button (`default` / `outline`), Car
 | Rule | Detail |
 | --- | --- |
 | Mark | Text `FreelanceOS` only |
-| Landing inverted | Contained surface: `bg-foreground text-background` (or `bg-primary text-primary-foreground`). Same tracking/weight as current auth/header wordmark (`text-sm font-semibold tracking-tight`). |
-| Containment | Header bar or compact chip — not the full viewport |
+| Landing | Plain text: `text-sm font-semibold tracking-tight`. No inverted chip. |
+| Containment | Header row only |
 | Not allowed | SVG/PNG/ICO, symbol, letterform, `.dark` on `<html>`, AuthBrand/AppHeader restyle |
 | Auth / AppShell | Unchanged light-canvas wordmark |
 
@@ -323,7 +331,7 @@ Primary target remains desktop productivity. Mobile must be usable.
 | AC-107-010 | Dashboard nav item highlights on `/dashboard` only. |
 | AC-107-011 | TimeEntry mutations revalidate `/dashboard` and keep layout revalidation for the unread badge. |
 | AC-107-012 | Landing names only Clients, Contracts, Time Tracking, Analytics/Dashboard, Reports, Alerts. |
-| AC-107-013 | Wordmark-only inverted contained treatment; no new asset; no site-wide dark mode. |
+| AC-107-013 | Wordmark-only plain text; no new asset; no site-wide dark mode. |
 | AC-107-014 | Authenticated app chrome (AppShell, auth forms, settings) is not restyled. |
 | AC-107-015 | Landing is usable at 390px and desktop; skip link + one `h1`. |
 | AC-107-016 | FINDING-QA-002 and other listed open findings remain OPEN. |
@@ -333,31 +341,34 @@ Primary target remains desktop productivity. Mobile must be usable.
 
 ## 19. Definition of Done
 
-- [ ] All six Product Decisions implemented as recorded
-- [ ] Routing table in §6 true in code
-- [ ] `(app)` architecture preserved; dashboard is `(app)/dashboard/page.tsx`
-- [ ] No new dependency, CMS, dark mode, or brand asset
-- [ ] Unit / integration / E2E updated; new landing E2E exists
-- [ ] README, `docs/architecture.md`, `docs/testing-strategy.md`, CHANGELOG synchronized in the documentation phase
+- [x] All six Product Decisions implemented as recorded
+- [x] Routing table in §6 true in code
+- [x] `(app)` architecture preserved; dashboard is `(app)/dashboard/page.tsx`
+- [x] No new dependency, CMS, dark mode, or brand asset
+- [x] Unit / integration / E2E updated; new landing E2E exists
+- [x] README, `docs/architecture.md`, `docs/testing-strategy.md`, CHANGELOG synchronized in the documentation phase
 - [ ] Engineering Review produced
-- [ ] Open findings listed in §23 still OPEN
-- [ ] Production Validation **not** started in this Epic
+- [x] Open findings listed in §23 still OPEN
+- [x] Production Validation **not** started in this Epic
 - [ ] Working tree clean at Epic closure
 
 ---
 
 ## 20. Implementation phases / commits
 
-| Phase | Commit | Deliverable |
-| --- | --- | --- |
-| P107-00 | `docs(landing): plan MVP public landing` | This plan + MASTER_PLAN registration |
-| P107-01 | `feat(app): move dashboard to /dashboard` | `(app)/dashboard/page.tsx`; `DEFAULT_AUTHENTICATED_PATH`; navigation; auth success + Google `callbackURL`; revalidatePath; unit/integration tests. Keep `(app)/page.tsx` as a temporary authenticated redirect to `/dashboard` so `/` is never 404. |
-| P107-02 | `feat(landing): add public landing at /` | `(public)` layout + page; remove `(app)/page.tsx`; public path classification; sign-out → `/`; landing IA + inverted wordmark; landing unit if needed |
-| P107-03 | `test(landing): cover public root and dashboard route` | E2E landing spec; update auth/onboarding/app-shell/dashboard/reports/mvp-integration/helpers |
-| P107-04 | `docs(landing): synchronize architecture and README` | README, architecture, testing-strategy, CHANGELOG, epic-plan status |
-| P107-05 | `docs(landing): EPIC-107 engineering review` | `docs/epics/EPIC-107/engineering-review.md` |
+| Phase | Commit | Status | Deliverable |
+| --- | --- | --- | --- |
+| P107-00 | `39fdd70` `docs(landing): plan MVP public landing` | COMPLETE | This plan + MASTER_PLAN registration |
+| P107-01 | `9a71124` `feat(app): move dashboard to /dashboard` | COMPLETE | `(app)/dashboard/page.tsx`; `DEFAULT_AUTHENTICATED_PATH`; navigation; auth success + Google `callbackURL`; revalidatePath; unit/integration tests |
+| P107-02 | `c446585` `feat(landing): add MVP public landing` | COMPLETE | `(public)` layout + page; remove `(app)/page.tsx`; public path classification; sign-out → `/`; landing IA |
+| P107-02 follow-up | `d257a4f` `fix(landing): simplify public wordmark` | COMPLETE | Plain wordmark |
+| P107-02 follow-up | `b1d7049` `fix(landing): keep auth CTAs in the header only` | COMPLETE | Header Sign Up / Sign In only; no extra hero CTA |
+| P107-02 follow-up | `ed44da9` `feat(landing): enrich MVP landing content` | COMPLETE | How it works + capability Read more |
+| P107-03 | `2ee06fb` `test(landing): cover public root and dashboard routing` | COMPLETE | Landing E2E; auth/onboarding/app-shell/dashboard routing coverage |
+| P107-04 | `docs(landing): synchronize EPIC-107 documentation` | COMPLETE | README, architecture, testing-strategy, CHANGELOG, epic-plan status |
+| P107-05 | `docs(landing): EPIC-107 engineering review` | NEXT | `docs/epics/EPIC-107/engineering-review.md` |
 
-P107-01 must not leave `/` without a page. The temporary `(app)/page.tsx` redirect is authenticated (current behavior). P107-02 replaces it with the public landing.
+P107-03 evidence: targeted E2E 26/26 PASS; broader E2E 40/40 PASS. FINDING-QA-001 not reproduced; remains OPEN.
 
 Do not combine planning and implementation. Do not start Production Validation in any P107 chat.
 
@@ -424,4 +435,4 @@ Do not start Production Certification.
 | `docs/epics/EPIC-107/epic-plan.md` | Create |
 | `MASTER_PLAN.md` | Register EPIC-107; set next work; defer §34 |
 
-README, architecture, testing-strategy, CHANGELOG wait for P107-04.
+README, architecture, testing-strategy, CHANGELOG wait for P107-04 (this documentation phase).

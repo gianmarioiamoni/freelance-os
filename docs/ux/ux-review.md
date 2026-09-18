@@ -384,3 +384,9 @@ Other in-scope findings closed: UX-001, UX-003, UX-005, UX-006, UX-007, UX-008, 
 Left OPEN: FINDING-UX-004 (custom period picker would be new functionality and would expose FINDING-QA-002). FINDING-QA-002 unchanged.
 
 Evidence: unit 396/396; integration 224/224; targeted E2E 56 passed after app-shell fix (auth, app-shell, onboarding, alerts, dashboard, dashboard-accessibility, time-tracking, reports, mvp-integration-journey); lint 0 errors / 6 pre-existing warnings; typecheck PASS. Browser: Sign In / Forgot Password / post-sign-out `/sign-in` show FreelanceOS; Settings shows workspace name, timezone, 80% warning threshold, no placeholder; Settings at 390×844 has no horizontal overflow.
+
+------------------------------------------------------------------------
+
+## 19. Post-polish routing (EPIC-107)
+
+EPIC-107 was inserted after UX Polish. Public `/` is the landing. The authenticated dashboard is `/dashboard`. Sign-out lands on `/`. Production Validation (`MASTER_PLAN.md` §34) remains DEFERRED until EPIC-107 and its validation are complete. Findings in this UX Gate / UX Polish record are unchanged. FINDING-UX-004 remains OPEN.
