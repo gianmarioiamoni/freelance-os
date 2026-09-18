@@ -406,11 +406,13 @@ Product Owner decisions D-001–D-004 were implemented in-repository after the c
 | 16. Runtime health | F-104-007 remains OPEN | Revalidate |
 
 ```text
-§34:                          MUST BE RE-RUN
-§35 PRODUCTION CERTIFICATION: DEFERRED
+§34:                          EXECUTED ON f5592b3 — RELEASE BLOCKED
+§35 PRODUCTION CERTIFICATION: DEFERRED / NOT ELIGIBLE
 RELEASE:                      NOT APPROVED
 PRODUCTION READINESS:         NO
 ```
+
+Evidence: `docs/release/production-validation.md` (final validation after D-004). Hosted Vercel, Google credentials, and Resend completion remain EXTERNAL. F-004 RESOLVED. Fresh `next start` E2E this run 67/68 (flake). D-005 NOT PROVIDED.
 
 ### D-004 residual failures (after 63/5/68)
 

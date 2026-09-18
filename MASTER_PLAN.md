@@ -4,7 +4,7 @@
 **Document:** `MASTER_PLAN.md`\
 **Product:** FreelanceOS\
 **Canonical format:** Markdown\
-**Current phase:** D-001–D-004 production infrastructure implemented (Vercel, Google OAuth in MVP, Resend Free, E2E `next start` isolation). MASTER_PLAN §34 last executed — RELEASE BLOCKED (`docs/release/production-validation.md`); that run predates this infrastructure. Next: §34 Production Validation re-run. §35 Production Certification DEFERRED. D-005 Product Owner approval: NOT PROVIDED. Production readiness: NO.
+**Current phase:** MASTER_PLAN §34 executed on `f5592b3` — RELEASE BLOCKED (`docs/release/production-validation.md`). Hosted Vercel, production Google credentials, and Resend completion remain external. §35 NOT ELIGIBLE. D-005 Product Owner approval: NOT PROVIDED. Production readiness: NO.
 
 ------------------------------------------------------------------------
 
@@ -275,7 +275,7 @@ Status: COMPLETE
 Verdict: PASS WITH FINDINGS
 Evidence: `docs/ux/ux-review.md`
 Blocking findings: NONE
-Next: D-001–D-004 infrastructure implemented; §34 must be re-run; §35 DEFERRED
+Next: §34 executed on `f5592b3` — RELEASE BLOCKED; §35 NOT ELIGIBLE
 
 UX Polish — after §33
 Status: COMPLETE
@@ -1617,24 +1617,24 @@ FINDING-QA-002 remains OPEN.
 
 # 34. Production Validation Gate
 
-**Status:** LAST EXECUTED — **RELEASE BLOCKED**. Evidence: `docs/release/production-validation.md`. Gate classification: `docs/release/release-gate-resolution.md`. Candidate at last run: `81a22dd` (2026-09-18 revalidation). D-001–D-004 infrastructure is now in-repository; hosted Vercel deploy was not executed in that run. Product Owner approval is a §35 field and is NOT PROVIDED. §35 DEFERRED.
+**Status:** LAST EXECUTED — **RELEASE BLOCKED**. Evidence: `docs/release/production-validation.md`. Candidate: `f5592b3` (2026-09-18 final validation after D-004). Hosted Vercel deploy not executed. Google/Resend production values EXTERNAL. Product Owner approval is a §35 field and is NOT PROVIDED. §35 NOT ELIGIBLE.
 
 Validate the exact build that will be deployed.
 
 Minimum:
 
--   [x] production build — PASS (last §34)
--   [x] deployment configuration — Vercel recorded (`vercel.json`); hosted deploy not executed; READY FOR DEPLOYMENT / EXTERNAL ACCESS REQUIRED
+-   [x] production build — PASS (`f5592b3`)
+-   [x] deployment configuration — Vercel recorded (`vercel.json`); hosted deploy not executed; HOSTED DEPLOYMENT / EXTERNAL ACCESS REQUIRED
 -   [x] database migration — PASS locally (`freelance_os` up to date); hosted PostgreSQL still required
--   [x] authentication — PASS WITH FINDINGS on last §34 (mailer/Google were incomplete then; Resend + Google env model now recorded)
--   [x] complete MVP workflow — PASS on last `pnpm start`
--   [x] critical E2E regression — last unisolated `next start`: 43/25 (F-004). After D-004 isolation: 63 passed / 5 failed of 68; residual failures were not auth-burst and were later resolved: 68/68 on `CI=true pnpm test:e2e:start`. Canonical CI remains `pnpm dev`. Re-verify in next §34
+-   [x] authentication — PASS WITH FINDINGS (email/password PASS; Google offered without credentials; Resend unset; reset completion NOT VERIFIED)
+-   [x] complete MVP workflow — PASS on `pnpm start` (PV34F)
+-   [x] critical E2E regression — unisolated historical 43/25 (F-004). D-004 isolation 68/68 on this SHA. Fresh §34 `CI=true pnpm test:e2e:start`: 67/68 (period-selector flake; isolated rerun PASS). F-004 RESOLVED. Canonical CI remains `pnpm dev`.
 -   [x] reports — PASS
 -   [x] alerts — PASS
 -   [x] notifications — PASS
 -   [x] security baseline — PASS on exercised paths
--   [x] environment variables — model complete; production values EXTERNAL
--   [x] no release-blocking defects — no new §37 Release Blocker; gate still RELEASE BLOCKED until next §34
+-   [x] environment variables — model complete; production Google/Resend/hosted values EXTERNAL
+-   [x] no release-blocking defects — no new §37 Release Blocker; outcome RELEASE BLOCKED on remaining environment gates
 
 The methodology requires Production Validation to validate exactly what
 will be deployed and concludes with either:

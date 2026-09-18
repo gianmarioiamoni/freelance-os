@@ -1,8 +1,259 @@
 # MVP Production Validation — §34
 
 **Gate:** `MASTER_PLAN.md` §34  
+**Date:** 2026-09-18 (final validation after D-004)  
+**Current candidate HEAD:** `f5592b3268e8514279b014f95dafbc2ff1581afc`  
+**Previous candidate HEAD:** `81a22dd507ae3d320fba64ead71ab2871a50e833`  
+**Branch:** `main`  
+**Working tree at start:** clean  
+
+```text
+VALIDATION EXECUTION:     COMPLETE WITH FINDINGS
+§34 / §36 GATE OUTCOME:   RELEASE BLOCKED
+BLOCKING FINDINGS (§37):  NONE newly confirmed as Release Blocker
+PRODUCTION READINESS:     NO
+§35 CERTIFICATION:        NOT RUN / NOT ELIGIBLE
+PRODUCT OWNER APPROVAL:   NOT PROVIDED
+```
+
+This record validates HEAD `f5592b3` after D-001–D-004. It is not Production Certification. It does not declare `READY FOR RELEASE`. It does not grant §35.
+
+MASTER_PLAN §34 concludes only with `READY FOR RELEASE` or `RELEASE BLOCKED`. Execution completeness is not a third release state.
+
+---
+
+## Timeline (do not rewrite historical rows)
+
+| Run | Candidate | Outcome |
+| --- | --- | --- |
+| Original §34 | `a0ad65f` | RELEASE BLOCKED. Unisolated `next start` 43/25 of 68 (F-004). |
+| Revalidation | `81a22dd` | RELEASE BLOCKED. Unisolated `next start` 43/25 of 68 (F-004). Hosted target none. |
+| D-001–D-004 implementation | `8aa0266` | Vercel config, Google in MVP, Resend adapter, `AUTH_E2E_RUNTIME`. Not a §34 run. |
+| D-004 residual E2E | `f5592b3` (this SHA, prior chat) | Isolated `next start` 63/5 then **68/68**. F-004 auth burst **RESOLVED**. Not a §34 run. |
+| **This §34** | `f5592b3` | **RELEASE BLOCKED**. Local `pnpm start` workflow PASS. Fresh `CI=true pnpm test:e2e:start` **67/68** (one flake). Hosted Vercel not executed. Google/Resend production values EXTERNAL. |
+
+---
+
+## Final §34 gate matrix (`f5592b3`)
+
+| Gate | Requirement | Current Evidence | Result | Blocking? |
+| --- | --- | --- | --- | --- |
+| Production build | Exact candidate builds | `pnpm build` on `f5592b3` PASS (Next.js 15.5.25 Turbopack). `/` and `/dashboard` dynamic. Build-time `DYNAMIC_SERVER_USAGE` for `/dashboard` (`headers()`). | **PASS** | No |
+| Deployment configuration | Exact build that will be deployed; D-001 = Vercel | `vercel.json` present (Next.js; `pnpm install --frozen-lockfile`; `prisma generate` + `prisma migrate deploy` + `pnpm build`). No `.vercel/` project. Vercel CLI absent. No hosted URL. Local runtime `pnpm start` at `http://localhost:3000`. | **HOSTED DEPLOYMENT / EXTERNAL ACCESS REQUIRED** | Yes for hosted production (D-001). Local artifact recorded. |
+| Database migration | Migrations applied | Local `freelance_os`: 5 migrations, up to date. `freelanceos_test`: no pending. Hosted PostgreSQL does not exist. | **PASS** locally. Hosted DB **EXTERNAL**. | Hosted DB blocks hosted deploy, not local persistence. |
+| Authentication | Email/password + offered Google + recovery | Sign-up `pv34f-20260918@example.com` → `/onboarding` → `PV34F Workspace` → `/dashboard`. Sign-out → `/`. Sign-in → `/dashboard`. Reset **request** acknowledged. Reset **completion NOT VERIFIED** (`RESEND_API_KEY` / `AUTH_EMAIL_FROM` UNSET). Google UI offered; click → `Google sign-in is unavailable.`; server `Provider not found … google`. Callback not verified. | **PASS WITH FINDINGS** | Env gaps (Google, Resend completion) remain. |
+| Complete MVP workflow | Auth → Workspace → Client → Contract → TimeEntry → Analytics → Dashboard → Reports → Alerts → Notifications | Executed on `pnpm start` / `freelance_os`. Client `PV34F Client`; contract hourly 80 EUR, 2h/month from 2026-09-01; 2h billable 2026-09-18. Dashboard 2h / 100%. Reports This Month 2h / 100%. Alerts WARNING + EXCEEDED; mark-read reduced unread 2→1. | **PASS** | No |
+| Critical E2E regression | §34 names critical E2E; does not name `next start` vs `pnpm dev` | Canonical CI remains `pnpm dev`. Fresh this run: `CI=true pnpm test:e2e:start` **67 passed / 1 failed / 68**. Failed: `reports.spec.ts` period selector `Today` click; URL stayed `/reports`. Isolated rerun of that test **PASS** (flake; same-path `<Link>` search params). Prior D-004 residual fix on this SHA: 68/68. Tests not modified this run. F-004 auth burst remains **RESOLVED**. | **PASS WITH FINDINGS** on production-like path (flake). Not F-004. | Not a new §37 Release Blocker. Does not by itself yield `READY FOR RELEASE`. |
+| Reports | Operational reports | This Month: Hours by Client PV34F Client 2h billable 100%; Contract Report ongoing 2h / 2h 100%; Annual Overview 2026 Sep 2h / total 2h 100%. | **PASS** | No |
+| Alerts | WARNING / EXCEEDED lifecycle | Both created at 100% capacity. Listed. Unread badge 2. | **PASS** | No |
+| Notifications | Unread + mark-read | 2 unread → mark EXCEEDED read → 1 unread; `Read 18 Sept 2026, 21:35`. | **PASS** | No |
+| Security baseline | No auth bypass on exercised paths | Anonymous protected routes HTTP 307 `/sign-in` including `/dashboard?workspaceId=…`. Authenticated `/` → `/dashboard`. AppShell wordmark `/clients` → `/dashboard`. Public wordmark stays `/`. Sign-out → `/`. | **PASS** on exercised paths | Not whole-app certification. |
+| Environment variables | Production env complete for the offering | Present: `DATABASE_URL`, `TEST_DATABASE_URL`, `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL` (local). UNSET: `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `AUTH_EMAIL_DELIVERY`, `RESEND_API_KEY`, `AUTH_EMAIL_FROM`, `AUTH_E2E_RUNTIME`, all `VERCEL_*`. Names in `.env.example` are not PASS. | **PARTIAL** | Google + Resend + hosted `BETTER_AUTH_URL` / `DATABASE_URL` EXTERNAL. |
+| No release-blocking defects | §37 Release Blocker | Workflows executable. No new broken workflow / corrupted data. F-104-007 log-only. 67/68 flake is not a new §37 class. | **No new §37 Release Blocker** | Does not yield `READY FOR RELEASE`. |
+
+```text
+§34 / §36 OUTCOME:  RELEASE BLOCKED
+```
+
+Reason: D-001 production target is Vercel and hosted deploy was not executed; production Google credentials are absent while Google remains offered; Resend is unimplemented in this environment so password-reset completion is NOT VERIFIED; Product Owner approval is a §35 field and is NOT PROVIDED. Local production-like workflow, reports, alerts, notifications, and security redirects PASS. F-004 (auth burst) is RESOLVED. Fresh `next start` E2E this run is 67/68 with an isolated-pass flake.
+
+§35 is **not eligible**.
+
+---
+
+## Final candidate
+
+| Item | Value |
+| --- | --- |
+| Commit SHA | `f5592b3268e8514279b014f95dafbc2ff1581afc` |
+| HEAD short | `f5592b3 fix(e2e): resolve next-start production runtime failures` |
+| Branch | `main` |
+| Working tree | clean |
+| Build | `pnpm build` PASS |
+| Runtime validated | `pnpm start` (`NODE_ENV=production`) `http://localhost:3000` |
+| Environment classification | Local production-like. **Not** hosted production. |
+| Deployment target | Vercel (D-001). `vercel.json` recorded. Hosted project/URL **not invented**. |
+| Database | Local PostgreSQL `freelance_os`. Tests: `freelanceos_test`. |
+| Auth | Better Auth 1.7.4. Email/password enabled. Google unregistered (credentials UNSET). |
+
+Secrets were inspected only as present/absent. No secret values are recorded.
+
+---
+
+## Final deployment
+
+D-001: production target is **Vercel**.
+
+- `vercel.json`: framework `nextjs`; install `pnpm install --frozen-lockfile`; build `prisma generate && prisma migrate deploy && pnpm build`.
+- Vercel CLI: **ABSENT**. `.vercel/`: **ABSENT**. No project ID, no production hostname.
+- CI (`.github/workflows/quality.yml`) builds and tests; it does not deploy.
+- `AUTH_E2E_RUNTIME` must never be set on Vercel (`e2e-runtime.ts` ignores it when `VERCEL=1` or `VERCEL_ENV=production`).
+
+**HOSTED DEPLOYMENT / EXTERNAL ACCESS REQUIRED.**
+
+If a future release is hosted, this gate must be re-run against that URL with production `DATABASE_URL` and `BETTER_AUTH_URL`.
+
+---
+
+## Final environment
+
+| Variable | Required for | This candidate | Status |
+| --- | --- | --- | --- |
+| `DATABASE_URL` | Runtime | SET → local `freelance_os` | configured (local) |
+| `TEST_DATABASE_URL` | Tests | SET → `freelanceos_test` | configured (tests) |
+| `BETTER_AUTH_SECRET` | Auth | SET | configured (value not recorded) |
+| `BETTER_AUTH_URL` | Auth callbacks | SET → local origin | configured (local). Production Vercel origin **EXTERNAL**. |
+| `GOOGLE_CLIENT_ID` | D-002 Google in MVP | UNSET | **missing** |
+| `GOOGLE_CLIENT_SECRET` | D-002 | UNSET | **missing** |
+| `AUTH_EMAIL_DELIVERY` | Mailer mode | UNSET → production when `NODE_ENV=production` | not applicable as a value; production mode active locally |
+| `RESEND_API_KEY` | D-003 send | UNSET | **missing** |
+| `AUTH_EMAIL_FROM` | D-003 send | UNSET | **missing** |
+| `AUTH_E2E_RUNTIME` | Playwright `pnpm start` only | UNSET in `.env` (injected by Playwright webServer) | not applicable on Vercel |
+
+Callback URI if Google were configured: `${BETTER_AUTH_URL}/api/auth/callback/google`. Production origin is not invented.
+
+---
+
+## Final authentication
+
+### Email / password — PASS
+
+- Register `pv34f-20260918@example.com` / `PV34F User` → `/onboarding`
+- Workspace `PV34F Workspace` (Europe/Rome, EUR) → `/dashboard`
+- Sign-out → `/` (heading FreelanceOS; public landing)
+- Sign-in same account → `/dashboard`
+
+### Password reset — request PASS; completion NOT VERIFIED
+
+- `GET /forgot-password` available
+- Request for `pv34f-20260918@example.com` → generic acknowledgement
+- Server: `Password reset email was not delivered: Resend is not configured (RESEND_API_KEY and AUTH_EMAIL_FROM).`
+- No delivered link. Token completion **not executed**. FINDING-INT-003 remains OPEN / NOT REPRODUCED.
+
+### Google — offered; production unready
+
+- “Continue with Google” on `/sign-in` and `/sign-up`
+- Click: alert `Google sign-in is unavailable.`
+- Server: `ERROR [Better Auth]: Provider not found … provider: 'google'`
+- Consent/callback **NOT VERIFIED**. Credentials were not invented. UI was not removed.
+
+---
+
+## Final MVP workflow (`pnpm start`)
+
+| Step | Result |
+| --- | --- |
+| Public `/` | HTTP 200 landing; How it works; six capabilities; Sign up / Sign in |
+| Auth / Workspace | As above |
+| Client | `PV34F Client` created (`/clients/dd5c04d9-…`) Active |
+| Contract | Hourly 80 EUR, valid from 2026-09-01, 2 monthly hours (`/contracts/4b3fec18-…`) |
+| TimeEntry | 2h billable 2026-09-18 “PV34F validation work” → `/time-tracking?date=2026-09-18` |
+| Analytics / Dashboard | Monthly Summary 2h / 2h billable 100%; Client Allocation PV34F Client 100% 2h; Contract Utilization 2h / 2h 100% Ongoing |
+| Reports | See below |
+| Alerts / Notifications | See below |
+| Isolation | Authenticated `/dashboard?workspaceId=aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee` stayed on **PV34F Workspace**; PV34F Client still shown. Second-workspace login **unavailable**; not fabricated. |
+| Logo | Authenticated AppShell `href=/dashboard`; from `/clients` navigated to `/dashboard`. Public wordmark click stayed `/`. |
+| Protected anonymous | `/dashboard`, `/clients`, `/contracts`, `/time-tracking`, `/reports`, `/alerts`, `/onboarding`, `/settings` → HTTP 307 `/sign-in`; query `workspaceId` does not bypass |
+
+---
+
+## Final reports / alerts / notifications
+
+| Surface | Evidence | Result |
+| --- | --- | --- |
+| Reports | Period This Month. Hours by Client PV34F Client 2h / 2h 100%. Contract Report ongoing 2h / 2h 100%. Annual Overview 2026 Sep 2h / Total 2h 100%. | **PASS** |
+| Alerts | “Contract approaching limit” and “Contract limit reached” for PV34F Client 100% (FINDING-P04-002 BY DESIGN). `[alert-evaluation] … alertsCreated=2 notificationsCreated=2` | **PASS** |
+| Notifications | 2 unread → mark EXCEEDED read → 1 unread; Read timestamp recorded | **PASS** |
+
+---
+
+## Final E2E against `next start`
+
+Command: `pnpm build` then `CI=true pnpm test:e2e:start` (`pnpm start` + `AUTH_E2E_RUNTIME=true`). Tests not modified. Production rate limits not changed.
+
+| Run | Result |
+| --- | --- |
+| Historical unisolated §34 | 43 passed / 25 failed / 68 (F-004 auth burst) |
+| After D-004 isolation (prior chat, this SHA) | 63/5 then **68/68**; F-004 auth burst gone |
+| **This §34 fresh run** | **67 passed / 1 failed / 68** |
+| Isolated rerun of the failed test | **PASS** |
+
+Failed test this run: `tests/e2e/reports.spec.ts` `default period is 'This Month' and switching periods updates the URL` — click `Today`; URL stayed `http://localhost:3000/reports` (no `period=today`). Same class as D-004 residual Next.js production `<Link>` + same-path search params. Not F-004. Not treated as a new §37 Release Blocker. Tests were not changed to hide it.
+
+F-004 (Better Auth production rate-limit auth burst): **RESOLVED**.
+
+Canonical CI remains `pnpm dev`.
+
+---
+
+## Final runtime health
+
+| Log / behaviour | Classification |
+| --- | --- |
+| `Failed to load dashboard analytics: Error: NEXT_REDIRECT` (`/sign-in` or `/onboarding`) | **F-104-007** reconfirmed. Layout redirect still wins. **Operational Warning**. User-visible navigation succeeded. Not closed. Not a §34 blocker. |
+| `ERROR [Better Auth]: Provider not found … google` | Expected while credentials UNSET |
+| `Password reset email was not delivered: Resend is not configured …` | Expected while Resend UNSET |
+| Build `DYNAMIC_SERVER_USAGE` `/dashboard` | Expected dynamic route |
+| 5xx on probed anonymous document routes | None observed |
+| Hydration error / redirect loop / crash in exercised session | None observed |
+
+---
+
+## Final existing findings
+
+No inherited finding is closed. None is auto-ACCEPTED. None is newly classed as a §37 Release Blocker.
+
+| ID | Status | New evidence | §34 blocking? |
+| --- | --- | --- | --- |
+| FINDING-QA-001 | OPEN / TEST DEFECT / FLAKY | Auth-burst family; F-004 RESOLVED. Not re-seen as sign-up stuck this run. | No |
+| FINDING-QA-002 | OPEN / APPLICATION DEFECT | Custom range not exercised | No |
+| FINDING-INT-001 | OPEN / TEST DEFECT / CONFIRMED | LA TZ integration not re-run | No |
+| FINDING-INT-002 | OPEN / NOT REPRODUCED | Sign-out → `/` PASS again | No |
+| FINDING-INT-003 | OPEN / NOT REPRODUCED | Reset request PASS; completion not executable | Completeness gap for recovery; not a new §37 class |
+| FINDING-UX-004 | OPEN | Custom period UI absent | No |
+| F-104-007 | OPEN / PRE-EXISTING / NON-BLOCKING | Reconfirmed on `pnpm start` and Playwright `next start` | No |
+| F-104-010 | OPEN | No new a11y-assertion evidence | No |
+| F-104-011 | OPEN | No new markup evidence | No |
+| F-104-012 | OPEN | No new evidence | No |
+| **F-004** | **RESOLVED** | D-004 isolation removed production rate-limit auth burst from `pnpm test:e2e:start`. Historical 43/25 retained. | No |
+
+---
+
+## Remaining mandatory §34 gates
+
+Only items that still prevent `READY FOR RELEASE`:
+
+1. **Hosted Vercel deployment** (D-001) — EXTERNAL ACCESS REQUIRED. No URL, project, or deploy result.
+2. **Production Google credentials** (D-002) — `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` UNSET; callback unverified.
+3. **Resend production send + password-reset completion** (D-003) — `RESEND_API_KEY` / `AUTH_EMAIL_FROM` / verified domain UNSET; completion NOT VERIFIED.
+
+Product Owner approval is **NOT PROVIDED**. It is a **§35** field, not a §34 implementation item. It remains required before certification. It is **not** fabricated here.
+
+Not required as new §37 Release Blockers (may remain OPEN): QA-001, QA-002, INT-001, INT-002, INT-003, UX-004, F-104-007, F-104-010, F-104-011, F-104-012. The 67/68 period-selector flake is recorded; tests were not modified.
+
+---
+
+## Final §34 result
+
+```text
+VALIDATION EXECUTION:     COMPLETE WITH FINDINGS
+§34 / §36 OUTCOME:        RELEASE BLOCKED
+PRODUCTION READINESS:     NO
+§35 ELIGIBILITY:          NO
+PRODUCT OWNER APPROVAL:   NOT PROVIDED
+```
+
+§35 Production Certification was **not** run. It cannot open while §34 is `RELEASE BLOCKED`.
+
+---
+
+# Previous §34 revalidation (`81a22dd`)
+
+The following sections are the 2026-09-18 revalidation of `81a22dd`. They are retained as historical evidence and are not rewritten.
+
+**Gate:** `MASTER_PLAN.md` §34  
 **Date:** 2026-09-18 (revalidation)  
-**Current candidate HEAD:** `81a22dd507ae3d320fba64ead71ab2871a50e833`  
+**Candidate HEAD:** `81a22dd507ae3d320fba64ead71ab2871a50e833`  
 **Previous candidate HEAD:** `a0ad65f55e147e8abdbd2539a0f73110d2b7cc85`  
 **Branch:** `main`  
 **Working tree at start:** clean  
