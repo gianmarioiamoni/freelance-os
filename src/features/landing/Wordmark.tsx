@@ -8,25 +8,22 @@ type WordmarkProps = {
 };
 
 export function Wordmark({ href }: WordmarkProps): JSX.Element {
-  const mark = (
-    <span className="inline-flex rounded-md bg-foreground px-2 py-1 text-sm font-semibold tracking-tight text-background">
-      FreelanceOS
-    </span>
-  );
+  const className = "shrink-0 text-sm font-semibold tracking-tight";
 
   if (!href) {
-    return mark;
+    return <p className={className}>FreelanceOS</p>;
   }
 
   return (
     <Link
       href={href}
       className={cn(
-        "rounded-md outline-none",
+        className,
+        "outline-none",
         "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
       )}
     >
-      {mark}
+      FreelanceOS
     </Link>
   );
 }

@@ -72,8 +72,7 @@ export function LandingPage(): JSX.Element {
         </section>
       </main>
       <footer className="mt-auto border-t bg-background">
-        <div className="mx-auto flex w-full max-w-5xl flex-wrap items-center justify-between gap-3 px-4 py-6">
-          <Wordmark href={LANDING_PATH} />
+        <div className="mx-auto flex w-full max-w-5xl flex-wrap items-center justify-end gap-3 px-4 py-6">
           <nav aria-label="Footer">
             <LandingAuthActions />
           </nav>
