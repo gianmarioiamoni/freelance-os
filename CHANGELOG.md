@@ -6,7 +6,8 @@ All notable changes to FreelanceOS are documented in this file.
 
 ### Added
 
-- EPIC-107 Public Landing implementation and E2E complete (P107-01 … P107-03). Documentation synchronized (P107-04). Engineering Review not started. Production Validation not started. Production readiness: NO.
+- MASTER_PLAN §34 Production Validation executed on candidate `a0ad65f` (local `pnpm build` + `pnpm start`). Evidence: `docs/release/production-validation.md`. Gate outcome: RELEASE BLOCKED. Production readiness: NO. Product Owner approval: NOT PROVIDED. §35 not run.
+- EPIC-107 Public Landing implementation and E2E complete (P107-01 … P107-03). Documentation synchronized (P107-04). Later: Engineering Review PASS WITH FINDINGS (P107-05); production-like validation PASS WITH FINDINGS (P107-06); epic certification RELEASE BLOCKED.
 - Public `/` landing for unauthenticated visitors: header with plain `FreelanceOS` wordmark, Sign Up / Sign In, hero, supporting statement, bordered How it works (Set up / Track / Understand), six MVP capability cards with native `<details>/<summary>` Read more. No logo asset, no site-wide dark mode, no additional hero CTA, no footer. Authenticated `/` never renders the landing.
 - Authenticated Dashboard moved to `/dashboard` under the existing `(app)` layout / AppShell. No nested dashboard layout. `(app)/page.tsx` removed.
 - Sign-in, sign-up, and Google callback land on `/dashboard` (workspace-gate still sends no-membership users to `/onboarding`). Sign-out lands on `/` (`router.refresh()` then `router.push("/")`). Reset-password success remains `/sign-in`. Unauthenticated `/dashboard` redirects to `/sign-in`.

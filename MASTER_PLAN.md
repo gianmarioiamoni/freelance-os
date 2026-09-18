@@ -4,7 +4,7 @@
 **Document:** `MASTER_PLAN.md`\
 **Product:** FreelanceOS\
 **Canonical format:** Markdown\
-**Current phase:** EPIC-107 Public Landing documentation COMPLETE (P107-04). Next: P107-05 Engineering Review (`docs/epics/EPIC-107/epic-plan.md`). Production Validation (§34) DEFERRED. Production readiness: NO.
+**Current phase:** EPIC-107 implementation, Engineering Review, production-like validation, and epic certification COMPLETE. MASTER_PLAN §34 executed on `a0ad65f` — RELEASE BLOCKED (`docs/release/production-validation.md`). Next: §35 Production Certification. Production readiness: NO.
 
 ------------------------------------------------------------------------
 
@@ -135,9 +135,9 @@ context is recovered from repository documentation.
 ## Overall
 
 ``` text
-STATUS: UX Polish COMPLETE; EPIC-107 Public Landing implementation, E2E, and documentation COMPLETE (P107-01 … P107-04); Engineering Review NOT STARTED
-NEXT: P107-05 Engineering Review
-Production Validation (§34): DEFERRED until EPIC-107 and its validation are complete
+STATUS: UX Polish COMPLETE; EPIC-107 Public Landing COMPLETE through P107-06 and epic certification; MASTER_PLAN §34 executed — RELEASE BLOCKED
+NEXT: §35 Production Certification
+Production Validation (§34): EXECUTED — RELEASE BLOCKED — docs/release/production-validation.md
 Production readiness: NO
 ```
 
@@ -161,7 +161,7 @@ MVP implementation: EPIC-101 COMPLETE; EPIC-102 COMPLETE; EPIC-103 COMPLETE; EPI
 MVP integration: COMPLETE / CLOSED — see docs/epics/MVP-INTEGRATION/engineering-review.md
 MVP QA Gate: PASS WITH FINDINGS — see docs/qa/qa-report.md
 Documentation Gate: COMPLETE — MASTER_PLAN.md §32
-Production deployment: NOT STARTED
+Production deployment: NOT STARTED (no hosted target; local `pnpm start` validated — docs/release/production-validation.md)
 Authentication: IMPLEMENTED — see docs/epics/EPIC-003/engineering-review.md
 Workspace / authorization: IMPLEMENTED — see docs/epics/EPIC-004/engineering-review.md
 Testing / CI foundation: IMPLEMENTED — see docs/epics/EPIC-005/engineering-review.md
@@ -172,7 +172,7 @@ Time tracking: IMPLEMENTED — see docs/epics/EPIC-103/engineering-review.md
 Analytics / dashboard: IMPLEMENTED — see docs/epics/EPIC-104/engineering-review.md
 Reporting: IMPLEMENTED — see docs/epics/EPIC-105/engineering-review.md
 Alerts & notifications: IMPLEMENTED — see docs/epics/EPIC-106/engineering-review.md
-Public landing: IMPLEMENTED — documentation COMPLETE (P107-04); Engineering Review NOT STARTED — see docs/epics/EPIC-107/epic-plan.md
+Public landing: IMPLEMENTED — P107-05 PASS WITH FINDINGS; P107-06 PASS WITH FINDINGS; epic certification RELEASE BLOCKED — see docs/epics/EPIC-107/
 ```
 
 EPIC-104 completed the shared analytics layer and the authenticated
@@ -274,7 +274,7 @@ Status: COMPLETE
 Verdict: PASS WITH FINDINGS
 Evidence: `docs/ux/ux-review.md`
 Blocking findings: NONE
-Next: UX Polish COMPLETE — EPIC-107 Public Landing documentation COMPLETE (P107-04); next P107-05 Engineering Review; Production Validation (§34) DEFERRED
+Next: EPIC-107 review/validation/certification COMPLETE; §34 EXECUTED — RELEASE BLOCKED; next §35 Production Certification
 
 UX Polish — after §33
 Status: COMPLETE
@@ -1017,7 +1017,7 @@ R0-E04 Workspace
 **Release gate (QA):** 5 pass / 1 flaky failure (FINDING-QA-001); focused PASS; isolated 3/3 PASS  
 **UX Gate:** COMPLETE — PASS WITH FINDINGS (`docs/ux/ux-review.md`). Blocking findings: NONE.  
 **UX Polish:** COMPLETE — `docs/ux/ux-review.md` §18.  
-**Next:** EPIC-107 Public Landing Engineering Review (P107-05) (`docs/epics/EPIC-107/epic-plan.md`). Production Validation (§34) is DEFERRED until that Epic and its validation are complete. Open/non-blocking findings remain and are carried forward. Production readiness: NO.
+**Next:** EPIC-107 COMPLETE through epic certification (RELEASE BLOCKED). MASTER_PLAN §34 EXECUTED — RELEASE BLOCKED (`docs/release/production-validation.md`). Next: §35. Production readiness: NO.
 
 After individual MVP Epics are complete, perform an explicit integration
 phase.
@@ -1056,13 +1056,14 @@ It is the integration and validation step required before release gates.
 
 # 17A. R1-E07 --- Public Landing
 
-**Status:** DOCUMENTATION COMPLETE (P107-04) — implementation and E2E COMPLETE; Epic OPEN pending Engineering Review  
+**Status:** IMPLEMENTATION COMPLETE — Engineering Review PASS WITH FINDINGS (P107-05); production-like validation PASS WITH FINDINGS (P107-06); epic certification RELEASE BLOCKED  
 **Plan:** `docs/epics/EPIC-107/epic-plan.md`  
 **Identifier:** EPIC-107 / R1-E07  
 **HEAD at planning:** `791c879`  
 **HEAD at P107-03:** `2ee06fb`  
-**Engineering Review:** NOT STARTED (P107-05)  
-**Production Validation:** DEFERRED until this Epic and its validation are complete  
+**Engineering Review:** COMPLETE — PASS WITH FINDINGS (P107-05)  
+**Epic production-like validation:** COMPLETE — PASS WITH FINDINGS (P107-06)  
+**MASTER_PLAN §34:** EXECUTED — RELEASE BLOCKED — `docs/release/production-validation.md`  
 **Production readiness:** NO
 
 At planning: unauthenticated `/` redirected to `/sign-in`. There was no public landing and no `/dashboard` route. The authenticated dashboard lived at `/`.
@@ -1615,24 +1616,24 @@ FINDING-QA-002 remains OPEN.
 
 # 34. Production Validation Gate
 
-**Status:** NOT STARTED — DEFERRED until EPIC-107 Public Landing and its validation are complete. Do not execute this gate in the landing planning or implementation chats.
+**Status:** EXECUTED — **RELEASE BLOCKED**. Evidence: `docs/release/production-validation.md`. Candidate: `a0ad65f` (2026-09-18). Local `pnpm build` + `pnpm start`. No hosted target. Product Owner approval is a §35 field and is NOT PROVIDED.
 
 Validate the exact build that will be deployed.
 
 Minimum:
 
--   [ ] production build
--   [ ] deployment configuration
--   [ ] database migration
--   [ ] authentication
--   [ ] complete MVP workflow
--   [ ] critical E2E regression
--   [ ] reports
--   [ ] alerts
--   [ ] notifications
--   [ ] security baseline
--   [ ] environment variables
--   [ ] no release-blocking defects
+-   [x] production build — PASS
+-   [x] deployment configuration — recorded: local `pnpm start`; hosted target absent
+-   [x] database migration — PASS (`freelance_os` up to date)
+-   [x] authentication — PASS WITH FINDINGS (mailer/Google incomplete)
+-   [x] complete MVP workflow — PASS on `pnpm start`
+-   [x] critical E2E regression — executed on `next start`: 43/66; failures = F-004
+-   [x] reports — PASS
+-   [x] alerts — PASS
+-   [x] notifications — PASS
+-   [x] security baseline — PASS on exercised paths
+-   [x] environment variables — PARTIAL (Google unset; production mailer unset)
+-   [x] no release-blocking defects — no new §37 Release Blocker; gate still RELEASE BLOCKED
 
 The methodology requires Production Validation to validate exactly what
 will be deployed and concludes with either:
@@ -2089,25 +2090,25 @@ The exact parallelization will be determined during each Epic plan.
 
 # 47. Current Next Action
 
-UX Polish is complete. Evidence: `docs/ux/ux-review.md` §18. Blocking
-findings: NONE. Production readiness: NO.
+MASTER_PLAN §34 Production Validation has been executed on candidate
+`a0ad65f`. Evidence: `docs/release/production-validation.md`. Gate
+outcome: **RELEASE BLOCKED**. Production readiness: NO. Product Owner
+approval: **NOT PROVIDED**.
 
-EPIC-107 Public Landing implementation and E2E are complete through
-P107-03. Evidence: `docs/epics/EPIC-107/epic-plan.md`. HEAD at P107-03:
-`2ee06fb`. Production Validation (§34) is DEFERRED until EPIC-107
-Engineering Review and its validation are complete.
+EPIC-107 Engineering Review, production-like validation, and epic
+certification already exist and are not re-opened here.
 
 Next actions:
 
 ``` text
 1. Open a new Cursor chat
-2. Execute P107-05 — docs(landing): EPIC-107 engineering review
-   (docs/epics/EPIC-107/epic-plan.md §20)
+2. Execute MASTER_PLAN §35 Production Certification against
+   docs/release/production-validation.md
 ```
 
-Do not start Production Validation or Production Certification in the
-P107 chats. The Epic remains OPEN. Open/non-blocking findings remain and
-are carried forward (FINDING-UX-004, FINDING-QA-002, FINDING-INT-001/002/003,
+§35 cannot grant release while §34 is RELEASE BLOCKED and Product Owner
+approval is absent. Open/non-blocking findings remain and are carried
+forward (FINDING-UX-004, FINDING-QA-002, FINDING-INT-001/002/003,
 FINDING-QA-001, F-104-007, F-104-010 / 011 / 012).
 
 This follows the methodology's rule that each Phase gets a focused
@@ -2156,10 +2157,11 @@ releases:
     status: future
 
 last_completed:
-  epic: MVP-Integration
-  gate: UX Polish
-  reference: MASTER_PLAN.md §33
-  evidence: docs/ux/ux-review.md
+  epic: EPIC-107
+  gate: Production Validation
+  reference: MASTER_PLAN.md §34
+  evidence: docs/release/production-validation.md
+  production_validation: RELEASE BLOCKED
   ux_verdict: pass-with-findings
   ux_polish: COMPLETE
   qa_gate: MVP QA Gate
@@ -2169,10 +2171,12 @@ last_completed:
   documentation_gate: COMPLETE
   blocking_findings: none
   production_readiness: false
+  candidate: a0ad65f
   tests:
-    unit: 396
+    unit: 398
     integration: 224
-    e2e: 56-targeted-pass
+    e2e_dev_historical: 66-pass
+    e2e_next_start: 43-pass-23-fail-F-004
     release_gate: 5-pass-1-flaky
     focused_release_gate: pass
     isolated_release_gate: 3/3
@@ -2198,14 +2202,15 @@ last_completed:
     - FINDING-UX-009 CLOSED
 
 next:
-  phase: EPIC-107 Public Landing Engineering Review
-  epic: EPIC-107
-  gate: none — P107-05 Engineering Review
-  reference: docs/epics/EPIC-107/epic-plan.md
-  production_validation: deferred
+  phase: Production Certification
+  epic: none
+  gate: MASTER_PLAN §35
+  reference: docs/release/production-validation.md
+  production_validation: RELEASE BLOCKED
   production_validation_reference: MASTER_PLAN.md §34
   production_readiness: false
-  objective: Produce EPIC-107 engineering review. Do not start Production Validation.
+  product_owner_approval: NOT PROVIDED
+  objective: Run §35 Production Certification. Do not grant release without Product Owner approval and remaining §34 mandatory open items.
   open_non_blocking_findings:
     - FINDING-INT-001
     - FINDING-INT-002

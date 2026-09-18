@@ -3,10 +3,10 @@
 **Epic:** EPIC-107  
 **Release:** Release 1 — MVP  
 **MASTER_PLAN identifier:** R1-E07 — Public Landing (`MASTER_PLAN.md` §17A)  
-**Status:** DOCUMENTATION COMPLETE (P107-04) — implementation and E2E COMPLETE; Engineering Review NOT STARTED  
+**Status:** IMPLEMENTATION COMPLETE — Engineering Review PASS WITH FINDINGS (P107-05); production-like validation PASS WITH FINDINGS (P107-06); epic certification RELEASE BLOCKED; MASTER_PLAN §34 EXECUTED — RELEASE BLOCKED  
 **Dependencies:** EPIC-003, EPIC-004, EPIC-006, EPIC-104, MVP-INTEGRATION, UX Polish  
 **Previous:** UX Polish COMPLETE (`791c879`)  
-**Next after this Epic:** Production Validation (`MASTER_PLAN.md` §34) — **DEFERRED until this Epic and its validation are complete**
+**Next after this Epic:** Production Certification (`MASTER_PLAN.md` §35) — §34 evidence: `docs/release/production-validation.md` (RELEASE BLOCKED)
 
 ```text
 PLANNING:              COMPLETE
@@ -14,16 +14,18 @@ PRODUCT DECISIONS:     RESOLVED (PD-LANDING-001 … PD-LANDING-006)
 BLOCKING DECISIONS:    NONE
 IMPLEMENTATION:        COMPLETE (P107-01 … P107-03)
 DOCUMENTATION:         COMPLETE (P107-04)
-ENGINEERING REVIEW:    NOT STARTED (P107-05)
-PRODUCTION VALIDATION: DEFERRED
-PRODUCTION CERTIFICATION: NOT STARTED
+ENGINEERING REVIEW:    COMPLETE — PASS WITH FINDINGS (P107-05)
+PRODUCTION-LIKE:       COMPLETE — PASS WITH FINDINGS (P107-06)
+EPIC CERTIFICATION:    COMPLETE — RELEASE BLOCKED
+MVP §34:               EXECUTED — RELEASE BLOCKED
+PRODUCTION CERTIFICATION (§35): NOT STARTED
 ```
 
 HEAD at planning: `791c87944163e4fb2262de13309e0effe19f9e38`  
 HEAD at P107-03: `2ee06fb45ce25cc2a0bf2ad61a072b2c7795eb6a`  
 UX Polish commit: `feat(ux): polish MVP settings and authentication branding`
 
-The Epic remains OPEN. Do not start Production Validation or Production Certification.
+The Epic implementation is COMPLETE. MASTER_PLAN §34 has been executed (RELEASE BLOCKED). Do not start §35 in a §34 documentation commit.
 
 This Epic is a dedicated product-surface + route-migration Epic. It is not a Documentation Gate, UX Gate, or Production Validation phase.
 
@@ -416,15 +418,14 @@ Do not combine planning and implementation. Do not start Production Validation i
 
 ## 24. Production Validation
 
-**DEFERRED.**
+This Epic’s own production-like validation is recorded in
+`docs/epics/EPIC-107/production-validation.md` (P107-06 — PASS WITH FINDINGS;
+full MASTER_PLAN §34 was **not** completed by that phase).
 
-`MASTER_PLAN.md` §34 is not started by this Epic. Production Validation must wait until:
+MASTER_PLAN §34 was later executed on candidate `a0ad65f`. Evidence:
+`docs/release/production-validation.md`. Outcome: **RELEASE BLOCKED**.
 
-1. P107-01 … P107-05 complete
-2. Engineering Review recorded
-3. Landing/routing validation (tests + E2E) complete
-
-Do not start Production Certification.
+Do not start Production Certification in this Epic plan.
 
 ---
 
