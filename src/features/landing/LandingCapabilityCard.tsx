@@ -26,7 +26,7 @@ export function LandingCapabilityCard({
       </CardHeader>
       <CardContent>
         <details className="group">
-          <summary className="cursor-pointer list-none text-sm text-muted-foreground outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 [&::-webkit-details-marker]:hidden">
+          <summary className="inline-flex cursor-pointer list-none items-center gap-1 text-sm text-muted-foreground outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 [&::-webkit-details-marker]:hidden">
             <span className="group-open:hidden">
               Read more
               <span className="sr-only"> about {capability.title}</span>
@@ -34,6 +34,12 @@ export function LandingCapabilityCard({
             <span className="hidden group-open:inline">
               Read less
               <span className="sr-only"> about {capability.title}</span>
+            </span>
+            <span
+              aria-hidden="true"
+              className="text-xs leading-none group-open:rotate-180"
+            >
+              ⌄
             </span>
           </summary>
           <p className="mt-2 text-sm text-muted-foreground">

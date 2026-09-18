@@ -5,6 +5,7 @@ import {
   SIGN_UP_PATH,
 } from "@/application/auth/route-access";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { LANDING_CAPABILITIES } from "@/features/landing/capabilities";
 import { LANDING_HOW_IT_WORKS } from "@/features/landing/how-it-works";
 import { LandingCapabilityCard } from "@/features/landing/LandingCapabilityCard";
@@ -51,24 +52,27 @@ export function LandingPage(): JSX.Element {
             workspace.
           </p>
         </section>
-        <section
-          className="mt-16 space-y-6"
-          aria-labelledby="landing-how-it-works"
-        >
-          <h2 id="landing-how-it-works">How it works</h2>
-          <ol className="grid list-none gap-6 p-0 sm:grid-cols-3">
-            {LANDING_HOW_IT_WORKS.map((item) => (
-              <li key={item.step} className="space-y-1">
-                <p className="text-sm font-semibold tracking-tight text-muted-foreground">
-                  {item.step}
-                </p>
-                <h3>{item.title}</h3>
-                <p className="text-sm text-muted-foreground">
-                  {item.description}
-                </p>
-              </li>
-            ))}
-          </ol>
+        <section className="mt-16" aria-labelledby="landing-how-it-works">
+          <Card>
+            <CardHeader>
+              <h2 id="landing-how-it-works">How it works</h2>
+            </CardHeader>
+            <CardContent>
+              <ol className="grid list-none gap-6 p-0 sm:grid-cols-3">
+                {LANDING_HOW_IT_WORKS.map((item) => (
+                  <li key={item.step} className="space-y-1">
+                    <p className="text-sm font-semibold tracking-tight text-muted-foreground">
+                      {item.step}
+                    </p>
+                    <h3>{item.title}</h3>
+                    <p className="text-sm text-muted-foreground">
+                      {item.description}
+                    </p>
+                  </li>
+                ))}
+              </ol>
+            </CardContent>
+          </Card>
         </section>
         <section
           className="mt-16 space-y-6"

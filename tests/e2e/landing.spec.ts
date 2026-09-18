@@ -37,14 +37,15 @@ test("should render the public landing for unauthenticated visitors", async ({
   await expect(
     page.getByRole("heading", { name: "How it works" }),
   ).toBeVisible();
+  const howItWorks = page.getByRole("region", { name: "How it works" });
   await expect(
-    page.getByRole("heading", { name: "Set up", exact: true }),
+    howItWorks.getByRole("heading", { name: "Set up", exact: true }),
   ).toBeVisible();
   await expect(
-    page.getByRole("heading", { name: "Track", exact: true }),
+    howItWorks.getByRole("heading", { name: "Track", exact: true }),
   ).toBeVisible();
   await expect(
-    page.getByRole("heading", { name: "Understand", exact: true }),
+    howItWorks.getByRole("heading", { name: "Understand", exact: true }),
   ).toBeVisible();
 
   for (const name of APPROVED_CAPABILITIES) {
