@@ -1,5 +1,6 @@
 // src/app/(app)/page.tsx
 import { AnalyticsService } from "@/application/analytics/analytics-service";
+import { listClients } from "@/application/clients/list-clients";
 import { Dashboard } from "@/components/dashboard/Dashboard";
 import { ErrorState } from "@/components/states/ErrorState";
 import { createRepositories } from "@/infrastructure/persistence/create-repositories";
@@ -15,9 +16,17 @@ export default async function HomePage(): Promise<JSX.Element> {
       repositories.members
     );
     
-    const analytics = await analyticsService.getCurrentMonthAnalytics(context);
+    const [analytics, activeClients] = await Promise.all([
+      analyticsService.getCurrentMonthAnalytics(context),
+      listClients(context, repositories.clients, "ACTIVE"),
+    ]);
     
-    return <Dashboard analytics={analytics} />;
+    return (
+      <Dashboard
+        analytics={analytics}
+        hasActiveClients={activeClients.length > 0}
+      />
+    );
   } catch (error) {
     console.error("Failed to load dashboard analytics:", error);
     return <ErrorState message="Unable to load dashboard. Please try refreshing the page." />;

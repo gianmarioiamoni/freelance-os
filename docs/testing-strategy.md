@@ -1,6 +1,6 @@
 # FreelanceOS --- Testing Strategy
 
-**Status:** Testing and CI foundation implemented — EPIC-005 complete; UI test baseline added by EPIC-006; client coverage added by EPIC-101; contract coverage added by EPIC-102; time-tracking coverage added by EPIC-103; analytics and dashboard coverage added by EPIC-104; reporting coverage added by EPIC-105; alert evaluation and notification center coverage added by EPIC-106; MVP Integration COMPLETE / CLOSED — release-gate cross-domain journey certified; MVP QA Gate PASS WITH FINDINGS; Documentation Gate COMPLETE; UX Gate PASS WITH FINDINGS (`docs/ux/ux-review.md`); production readiness NO\
+**Status:** Testing and CI foundation implemented — EPIC-005 complete; UI test baseline added by EPIC-006; client coverage added by EPIC-101; contract coverage added by EPIC-102; time-tracking coverage added by EPIC-103; analytics and dashboard coverage added by EPIC-104; reporting coverage added by EPIC-105; alert evaluation and notification center coverage added by EPIC-106; MVP Integration COMPLETE / CLOSED — release-gate cross-domain journey certified; MVP QA Gate PASS WITH FINDINGS; Documentation Gate COMPLETE; UX Gate PASS WITH FINDINGS; UX Polish COMPLETE (`docs/ux/ux-review.md` §18); production readiness NO\
 **Document:** `docs/testing-strategy.md`\
 **Scope:** Release 0 Foundation + Release 1 MVP\
 **Canonical format:** Markdown
@@ -1649,7 +1649,11 @@ EPIC-006 established an accessibility baseline for the authenticated
 shell. Playwright asserts semantic Application nav, skip link to
 `#main-content`, `aria-current`, Sign out, heading structure, and
 mobile menu keyboard/role access. Field helpers associate label,
-hint, and error (`aria-invalid` / `aria-describedby`).
+hint, and error (`aria-invalid` / `aria-describedby`). UX Polish
+extends `app-shell.spec.ts` to assert `/settings` is a read-only
+workspace/account surface (not a placeholder) and `auth.spec.ts` to
+assert the FreelanceOS wordmark on Sign In, Forgot Password, and the
+Sign Out destination.
 
 EPIC-104 added `tests/e2e/dashboard-accessibility.spec.ts` for the `/`
 dashboard. Only part of it is sound evidence. Verified: exactly three

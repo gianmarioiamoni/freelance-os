@@ -14,8 +14,8 @@ export function NotificationList({
   if (notifications.length === 0) {
     return (
       <EmptyState
-        title="No notifications"
-        description="Notifications will appear here when contract thresholds are reached."
+        title="No alerts"
+        description="Alerts appear here when contract thresholds are reached."
       />
     );
   }

@@ -34,6 +34,7 @@ function makeUtilization(override: Partial<ContractUtilization> = {}): ContractU
   return {
     contractId,
     clientName,
+    isArchived: false,
     validFrom: new Date("2026-01-01T00:00:00.000Z"),
     validTo: null,
     isOngoing: true,

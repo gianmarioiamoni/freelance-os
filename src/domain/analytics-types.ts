@@ -51,6 +51,8 @@ export type ClientAllocation = {
 export type ContractUtilization = {
   contractId: string;
   clientName: string;
+  /** True when the related client is archived. */
+  isArchived: boolean;
   /** Contract validity start (inclusive). */
   validFrom: Date;
   /** Contract validity end (exclusive). null means the contract is ongoing. */

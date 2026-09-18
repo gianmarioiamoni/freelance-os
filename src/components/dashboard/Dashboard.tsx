@@ -4,15 +4,21 @@ import { ClientAllocation } from "@/components/dashboard/ClientAllocation";
 import { ContractUtilization } from "@/components/dashboard/ContractUtilization";
 import { PageHeader } from "@/components/page/PageHeader";
 import { EmptyState } from "@/components/states/EmptyState";
+import { Button } from "@/components/ui/button";
 import { formatPeriodDisplay } from "@/lib/analytics-periods";
 import type { MonthlyAnalytics as MonthlyAnalyticsType } from "@/domain/analytics-types";
+import Link from "next/link";
 import type { JSX } from "react";
 
 type DashboardProps = {
   analytics: MonthlyAnalyticsType;
+  hasActiveClients: boolean;
 };
 
-export function Dashboard({ analytics }: DashboardProps): JSX.Element {
+export function Dashboard({
+  analytics,
+  hasActiveClients,
+}: DashboardProps): JSX.Element {
   const hasTimeEntries = analytics.totalMinutes > 0;
   const periodDisplay = formatPeriodDisplay(analytics.period);
 
@@ -25,7 +31,22 @@ export function Dashboard({ analytics }: DashboardProps): JSX.Element {
         />
         <EmptyState
           title="No time entries yet"
-          description="Start by creating your first client and logging some work from the Time Tracking page."
+          description={
+            hasActiveClients
+              ? "Log time from Time Tracking to see this month's analytics."
+              : "Create a client, then log time from Time Tracking to see this month's analytics."
+          }
+          action={
+            hasActiveClients ? (
+              <Button asChild>
+                <Link href="/time-tracking/new">Log time</Link>
+              </Button>
+            ) : (
+              <Button asChild>
+                <Link href="/clients/new">New client</Link>
+              </Button>
+            )
+          }
         />
       </div>
     );

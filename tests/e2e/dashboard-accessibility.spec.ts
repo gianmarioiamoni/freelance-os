@@ -427,21 +427,18 @@ test.describe("Dashboard Accessibility", () => {
     const emptyMessage = page.getByText(/no time entries/i);
     await expect(emptyMessage).toBeVisible();
 
-    // Should provide meaningful guidance
-    const guidanceText = page.getByText(/start by creating/i);
+    const guidanceText = page.getByText(/create a client, then log time/i);
     await expect(guidanceText).toBeVisible();
 
-    // The empty state must be announced as a heading, not plain text
     await expect(
       page.getByRole("heading", { name: "No time entries yet" }),
     ).toBeVisible();
 
-    // The page keeps a single top-level heading for orientation
     await expect(page.getByRole("heading", { level: 1 })).toContainText(
       "Dashboard",
     );
 
-    // Guidance points to the action that resolves the empty state
+    await expect(page.getByRole("link", { name: "New client" })).toBeVisible();
     await expect(guidanceText).toContainText(/time tracking/i);
   });
 });

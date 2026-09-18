@@ -2,6 +2,7 @@
 "use client";
 
 import { Field } from "@/components/forms/Field";
+import { formatBillingModel } from "@/features/contracts/contract-display";
 import type { ClientRecord, ContractRecord } from "@/domain/persistence-types";
 import { useState, useMemo, type JSX } from "react";
 
@@ -117,7 +118,7 @@ export function ClientContractSelector({
             
             return (
               <option key={contract.id} value={contract.id}>
-                {contract.billingModel} · {formattedRate} · {new Date(contract.validFrom).toLocaleDateString()} to {contract.validTo ? new Date(contract.validTo).toLocaleDateString() : "ongoing"}
+                {formatBillingModel(contract.billingModel)} · {formattedRate} · {new Date(contract.validFrom).toLocaleDateString()} to {contract.validTo ? new Date(contract.validTo).toLocaleDateString() : "ongoing"}
               </option>
             );
           })}

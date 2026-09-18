@@ -5,6 +5,7 @@ import { TimeEntryForm } from "@/features/time-entries/TimeEntryForm";
 import { DeleteTimeEntryForm } from "@/features/time-entries/DeleteTimeEntryForm";
 import { updateTimeEntryAction } from "@/features/time-entries/update-time-entry-action";
 import { loadTimeEntry, loadClientsAndContracts } from "@/features/time-entries/load-time-entries";
+import { formatBillingModel } from "@/features/contracts/contract-display";
 import { formatDurationToHoursMinutes } from "@/features/time-entries/time-entry-form-state";
 import { notFound } from "next/navigation";
 import type { JSX } from "react";
@@ -63,7 +64,7 @@ export default async function TimeTrackingEditPage({
               isEdit={true}
               clientName={client?.companyName}
               contractDescription={contract ? 
-                `${contract.billingModel} · ${new Date(contract.validFrom).toLocaleDateString()} to ${contract.validTo ? new Date(contract.validTo).toLocaleDateString() : "ongoing"}` : 
+                `${formatBillingModel(contract.billingModel)} · ${new Date(contract.validFrom).toLocaleDateString()} to ${contract.validTo ? new Date(contract.validTo).toLocaleDateString() : "ongoing"}` : 
                 undefined
               }
             />

@@ -15,11 +15,11 @@ export default async function AlertsPage(): Promise<JSX.Element> {
     return (
       <section className="max-w-2xl">
         <PageHeader
-          title="Notifications"
-          description="Your in-app notifications for contract alerts."
+          title="Alerts"
+          description="In-app notifications for contract alerts."
         />
         <PageContent>
-          <ErrorState message="Unable to load notifications. Please try again later." />
+          <ErrorState message="Unable to load alerts. Please try again later." />
         </PageContent>
       </section>
     );
@@ -27,10 +27,10 @@ export default async function AlertsPage(): Promise<JSX.Element> {
 
   return (
     <section className="max-w-2xl">
-      <PageHeader
-        title="Notifications"
-        description="Your in-app notifications for contract alerts."
-      />
+        <PageHeader
+          title="Alerts"
+          description="In-app notifications for contract alerts."
+        />
       <PageContent>
         <NotificationList notifications={notifications} />
       </PageContent>

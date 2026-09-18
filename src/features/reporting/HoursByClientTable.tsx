@@ -1,7 +1,9 @@
 // src/features/reporting/HoursByClientTable.tsx
 import { AnalyticsService } from "@/application/analytics/analytics-service";
 import { EmptyState } from "@/components/states/EmptyState";
+import { Button } from "@/components/ui/button";
 import type { ClientAllocation } from "@/domain/analytics-types";
+import Link from "next/link";
 import type { JSX } from "react";
 
 type HoursByClientTableProps = {
@@ -16,6 +18,11 @@ export function HoursByClientTable({
       <EmptyState
         title="No hours recorded for this period"
         description="Time logged for clients will appear here once you start tracking."
+        action={
+          <Button asChild>
+            <Link href="/time-tracking/new">Log time</Link>
+          </Button>
+        }
       />
     );
   }

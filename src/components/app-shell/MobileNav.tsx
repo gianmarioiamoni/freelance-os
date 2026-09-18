@@ -29,10 +29,22 @@ export function MobileNav({ unreadAlertCount }: MobileNavProps): JSX.Element {
           type="button"
           variant="ghost"
           size="icon"
-          className="md:hidden"
-          aria-label="Open navigation"
+          className="relative md:hidden"
+          aria-label={
+            unreadAlertCount > 0
+              ? `Open navigation, ${unreadAlertCount} unread alerts`
+              : "Open navigation"
+          }
         >
           <Menu aria-hidden="true" />
+          {unreadAlertCount > 0 ? (
+            <span
+              aria-hidden="true"
+              className="absolute top-1 right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[0.6rem] font-semibold leading-none text-destructive-foreground"
+            >
+              {unreadAlertCount > 99 ? "99+" : unreadAlertCount}
+            </span>
+          ) : null}
         </Button>
       </SheetTrigger>
       <SheetContent side="left" className="w-72 max-w-[85vw] p-0">

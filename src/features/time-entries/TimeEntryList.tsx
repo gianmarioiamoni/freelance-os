@@ -9,6 +9,7 @@ import {
 import { Button } from "@/components/ui/button";
 import type { TimeEntryRecord, ClientRecord, ContractRecord } from "@/domain/persistence-types";
 import Link from "next/link";
+import { formatBillingModel } from "@/features/contracts/contract-display";
 import { formatDurationToHoursMinutes } from "@/features/time-entries/time-entry-form-state";
 import type { JSX } from "react";
 
@@ -118,7 +119,7 @@ export function TimeEntryList({ entries, date }: TimeEntryListProps): JSX.Elemen
                     </div>
                   </CardTitle>
                   <CardDescription>
-                    {entry.contract.billingModel} · {formatBillableStatus(entry.billable)}
+                    {formatBillingModel(entry.contract.billingModel)} · {formatBillableStatus(entry.billable)}
                   </CardDescription>
                 </CardHeader>
                 {entry.description && (

@@ -1,7 +1,9 @@
 // src/features/reporting/ContractReportTable.tsx
 import { AnalyticsService } from "@/application/analytics/analytics-service";
 import { EmptyState } from "@/components/states/EmptyState";
+import { Button } from "@/components/ui/button";
 import type { ContractUtilization } from "@/domain/analytics-types";
+import Link from "next/link";
 import type { JSX } from "react";
 
 type ContractReportTableProps = {
@@ -16,6 +18,11 @@ export function ContractReportTable({
       <EmptyState
         title="No contracts for this period"
         description="Relevant contracts will appear here once contracts overlap with the selected period."
+        action={
+          <Button asChild>
+            <Link href="/contracts/new">New contract</Link>
+          </Button>
+        }
       />
     );
   }
@@ -64,6 +71,11 @@ export function ContractReportTable({
                     {u.clientName}
                   </span>
                   <span className="ml-2 inline-flex gap-1">
+                    {u.isArchived && (
+                      <span className="text-xs text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
+                        Archived
+                      </span>
+                    )}
                     {u.isOngoing && (
                       <span className="text-xs text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
                         Ongoing

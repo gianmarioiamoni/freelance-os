@@ -52,6 +52,11 @@ export function ContractUtilization({ utilizations }: ContractUtilizationProps):
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
                     <h3 className="font-medium text-sm">{utilization.clientName}</h3>
+                    {utilization.isArchived && (
+                      <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded">
+                        Archived
+                      </span>
+                    )}
                     {utilization.isOngoing && (
                       <span className="text-xs text-muted-foreground" aria-label="ongoing contract">
                         Ongoing

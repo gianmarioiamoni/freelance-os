@@ -7,8 +7,9 @@
 **Host clock:** Europe/Rome (CEST, UTC+2)  
 **Verdict:** PASS WITH FINDINGS  
 **Blocking findings:** NONE  
-**Release readiness:** NO — UX Polish, then Production Validation / Certification remain required  
-**Next lifecycle phase:** UX Polish (`MASTER_PLAN.md` §33)
+**Release readiness:** NO — Production Validation / Certification remain required  
+**Next lifecycle phase:** Production Validation (`MASTER_PLAN.md` §34)  
+**UX Polish:** COMPLETE (2026-09-18) — see §18
 
 ------------------------------------------------------------------------
 
@@ -174,7 +175,7 @@ Copy-previous-entry remains deferred. UX Polish must not add it (`MASTER_PLAN.md
 |---|---|
 | **ID** | FINDING-UX-001 |
 | **Severity** | Medium |
-| **Status** | OPEN |
+| **Status** | CLOSED |
 | **Classification** | APPLICATION / UX |
 | **Dimension** | Empty states / clarity |
 | **Route** | `/` — `Dashboard.tsx` |
@@ -182,7 +183,7 @@ Copy-previous-entry remains deferred. UX Polish must not add it (`MASTER_PLAN.md
 | **Observed** | After creating “UX Gate Client”, dashboard still said “Start by creating your first client and logging some work from the Time Tracking page.” No CTA. |
 | **User impact** | Misleading instruction after onboarding step 1 |
 | **Blocking** | No |
-| **Next phase** | UX Polish |
+| **Next phase** | CLOSED in UX Polish — empty copy depends on whether active clients exist; CTA to New client or Log time |
 
 ### FINDING-UX-002 — Settings is a nav dead end
 
@@ -190,7 +191,7 @@ Copy-previous-entry remains deferred. UX Polish must not add it (`MASTER_PLAN.md
 |---|---|
 | **ID** | FINDING-UX-002 |
 | **Severity** | Medium |
-| **Status** | OPEN |
+| **Status** | CLOSED |
 | **Classification** | PRE-EXISTING (EPIC-006 placeholder) |
 | **Dimension** | Trust / discoverability |
 | **Route** | `/settings` — `PlaceholderPage` |
@@ -198,7 +199,7 @@ Copy-previous-entry remains deferred. UX Polish must not add it (`MASTER_PLAN.md
 | **Observed** | “Settings is not implemented yet.” |
 | **User impact** | Looks unfinished |
 | **Blocking** | No |
-| **Next phase** | UX Polish (hide or replace copy; do not add Settings product scope) |
+| **Next phase** | CLOSED in UX Polish — read-only Settings surface; no settings administration or timezone mutation |
 
 ### FINDING-UX-003 — Alerts vs Notifications terminology
 
@@ -206,7 +207,7 @@ Copy-previous-entry remains deferred. UX Polish must not add it (`MASTER_PLAN.md
 |---|---|
 | **ID** | FINDING-UX-003 |
 | **Severity** | Low |
-| **Status** | OPEN |
+| **Status** | CLOSED |
 | **Classification** | UX / terminology |
 | **Dimension** | Consistency |
 | **Route** | Nav `Alerts` → `/alerts` `h1` “Notifications” |
@@ -214,7 +215,7 @@ Copy-previous-entry remains deferred. UX Polish must not add it (`MASTER_PLAN.md
 | **Observed** | Nav Alerts; page Notifications; description “notifications for contract alerts” |
 | **User impact** | Mild confusion |
 | **Blocking** | No |
-| **Next phase** | UX Polish (do not silently rename the domain) |
+| **Next phase** | CLOSED in UX Polish — page title aligned to nav/route `Alerts`; domain Notification/Alert types unchanged |
 
 ### FINDING-UX-004 — Custom report period is not selectable in the UI
 
@@ -230,7 +231,7 @@ Copy-previous-entry remains deferred. UX Polish must not add it (`MASTER_PLAN.md
 | **Observed** | Pills: Today / This Week / This Month / This Year only. Custom URL works; no pill is `aria-current`. |
 | **User impact** | Custom range undiscoverable; FINDING-QA-002 mostly hidden from UI users |
 | **Blocking** | No |
-| **Next phase** | UX Polish |
+| **Next phase** | Remains OPEN — custom period UI would be new functionality and would expose FINDING-QA-002 |
 
 ### FINDING-UX-005 — Mobile unread badge not on the menu trigger
 
@@ -238,7 +239,7 @@ Copy-previous-entry remains deferred. UX Polish must not add it (`MASTER_PLAN.md
 |---|---|
 | **ID** | FINDING-UX-005 |
 | **Severity** | Medium |
-| **Status** | OPEN |
+| **Status** | CLOSED |
 | **Classification** | UX / responsive |
 | **Dimension** | Discoverability / mobile |
 | **Route** | `MobileNav.tsx` |
@@ -246,7 +247,7 @@ Copy-previous-entry remains deferred. UX Polish must not add it (`MASTER_PLAN.md
 | **Observed** | Hamburger `aria-label="Open navigation"` has no badge; count is inside the sheet / desktop sidebar |
 | **User impact** | Mobile users miss unread alerts until they open nav |
 | **Blocking** | No |
-| **Next phase** | UX Polish |
+| **Next phase** | CLOSED in UX Polish — unread count on hamburger `aria-label` and visible badge |
 
 ### FINDING-UX-006 — Duration control hint and labelling mismatch
 
@@ -254,7 +255,7 @@ Copy-previous-entry remains deferred. UX Polish must not add it (`MASTER_PLAN.md
 |---|---|
 | **ID** | FINDING-UX-006 |
 | **Severity** | Low |
-| **Status** | OPEN |
+| **Status** | CLOSED |
 | **Classification** | UX / accessibility |
 | **Dimension** | Interaction / a11y |
 | **Route** | `/time-tracking/new` — `DurationInput.tsx` |
@@ -262,7 +263,7 @@ Copy-previous-entry remains deferred. UX Polish must not add it (`MASTER_PLAN.md
 | **Observed** | Hint “hours:minutes (e.g., 2:30)” vs Hours + Minutes boxes. `Field` clones `id` onto the wrapper while Hours also uses `durationHours`. Minutes unlabeled. |
 | **User impact** | Confusing entry; weaker AT mapping |
 | **Blocking** | No |
-| **Next phase** | UX Polish |
+| **Next phase** | CLOSED in UX Polish — fieldset with Hours/Minutes labels, unique ids, matching hint |
 
 ### FINDING-UX-007 — Billing model label casing
 
@@ -270,7 +271,7 @@ Copy-previous-entry remains deferred. UX Polish must not add it (`MASTER_PLAN.md
 |---|---|
 | **ID** | FINDING-UX-007 |
 | **Severity** | Low |
-| **Status** | OPEN |
+| **Status** | CLOSED |
 | **Classification** | UX / terminology |
 | **Dimension** | Consistency |
 | **Route** | Contract form “Hourly”; time list/selector “HOURLY” |
@@ -278,7 +279,7 @@ Copy-previous-entry remains deferred. UX Polish must not add it (`MASTER_PLAN.md
 | **Observed** | Enum dumped in lists/selectors |
 | **User impact** | Looks unfinished |
 | **Blocking** | No |
-| **Next phase** | UX Polish |
+| **Next phase** | CLOSED in UX Polish — `formatBillingModel` on time-entry list, selector, and edit summary |
 
 ### FINDING-UX-008 — Several empty states have no next action
 
@@ -286,7 +287,7 @@ Copy-previous-entry remains deferred. UX Polish must not add it (`MASTER_PLAN.md
 |---|---|
 | **ID** | FINDING-UX-008 |
 | **Severity** | Low |
-| **Status** | OPEN |
+| **Status** | CLOSED |
 | **Classification** | UX / empty states |
 | **Dimension** | Empty states |
 | **Route** | Dashboard empty; reports section empties; `EmptyState` has no action slot |
@@ -294,7 +295,7 @@ Copy-previous-entry remains deferred. UX Polish must not add it (`MASTER_PLAN.md
 | **Observed** | Clients/contracts put New * above* empty; dashboard/reports describe only |
 | **User impact** | Extra navigation guesswork |
 | **Blocking** | No |
-| **Next phase** | UX Polish |
+| **Next phase** | CLOSED in UX Polish — EmptyState action slot; dashboard and report empties offer next steps |
 
 ### FINDING-UX-009 — Archived contracts unlabeled on dashboard / contract report
 
@@ -302,7 +303,7 @@ Copy-previous-entry remains deferred. UX Polish must not add it (`MASTER_PLAN.md
 |---|---|
 | **ID** | FINDING-UX-009 |
 | **Severity** | Low |
-| **Status** | OPEN |
+| **Status** | CLOSED |
 | **Classification** | UX / consistency |
 | **Dimension** | Visual hierarchy / terminology |
 | **Route** | Dashboard `ContractUtilization`; reports `ContractReportTable` |
@@ -310,7 +311,7 @@ Copy-previous-entry remains deferred. UX Polish must not add it (`MASTER_PLAN.md
 | **Observed** | “Northwind Contracts” 0h/40h with no Archived badge (Hours by Client does label archived when present) |
 | **User impact** | May look like an active contract |
 | **Blocking** | No |
-| **Next phase** | UX Polish |
+| **Next phase** | CLOSED in UX Polish — Archived badge on dashboard Contract Utilization and Contract Report |
 
 ------------------------------------------------------------------------
 
@@ -324,15 +325,15 @@ NONE.
 
 | ID | Status | Class | Phase |
 |---|---|---|---|
-| FINDING-UX-001 | OPEN | UX | UX Polish |
-| FINDING-UX-002 | OPEN | PRE-EXISTING | UX Polish |
-| FINDING-UX-003 | OPEN | UX / terminology | UX Polish |
-| FINDING-UX-004 | OPEN | UX | UX Polish |
-| FINDING-UX-005 | OPEN | UX / mobile | UX Polish |
-| FINDING-UX-006 | OPEN | UX / a11y | UX Polish |
-| FINDING-UX-007 | OPEN | UX / terminology | UX Polish |
-| FINDING-UX-008 | OPEN | UX | UX Polish |
-| FINDING-UX-009 | OPEN | UX | UX Polish |
+| FINDING-UX-001 | CLOSED | UX | UX Polish |
+| FINDING-UX-002 | CLOSED | PRE-EXISTING | UX Polish |
+| FINDING-UX-003 | CLOSED | UX / terminology | UX Polish |
+| FINDING-UX-004 | OPEN | UX | later (custom UI is new functionality) |
+| FINDING-UX-005 | CLOSED | UX / mobile | UX Polish |
+| FINDING-UX-006 | CLOSED | UX / a11y | UX Polish |
+| FINDING-UX-007 | CLOSED | UX / terminology | UX Polish |
+| FINDING-UX-008 | CLOSED | UX | UX Polish |
+| FINDING-UX-009 | CLOSED | UX | UX Polish |
 | FINDING-P04-002 | ACCEPTED | BY DESIGN | — |
 | FINDING-INT-001 | OPEN | TEST DEFECT | later test hardening |
 | FINDING-INT-002 | OPEN | TEST DEFECT | later test hardening |
@@ -346,11 +347,9 @@ NONE.
 
 ## 15. Recommended next lifecycle phase
 
-**UX Polish** — `MASTER_PLAN.md` §33.
+**Production Validation** — `MASTER_PLAN.md` §34.
 
-Implement only the identified UX improvements. No new functionality. Do not start Production Validation or Production Certification.
-
-Do not treat FINDING-QA-002 as closed. If Polish adds a custom-range picker, that defect becomes user-visible and should be fixed in implementation, not ignored.
+UX Polish is complete. FINDING-UX-004 remains OPEN. FINDING-QA-002 remains OPEN. Do not start Production Certification in the Validation chat.
 
 ------------------------------------------------------------------------
 
@@ -366,3 +365,22 @@ No production code or tests were modified.
 ## 17. Production readiness
 
 **NO.**
+
+------------------------------------------------------------------------
+
+## 18. UX Polish
+
+**Date:** 2026-09-18  
+**Status:** COMPLETE  
+**Commit target:** `feat(ux): polish MVP settings and authentication branding`
+
+Product Owner priorities implemented:
+
+- Settings is a read-only Account / Workspace / Alerts surface. No timezone editor. No settings mutation. No capacity-threshold control (capacity alerts remain deferred).
+- FreelanceOS wordmark on `(auth)` and `(public-auth)` layouts (Sign In, Sign Up, Forgot Password, Reset Password, and the Sign Out destination).
+
+Other in-scope findings closed: UX-001, UX-003, UX-005, UX-006, UX-007, UX-008, UX-009.
+
+Left OPEN: FINDING-UX-004 (custom period picker would be new functionality and would expose FINDING-QA-002). FINDING-QA-002 unchanged.
+
+Evidence: unit 396/396; integration 224/224; targeted E2E 56 passed after app-shell fix (auth, app-shell, onboarding, alerts, dashboard, dashboard-accessibility, time-tracking, reports, mvp-integration-journey); lint 0 errors / 6 pre-existing warnings; typecheck PASS. Browser: Sign In / Forgot Password / post-sign-out `/sign-in` show FreelanceOS; Settings shows workspace name, timezone, 80% warning threshold, no placeholder; Settings at 390×844 has no horizontal overflow.

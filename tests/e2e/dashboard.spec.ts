@@ -272,7 +272,10 @@ test.describe("Dashboard Analytics E2E Journey", () => {
     // Verify empty workspace shows appropriate message and guidance
     await waitForAnalyticsDisplay(page);
     await expect(page.getByText("No time entries yet")).toBeVisible();
-    await expect(page.getByText(/start by creating/i)).toBeVisible();
+    await expect(
+      page.getByText(/create a client, then log time/i),
+    ).toBeVisible();
+    await expect(page.getByRole("link", { name: "New client" })).toBeVisible();
 
     // Test recovery by navigating away and back
     await page.getByRole("link", { name: "Time Tracking" }).click();

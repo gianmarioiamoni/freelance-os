@@ -90,4 +90,27 @@ test("should show authenticated shell identity, navigation, and skip link", asyn
       name: "Clients",
     }),
   ).toHaveAttribute("aria-current", "page");
+
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.getByRole("navigation", { name: "Application" }).getByRole("link", {
+    name: "Settings",
+  }).click();
+  await expect(page).toHaveURL(/\/settings$/);
+  await expect(
+    page.getByRole("heading", { level: 1, name: "Settings" }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("Settings is not implemented yet."),
+  ).toHaveCount(0);
+  await expect(page.getByRole("heading", { name: "Workspace" })).toBeVisible();
+  await expect(page.getByText("Europe/Rome")).toBeVisible();
+  await expect(
+    page.getByText("Timezone is used for reporting periods"),
+  ).toBeVisible();
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect(
+    page.getByRole("heading", { level: 1, name: "Settings" }),
+  ).toBeVisible();
+  await expect(page.getByText("Europe/Rome")).toBeVisible();
 });

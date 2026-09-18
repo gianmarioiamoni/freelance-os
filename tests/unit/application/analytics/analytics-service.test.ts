@@ -53,6 +53,7 @@ const mockMonthlyAnalytics: MonthlyAnalytics = {
     {
       contractId: "contract-1",
       clientName: "ACME Corp",
+      isArchived: false,
       validFrom: new Date("2026-01-01T00:00:00.000Z"),
       validTo: new Date("2027-01-01T00:00:00.000Z"),
       isOngoing: false,
@@ -293,6 +294,7 @@ describe("AnalyticsService", () => {
         {
           contractId: "contract-1",
           clientName: "ACME Corp",
+          isArchived: false,
           validFrom: new Date("2026-01-01T00:00:00.000Z"),
           validTo: new Date("2027-01-01T00:00:00.000Z"),
           isOngoing: false,
@@ -328,6 +330,7 @@ describe("AnalyticsService", () => {
         {
           contractId: "contract-2",
           clientName: "Gamma Inc",
+          isArchived: false,
           validFrom: new Date("2026-01-01T00:00:00.000Z"),
           validTo: null, // ongoing
           isOngoing: true,

@@ -156,7 +156,7 @@ test(
     await page.goto("/alerts");
     await expect(page).toHaveURL(/\/alerts$/);
     await expect(
-      page.getByRole("heading", { name: "Notifications", exact: true, level: 1 }),
+      page.getByRole("heading", { name: "Alerts", exact: true, level: 1 }),
     ).toBeVisible();
 
     // Notification list must be visible (threshold crossed)

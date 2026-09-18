@@ -336,7 +336,7 @@ async function getContractUtilizations(
       ],
     },
     include: {
-      client: { select: { companyName: true } },
+      client: { select: { companyName: true, status: true } },
     },
   });
 
@@ -369,7 +369,7 @@ async function getContractUtilizations(
     consumptionOnlyContractIds.length > 0
       ? await db.contract.findMany({
           where: { workspaceId, id: { in: consumptionOnlyContractIds } },
-          include: { client: { select: { companyName: true } } },
+          include: { client: { select: { companyName: true, status: true } } },
         })
       : [];
 
@@ -451,6 +451,7 @@ async function getContractUtilizations(
       return {
         contractId: contract.id,
         clientName: contract.client.companyName,
+        isArchived: contract.client.status === "ARCHIVED",
         validFrom: contract.validFrom,
         validTo: contract.validTo,
         isOngoing,

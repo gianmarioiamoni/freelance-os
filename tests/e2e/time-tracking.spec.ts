@@ -117,7 +117,7 @@ test("should complete authenticated time tracking journey", async ({ page }) => 
   await expect(page.getByText(CLIENT_NAME)).toBeVisible();
   await expect(page.getByText("Development work on new features")).toBeVisible();
   await expect(page.getByText("2h 30m", { exact: true })).toBeVisible();
-  await expect(page.getByText(/HOURLY · Billable/)).toBeVisible();
+  await expect(page.getByText(/Hourly · Billable/)).toBeVisible();
 
   // Verify daily totals are shown
   await expect(page.getByText("Total: 2h 30m")).toBeVisible();
@@ -138,7 +138,7 @@ test("should complete authenticated time tracking journey", async ({ page }) => 
 
   // Verify client and contract are shown as read-only
   await expect(page.locator("#client-readonly")).toHaveText(CLIENT_NAME);
-  await expect(page.locator("#contract-readonly")).toContainText("HOURLY ·");
+  await expect(page.locator("#contract-readonly")).toContainText("Hourly ·");
 
   // Edit mutable fields
   await page.getByPlaceholder("Hours").clear();
@@ -158,7 +158,7 @@ test("should complete authenticated time tracking journey", async ({ page }) => 
   // Verify changes are reflected
   await expect(page.getByText("Updated: Development and testing work")).toBeVisible();
   await expect(page.getByText("3h", { exact: true })).toBeVisible();
-  await expect(page.getByText(/HOURLY · Non-billable/)).toBeVisible();
+  await expect(page.getByText(/Hourly · Non-billable/)).toBeVisible();
 
   // Verify updated totals
   await expect(page.getByText("Total: 3h")).toBeVisible();
@@ -236,8 +236,7 @@ test("should verify contract details are presentation-only", async ({ page }) =>
   const contractSelectElement = page.getByLabel("Contract");
   await expect(contractSelectElement).not.toBeDisabled();
   
-  // Verify contract option with HOURLY billing model appears
-  await expect(contractSelectElement.locator('option').filter({ hasText: "HOURLY" })).toHaveCount(1, { timeout: 5000 });
+  await expect(contractSelectElement.locator('option').filter({ hasText: "Hourly" })).toHaveCount(1, { timeout: 5000 });
 
   // Verify these are presentation-only (no calculated billing amounts)
   await expect(page.getByText("Revenue")).not.toBeVisible();
@@ -305,8 +304,9 @@ test("should verify quick-add uses normal creation path", async ({ page }) => {
   await expect(page.getByLabel("Contract")).toBeVisible();
   await expect(page.getByLabel("Work date")).toBeVisible();
   
-  // Duration field has label "Duration" but is composed of hours/minutes inputs
   await expect(page.getByText("Duration")).toBeVisible();
+  await expect(page.getByLabel("Hours")).toBeVisible();
+  await expect(page.getByLabel("Minutes")).toBeVisible();
 });
 
 test("should enforce workspace isolation in browser", async ({ page }) => {
@@ -457,7 +457,7 @@ test("should maintain immutability constraints in edit form", async ({ page }) =
 
   // Verify they are shown as read-only display
   await expect(page.locator("#client-readonly")).toHaveText("Immutable Client");
-  await expect(page.locator("#contract-readonly")).toContainText("HOURLY ·");
+  await expect(page.locator("#contract-readonly")).toContainText("Hourly ·");
   await expect(page.locator("#workDate")).toHaveText(TODAY_DISPLAY);
 
   // Verify mutable fields are editable
@@ -488,7 +488,7 @@ test("should maintain immutability constraints in edit form", async ({ page }) =
   // Verify changes took effect but immutable fields remained unchanged
   await expect(page.getByText("Modified description")).toBeVisible();
   await expect(page.getByText("5h 30m", { exact: true })).toBeVisible();
-  await expect(page.getByText(/HOURLY · Non-billable/)).toBeVisible();
+  await expect(page.getByText(/Hourly · Non-billable/)).toBeVisible();
 
   // Immutable associations should remain the same
   await expect(page.getByText("Immutable Client", { exact: true })).toBeVisible();

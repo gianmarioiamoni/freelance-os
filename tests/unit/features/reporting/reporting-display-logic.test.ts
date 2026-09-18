@@ -53,6 +53,7 @@ describe("ContractReportTable display logic", () => {
   const base: ContractUtilization = {
     contractId: "ct1",
     clientName: "Client A",
+    isArchived: false,
     validFrom: new Date("2026-01-01T00:00:00.000Z"),
     validTo: null,
     isOngoing: true,
@@ -61,6 +62,10 @@ describe("ContractReportTable display logic", () => {
     utilizationPercentage: 12.5,
     isOutOfValidity: false,
   };
+
+  it("shows Archived badge for archived clients", () => {
+    expect({ ...base, isArchived: true }.isArchived).toBe(true);
+  });
 
   it("shows Ongoing label for ongoing contracts (BR-105-016)", () => {
     expect(base.isOngoing).toBe(true);

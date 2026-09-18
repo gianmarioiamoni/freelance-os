@@ -793,7 +793,7 @@ This Epic remains COMPLETE / CLOSED. Historical P-INT-05 / P-INT-06 results are 
 | FINDING-QA-002 | OPEN / NON-BLOCKING | APPLICATION DEFECT — `getDateRangePeriod` west of UTC |
 | F-104-007 | PRE-EXISTING / NON-BLOCKING | Dashboard `NEXT_REDIRECT` logs |
 
-UX Gate (`MASTER_PLAN.md` §33, 2026-09-18): **COMPLETE**. Evidence: `docs/ux/ux-review.md`. Verdict: **PASS WITH FINDINGS**. Blocking findings: **NONE**. Production readiness: **NO**. Next: UX Polish.
+UX Gate (`MASTER_PLAN.md` §33, 2026-09-18): **COMPLETE**. Evidence: `docs/ux/ux-review.md`. Verdict: **PASS WITH FINDINGS**. Blocking findings: **NONE**. Production readiness: **NO**. UX Polish: **COMPLETE** (`docs/ux/ux-review.md` §18). `/settings` is a read-only information surface; timezone remains immutable after creation. Next: Production Validation (`MASTER_PLAN.md` §34).
 
 ---
 
@@ -1026,6 +1026,6 @@ ux_gate:
   blocking_findings: NONE
   production_readiness: NO
 next:
-  phase: UX Polish
-  objective: UX Polish (§33) — implement only identified UX improvements; no new functionality
+  phase: Production Validation
+  objective: Production Validation (§34) — validate the exact build that will be deployed
 ```

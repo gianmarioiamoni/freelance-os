@@ -102,9 +102,9 @@ test("alerts page shows empty state when there are no notifications", async ({
   await page.goto("/alerts");
   await expect(page).toHaveURL(/\/alerts$/);
   await expect(
-    page.getByRole("heading", { name: "Notifications", exact: true, level: 1 }),
+    page.getByRole("heading", { name: "Alerts", exact: true, level: 1 }),
   ).toBeVisible();
-  await expect(page.getByText("No notifications")).toBeVisible();
+  await expect(page.getByText("No alerts")).toBeVisible();
 });
 
 // ---------------------------------------------------------------------------
@@ -132,7 +132,7 @@ test("primary journey: TimeEntry above threshold → /alerts → unread → mark
   await page.goto("/alerts");
   await expect(page).toHaveURL(/\/alerts$/);
   await expect(
-    page.getByRole("heading", { name: "Notifications", exact: true, level: 1 }),
+    page.getByRole("heading", { name: "Alerts", exact: true, level: 1 }),
   ).toBeVisible();
 
   // Step 9: notification is visible — scoped to the notification list
@@ -192,6 +192,11 @@ test("alerts page shows unread count when notifications are unread", async ({
 
   // Unread summary text must be visible before marking read
   await expect(page.getByText(/unread notification/i)).toBeVisible();
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect(
+    page.getByRole("button", { name: /Open navigation/ }),
+  ).toHaveAttribute("aria-label", /unread alerts/);
 });
 
 // ---------------------------------------------------------------------------
@@ -284,7 +289,7 @@ test("workspace isolation: user B cannot see user A notifications on /alerts", a
 
   // User B has no time entries or alerts
   await pageB.goto("/alerts");
-  await expect(pageB.getByText("No notifications")).toBeVisible();
+  await expect(pageB.getByText("No alerts")).toBeVisible();
   await ctxB.close();
 });
 

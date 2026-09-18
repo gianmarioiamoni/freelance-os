@@ -1,7 +1,9 @@
 // src/features/reporting/AnnualOverviewTable.tsx
 import { AnalyticsService } from "@/application/analytics/analytics-service";
 import { EmptyState } from "@/components/states/EmptyState";
+import { Button } from "@/components/ui/button";
 import type { MonthlyAnalytics } from "@/domain/analytics-types";
+import Link from "next/link";
 import type { JSX } from "react";
 
 const MONTH_NAMES = [
@@ -35,6 +37,11 @@ export function AnnualOverviewTable({
       <EmptyState
         title="No activity recorded for this year"
         description="Monthly totals will appear here as you log time."
+        action={
+          <Button asChild>
+            <Link href="/time-tracking/new">Log time</Link>
+          </Button>
+        }
       />
     );
   }

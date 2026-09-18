@@ -1,6 +1,6 @@
 # FreelanceOS — System Architecture
 
-**Status:** Architecture Baseline — Authentication, workspace, testing/CI, UI foundation, client management, contract management, time tracking, analytics/dashboard, reporting, alert evaluation with in-app notification center, and MVP Integration COMPLETE / CLOSED (EPIC-003, EPIC-004, EPIC-005, EPIC-006, EPIC-101, EPIC-102, EPIC-103, EPIC-104, EPIC-105, EPIC-106, MVP-INTEGRATION). MVP QA Gate PASS WITH FINDINGS. Documentation Gate COMPLETE. UX Gate PASS WITH FINDINGS. Production readiness: NO.  
+**Status:** Architecture Baseline — Authentication, workspace, testing/CI, UI foundation, client management, contract management, time tracking, analytics/dashboard, reporting, alert evaluation with in-app notification center, and MVP Integration COMPLETE / CLOSED (EPIC-003, EPIC-004, EPIC-005, EPIC-006, EPIC-101, EPIC-102, EPIC-103, EPIC-104, EPIC-105, EPIC-106, MVP-INTEGRATION). MVP QA Gate PASS WITH FINDINGS. Documentation Gate COMPLETE. UX Gate PASS WITH FINDINGS. UX Polish COMPLETE. Production readiness: NO.  
 **Scope:** MVP  
 **Architectural style:** Modular Monolith  
 **Primary runtime:** Next.js / TypeScript  
@@ -954,7 +954,7 @@ Desktop: skip link, header (product mark, workspace name, account label, Sign ou
 
 Mobile: header menu button opens a Sheet with Application nav.
 
-`/` is the authenticated Dashboard product surface (EPIC-104): monthly summary, client allocation, and contract utilization, rendered as a Server Component from the shared analytics service. It is no longer a structural placeholder. `/clients` is a product surface: ACTIVE list, archived view, create, detail, and edit. `/contracts` is a product surface: list, create, detail, and edit. `/time-tracking` is a product surface. Other Application destinations remain structural placeholders with stable `h1` titles. `(app)/loading.tsx`, `error.tsx`, and `not-found.tsx` render the shared state primitives; the dashboard uses the route-level loading surface only, with no per-section skeletons (F-104-008).
+`/` is the authenticated Dashboard product surface (EPIC-104): monthly summary, client allocation, and contract utilization, rendered as a Server Component from the shared analytics service. It is no longer a structural placeholder. `/clients` is a product surface: ACTIVE list, archived view, create, detail, and edit. `/contracts` is a product surface: list, create, detail, and edit. `/time-tracking` is a product surface. `/alerts` is the in-app notification center (page title Alerts). `/settings` is a read-only Account / Workspace / Alerts information surface. It does not mutate timezone, currency, or thresholds. Timezone remains immutable after workspace creation. `(auth)` and `(public-auth)` layouts show the FreelanceOS wordmark. `(app)/loading.tsx`, `error.tsx`, and `not-found.tsx` render the shared state primitives; the dashboard uses the route-level loading surface only, with no per-section skeletons (F-104-008).
 
 ## 14.5 Responsive design
 

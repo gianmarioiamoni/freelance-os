@@ -1,7 +1,6 @@
 // src/features/time-entries/DurationInput.tsx
 "use client";
 
-import { Field } from "@/components/forms/Field";
 import { Input } from "@/components/ui/input";
 import type { JSX } from "react";
 
@@ -22,15 +21,18 @@ export function DurationInput({
   error,
   disabled = false,
 }: DurationInputProps): JSX.Element {
+  const hintId = `${hoursName}-hint`;
+  const errorId = `${hoursName}-error`;
+  const describedBy = error ? `${hintId} ${errorId}` : hintId;
+
   return (
-    <Field
-      label="Duration"
-      htmlFor={hoursName}
-      hint="Enter time as hours:minutes (e.g., 2:30 for 2 hours 30 minutes)"
-      error={error}
-    >
-      <div className="flex items-center gap-2">
-        <div className="flex-1">
+    <fieldset className="grid gap-2">
+      <legend className="text-sm font-medium">Duration</legend>
+      <div className="flex items-end gap-2">
+        <div className="grid flex-1 gap-1">
+          <label htmlFor={hoursName} className="text-sm">
+            Hours
+          </label>
           <Input
             id={hoursName}
             name={hoursName}
@@ -39,22 +41,41 @@ export function DurationInput({
             placeholder="Hours"
             defaultValue={defaultHours}
             disabled={disabled}
+            aria-invalid={error ? true : undefined}
+            aria-describedby={describedBy}
             className="text-center"
           />
         </div>
-        <span className="text-muted-foreground">:</span>
-        <div className="flex-1">
+        <span className="pb-2 text-muted-foreground" aria-hidden="true">
+          :
+        </span>
+        <div className="grid flex-1 gap-1">
+          <label htmlFor={minutesName} className="text-sm">
+            Minutes
+          </label>
           <Input
+            id={minutesName}
             name={minutesName}
             type="text"
             inputMode="numeric"
             placeholder="Minutes"
             defaultValue={defaultMinutes}
             disabled={disabled}
+            aria-invalid={error ? true : undefined}
+            aria-describedby={describedBy}
             className="text-center"
           />
         </div>
       </div>
-    </Field>
+      <p id={hintId} className="muted">
+        Enter hours and minutes in the two boxes (for example 2 hours and 30
+        minutes).
+      </p>
+      {error ? (
+        <p id={errorId} className="text-sm text-destructive" role="alert">
+          {error}
+        </p>
+      ) : null}
+    </fieldset>
   );
 }
