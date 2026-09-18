@@ -84,9 +84,6 @@ test("should keep the landing usable at 390px", async ({ page }) => {
     page.getByRole("banner").getByRole("link", { name: "Sign up" }),
   ).toBeVisible();
   await expect(page.getByRole("heading", { name: "Clients" })).toBeVisible();
-  await expect(
-    page.getByRole("contentinfo").getByRole("link", { name: "Sign in" }),
-  ).toBeVisible();
 
   const bodyScrollWidth = await page.evaluate(() => document.body.scrollWidth);
   expect(bodyScrollWidth).toBeLessThanOrEqual(410);

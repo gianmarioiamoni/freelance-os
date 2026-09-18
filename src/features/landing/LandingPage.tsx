@@ -50,7 +50,6 @@ export function LandingPage(): JSX.Element {
             A workspace for freelance operations: clients, contracts, time
             tracking, analytics, reports, and alerts.
           </p>
-          <LandingAuthActions />
         </section>
         <section
           className="mt-16 space-y-6"
@@ -71,13 +70,6 @@ export function LandingPage(): JSX.Element {
           </div>
         </section>
       </main>
-      <footer className="mt-auto border-t bg-background">
-        <div className="mx-auto flex w-full max-w-5xl flex-wrap items-center justify-end gap-3 px-4 py-6">
-          <nav aria-label="Footer">
-            <LandingAuthActions />
-          </nav>
-        </div>
-      </footer>
     </>
   );
 }
