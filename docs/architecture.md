@@ -1,6 +1,6 @@
 # FreelanceOS — System Architecture
 
-**Status:** Architecture Baseline — Authentication, workspace, testing/CI, UI foundation, client management, contract management, time tracking, analytics/dashboard, reporting, alert evaluation with in-app notification center, and MVP Integration COMPLETE / CLOSED (EPIC-003, EPIC-004, EPIC-005, EPIC-006, EPIC-101, EPIC-102, EPIC-103, EPIC-104, EPIC-105, EPIC-106, MVP-INTEGRATION)  
+**Status:** Architecture Baseline — Authentication, workspace, testing/CI, UI foundation, client management, contract management, time tracking, analytics/dashboard, reporting, alert evaluation with in-app notification center, and MVP Integration COMPLETE / CLOSED (EPIC-003, EPIC-004, EPIC-005, EPIC-006, EPIC-101, EPIC-102, EPIC-103, EPIC-104, EPIC-105, EPIC-106, MVP-INTEGRATION). MVP QA Gate PASS WITH FINDINGS. Documentation Gate COMPLETE. Production readiness: NO.  
 **Scope:** MVP  
 **Architectural style:** Modular Monolith  
 **Primary runtime:** Next.js / TypeScript  
@@ -333,11 +333,14 @@ The analytics layer is not a second database of truth.
 
 It derives information from domain data.
 
-**`Workspace.timezone` is the sole authority for all period boundaries
-(PD-105-003).** Every period constructor (`getTodayPeriod`,
+**`Workspace.timezone` is the intended sole authority for period
+boundaries (PD-105-003).** Current-period constructors (`getTodayPeriod`,
 `getCurrentWeekPeriod`, `getCurrentMonthPeriod`, `getCurrentYearPeriod`)
-accepts the workspace timezone as an explicit parameter. No period
-boundary is derived from the process clock timezone or from an
+accept the workspace timezone as an explicit parameter and passed QA
+under host TZ and `America/New_York`. `getDateRangePeriod` (custom
+range) still uses local date getters and shifts the calendar day when
+the process timezone is west of UTC (FINDING-QA-002, OPEN, APPLICATION
+DEFECT, NON-BLOCKING). No period boundary is accepted from an
 unauthenticated request parameter.
 
 ### Implemented by EPIC-104 and extended by EPIC-105
@@ -345,7 +348,7 @@ unauthenticated request parameter.
 The analytics module is implemented as an application service over a
 dedicated persistence adapter. Reviews:
 `docs/epics/EPIC-104/engineering-review.md`,
-`docs/epics/EPIC-105/engineering-review.md` (pending P105-08).
+`docs/epics/EPIC-105/engineering-review.md`.
 
 ```text
 src/domain/analytics-types.ts                       domain types

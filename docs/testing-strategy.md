@@ -1,6 +1,6 @@
 # FreelanceOS --- Testing Strategy
 
-**Status:** Testing and CI foundation implemented — EPIC-005 complete; UI test baseline added by EPIC-006; client coverage added by EPIC-101; contract coverage added by EPIC-102; time-tracking coverage added by EPIC-103; analytics and dashboard coverage added by EPIC-104; reporting coverage added by EPIC-105; alert evaluation and notification center coverage added by EPIC-106; MVP Integration COMPLETE / CLOSED — release-gate cross-domain journey certified\
+**Status:** Testing and CI foundation implemented — EPIC-005 complete; UI test baseline added by EPIC-006; client coverage added by EPIC-101; contract coverage added by EPIC-102; time-tracking coverage added by EPIC-103; analytics and dashboard coverage added by EPIC-104; reporting coverage added by EPIC-105; alert evaluation and notification center coverage added by EPIC-106; MVP Integration COMPLETE / CLOSED — release-gate cross-domain journey certified; MVP QA Gate PASS WITH FINDINGS; Documentation Gate COMPLETE; production readiness NO\
 **Document:** `docs/testing-strategy.md`\
 **Scope:** Release 0 Foundation + Release 1 MVP\
 **Canonical format:** Markdown
@@ -117,12 +117,12 @@ E2E / CI contract is unchanged. Review:
 Current suite totals — **three separate suites, never combined**:
 
 ``` text
-Unit          392   pnpm test                            (vitest)
-Integration   223   pnpm test:integration                (223 passed / 1 pre-existing — FINDING-INT-001)
-E2E            58   CI=true pnpm test:e2e --workers=1     (54 passed / 4 failed — all classified non-application defects)
+Unit          392   pnpm test                            (vitest) — 392/392 PASS
+Integration   224   pnpm test:integration                (224/224 PASS on host TZ; FINDING-INT-001 CONFIRMED OPEN under America/Los_Angeles — 217 passed / 7 failed)
+E2E            58   CI=true pnpm test:e2e --workers=1     (58/58 PASS)
 ```
 
-MVP Integration release gate: `tests/e2e/mvp-integration-journey.spec.ts` — 3/3 PASS; 22/22 assertions. Blocking findings: NONE.
+MVP QA release-gate evidence (`tests/e2e/mvp-integration-journey.spec.ts`): 5 pass / 1 flaky failure (FINDING-QA-001); focused release-gate PASS; isolated release-gate 3/3 PASS after the burst failure. Classification: NON-BLOCKING TEST DEFECT / FLAKY. Do not treat as a deterministic PASS. Blocking findings: NONE. Production readiness: NO. Evidence: `docs/qa/qa-report.md`.
 
 Suite totals at EPIC-106 closure (for reference): 379 unit / 219 integration / 57 E2E.
 Suite totals at EPIC-105 closure (for reference): 331 unit / 187 integration / 51 E2E.
@@ -901,16 +901,32 @@ Added by MVP Integration:
 - integration — `tests/integration/persistence/notification-unread-count.test.ts`
 - E2E — `tests/e2e/mvp-integration-journey.spec.ts` (`@release-gate`): Auth → Workspace → Client → Contract → TimeEntry → Dashboard → Reports → Alerts → mark-as-read → badge clear
 
-Classified suite exceptions at MVP Integration closure (not application defects; not closed here):
+Classified suite exceptions at MVP Integration closure (historical; not closed here):
 
-| ID | Status | Type | Deferred to |
+| ID | Status at integration closure | Type | Deferred to |
 |---|---|---|---|
 | FINDING-P04-003 | PRE-EXISTING | TEST DEFECT (`time-tracking.spec.ts` hardcoded `"9/17/2026"`) | QA / Production Certification |
 | FINDING-INT-001 | PRE-EXISTING | TEST DEFECT (`analytics-isolation.test.ts` UTC normalization) | QA / Production Certification |
 | FINDING-INT-002 | OPEN | TEST DEFECT (`auth.spec.ts` sign-out missing `waitForURL`) | QA / Production Certification |
 | FINDING-INT-003 | OPEN | TEST INFRASTRUCTURE (password-reset email delivery) | QA / Production Certification |
 
-FINDING-P04-001 (application sign-out race) is CLOSED. FINDING-P04-002 (dual notification at 100% utilization) is ACCEPTED.
+FINDING-P04-001 (application sign-out race) is CLOSED. FINDING-P04-002 (dual notification at 100% utilization) is ACCEPTED / BY DESIGN.
+
+### Revalidated by MVP QA Gate
+
+Evidence: `docs/qa/qa-report.md`. Verdict: PASS WITH FINDINGS. Blocking findings: NONE. Production readiness: NO.
+
+| ID | QA status | Classification | Notes |
+|---|---|---|---|
+| FINDING-P04-001 | CLOSED | APPLICATION DEFECT (fixed) | Sign-out 2/2 PASS |
+| FINDING-P04-002 | ACCEPTED / BY DESIGN | BY DESIGN | 100% may emit WARNING + EXCEEDED |
+| FINDING-P04-003 | CLOSED | — | Hardcoded `"9/17/2026"` absent at QA HEAD |
+| FINDING-INT-001 | OPEN / CONFIRMED | TEST DEFECT | Reproduced under `America/Los_Angeles` |
+| FINDING-INT-002 | OPEN / NOT REPRODUCED | TEST DEFECT | Sign-out 2/2 PASS; no `waitForURL` residual |
+| FINDING-INT-003 | OPEN / NOT REPRODUCED | TEST INFRASTRUCTURE | Password reset 2/2 PASS with test email delivery |
+| FINDING-QA-001 | OPEN | TEST DEFECT / FLAKY | Release-gate 5 pass / 1 flaky failure |
+| FINDING-QA-002 | OPEN | APPLICATION DEFECT | `getDateRangePeriod` custom-range TZ shift west of UTC |
+| F-104-007 | PRE-EXISTING | APPLICATION | Dashboard `NEXT_REDIRECT` logs; redirects still work |
 
 Example:
 

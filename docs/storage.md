@@ -188,7 +188,7 @@ EPIC-104 reference volume (100 clients, 50 contracts, 1000 time entries,
 analysis has been performed; these indexes provide structural support
 only. Do not cite the measured timings as a production guarantee.
 Reviews: `docs/epics/EPIC-104/engineering-review.md`,
-`docs/epics/EPIC-105/engineering-review.md` (pending P105-08).
+`docs/epics/EPIC-105/engineering-review.md`.
 
 `Alert.clientId` and `Alert.contractId` are independently optional
 workspace-scoped FKs. The database does not prove they refer to the

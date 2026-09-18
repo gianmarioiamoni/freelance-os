@@ -6,7 +6,11 @@ All notable changes to FreelanceOS are documented in this file.
 
 ### Added
 
-- MVP Integration COMPLETE / CLOSED — Engineering Review PASS WITH FINDINGS. Release gate PASSED (3/3; 22-step authenticated journey; 22/22 assertions). Blocking findings: NONE. Not production-ready. Next: QA — MVP QA Gate (§31).
+- MVP QA Gate PASS WITH FINDINGS (`docs/qa/qa-report.md`). Documentation Gate COMPLETE (`MASTER_PLAN.md` §32). Blocking findings: NONE. Production readiness: NO. Next: UX Gate (§33).
+- Automated QA evidence: lint 0 errors / 6 pre-existing warnings; typecheck PASS; unit 392/392; integration 224/224 (host TZ); build PASS; E2E 58/58; release-gate 5 pass / 1 flaky failure (FINDING-QA-001); focused release-gate PASS; isolated release-gate 3/3 PASS.
+- Findings after QA: FINDING-P04-001 CLOSED; FINDING-P04-002 ACCEPTED / BY DESIGN; FINDING-P04-003 CLOSED; FINDING-INT-001 OPEN / CONFIRMED (TEST DEFECT under America/Los_Angeles); FINDING-INT-002 OPEN / NOT REPRODUCED; FINDING-INT-003 OPEN / NOT REPRODUCED; FINDING-QA-001 OPEN NON-BLOCKING TEST DEFECT / FLAKY; FINDING-QA-002 OPEN NON-BLOCKING APPLICATION DEFECT (`getDateRangePeriod` custom-range timezone shift west of UTC); F-104-007 PRE-EXISTING / NON-BLOCKING.
+
+- MVP Integration COMPLETE / CLOSED — Engineering Review PASS WITH FINDINGS. Release gate PASSED (3/3; 22-step authenticated journey; 22/22 assertions). Blocking findings: NONE. Not production-ready. Next at integration closure: QA — MVP QA Gate (§31).
 - Cross-domain integration certified: Authentication → Workspace → Client → Contract → TimeEntry → Analytics → Dashboard → Alerts / Notifications → Reports. TimeEntry mutations revalidate `/` (layout + dashboard), `/reports`, and `/alerts` after persistence and alert evaluation. Unread Alerts navigation badge implemented. Sign-out uses `router.refresh()` then `router.push("/sign-in")` (FINDING-P04-001 CLOSED).
 - Findings: FINDING-P04-001 CLOSED; FINDING-P04-002 NON-BLOCKING / ACCEPTED (100% utilization may produce WARNING + EXCEEDED); FINDING-P04-003 NON-BLOCKING / PRE-EXISTING; FINDING-INT-001 NON-BLOCKING / PRE-EXISTING; FINDING-INT-002 NON-BLOCKING / OPEN; FINDING-INT-003 NON-BLOCKING / OPEN. OPEN and PRE-EXISTING test/infrastructure defects deferred to QA / Production Certification.
 - Suite totals at closure: 392 unit (PASS); 223 integration passed / 1 pre-existing (FINDING-INT-001); full E2E 54 passed / 4 failed, all classified non-application defects.

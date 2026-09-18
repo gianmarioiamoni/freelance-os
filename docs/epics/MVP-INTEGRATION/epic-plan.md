@@ -773,6 +773,28 @@ Test: "MVP integration journey: auth → workspace → client → contract → t
 
 **Commit:** `docs(integration): close MVP integration epic`
 
+### Documentation Gate / QA revalidation (2026-09-18)
+
+QA evidence: `docs/qa/qa-report.md`. Documentation Gate (`MASTER_PLAN.md` §32): **COMPLETE**.
+
+QA verdict: **PASS WITH FINDINGS**. Blocking findings: **NONE**. Production readiness: **NO**.
+
+This Epic remains COMPLETE / CLOSED. Historical P-INT-05 / P-INT-06 results are unchanged. QA revalidated findings without closing OPEN items that were not reproduced.
+
+| ID | Status after QA | Classification |
+|---|---|---|
+| FINDING-P04-001 | CLOSED | APPLICATION DEFECT (fixed) |
+| FINDING-P04-002 | ACCEPTED / BY DESIGN | BY DESIGN |
+| FINDING-P04-003 | CLOSED | Hardcoded date absent at QA HEAD |
+| FINDING-INT-001 | OPEN / CONFIRMED | TEST DEFECT under America/Los_Angeles |
+| FINDING-INT-002 | OPEN / NOT REPRODUCED | TEST DEFECT |
+| FINDING-INT-003 | OPEN / NOT REPRODUCED | TEST INFRASTRUCTURE |
+| FINDING-QA-001 | OPEN / NON-BLOCKING | TEST DEFECT / FLAKY — release-gate 5 pass / 1 flaky failure |
+| FINDING-QA-002 | OPEN / NON-BLOCKING | APPLICATION DEFECT — `getDateRangePeriod` west of UTC |
+| F-104-007 | PRE-EXISTING / NON-BLOCKING | Dashboard `NEXT_REDIRECT` logs |
+
+Next: UX Gate (`MASTER_PLAN.md` §33).
+
 ---
 
 ## 10. E2E Certification Scenario
@@ -979,7 +1001,26 @@ deferred_to_qa_production_certification:
   - FINDING-INT-001
   - FINDING-INT-002
   - FINDING-INT-003
+qa_revalidation:
+  evidence: docs/qa/qa-report.md
+  verdict: PASS WITH FINDINGS
+  blocking_findings: NONE
+  production_readiness: NO
+  documentation_gate: COMPLETE
+  release_gate: 5-pass-1-flaky
+  focused_release_gate: PASS
+  isolated_release_gate: 3/3
+  findings_after_qa:
+    FINDING-P04-001: CLOSED
+    FINDING-P04-002: ACCEPTED / BY DESIGN
+    FINDING-P04-003: CLOSED
+    FINDING-INT-001: OPEN / CONFIRMED — TEST DEFECT under America/Los_Angeles
+    FINDING-INT-002: OPEN / NOT REPRODUCED — TEST DEFECT
+    FINDING-INT-003: OPEN / NOT REPRODUCED — TEST INFRASTRUCTURE
+    FINDING-QA-001: OPEN / NON-BLOCKING — TEST DEFECT / FLAKY
+    FINDING-QA-002: OPEN / NON-BLOCKING — APPLICATION DEFECT
+    F-104-007: PRE-EXISTING / NON-BLOCKING
 next:
-  phase: QA
-  objective: MVP QA Gate (§31) — verify critical workflows, regressions, edge cases, authorization, workspace isolation
+  phase: UX
+  objective: UX Gate (§33) — clarity, discoverability, navigation, consistency, trust, onboarding, interaction flow, visual hierarchy
 ```

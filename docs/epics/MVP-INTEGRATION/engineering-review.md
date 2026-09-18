@@ -434,4 +434,28 @@ This review verdict is accepted as the final Engineering Review for the Epic:
 - FINDING-INT-002 and FINDING-INT-003 remain **OPEN** (non-blocking) and are deferred to QA / Production Certification
 - FINDING-P04-003 and FINDING-INT-001 remain **PRE-EXISTING** (non-blocking) and are deferred to QA / Production Certification
 
-Next roadmap phase: **QA — MVP QA Gate** (`MASTER_PLAN.md` §31).
+Next roadmap phase at closure: **QA — MVP QA Gate** (`MASTER_PLAN.md` §31).
+
+---
+
+## 15. QA revalidation / Documentation Gate
+
+QA evidence: `docs/qa/qa-report.md`. Documentation Gate: `MASTER_PLAN.md` §32 COMPLETE.
+
+This review's historical verdict is unchanged. QA revalidated findings as follows and did not close OPEN items that were not reproduced:
+
+| ID | Status at this review | Status after QA | Classification after QA |
+|---|---|---|---|
+| FINDING-P04-001 | CLOSED | CLOSED | APPLICATION DEFECT (fixed) |
+| FINDING-P04-002 | ACCEPTED | ACCEPTED / BY DESIGN | BY DESIGN |
+| FINDING-P04-003 | PRE-EXISTING | CLOSED | Hardcoded date absent at QA HEAD |
+| FINDING-INT-001 | PRE-EXISTING | OPEN / CONFIRMED | TEST DEFECT under America/Los_Angeles |
+| FINDING-INT-002 | OPEN | OPEN / NOT REPRODUCED | TEST DEFECT |
+| FINDING-INT-003 | OPEN | OPEN / NOT REPRODUCED | TEST INFRASTRUCTURE |
+| FINDING-QA-001 | — | OPEN | TEST DEFECT / FLAKY (release-gate 5/6) |
+| FINDING-QA-002 | — | OPEN | APPLICATION DEFECT (`getDateRangePeriod`) |
+| F-104-007 | — | PRE-EXISTING | Dashboard `NEXT_REDIRECT` logs |
+
+QA verdict: **PASS WITH FINDINGS**. Blocking findings: **NONE**. Production readiness: **NO**.
+Release-gate at QA: 5 pass / 1 flaky failure; focused PASS; isolated 3/3 PASS.
+Next roadmap phase after Documentation Gate: **UX Gate** (`MASTER_PLAN.md` §33).

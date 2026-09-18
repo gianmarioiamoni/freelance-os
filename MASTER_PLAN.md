@@ -4,7 +4,7 @@
 **Document:** `MASTER_PLAN.md`\
 **Product:** FreelanceOS\
 **Canonical format:** Markdown\
-**Current phase:** MVP Integration COMPLETE / CLOSED → QA (MVP QA Gate §31)
+**Current phase:** Documentation Gate COMPLETE (§32) → UX Gate (§33)
 
 ------------------------------------------------------------------------
 
@@ -135,8 +135,8 @@ context is recovered from repository documentation.
 ## Overall
 
 ``` text
-STATUS: MVP Integration COMPLETE / CLOSED — Engineering Review PASS WITH FINDINGS
-NEXT: QA — MVP QA Gate (§31)
+STATUS: Documentation Gate COMPLETE — QA PASS WITH FINDINGS
+NEXT: UX Gate (§33)
 ```
 
 ## Completed planning artifacts
@@ -157,6 +157,8 @@ Application implementation: STARTED
 Foundation implementation: EPIC-001 COMPLETE; EPIC-002 COMPLETE; EPIC-003 COMPLETE; EPIC-004 COMPLETE; EPIC-005 COMPLETE; EPIC-006 COMPLETE
 MVP implementation: EPIC-101 COMPLETE; EPIC-102 COMPLETE; EPIC-103 COMPLETE; EPIC-104 COMPLETE; EPIC-105 COMPLETE; EPIC-106 COMPLETE
 MVP integration: COMPLETE / CLOSED — see docs/epics/MVP-INTEGRATION/engineering-review.md
+MVP QA Gate: PASS WITH FINDINGS — see docs/qa/qa-report.md
+Documentation Gate: COMPLETE — MASTER_PLAN.md §32
 Production deployment: NOT STARTED
 Authentication: IMPLEMENTED — see docs/epics/EPIC-003/engineering-review.md
 Workspace / authorization: IMPLEMENTED — see docs/epics/EPIC-004/engineering-review.md
@@ -227,6 +229,54 @@ Gates: lint PASS; typecheck PASS; build PASS
 Open findings deferred to QA / Production Certification: FINDING-INT-002, FINDING-INT-003
 Accepted / pre-existing: FINDING-P04-002 ACCEPTED; FINDING-P04-003 PRE-EXISTING; FINDING-INT-001 PRE-EXISTING
 Closed: FINDING-P04-001
+
+MVP QA Gate — §31
+Evidence: docs/qa/qa-report.md
+HEAD at QA: c872a83
+Verdict: PASS WITH FINDINGS
+Blocking findings: NONE
+Production readiness: NO
+Critical workflows: PASS
+Regressions: PASS
+Edge cases: PASS WITH FINDINGS
+Authorization: PASS
+Workspace isolation: PASS
+Contract validity: PASS
+Billing calculations: N/A (no billing/revenue in MVP)
+Utilization: PASS
+Alerts: PASS
+Reporting: PASS WITH FINDINGS
+Authentication: PASS
+Stability: PASS WITH FINDINGS
+Performance smoke: PASS
+Error states: PASS
+Lint: 0 errors / 6 pre-existing warnings
+Typecheck: PASS
+Unit: 392/392
+Integration (host TZ): 224/224
+Build: PASS
+E2E: 58/58
+Release-gate: 5 pass / 1 flaky failure (FINDING-QA-001)
+Focused release-gate: PASS
+Isolated release-gate: 3/3 PASS after the burst failure
+Core journeys: ALL PASS
+Timezone current periods: PASS
+Custom date range: APPLICATION DEFECT — FINDING-QA-002 (OPEN / NON-BLOCKING)
+
+Documentation Gate — §32
+Status: COMPLETE
+Next: UX Gate (§33)
+
+Findings after QA (current):
+FINDING-P04-001 CLOSED
+FINDING-P04-002 ACCEPTED / BY DESIGN
+FINDING-P04-003 CLOSED
+FINDING-INT-001 OPEN / CONFIRMED — TEST DEFECT under America/Los_Angeles
+FINDING-INT-002 OPEN / NOT REPRODUCED — TEST DEFECT
+FINDING-INT-003 OPEN / NOT REPRODUCED — TEST INFRASTRUCTURE
+FINDING-QA-001 OPEN / NON-BLOCKING — TEST DEFECT / FLAKY
+FINDING-QA-002 OPEN / NON-BLOCKING — APPLICATION DEFECT
+F-104-007 PRE-EXISTING / NON-BLOCKING
 ```
 
 Present after EPIC-104:
@@ -299,8 +349,9 @@ Present after EPIC-102:
     history
 
 This is not production readiness. Release 0 Foundation engineering
-remains complete. MVP implementation has started. Later
-validation/certification remain required.
+remains complete. MVP implementation, integration, QA, and
+Documentation Gate are complete. UX Review, Production Validation,
+and Production Certification remain required.
 
 This distinction is deliberate: planning documents describe what has
 been designed; future documentation updates must describe what has
@@ -932,9 +983,13 @@ R0-E04 Workspace
 **Status:** COMPLETE / CLOSED — Engineering Review PASS WITH FINDINGS  
 **Plan:** `docs/epics/MVP-INTEGRATION/epic-plan.md`  
 **Review:** `docs/epics/MVP-INTEGRATION/engineering-review.md`  
+**QA:** PASS WITH FINDINGS — `docs/qa/qa-report.md`  
+**Documentation Gate:** COMPLETE (§32)  
 **Blocking findings:** NONE  
-**Release gate:** PASSED (3/3; 22-step authenticated journey; 22/22 assertions)  
-**Next:** QA — MVP QA Gate (§31). Remaining OPEN test/infrastructure defects (FINDING-INT-002, FINDING-INT-003) are deferred to QA / Production Certification.
+**Production readiness:** NO  
+**Release gate (integration):** PASSED (3/3; 22-step authenticated journey; 22/22 assertions)  
+**Release gate (QA):** 5 pass / 1 flaky failure (FINDING-QA-001); focused PASS; isolated 3/3 PASS  
+**Next:** UX Gate (§33). Open non-blocking findings remain and are carried forward.
 
 After individual MVP Epics are complete, perform an explicit integration
 phase.
@@ -1411,20 +1466,23 @@ This is the methodology's defined purpose for Engineering Review.
 
 QA must verify:
 
--   [ ] critical workflows
--   [ ] regressions
--   [ ] edge cases
--   [ ] authorization
--   [ ] workspace isolation
--   [ ] contract validity
--   [ ] billing calculations
--   [ ] utilization
--   [ ] alerts
--   [ ] reporting
--   [ ] authentication
--   [ ] stability
--   [ ] performance smoke checks
--   [ ] error states
+-   [x] critical workflows — PASS
+-   [x] regressions — PASS
+-   [x] edge cases — PASS WITH FINDINGS
+-   [x] authorization — PASS
+-   [x] workspace isolation — PASS
+-   [x] contract validity — PASS
+-   [ ] billing calculations — N/A (MVP has no billing/revenue; utilization/capacity verified)
+-   [x] utilization — PASS
+-   [x] alerts — PASS
+-   [x] reporting — PASS WITH FINDINGS (FINDING-QA-002)
+-   [x] authentication — PASS
+-   [x] stability — PASS WITH FINDINGS (FINDING-QA-001)
+-   [x] performance smoke checks — PASS
+-   [x] error states — PASS
+
+Evidence: `docs/qa/qa-report.md`. Verdict: **PASS WITH FINDINGS**.
+Blocking findings: **NONE**. Production readiness: **NO**.
 
 QA answers:
 
@@ -1454,6 +1512,11 @@ Only implemented behavior should be described as implemented.
 The methodology requires continuous documentation synchronization and
 explicitly includes README, Architecture, CHANGELOG, MASTER_PLAN, and
 technical documentation. fileciteturn1file3L1333-L1361
+
+Status (2026-09-18): **COMPLETE**. QA evidence: `docs/qa/qa-report.md`.
+QA verdict: **PASS WITH FINDINGS**. Blocking findings: **NONE**.
+Production readiness: **NO**. Open/non-blocking findings remain.
+Next: UX Gate (§33).
 
 ------------------------------------------------------------------------
 
@@ -1658,7 +1721,7 @@ PD-105-002 settled period end as "through today". Both are implemented
 in P105-04 and verified by integration evidence.
 
 Real debt recorded by EPIC-105 (see `docs/epics/EPIC-105/epic-plan.md`
-§16.4 and the Engineering Review pending at P105-08):
+§16.4 and `docs/epics/EPIC-105/engineering-review.md`):
 
   ID            Area                                                          Severity    Status
   ------------- ------------------------------------------------------------- ----------- -------
@@ -1669,6 +1732,18 @@ Real debt recorded by EPIC-105 (see `docs/epics/EPIC-105/epic-plan.md`
 EPIC-105 findings F-105-001 through F-105-007 are closed; F-105-P-007
 (performance N+1 concern) is evidenced and measured at MVP scale; no
 optimization is required without a threshold from PD-105-008.
+
+Real debt recorded by MVP QA Gate (see `docs/qa/qa-report.md`). F-104-007
+remains OPEN / PRE-EXISTING / NON-BLOCKING (dashboard `NEXT_REDIRECT`
+logs). FINDING-QA-001 is a test defect, not application debt:
+
+  ID              Area                                                          Severity   Status
+  --------------- ------------------------------------------------------------- ---------- ------------
+  FINDING-QA-002  `getDateRangePeriod` custom-range process-TZ shift west of UTC Medium     OPEN
+  FINDING-INT-001 Analytics isolation / `getDateRangePeriod` under LA TZ         —          OPEN / CONFIRMED
+  FINDING-INT-002 `auth.spec.ts` sign-out missing `waitForURL`                   —          OPEN / NOT REPRODUCED
+  FINDING-INT-003 Password-reset email delivery residual                        —          OPEN / NOT REPRODUCED
+  FINDING-QA-001  Flaky release-gate sign-up (`/onboarding` vs `/sign-in`)       Low        OPEN / FLAKY
 
 Do not use "technical debt" as a label for unimplemented planned
 features.
@@ -1944,25 +2019,20 @@ The exact parallelization will be determined during each Epic plan.
 
 # 47. Current Next Action
 
-EPIC-105 Reporting is engineering-complete (COMPLETE WITH DOCUMENTED
-ENVIRONMENTAL GATE EXCEPTION). P105-07 documentation synchronization is
-complete. The next step is the Engineering Review.
+Documentation Gate (§32) is complete. MVP QA Gate (§31) verdict is
+PASS WITH FINDINGS. Blocking findings: NONE. Production readiness: NO.
 
 Next actions:
 
 ``` text
 1. Open a new Cursor chat
-2. Execute P105-08 — EPIC-105 Engineering Review
-3. Produce docs/epics/EPIC-105/engineering-review.md
+2. Execute UX Gate — MASTER_PLAN.md §33
+3. Review clarity, discoverability, navigation, consistency, trust,
+   onboarding, interaction flow, and visual hierarchy
 ```
 
-The Engineering Review (P105-08) requires no code changes. It produces
-the verdict, per-suite evidence, findings summary, inherited findings
-status, OBD relevance, and production-readiness limitations for
-EPIC-105. It depends on P105-07 being complete.
-
-Before starting R1-E06 Alerts and Notifications, resolve OBD-006
-(capacity warning threshold) and confirm the alert trigger semantics.
+Do not start Production Validation or Production Certification in the
+UX Gate chat. Open/non-blocking findings remain and are carried forward.
 
 This follows the methodology's rule that each Phase gets a focused
 Cursor chat, a defined commit expectation, review, approval, and then
@@ -2011,35 +2081,44 @@ releases:
 
 last_completed:
   epic: MVP-Integration
-  objective: Cross-domain MVP integration certification
-  verdict: complete-pass-with-findings
-  engineering_status: complete
+  gate: Documentation Gate
+  reference: MASTER_PLAN.md §32
+  qa_gate: MVP QA Gate
+  qa_reference: MASTER_PLAN.md §31
+  qa_evidence: docs/qa/qa-report.md
+  qa_verdict: pass-with-findings
   blocking_findings: none
-  release_gate: pass
   production_readiness: false
   tests:
     unit: 392
-    integration: 223
+    integration: 224
     e2e: 58
+    release_gate: 5-pass-1-flaky
+    focused_release_gate: pass
+    isolated_release_gate: 3/3
   findings:
     - FINDING-P04-001 CLOSED
-    - FINDING-P04-002 NON-BLOCKING / ACCEPTED
-    - FINDING-P04-003 NON-BLOCKING / PRE-EXISTING
-    - FINDING-INT-001 NON-BLOCKING / PRE-EXISTING
-    - FINDING-INT-002 NON-BLOCKING / OPEN
-    - FINDING-INT-003 NON-BLOCKING / OPEN
+    - FINDING-P04-002 ACCEPTED / BY DESIGN
+    - FINDING-P04-003 CLOSED
+    - FINDING-INT-001 OPEN / CONFIRMED / TEST DEFECT
+    - FINDING-INT-002 OPEN / NOT REPRODUCED / TEST DEFECT
+    - FINDING-INT-003 OPEN / NOT REPRODUCED / TEST INFRASTRUCTURE
+    - FINDING-QA-001 OPEN / NON-BLOCKING / TEST DEFECT / FLAKY
+    - FINDING-QA-002 OPEN / NON-BLOCKING / APPLICATION DEFECT
+    - F-104-007 PRE-EXISTING / NON-BLOCKING
 
 next:
-  phase: QA
-  gate: MVP QA Gate
-  reference: MASTER_PLAN.md §31
-  objective: Verify critical workflows, regressions, edge cases, authorization, workspace isolation
-  deferred_open_findings:
+  phase: UX
+  gate: UX Gate
+  reference: MASTER_PLAN.md §33
+  objective: Review clarity, discoverability, navigation, consistency, trust, onboarding, interaction flow, visual hierarchy
+  open_non_blocking_findings:
+    - FINDING-INT-001
     - FINDING-INT-002
     - FINDING-INT-003
-  deferred_pre_existing_test_defects:
-    - FINDING-P04-003
-    - FINDING-INT-001
+    - FINDING-QA-001
+    - FINDING-QA-002
+    - F-104-007
 ```
 
 ------------------------------------------------------------------------
