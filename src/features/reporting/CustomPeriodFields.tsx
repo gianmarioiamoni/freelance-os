@@ -39,27 +39,41 @@ export function CustomPeriodFields({
     <form
       method="GET"
       action="/reports"
-      className="flex flex-wrap items-end gap-2"
+      className="grid w-full min-w-0 gap-3 md:flex md:flex-wrap md:items-end md:gap-2"
       onSubmit={handleSubmit}
     >
       <input type="hidden" name="period" value="custom" />
-      <Field label="Start date" htmlFor="report-period-start" error={errors.start}>
+      <Field
+        label="Start date"
+        htmlFor="report-period-start"
+        error={errors.start}
+        className="w-full min-w-0 md:w-auto"
+      >
         <Input
           type="date"
           name="start"
           defaultValue={defaultStart}
+          className="h-11 md:h-8"
           onChange={(event) => setStart(event.target.value)}
         />
       </Field>
-      <Field label="End date" htmlFor="report-period-end" error={errors.end}>
+      <Field
+        label="End date"
+        htmlFor="report-period-end"
+        error={errors.end}
+        className="w-full min-w-0 md:w-auto"
+      >
         <Input
           type="date"
           name="end"
           defaultValue={defaultEnd}
           min={start || undefined}
+          className="h-11 md:h-8"
         />
       </Field>
-      <Button type="submit">Apply</Button>
+      <Button type="submit" className="h-11 w-full md:h-8 md:w-auto">
+        Apply
+      </Button>
     </form>
   );
 }

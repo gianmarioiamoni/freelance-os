@@ -24,7 +24,7 @@ export function PeriodSelector({ current }: PeriodSelectorProps): JSX.Element {
   const isCustom = current.kind === "custom";
 
   return (
-    <nav aria-label="Report period" className="grid gap-3">
+    <nav aria-label="Report period" className="grid min-w-0 gap-3">
       <ul className="flex flex-wrap gap-2 list-none p-0 m-0">
         {STANDARD_PERIODS.map((kind) => {
           const isActive = current.kind === kind;
@@ -42,7 +42,7 @@ export function PeriodSelector({ current }: PeriodSelectorProps): JSX.Element {
         })}
       </ul>
 
-      <div className="grid gap-2">
+      <div className="grid min-w-0 gap-2">
         <span
           className={isCustom ? PILL_ACTIVE : PILL_INACTIVE}
           aria-current={isCustom ? "true" : undefined}
