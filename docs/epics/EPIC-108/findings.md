@@ -9,6 +9,7 @@
 **ER-108-D2:** PASS  
 **ER-108-D3:** PASS  
 **Stream C verification:** PASS  
+**Final ER:** PASS WITH FINDINGS — `docs/epics/EPIC-108/engineering-review.md`  
 **Does not rewrite:** MASTER_PLAN §34 / §35, R1 certification, historical QA / UX / EPIC-107 rows
 
 ---
@@ -274,4 +275,4 @@ No application or test code was changed for Stream B.
 
 ## Still OPEN (not Stream A / E / B / D / C)
 
-None.
+FINDING-108-ER-001 (final ER; PRE-EXISTING / TEST DEFECT; time-tracking E2E “today” vs `toISOString()` UTC day; not an EPIC-108 regression).

@@ -6,6 +6,7 @@ All notable changes to FreelanceOS are documented in this file.
 
 ### Fixed
 
+- EPIC-108 Engineering Review PASS WITH FINDINGS (`docs/epics/EPIC-108/engineering-review.md`). Streams A/E/B/D/C CLOSED. FINDING-108-ER-001 recorded (pre-existing time-tracking E2E today vs UTC; non-blocking). Does not rewrite §34 / §35.
 - EPIC-108 Stream C CLOSED (`docs/epics/EPIC-108/findings.md`, C05 verification PASS). FINDING-UX-004: Custom Period Selector on `/reports` (`?period=custom&start=YYYY-MM-DD&end=YYYY-MM-DD`). JS validation is authority; `noValidate` so native `end.min` does not swallow submit; `min` remains an affordance. Reports E2E 22/22; unit 6/6. C01 `0743996`; C02 `92c2808`; C03 `14b4c88`; C04 `977210b`. Does not rewrite §34 / §35.
 - EPIC-108 Stream D CLOSED (`docs/epics/EPIC-108/findings.md`, ER-108-D1 / D2 / D3 PASS). F-104-011 (`<dl>`), F-104-012 (native headings / truncation / within-capacity text), F-104-010 (hardened dashboard a11y assertions; suite 11/11). P108-08 `8f5607e`. FINDING-UX-004 remains OPEN (Stream C). Does not rewrite §34 / §35.
 - EPIC-108 Stream D: F-104-012 CLOSED (`docs/epics/EPIC-108/findings.md`, ER-108-D2 PASS). Native `h2` card titles; truncated `clientName` remains in the heading DOM; `"Within contracted capacity"` for finite known percentage `<= 100`. Unit display 7/7; dashboard journey 1/1; semantic HTML/a11y 1/1. P108-07 `1f2cf71`. Stream D remains open for F-104-010. Does not rewrite §34 / §35.

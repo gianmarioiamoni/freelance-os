@@ -135,8 +135,8 @@ context is recovered from repository documentation.
 ## Overall
 
 ``` text
-STATUS: UX Polish COMPLETE; EPIC-107 Public Landing COMPLETE through P107-06 and epic certification; MASTER_PLAN §34 READY FOR RELEASE; §35 GRANTED; EPIC-108 Stream A, Stream E, Stream B, Stream D, and Stream C complete
-NEXT: none. EPIC-108 streams A, E, B, D, and C CLOSED — docs/epics/EPIC-108/findings.md
+STATUS: UX Polish COMPLETE; EPIC-107 Public Landing COMPLETE through P107-06 and epic certification; MASTER_PLAN §34 READY FOR RELEASE; §35 GRANTED; EPIC-108 COMPLETE (ER PASS WITH FINDINGS)
+NEXT: none. EPIC-108 CLOSED — docs/epics/EPIC-108/engineering-review.md; findings.md
 Production Validation (§34): EXECUTED — READY FOR RELEASE — docs/release/production-validation.md
 Production Certification (§35): GRANTED — docs/release/production-certification.md
 Release gate resolution: docs/release/release-gate-resolution.md
@@ -2110,7 +2110,7 @@ Next actions:
 
 ``` text
 1. Release 1 MVP is certified
-2. EPIC-108 Stream A, Stream E, Stream B, Stream D, and Stream C are complete
+2. EPIC-108 is CLOSED (ER PASS WITH FINDINGS)
 3. Do not rewrite historical §34 rows
 ```
 
@@ -2224,8 +2224,9 @@ next:
   production_certification: GRANTED
   production_readiness: release-granted
   product_owner_approval: D-005 PROVIDED
-  objective: Release 1 MVP certified. EPIC-108 Stream A, Stream E, Stream B, Stream D, and Stream C CLOSED.
-  open_non_blocking_findings: []
+  objective: Release 1 MVP certified. EPIC-108 CLOSED (ER PASS WITH FINDINGS).
+  open_non_blocking_findings:
+    - FINDING-108-ER-001
 ```
 
 ------------------------------------------------------------------------
