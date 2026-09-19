@@ -973,11 +973,12 @@ Evidence: `docs/epics/EPIC-108/findings.md`. ER-108-B PASS. P108-04 evidence onl
 
 ### Closed by EPIC-108 Stream D (partial)
 
-Evidence: `docs/epics/EPIC-108/findings.md`. ER-108-D1 PASS. Stream D remains open for F-104-010 / F-104-012.
+Evidence: `docs/epics/EPIC-108/findings.md`. ER-108-D1 PASS. ER-108-D2 PASS. Stream D remains open for F-104-010.
 
 | ID | Status | Classification | Notes |
 |---|---|---|---|
 | F-104-011 | CLOSED | ACCESSIBILITY | Monthly Summary `<dl>`; dashboard journey 1/1; semantic HTML 1/1. P108-06 `3d4ad4c` |
+| F-104-012 | CLOSED | ACCESSIBILITY | Native `h2` card titles; truncated `clientName` remains in the heading DOM; `"Within contracted capacity"` for finite `<= 100`. Unit display 7/7; dashboard journey 1/1; semantic HTML/a11y 1/1. P108-07 `1f2cf71` |
 
 ### Implemented by EPIC-107
 
@@ -1737,8 +1738,8 @@ touch-target floor, and a textual (non-colour) utilization label.
 indicators, colour independence and contrast, and no-horizontal-scroll
 at 200 percent text scaling — those assertions cannot fail as written
 (F-104-010, open). Monthly Summary is a `<dl>` with `dt`/`dd` groups
-(F-104-011, CLOSED, EPIC-108 Stream D / ER-108-D1). The dashboard still
-uses `role="heading" aria-level={2}` rather than native `h2` (F-104-012).
+(F-104-011, CLOSED, EPIC-108 Stream D / ER-108-D1). Dashboard card titles
+are native `h2` (F-104-012, CLOSED, EPIC-108 Stream D / ER-108-D2).
 
 This is an accessibility baseline, not WCAG certification, and the
 dashboard portion of it is weaker than its test count suggests. No
