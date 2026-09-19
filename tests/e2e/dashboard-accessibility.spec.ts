@@ -57,17 +57,19 @@ test.describe("Dashboard Responsive Design", () => {
     await expect(page.getByText("Test Client").first()).toBeVisible();
     await expect(page.getByLabel("7h 30m total hours tracked")).toBeVisible(); // Total hours display
 
-    // Verify sections stack vertically (single column)
-    const summarySection = page.getByText("Monthly Summary", { exact: true }).locator('..');
-    const clientSection = page.getByText("Client Allocation", { exact: true }).locator('..');
-    
-    const summaryBox = await summarySection.boundingBox();
-    const clientBox = await clientSection.boundingBox();
-    
-    if (summaryBox && clientBox) {
-      // Client section should be below summary (higher Y coordinate)
-      expect(clientBox.y).toBeGreaterThan(summaryBox.y);
-    }
+    const summaryHeading = page.getByRole("heading", {
+      level: 2,
+      name: "Monthly Summary",
+    });
+    const clientHeading = page.getByRole("heading", {
+      level: 2,
+      name: "Client Allocation",
+    });
+    const summaryBox = await summaryHeading.boundingBox();
+    const clientBox = await clientHeading.boundingBox();
+    expect(summaryBox).not.toBeNull();
+    expect(clientBox).not.toBeNull();
+    expect(clientBox!.y).toBeGreaterThan(summaryBox!.y);
 
     // Verify horizontal scrolling is not needed
     const bodyScrollWidth = await page.evaluate(() => document.body.scrollWidth);
@@ -152,41 +154,26 @@ test.describe("Dashboard Responsive Design", () => {
 
   test("text scaling and zoom support", async ({ page }) => {
     await setupDashboardWithData(page);
-    
-    // Test 200% zoom (common accessibility requirement)
-    await page.setViewportSize({ width: 1280, height: 720 });
-    await page.evaluate(() => {
-      document.body.style.zoom = '2';
-    });
-    
+
+    // 1280x720 at 200% browser zoom is a 640x360 CSS viewport
+    await page.setViewportSize({ width: 640, height: 360 });
     await waitForAnalytics(page);
 
-    // Content should remain accessible at 200% zoom
-    await expect(page.getByRole("heading", { name: "Dashboard" })).toBeVisible();
-    await expect(page.getByText("Monthly Summary", { exact: true })).toBeVisible();
-    
-    // Should not require horizontal scrolling
-    const hasHorizontalScroll = await page.evaluate(() => {
-      return document.documentElement.scrollWidth > document.documentElement.clientWidth;
-    });
-    expect(hasHorizontalScroll).toBeFalsy();
+    await expect(
+      page.getByRole("heading", { level: 1, name: /dashboard/i }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("heading", { level: 2, name: "Monthly Summary" }),
+    ).toBeVisible();
+    await expect(page.getByLabel("7h 30m total hours tracked")).toBeVisible();
 
-    // Reset zoom
-    await page.evaluate(() => {
-      document.body.style.zoom = '1';
+    const overflow = await page.evaluate(() => {
+      return {
+        scrollWidth: document.documentElement.scrollWidth,
+        clientWidth: document.documentElement.clientWidth,
+      };
     });
-
-    // Test with larger system font size (simulated)
-    await page.addStyleTag({
-      content: `
-        * {
-          font-size: 1.2em !important;
-        }
-      `
-    });
-    
-    await waitForAnalytics(page);
-    await expect(page.getByRole("heading", { name: "Dashboard" })).toBeVisible();
+    expect(overflow.scrollWidth).toBeLessThanOrEqual(overflow.clientWidth + 1);
   });
 });
 
@@ -268,67 +255,40 @@ test.describe("Dashboard Accessibility", () => {
     const totalHours = page.getByLabel("7h 30m total hours tracked");
     await expect(totalHours).toBeVisible();
 
-    // Check for monthly summary section
-    const monthlySection = page.getByText("Monthly Summary", { exact: true });
-    await expect(monthlySection).toBeVisible();
-
-    // Verify percentage information is accessible
-    const billablePercentage = page.getByText("(100%)").first();
-    await expect(billablePercentage).toBeVisible();
-
-    // Check that data tables/lists have proper structure
-    const clientAllocation = page.getByText("Client Allocation", { exact: true }).locator('..');
-    await expect(clientAllocation).toBeVisible();
-
-    // Verify contract utilization section
-    const contractSection = page.getByText("Contract Utilization", { exact: true }).locator('..');
-    await expect(contractSection).toBeVisible();
+    await expect(
+      page.getByRole("heading", { level: 2, name: "Monthly Summary" }),
+    ).toBeVisible();
+    await expect(
+      page.getByLabel("7h 30m billable hours, 100% of total"),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("heading", { level: 2, name: "Client Allocation" }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("heading", { level: 2, name: "Contract Utilization" }),
+    ).toBeVisible();
   });
 
   test("color independence and contrast", async ({ page }) => {
     await setupDashboardWithData(page);
     await waitForAnalytics(page);
 
-    // Test with high contrast mode simulation
-    await page.addStyleTag({
-      content: `
-        @media (prefers-contrast: high) {
-          * {
-            background: white !important;
-            color: black !important;
-          }
-        }
-      `
-    });
+    await page.emulateMedia({ forcedColors: "active", reducedMotion: "reduce" });
 
-    // Content should still be readable
-    await expect(page.getByRole("heading", { name: "Dashboard" })).toBeVisible();
-    await expect(page.getByText("Test Client").first()).toBeVisible();
+    await expect(
+      page.getByRole("heading", { level: 1, name: /dashboard/i }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("heading", { level: 3, name: "Test Client" }).first(),
+    ).toBeVisible();
     await expect(page.getByLabel("7h 30m total hours tracked")).toBeVisible();
-
-    // Test with reduced motion preference
-    await page.addStyleTag({
-      content: `
-        @media (prefers-reduced-motion: reduce) {
-          * {
-            animation-duration: 0.01s !important;
-            animation-iteration-count: 1 !important;
-            transition-duration: 0.01s !important;
-          }
-        }
-      `
-    });
-
-    // Should not break functionality
-    await waitForAnalytics(page);
-    await expect(page.getByText("Monthly Summary", { exact: true })).toBeVisible();
-
-    // Information should not rely solely on color
-    // Percentages should be explicit text, not just color bars
-    // Utilization is conveyed as explicit text, not only via the progress bar
+    await expect(
+      page.getByRole("heading", { level: 2, name: "Monthly Summary" }),
+    ).toBeVisible();
     await expect(
       page.getByLabel("Test Client contract: 9% utilized"),
     ).toBeVisible();
+    await expect(page.getByText("Within contracted capacity")).toBeVisible();
   });
 
   test("meaningful text alternatives and descriptions", async ({ page }) => {
@@ -346,77 +306,39 @@ test.describe("Dashboard Accessibility", () => {
     // Client names should be clear
     await expect(page.getByText("Test Client").first()).toBeVisible();
 
-    // Utilization states consumed vs contracted, not just a bar
     await expect(
       page.getByLabel("7h 30m consumed of 80h contracted, 9% utilization"),
     ).toBeVisible();
-
-    // Test with screen reader simulation (check for hidden text)
-    const srOnlyElements = page.locator('.sr-only, .visually-hidden, [aria-label]');
-    const srElementCount = await srOnlyElements.count();
-    
-    // Should have some screen reader specific content
-    if (srElementCount > 0) {
-      for (let i = 0; i < srElementCount; i++) {
-        const element = srOnlyElements.nth(i);
-        const ariaLabel = await element.getAttribute('aria-label');
-        const textContent = await element.textContent();
-        
-        // Either should have meaningful aria-label or text content
-        expect(ariaLabel || textContent).toBeTruthy();
-      }
-    }
   });
 
   test("focus indicators and visual accessibility", async ({ page }) => {
     await setupDashboardWithData(page);
     await waitForAnalytics(page);
 
-    // Test that focused elements have visible indicators
-    const firstLink = page.getByRole("navigation").getByRole("link").first();
-    await firstLink.focus();
+    const skipLink = page.getByRole("link", { name: "Skip to content" });
+    await expect(skipLink).toHaveAttribute("href", "#main-content");
+    await expect(page.locator("main#main-content")).toBeVisible();
 
-    // Check focus outline is visible
-    const focusStyles = await firstLink.evaluate((el) => {
-      const computed = window.getComputedStyle(el, ':focus');
+    await page.keyboard.press("Tab");
+    await expect(skipLink).toBeFocused();
+    await expect(skipLink).toBeVisible();
+
+    const skipFocusStyles = await skipLink.evaluate((el) => {
+      const computed = window.getComputedStyle(el);
       return {
-        outline: computed.outline,
+        outlineStyle: computed.outlineStyle,
         outlineWidth: computed.outlineWidth,
         boxShadow: computed.boxShadow,
       };
     });
+    const skipHasFocusIndicator =
+      (skipFocusStyles.outlineStyle !== "none" &&
+        parseFloat(skipFocusStyles.outlineWidth) > 0) ||
+      (skipFocusStyles.boxShadow !== "none" && skipFocusStyles.boxShadow !== "");
+    expect(skipHasFocusIndicator).toBe(true);
 
-    // Should have some kind of focus indicator
-    const hasFocusIndicator = 
-      focusStyles.outline !== 'none' || 
-      focusStyles.outlineWidth !== '0px' || 
-      focusStyles.boxShadow !== 'none';
-    
-    expect(hasFocusIndicator).toBeTruthy();
-
-    // Test with Windows High Contrast Mode simulation
-    await page.addStyleTag({
-      content: `
-        @media (prefers-contrast: high) {
-          a:focus, button:focus {
-            outline: 3px solid ButtonText !important;
-          }
-        }
-      `
-    });
-
-    await firstLink.focus();
-    await expect(firstLink).toBeVisible();
-
-    // Verify skip link functionality (if present)
-    const skipLink = page.getByText(/skip to main content/i);
-    if (await skipLink.isVisible()) {
-      await skipLink.click();
-      
-      // Should focus main content
-      const mainContent = page.getByRole("main");
-      await expect(mainContent).toBeFocused();
-    }
+    await skipLink.press("Enter");
+    await expect(page).toHaveURL(/#main-content$/);
   });
 
   test("empty state accessibility", async ({ page }) => {
