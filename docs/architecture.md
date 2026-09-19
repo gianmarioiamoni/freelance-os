@@ -1067,6 +1067,13 @@ No reporting formula is duplicated from the analytics layer.
 Authorization is resolved through `getCurrentWorkspaceContext()` outside
 any `try` block. Period selection is URL-driven (search parameters only);
 no browser-supplied tenant identifier can influence the workspace scope.
+`PeriodSelector` keeps the four preset links and adds a Custom Range GET
+form (FINDING-UX-004 CLOSED, EPIC-108 Stream C):
+`/reports?period=custom&start=YYYY-MM-DD&end=YYYY-MM-DD`. Custom Range is
+not a `Link`. JS validation is the authority; the form is `noValidate` so
+native `end.min` does not swallow submit. `min={start}` remains a picker
+affordance. Annual Overview stays current-year and is not period-filtered.
+No new timezone logic; `getDateRangePeriod` / `resolvePeriod` unchanged.
 
 Performance: a baseline has been measured at the EPIC-104 reference
 volume (100 clients, 50 contracts, 1000 time entries, 13 months). The

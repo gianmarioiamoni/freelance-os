@@ -980,6 +980,16 @@ Evidence: `docs/epics/EPIC-108/findings.md`. ER-108-D1 PASS. ER-108-D2 PASS. ER-
 | F-104-012 | CLOSED | ACCESSIBILITY | Native `h2` card titles; truncated `clientName` remains in the heading DOM; `"Within contracted capacity"` for finite `<= 100`. Unit display 7/7; dashboard journey 1/1; semantic HTML/a11y 1/1. P108-07 `1f2cf71` |
 | F-104-010 | CLOSED | ACCESSIBILITY / TEST | Hardened dashboard a11y assertions; suite 11/11. P108-08 `8f5607e` |
 
+### Closed by EPIC-108 Stream C
+
+Evidence: `docs/epics/EPIC-108/findings.md`. C05 verification PASS. Stream C CLOSED. Does not rewrite the QA Gate table above.
+
+| ID | Status | Classification | Notes |
+|---|---|---|---|
+| FINDING-UX-004 | CLOSED | UX | Custom Period Selector on `/reports`. URL `?period=custom&start=&end=`. JS validation authority; `noValidate` + `end.min` affordance. Reports E2E 22/22; unit 6/6. C01–C04 |
+
+`tests/e2e/reports.spec.ts` now also covers custom apply, same-day, preset-after-custom, invalid/incomplete range, keyboard submit, crafted custom URL, and 390×844 overflow.
+
 ### Implemented by EPIC-107
 
 EPIC-107 added public-root and dashboard-routing coverage. It does not close inherited findings. FINDING-QA-001 was not reproduced in P107-03; it remains OPEN.

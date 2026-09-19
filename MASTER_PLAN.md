@@ -135,8 +135,8 @@ context is recovered from repository documentation.
 ## Overall
 
 ``` text
-STATUS: UX Polish COMPLETE; EPIC-107 Public Landing COMPLETE through P107-06 and epic certification; MASTER_PLAN §34 READY FOR RELEASE; §35 GRANTED; EPIC-108 Stream A, Stream E, Stream B, and Stream D complete
-NEXT: EPIC-108 Stream C (FINDING-UX-004; Product Owner decision). Stream A, E, B, and D findings CLOSED — docs/epics/EPIC-108/findings.md
+STATUS: UX Polish COMPLETE; EPIC-107 Public Landing COMPLETE through P107-06 and epic certification; MASTER_PLAN §34 READY FOR RELEASE; §35 GRANTED; EPIC-108 Stream A, Stream E, Stream B, Stream D, and Stream C complete
+NEXT: none. EPIC-108 streams A, E, B, D, and C CLOSED — docs/epics/EPIC-108/findings.md
 Production Validation (§34): EXECUTED — READY FOR RELEASE — docs/release/production-validation.md
 Production Certification (§35): GRANTED — docs/release/production-certification.md
 Release gate resolution: docs/release/release-gate-resolution.md
@@ -298,7 +298,7 @@ F-104-007 CLOSED — EPIC-108 Stream E / ER-108-E PASS
 FINDING-UX-001 CLOSED
 FINDING-UX-002 CLOSED
 FINDING-UX-003 CLOSED
-FINDING-UX-004 OPEN / NON-BLOCKING
+FINDING-UX-004 CLOSED — EPIC-108 Stream C / C05 verification PASS
 FINDING-UX-005 CLOSED
 FINDING-UX-006 CLOSED
 FINDING-UX-007 CLOSED
@@ -2110,14 +2110,13 @@ Next actions:
 
 ``` text
 1. Release 1 MVP is certified
-2. EPIC-108 Stream A, Stream E, Stream B, and Stream D are complete
+2. EPIC-108 Stream A, Stream E, Stream B, Stream D, and Stream C are complete
 3. Do not rewrite historical §34 rows
 ```
 
-Open/non-blocking findings remain and are carried forward (FINDING-UX-004).
-FINDING-QA-002, FINDING-INT-001, FINDING-108-001, F-104-007, FINDING-QA-001,
-FINDING-INT-002, FINDING-INT-003, F-104-011, F-104-012, and F-104-010 are CLOSED
-(`docs/epics/EPIC-108/findings.md`). F-004 is CLOSED.
+FINDING-UX-004, FINDING-QA-002, FINDING-INT-001, FINDING-108-001, F-104-007,
+FINDING-QA-001, FINDING-INT-002, FINDING-INT-003, F-104-011, F-104-012, and
+F-104-010 are CLOSED (`docs/epics/EPIC-108/findings.md`). F-004 is CLOSED.
 
 This follows the methodology's rule that each Phase gets a focused
 Cursor chat, a defined commit expectation, review, approval, and then
@@ -2208,7 +2207,7 @@ last_completed:
     - FINDING-UX-001 CLOSED
     - FINDING-UX-002 CLOSED
     - FINDING-UX-003 CLOSED
-    - FINDING-UX-004 OPEN / NON-BLOCKING
+    - FINDING-UX-004 CLOSED (EPIC-108 Stream C / C05)
     - FINDING-UX-005 CLOSED
     - FINDING-UX-006 CLOSED
     - FINDING-UX-007 CLOSED
@@ -2225,9 +2224,8 @@ next:
   production_certification: GRANTED
   production_readiness: release-granted
   product_owner_approval: D-005 PROVIDED
-  objective: Release 1 MVP certified. EPIC-108 Stream A, Stream E, Stream B, and Stream D CLOSED. FINDING-UX-004 remains OPEN (Stream C).
-  open_non_blocking_findings:
-    - FINDING-UX-004
+  objective: Release 1 MVP certified. EPIC-108 Stream A, Stream E, Stream B, Stream D, and Stream C CLOSED.
+  open_non_blocking_findings: []
 ```
 
 ------------------------------------------------------------------------

@@ -272,3 +272,4 @@ This section does not rewrite the QA Gate snapshot above.
 | F-104-011 | OPEN (EPIC-104) | CLOSED | ER-108-D1 PASS. P108-06 `3d4ad4c`. Monthly Summary `<dl>` |
 | F-104-012 | OPEN (EPIC-104) | CLOSED | ER-108-D2 PASS. P108-07 `1f2cf71`. Native `h2`; truncation in heading DOM; within-capacity text |
 | F-104-010 | OPEN (EPIC-104) | CLOSED | ER-108-D3 PASS. P108-08 `8f5607e`. Hardened dashboard a11y assertions; suite 11/11 |
+| FINDING-UX-004 | OPEN (UX Gate / Polish) | CLOSED | C05 verification PASS. C01–C04. Custom Period Selector on `/reports`. Reports E2E 22/22. `docs/epics/EPIC-108/findings.md` |

@@ -1,13 +1,14 @@
 # EPIC-108 — Findings Matrix
 
 **Epic:** EPIC-108 — Post-Release Hardening  
-**Scope of this record:** Stream A, Stream E, Stream B, and Stream D documentation closure  
+**Scope of this record:** Stream A, Stream E, Stream B, Stream D, and Stream C documentation closure  
 **ER-108-A:** PASS  
 **ER-108-E:** PASS  
 **ER-108-B:** PASS  
 **ER-108-D1:** PASS  
 **ER-108-D2:** PASS  
 **ER-108-D3:** PASS  
+**Stream C verification:** PASS  
 **Does not rewrite:** MASTER_PLAN §34 / §35, R1 certification, historical QA / UX / EPIC-107 rows
 
 ---
@@ -231,6 +232,46 @@ No application or test code was changed for Stream B.
 
 ---
 
-## Still OPEN (not Stream A / E / B / D)
+## Stream C
 
-FINDING-UX-004 (Stream C; custom period selector; requires Product Owner decision).
+| Field | Value |
+|---|---|
+| **Status** | technically complete |
+| **Verification** | C05 PASS |
+| **Findings** | FINDING-UX-004 CLOSED |
+| **Phases** | P108-C01, P108-C02, P108-C03, P108-C04, P108-C05 (this record) |
+| **PO decision** | IMPLEMENT R1 |
+
+| Phase | Commit | SHA |
+|---|---|---|
+| P108-C01 | `feat(reports): add custom period form` | `0743996c8a9ea26c9a36bf0da20e272b33f2f2a5` |
+| P108-C02 | `feat(reports): validate custom period` | `92c28087b0029d4d7c29d9c836a6023cf5862a2a` |
+| P108-C03 | `feat(reports): polish custom period mobile layout` | `14b4c8863d60b9ac5e8fe4de45e181e84b65c47b` |
+| P108-C04 | `test(reports): cover custom period selector` | `977210b289da2a674a1ab6d6475023da9f4f5f82` |
+
+---
+
+## FINDING-UX-004 — Custom report period is not selectable in the UI
+
+| Field | Value |
+|---|---|
+| **ID** | FINDING-UX-004 |
+| **Status** | CLOSED |
+| **Classification** | UX / discoverability |
+| **Surface** | `/reports` only. Dashboard, Annual Overview, and Time Tracking unchanged |
+| **UI** | Presets Today / This Week / This Month / This Year remain `Link`s. Custom Range is a `span`, not a `Link` to `?period=custom` |
+| **URL contract** | `GET /reports?period=custom&start=YYYY-MM-DD&end=YYYY-MM-DD`. Search params remain the period authority |
+| **Validation** | Missing start/end or `start > end` blocks navigation and shows Field errors (`aria-invalid`, `aria-describedby`). `start === end` is valid. ISO calendar strings only; no new timezone logic |
+| **`noValidate`** | Form uses `noValidate` so native constraint validation on `end.min` does not swallow submit. `min={start}` remains a picker affordance. JS `validateCustomPeriodFields` is the validation authority |
+| **Responsive** | Stacked fields at 390×844; no page-level horizontal overflow; desktop row preserved |
+| **Evidence** | Reports E2E 22/22; custom-period unit 6/6; typecheck PASS; lint PASS |
+| **Closure review** | C05 verification PASS |
+| **Commits** | C01 `0743996`; C02 `92c2808`; C03 `14b4c88`; C04 `977210b` (`noValidate` in C04) |
+| **Origin** | `docs/ux/ux-review.md` (historical OPEN at UX Gate / UX Polish) |
+| **Unchanged** | `getDateRangePeriod`, `resolvePeriod`, `parseReportPeriodParam`, analytics/report math, Prisma |
+
+---
+
+## Still OPEN (not Stream A / E / B / D / C)
+
+None.
