@@ -20,7 +20,7 @@ export function MonthlyAnalytics({ analytics }: MonthlyAnalyticsProps): JSX.Elem
         <CardTitle role="heading" aria-level={2}>Monthly Summary</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <dl className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <div className="space-y-1">
             <dt className="text-sm font-medium text-muted-foreground">Total Hours</dt>
             <dd className="text-2xl font-bold" aria-label={`${totalHours} total hours tracked`}>
@@ -62,7 +62,7 @@ export function MonthlyAnalytics({ analytics }: MonthlyAnalyticsProps): JSX.Elem
               </span>
             </dd>
           </div>
-        </div>
+        </dl>
       </CardContent>
     </Card>
   );

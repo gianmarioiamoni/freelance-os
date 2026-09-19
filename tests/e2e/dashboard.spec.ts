@@ -136,6 +136,11 @@ test.describe("Dashboard Analytics E2E Journey", () => {
     await expect(
       page.getByRole("heading", { name: "Monthly Summary" }),
     ).toBeVisible();
+
+    const monthlySummary = page.locator("dl").filter({ hasText: "Total Hours" });
+    await expect(monthlySummary).toBeVisible();
+    await expect(monthlySummary.locator("dt")).toHaveCount(4);
+    await expect(monthlySummary.locator("dd")).toHaveCount(4);
     await expect(
       page.getByRole("heading", { name: "Client Allocation" }),
     ).toBeVisible();
