@@ -1,7 +1,5 @@
 // src/features/reporting/PeriodSelector.tsx
-import { Field } from "@/components/forms/Field";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { CustomPeriodFields } from "@/features/reporting/CustomPeriodFields";
 import Link from "next/link";
 import type { JSX } from "react";
 import { PERIOD_LABELS, periodHref, type ReportPeriodParam } from "./reporting-types";
@@ -51,24 +49,11 @@ export function PeriodSelector({ current }: PeriodSelectorProps): JSX.Element {
         >
           {PERIOD_LABELS.custom}
         </span>
-        <form method="GET" action="/reports" className="flex flex-wrap items-end gap-2">
-          <input type="hidden" name="period" value="custom" />
-          <Field label="Start date" htmlFor="report-period-start">
-            <Input
-              type="date"
-              name="start"
-              defaultValue={isCustom ? current.start : undefined}
-            />
-          </Field>
-          <Field label="End date" htmlFor="report-period-end">
-            <Input
-              type="date"
-              name="end"
-              defaultValue={isCustom ? current.end : undefined}
-            />
-          </Field>
-          <Button type="submit">Apply</Button>
-        </form>
+        <CustomPeriodFields
+          key={isCustom ? `${current.start}_${current.end}` : "preset"}
+          defaultStart={isCustom ? current.start : undefined}
+          defaultEnd={isCustom ? current.end : undefined}
+        />
       </div>
     </nav>
   );
