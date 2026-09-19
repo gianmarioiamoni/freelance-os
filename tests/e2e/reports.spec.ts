@@ -12,6 +12,7 @@
 //   Empty-state     — zero-activity period renders EmptyState, not a blank page.
 //   Error recovery  — navigating away and back restores the surface.
 //   Period selector — switching periods updates the URL and heading.
+//   Custom period   — UX-004 GET form, validation, aria-current, 390×844.
 //   Zero denominator— unlimited contract renders "—" (no invented percentage).
 //   Out-of-validity — indicator visible with a textual alternative.
 //   No monetary figures anywhere (BR-105-011 / PD-105-001).
@@ -24,6 +25,7 @@ import {
 import {
   createClientWithContract,
   createTimeEntry,
+  todayValue,
 } from "./helpers/analytics-fixtures";
 import { submitAndFollowActionRedirect } from "./helpers/server-action";
 
@@ -33,6 +35,24 @@ import { submitAndFollowActionRedirect } from "./helpers/server-action";
 
 async function waitForReportsPage(page: Page): Promise<void> {
   await expect(page.getByRole("heading", { level: 1, name: /reports/i })).toBeVisible();
+}
+
+function expectCustomPeriodSearch(page: Page, start: string, end: string): void {
+  const url = new URL(page.url());
+  expect(url.pathname).toBe("/reports");
+  expect(url.searchParams.get("period")).toBe("custom");
+  expect(url.searchParams.get("start")).toBe(start);
+  expect(url.searchParams.get("end")).toBe(end);
+}
+
+async function applyCustomRange(
+  page: Page,
+  start: string,
+  end: string,
+): Promise<void> {
+  await page.getByLabel("Start date").fill(start);
+  await page.getByLabel("End date").fill(end);
+  await page.getByRole("button", { name: "Apply" }).click();
 }
 
 // ---------------------------------------------------------------------------
@@ -143,6 +163,249 @@ test.describe("period selector", () => {
     // Period selector must show "This Month" as active (graceful fallback).
     const monthLink = page.getByRole("link", { name: "This Month" });
     await expect(monthLink).toHaveAttribute("aria-current", "page");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Custom period selector — UX-004
+// ---------------------------------------------------------------------------
+
+test.describe("custom period selector", () => {
+  test("applying a custom range updates the URL, current state, and report content", async ({
+    page,
+  }) => {
+    const email = uniqueE2EEmail("reports-custom-valid");
+    await registerAndCreateFirstWorkspace(page, {
+      email,
+      name: "Custom Range User",
+      workspaceName: "Custom Range Workspace",
+    });
+    await createClientWithContract(page, {
+      companyName: "Custom Period Client",
+      rate: "100",
+      monthlyContractedHours: "40",
+    });
+    await createTimeEntry(page, {
+      clientName: "Custom Period Client",
+      hours: "2",
+      minutes: "0",
+      description: "Custom period work",
+      billable: true,
+    });
+
+    await page.goto("/reports");
+    await waitForReportsPage(page);
+
+    await applyCustomRange(page, "2020-01-01", "2020-01-31");
+    await waitForReportsPage(page);
+    expectCustomPeriodSearch(page, "2020-01-01", "2020-01-31");
+    await expect(page.getByText("Custom Range", { exact: true })).toHaveAttribute(
+      "aria-current",
+      "true",
+    );
+    await expect(page.getByRole("link", { name: "This Month" })).not.toHaveAttribute(
+      "aria-current",
+    );
+    await expect(
+      page.getByText("Operational reporting — 2020-01-01 — 2020-01-31"),
+    ).toBeVisible();
+    await expect(page.getByText(/no hours recorded for this period/i)).toBeVisible();
+
+    const includedDay = todayValue();
+    await applyCustomRange(page, includedDay, includedDay);
+    await waitForReportsPage(page);
+    expectCustomPeriodSearch(page, includedDay, includedDay);
+    await expect(
+      page.getByText(`Operational reporting — ${includedDay} — ${includedDay}`),
+    ).toBeVisible();
+    await expect(page.getByText("Custom Period Client").first()).toBeVisible();
+  });
+
+  test("same-day custom range is accepted", async ({ page }) => {
+    const email = uniqueE2EEmail("reports-custom-same-day");
+    await registerAndCreateFirstWorkspace(page, {
+      email,
+      name: "Same Day User",
+      workspaceName: "Same Day Workspace",
+    });
+    await page.goto("/reports");
+    await waitForReportsPage(page);
+
+    await applyCustomRange(page, "2026-03-15", "2026-03-15");
+    await waitForReportsPage(page);
+    expectCustomPeriodSearch(page, "2026-03-15", "2026-03-15");
+    await expect(page.getByText("Custom Range", { exact: true })).toHaveAttribute(
+      "aria-current",
+      "true",
+    );
+    await expect(
+      page.getByText("Operational reporting — 2026-03-15 — 2026-03-15"),
+    ).toBeVisible();
+  });
+
+  test("choosing a preset after custom clears start and end", async ({ page }) => {
+    const email = uniqueE2EEmail("reports-custom-preset");
+    await registerAndCreateFirstWorkspace(page, {
+      email,
+      name: "Custom Preset User",
+      workspaceName: "Custom Preset Workspace",
+    });
+    await page.goto("/reports");
+    await waitForReportsPage(page);
+
+    await applyCustomRange(page, "2026-02-01", "2026-02-28");
+    await waitForReportsPage(page);
+    expectCustomPeriodSearch(page, "2026-02-01", "2026-02-28");
+
+    await page.getByRole("link", { name: "Today" }).click();
+    await expect(page).toHaveURL(/period=today/);
+    await waitForReportsPage(page);
+
+    const url = new URL(page.url());
+    expect(url.searchParams.get("period")).toBe("today");
+    expect(url.searchParams.has("start")).toBe(false);
+    expect(url.searchParams.has("end")).toBe(false);
+    await expect(page.getByRole("link", { name: "Today" })).toHaveAttribute(
+      "aria-current",
+      "page",
+    );
+    await expect(page.getByText("Custom Range", { exact: true })).not.toHaveAttribute(
+      "aria-current",
+    );
+  });
+
+  test("reversed dates do not navigate and mark the end field invalid", async ({
+    page,
+  }) => {
+    const email = uniqueE2EEmail("reports-custom-reversed");
+    await registerAndCreateFirstWorkspace(page, {
+      email,
+      name: "Reversed Range User",
+      workspaceName: "Reversed Range Workspace",
+    });
+    await page.goto("/reports");
+    await waitForReportsPage(page);
+
+    const urlBefore = page.url();
+    await page.getByLabel("End date").fill("2026-01-01");
+    await page.getByLabel("Start date").fill("2026-03-31");
+    await page.getByRole("button", { name: "Apply" }).click();
+
+    await expect(
+      page.getByText("End date must be on or after the start date."),
+    ).toBeVisible();
+    await expect(page.getByLabel("End date")).toHaveAttribute("aria-invalid", "true");
+    expect(page.url()).toBe(urlBefore);
+  });
+
+  test("missing end date does not navigate and marks the field invalid", async ({
+    page,
+  }) => {
+    const email = uniqueE2EEmail("reports-custom-incomplete");
+    await registerAndCreateFirstWorkspace(page, {
+      email,
+      name: "Incomplete Range User",
+      workspaceName: "Incomplete Range Workspace",
+    });
+    await page.goto("/reports");
+    await waitForReportsPage(page);
+
+    const urlBefore = page.url();
+    await page.getByLabel("Start date").fill("2026-01-01");
+    await page.getByRole("button", { name: "Apply" }).click();
+
+    await expect(page.getByText("Enter an end date.")).toBeVisible();
+    await expect(page.getByLabel("End date")).toHaveAttribute("aria-invalid", "true");
+    expect(page.url()).toBe(urlBefore);
+  });
+
+  test("custom range fields are keyboard reachable and submit with Enter", async ({
+    page,
+  }) => {
+    const email = uniqueE2EEmail("reports-custom-keyboard");
+    await registerAndCreateFirstWorkspace(page, {
+      email,
+      name: "Custom Keyboard User",
+      workspaceName: "Custom Keyboard Workspace",
+    });
+    await page.goto("/reports");
+    await waitForReportsPage(page);
+
+    const start = page.getByLabel("Start date");
+    const end = page.getByLabel("End date");
+    const apply = page.getByRole("button", { name: "Apply" });
+
+    await start.focus();
+    await expect(start).toBeFocused();
+    await end.focus();
+    await expect(end).toBeFocused();
+    await apply.focus();
+    await expect(apply).toBeFocused();
+
+    await start.fill("2026-04-01");
+    await end.fill("2026-04-30");
+    await apply.focus();
+    await page.keyboard.press("Enter");
+    await waitForReportsPage(page);
+    expectCustomPeriodSearch(page, "2026-04-01", "2026-04-30");
+  });
+
+  test("crafted valid custom URL renders as the current period", async ({ page }) => {
+    const email = uniqueE2EEmail("reports-custom-url");
+    await registerAndCreateFirstWorkspace(page, {
+      email,
+      name: "Custom URL User",
+      workspaceName: "Custom URL Workspace",
+    });
+    await page.goto("/reports?period=custom&start=2026-09-01&end=2026-09-18");
+    await waitForReportsPage(page);
+
+    expectCustomPeriodSearch(page, "2026-09-01", "2026-09-18");
+    await expect(page.getByText("Custom Range", { exact: true })).toHaveAttribute(
+      "aria-current",
+      "true",
+    );
+    await expect(page.getByRole("link", { name: "This Month" })).not.toHaveAttribute(
+      "aria-current",
+    );
+    await expect(
+      page.getByText("Operational reporting — 2026-09-01 — 2026-09-18"),
+    ).toBeVisible();
+    await expect(page.getByLabel("Start date")).toHaveValue("2026-09-01");
+    await expect(page.getByLabel("End date")).toHaveValue("2026-09-18");
+  });
+
+  test("custom range is usable at 390×844 without page overflow", async ({ page }) => {
+    const email = uniqueE2EEmail("reports-custom-mobile");
+    await registerAndCreateFirstWorkspace(page, {
+      email,
+      name: "Custom Mobile User",
+      workspaceName: "Custom Mobile Workspace",
+    });
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/reports");
+    await waitForReportsPage(page);
+
+    const start = page.getByLabel("Start date");
+    const end = page.getByLabel("End date");
+    const apply = page.getByRole("button", { name: "Apply" });
+    await expect(start).toBeVisible();
+    await expect(end).toBeVisible();
+    await expect(apply).toBeVisible();
+
+    const overflow = await page.evaluate(() => {
+      const root = document.documentElement;
+      return root.scrollWidth <= root.clientWidth;
+    });
+    expect(overflow).toBe(true);
+
+    await applyCustomRange(page, "2026-05-01", "2026-05-15");
+    await waitForReportsPage(page);
+    expectCustomPeriodSearch(page, "2026-05-01", "2026-05-15");
+    await expect(page.getByText("Custom Range", { exact: true })).toHaveAttribute(
+      "aria-current",
+      "true",
+    );
   });
 });
 

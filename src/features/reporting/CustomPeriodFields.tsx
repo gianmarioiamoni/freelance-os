@@ -40,6 +40,7 @@ export function CustomPeriodFields({
       method="GET"
       action="/reports"
       className="grid w-full min-w-0 gap-3 md:flex md:flex-wrap md:items-end md:gap-2"
+      noValidate
       onSubmit={handleSubmit}
     >
       <input type="hidden" name="period" value="custom" />
