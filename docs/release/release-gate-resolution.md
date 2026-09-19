@@ -1,23 +1,24 @@
 # Release Gate Resolution
 
 **Gate:** `MASTER_PLAN.md` §34–§37  
-**Date:** 2026-09-18  
+**Date:** 2026-09-19 (current); classification snapshot 2026-09-18  
 **HEAD at analysis:** `88cc196423a50a03949c1115656b700c331ec30f`  
 **HEAD after D-001–D-004 implementation:** see git log for `feat(release): implement MVP production infrastructure`  
-**§34 candidate previously validated:** `81a22dd507ae3d320fba64ead71ab2871a50e833`  
+**Current §34 candidate:** `2b58af442f0ab169f08eb0c216c467375acdb285`  
+**§34 candidate previously validated:** `f5592b3268e8514279b014f95dafbc2ff1581afc`  
 **Evidence:** `docs/release/production-validation.md`  
-**§35 Production Certification:** NOT RUN  
+**§35 Production Certification:** NOT RUN / AWAITING PRODUCT OWNER APPROVAL  
 **Product Owner approval:** NOT PROVIDED  
 
 ```text
-CURRENT DECISION:     RELEASE BLOCKED
-PRODUCTION READINESS: NO
+CURRENT DECISION:     READY FOR RELEASE
+PRODUCTION READINESS: VALIDATED — RELEASE NOT GRANTED
 NEW EPIC:             NOT OPENED
-APPLICATION CHANGES:  NONE
+APPLICATION CHANGES:  NONE in this documentation update
 TESTS MODIFIED:       NONE
 ```
 
-The block above is the classification snapshot. D-001–D-004 were implemented later; see §12. Historical §34 results were not rewritten.
+The 2026-09-18 classification snapshot is preserved below. D-001–D-004 were implemented later; see §12. Hosted production + Gmail SMTP close-out is §13. Historical §34 rows were not rewritten.
 
 This record classifies remaining §34 items. It does not grant release. It does not accept findings. It does not close historical findings.
 
@@ -27,17 +28,17 @@ This record classifies remaining §34 items. It does not grant release. It does 
 
 | Field | Value |
 | --- | --- |
-| §34 execution | COMPLETE WITH FINDINGS |
-| §34 / §36 outcome | **RELEASE BLOCKED** |
-| Overall production readiness | **NO** |
-| Hosted production | none |
-| Runtime validated | local `pnpm build` + `pnpm start` |
+| §34 execution | COMPLETE |
+| §34 / §36 outcome | **READY FOR RELEASE** |
+| Overall production readiness | **VALIDATED — RELEASE NOT GRANTED** |
+| Hosted production | `https://freelance-os-timeplan.vercel.app` (Vercel + Neon) |
+| Runtime validated | hosted production + prior local `pnpm start` |
 | Product Owner approval | NOT PROVIDED (§35 field) |
 | New §37 Release Blocker from last §34 run | NONE newly confirmed |
 
-Passed on the local production-like candidate: production build; database/migrations; email/password auth; complete MVP workflow; Reports / Alerts / Notifications; dashboard server-side authorization on exercised paths; workspace isolation on exercised paths; logo navigation; runtime health PASS WITH FINDINGS (F-104-007 reconfirmed).
+Passed: production build; hosted Vercel deploy; Neon migrations; email/password; Google production E2E; Gmail SMTP password-reset completion; complete MVP workflow (local PV34F); Reports / Alerts / Notifications; F-004 CLOSED (68/68 isolated `next start`).
 
-Not complete for `READY FOR RELEASE`: deployment target vs hosted validation; production password-reset completion; Google production credentials while the control is offered; Playwright green on `next start`; Product Owner approval for §35.
+Remaining exclusively for §35: explicit Product Owner approval (D-005). Historical findings stay OPEN and are not §34 blockers.
 
 ---
 
@@ -425,5 +426,29 @@ Historical unisolated `next start`: **43 passed / 25 failed / 68** (F-004 auth b
 | Server-action `redirect()` (`x-action-redirect: …;push`) not consumed by the production client router | TEST TIMING/READINESS | Follow `x-action-redirect` then assert destination |
 
 After those fixes: **68 passed / 0 failed / 68** on `CI=true pnpm test:e2e:start`. This is evidence for the next §34 run, not a §34 execution. F-004 (rate-limit auth burst) is **RESOLVED**. Canonical CI remains `pnpm dev`.
+
+---
+
+## 13. Hosted production + Gmail SMTP close-out (2026-09-19)
+
+This section updates the current gate after hosted validation. It does not rewrite historical §34 rows or auto-close inherited findings.
+
+| Decision / blocker | Status |
+| --- | --- |
+| D-001 Hosted Vercel + Neon | **CLOSED**. Production `https://freelance-os-timeplan.vercel.app`. Migrations applied on deploy. |
+| D-002 Google OAuth production | **CLOSED**. Credentials and origin configured. Callback `/api/auth/callback/google`. Login verified in production. |
+| D-003 Production mailer | **CLOSED**. Resend removed from runtime. Gmail SMTP / Nodemailer (`2b58af4`). Custom domain not purchased. MVP-volume choice; not the definitive high-scale transactional mailer. |
+| Password-reset completion | **CLOSED**. Manual production E2E: request, delivered mail, reset link, new password login, old password rejected. |
+| D-004 / F-004 | **CLOSED**. Isolated `next start` 68/68. Tests not weakened. Production rate limits unchanged. |
+| D-005 Product Owner approval | **NOT PROVIDED**. §35 only. |
+
+```text
+§34:                          EXECUTED ON 2b58af4 — READY FOR RELEASE
+§35 PRODUCTION CERTIFICATION: NOT RUN / AWAITING PRODUCT OWNER APPROVAL
+RELEASE:                      NOT APPROVED
+PRODUCTION READINESS:         VALIDATED — RELEASE NOT GRANTED
+```
+
+Historical findings remain OPEN and are not §34 blockers: QA-001, QA-002, INT-001, INT-002, INT-003, UX-004, F-104-007, F-104-010, F-104-011, F-104-012.
 
 

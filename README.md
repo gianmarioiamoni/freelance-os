@@ -4,7 +4,7 @@ FreelanceOS is a web application for freelancer operations management.
 
 ## Status
 
-Release 1 — MVP in progress. UX Polish COMPLETE (`docs/ux/ux-review.md` §18). UX Gate PASS WITH FINDINGS. Documentation Gate COMPLETE (`MASTER_PLAN.md` §32). MVP QA Gate PASS WITH FINDINGS (`docs/qa/qa-report.md`). Blocking findings: NONE. Production readiness: NO. EPIC-107 Public Landing implementation COMPLETE. MASTER_PLAN §34 last executed — RELEASE BLOCKED (`docs/release/production-validation.md`). D-001 Vercel, D-002 Google OAuth, D-003 Resend Free, and D-004 E2E isolation are implemented in-repository. Hosted deploy and production credentials remain external. Next: §34 Production Validation re-run; §35 DEFERRED. Product Owner approval: NOT PROVIDED.
+Release 1 — MVP in progress. UX Polish COMPLETE (`docs/ux/ux-review.md` §18). UX Gate PASS WITH FINDINGS. Documentation Gate COMPLETE (`MASTER_PLAN.md` §32). MVP QA Gate PASS WITH FINDINGS (`docs/qa/qa-report.md`). Blocking findings: NONE. Production readiness: VALIDATED — RELEASE NOT GRANTED. EPIC-107 Public Landing implementation COMPLETE. MASTER_PLAN §34 last executed — READY FOR RELEASE (`docs/release/production-validation.md`). Hosted Vercel, Neon, production Google, and Gmail SMTP password-reset completion are verified. F-004 CLOSED. Next: §35 Production Certification — AWAITING PRODUCT OWNER APPROVAL. Product Owner approval: NOT PROVIDED.
 
 Planning and architecture documents are the source of truth. See [`MASTER_PLAN.md`](./MASTER_PLAN.md).
 

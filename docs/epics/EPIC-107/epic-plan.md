@@ -3,10 +3,10 @@
 **Epic:** EPIC-107  
 **Release:** Release 1 — MVP  
 **MASTER_PLAN identifier:** R1-E07 — Public Landing (`MASTER_PLAN.md` §17A)  
-**Status:** IMPLEMENTATION COMPLETE — Engineering Review PASS WITH FINDINGS (P107-05); production-like validation PASS WITH FINDINGS (P107-06); epic certification RELEASE BLOCKED; MASTER_PLAN §34 EXECUTED — RELEASE BLOCKED  
+**Status:** IMPLEMENTATION COMPLETE — Engineering Review PASS WITH FINDINGS (P107-05); production-like validation PASS WITH FINDINGS (P107-06); epic certification RELEASE BLOCKED; MASTER_PLAN §34 EXECUTED — READY FOR RELEASE  
 **Dependencies:** EPIC-003, EPIC-004, EPIC-006, EPIC-104, MVP-INTEGRATION, UX Polish  
 **Previous:** UX Polish COMPLETE (`791c879`)  
-**Next after this Epic:** Production Certification (`MASTER_PLAN.md` §35) — §34 evidence: `docs/release/production-validation.md` (RELEASE BLOCKED)
+**Next after this Epic:** Production Certification (`MASTER_PLAN.md` §35) — AWAITING PRODUCT OWNER APPROVAL. §34 evidence: `docs/release/production-validation.md` (READY FOR RELEASE)
 
 ```text
 PLANNING:              COMPLETE
@@ -17,15 +17,15 @@ DOCUMENTATION:         COMPLETE (P107-04)
 ENGINEERING REVIEW:    COMPLETE — PASS WITH FINDINGS (P107-05)
 PRODUCTION-LIKE:       COMPLETE — PASS WITH FINDINGS (P107-06)
 EPIC CERTIFICATION:    COMPLETE — RELEASE BLOCKED
-MVP §34:               EXECUTED — RELEASE BLOCKED
-PRODUCTION CERTIFICATION (§35): NOT STARTED
+MVP §34:               EXECUTED — READY FOR RELEASE
+PRODUCTION CERTIFICATION (§35): NOT STARTED / AWAITING PRODUCT OWNER APPROVAL
 ```
 
 HEAD at planning: `791c87944163e4fb2262de13309e0effe19f9e38`  
 HEAD at P107-03: `2ee06fb45ce25cc2a0bf2ad61a072b2c7795eb6a`  
 UX Polish commit: `feat(ux): polish MVP settings and authentication branding`
 
-The Epic implementation is COMPLETE. MASTER_PLAN §34 has been executed (RELEASE BLOCKED). Do not start §35 in a §34 documentation commit.
+The Epic implementation is COMPLETE. MASTER_PLAN §34 has been executed (READY FOR RELEASE). §35 remains deferred until explicit Product Owner approval.
 
 This Epic is a dedicated product-surface + route-migration Epic. It is not a Documentation Gate, UX Gate, or Production Validation phase.
 

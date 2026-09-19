@@ -1,24 +1,24 @@
 # MVP Production Validation — §34
 
 **Gate:** `MASTER_PLAN.md` §34  
-**Date:** 2026-09-18 (final validation after D-004)  
-**Current candidate HEAD:** `f5592b3268e8514279b014f95dafbc2ff1581afc`  
-**Previous candidate HEAD:** `81a22dd507ae3d320fba64ead71ab2871a50e833`  
+**Date:** 2026-09-19 (hosted production + Gmail SMTP revalidation)  
+**Current candidate HEAD:** `2b58af442f0ab169f08eb0c216c467375acdb285`  
+**Previous candidate HEAD:** `f5592b3268e8514279b014f95dafbc2ff1581afc`  
 **Branch:** `main`  
 **Working tree at start:** clean  
 
 ```text
-VALIDATION EXECUTION:     COMPLETE WITH FINDINGS
-§34 / §36 GATE OUTCOME:   RELEASE BLOCKED
+VALIDATION EXECUTION:     COMPLETE
+§34 / §36 GATE OUTCOME:   READY FOR RELEASE
 BLOCKING FINDINGS (§37):  NONE newly confirmed as Release Blocker
-PRODUCTION READINESS:     NO
-§35 CERTIFICATION:        NOT RUN / NOT ELIGIBLE
+PRODUCTION READINESS:     VALIDATED — RELEASE NOT GRANTED
+§35 CERTIFICATION:        NOT RUN / AWAITING PRODUCT OWNER APPROVAL
 PRODUCT OWNER APPROVAL:   NOT PROVIDED
 ```
 
-This record validates HEAD `f5592b3` after D-001–D-004. It is not Production Certification. It does not declare `READY FOR RELEASE`. It does not grant §35.
+This record updates §34 after hosted Vercel production validation and Gmail SMTP password-reset completion. It is not Production Certification. It does not grant §35. It does not invent Product Owner approval.
 
-MASTER_PLAN §34 concludes only with `READY FOR RELEASE` or `RELEASE BLOCKED`. Execution completeness is not a third release state.
+MASTER_PLAN §34 concludes only with `READY FOR RELEASE` or `RELEASE BLOCKED`. Execution completeness is not a third release state. Certification is §35 only.
 
 ---
 
@@ -31,10 +31,78 @@ MASTER_PLAN §34 concludes only with `READY FOR RELEASE` or `RELEASE BLOCKED`. E
 | D-001–D-004 implementation | `8aa0266` | Vercel config, Google in MVP, Resend adapter, `AUTH_E2E_RUNTIME`. Not a §34 run. |
 | D-004 residual E2E | `f5592b3` (this SHA, prior chat) | Isolated `next start` 63/5 then **68/68**. F-004 auth burst **RESOLVED**. Not a §34 run. |
 | **This §34** | `f5592b3` | **RELEASE BLOCKED**. Local `pnpm start` workflow PASS. Fresh `CI=true pnpm test:e2e:start` **67/68** (one flake). Hosted Vercel not executed. Google/Resend production values EXTERNAL. |
+| Hosted + SMTP revalidation | `2b58af4` | **READY FOR RELEASE**. Vercel production + Neon + Gmail SMTP password-reset completion verified. Google OAuth production verified. F-004 CLOSED. Historical findings remain OPEN. §35 not run. |
 
 ---
 
-## Final §34 gate matrix (`f5592b3`)
+## Current §34 (`2b58af4`, 2026-09-19)
+
+Hosted production origin: `https://freelance-os-timeplan.vercel.app`. Database: hosted PostgreSQL (Neon). Mail transport: Gmail SMTP via Nodemailer (`2b58af4`). Custom domain was not purchased. Resend was removed from the runtime. Gmail SMTP is the MVP mailer and is not presented as the long-term high-scale transactional provider.
+
+Secrets were inspected only as present/absent. No secret values are recorded.
+
+| Gate | Requirement | Current Evidence | Result | Blocking? |
+| --- | --- | --- | --- | --- |
+| Production build | Exact candidate builds | SMTP transport commit `2b58af4`. Targeted email tests 24/24. typecheck/lint PASS. Prior `pnpm build` PASS on the release line. | **PASS** | No |
+| Deployment configuration | Exact hosted build | Vercel Production operational. GitHub/Vercel workflow. Prisma `generate` + `migrate deploy` during deploy. | **PASS** — hosted deployment **CLOSED** | No |
+| Database migration | Migrations applied | Hosted Neon PostgreSQL operational. Migrations applied during Vercel deploy. Local chain unchanged. | **PASS** | No |
+| Authentication | Email/password + offered Google + recovery | Google production credentials and origin configured. Callback `/api/auth/callback/google`. Google login verified end-to-end in production. Password reset completed in production (request → delivered mail → link → new password → old password rejected). | **PASS** | No |
+| Complete MVP workflow | Previously PASS locally | Local `pnpm start` PV34F workflow remains recorded. Hosted auth + recovery now verified. | **PASS** | No |
+| Critical E2E regression | Critical E2E | F-004 auth burst **CLOSED**. Isolated `next start` **68/68**. Tests not weakened. Production rate limits unchanged. Canonical CI remains `pnpm dev`. | **PASS** | No |
+| Reports / Alerts / Notifications | Operational | Unchanged from `f5592b3` local PASS. | **PASS** | No |
+| Security baseline | Exercised paths | Unchanged local PASS. Hosted anonymous `/dashboard` was previously exercised against Deployment Protection / app auth as applicable. | **PASS** on exercised paths | Not whole-app certification |
+| Environment variables | Production env for the offering | Hosted: `DATABASE_URL`, `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASSWORD` (present; values not recorded). `AUTH_E2E_RUNTIME` must remain unset on Vercel. `RESEND_API_KEY` / `AUTH_EMAIL_FROM` removed from the runtime. | **PASS** | No |
+| No release-blocking defects | §37 | No new §37 Release Blocker. Historical findings remain OPEN and are not newly classed as §34 blockers. | **No new §37 Release Blocker** | Does not grant §35 |
+
+### §34 blockers closed this run
+
+| Previous blocker | Status |
+| --- | --- |
+| Hosted deployment (D-001) | **CLOSED** |
+| Google OAuth production (D-002) | **CLOSED** |
+| Production mail delivery (D-003; now Gmail SMTP) | **CLOSED** |
+| Password-reset completion | **CLOSED** |
+| F-004 next-start E2E | **CLOSED** |
+
+### Mail transport
+
+| Item | Previous | Current |
+| --- | --- | --- |
+| Runtime provider | Resend Free | Gmail SMTP / Nodemailer 10.0.10 |
+| Implementation | `resend-password-reset.ts` | `smtp-password-reset.ts` (`2b58af4`) |
+| Required env | `RESEND_API_KEY`, `AUTH_EMAIL_FROM` | `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASSWORD` |
+| Custom domain | External / not purchased | **Not purchased** |
+| Scale note | Resend testing-domain 403 for unauthorized recipients | Appropriate for MVP volume. Not the definitive high-scale transactional mailer. |
+
+### Current findings (historical IDs unchanged)
+
+No inherited finding is auto-ACCEPTED. None is newly classed as a §37 Release Blocker. F-004 is CLOSED.
+
+| ID | Status | New evidence | §34 blocking? |
+| --- | --- | --- | --- |
+| FINDING-QA-001 | OPEN / TEST DEFECT / FLAKY | Unchanged | No |
+| FINDING-QA-002 | OPEN / APPLICATION DEFECT | Unchanged | No |
+| FINDING-INT-001 | OPEN / TEST DEFECT / CONFIRMED | Unchanged | No |
+| FINDING-INT-002 | OPEN / NOT REPRODUCED | Unchanged | No |
+| FINDING-INT-003 | OPEN / NOT REPRODUCED | Production reset completion now verified; finding ID not auto-closed | No |
+| FINDING-UX-004 | OPEN | Unchanged | No |
+| F-104-007 | OPEN / PRE-EXISTING / NON-BLOCKING | Unchanged | No |
+| F-104-010 | OPEN | Unchanged | No |
+| F-104-011 | OPEN | Unchanged | No |
+| F-104-012 | OPEN | Unchanged | No |
+| **F-004** | **CLOSED** | Isolated 68/68; production rate limits unchanged | No |
+
+```text
+§34 / §36 OUTCOME:  READY FOR RELEASE
+```
+
+Reason: hosted Vercel + Neon + production Google + Gmail SMTP password-reset completion are verified. F-004 is CLOSED. Historical non-blocking findings remain OPEN. Product Owner approval is a §35 field and is NOT PROVIDED.
+
+§35 remains **not run**. Certification requires explicit Product Owner approval (D-005).
+
+---
+
+## Historical §34 gate matrix (`f5592b3`)
 
 | Gate | Requirement | Current Evidence | Result | Blocking? |
 | --- | --- | --- | --- | --- |
@@ -221,7 +289,9 @@ No inherited finding is closed. None is auto-ACCEPTED. None is newly classed as 
 
 ## Remaining mandatory §34 gates
 
-Only items that still prevent `READY FOR RELEASE`:
+Historical (`f5592b3`, 2026-09-18). Superseded by Current §34 (`2b58af4`, 2026-09-19): those three items are **CLOSED**. Product Owner approval remains a **§35** field and is still **NOT PROVIDED**.
+
+Only items that still prevent `READY FOR RELEASE` on `f5592b3`:
 
 1. **Hosted Vercel deployment** (D-001) — EXTERNAL ACCESS REQUIRED. No URL, project, or deploy result.
 2. **Production Google credentials** (D-002) — `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` UNSET; callback unverified.

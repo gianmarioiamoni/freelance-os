@@ -6,7 +6,10 @@ All notable changes to FreelanceOS are documented in this file.
 
 ### Added
 
-- MVP production infrastructure for D-001–D-004: Vercel deployment configuration, Google OAuth kept in the MVP release, Resend Free password-reset delivery, and E2E isolation (`AUTH_E2E_RUNTIME` on `pnpm test:e2e:start`). Isolated `next start` E2E: 63 passed / 5 failed of 68. Hosted deploy and production credentials remain external. §34 not re-run. §35 not run.
+- MASTER_PLAN §34 Production Validation revalidated on hosted Vercel + Neon + Gmail SMTP (`2b58af4`). Outcome: READY FOR RELEASE. Hosted deploy, production Google, and password-reset completion CLOSED. F-004 CLOSED. Custom domain not purchased. Gmail SMTP is the MVP mailer, not a high-scale transactional standard. §35 not run. Product Owner approval NOT PROVIDED.
+- Production password-reset transport replaced Resend with Gmail SMTP / Nodemailer. Resend removed from the runtime.
+
+- MVP production infrastructure for D-001–D-004: Vercel deployment configuration, Google OAuth kept in the MVP release, then Gmail SMTP password-reset delivery, and E2E isolation (`AUTH_E2E_RUNTIME` on `pnpm test:e2e:start`). Isolated `next start` E2E later 68/68. Historical note: hosted deploy and production credentials were external at D-001–D-004 implementation. §35 not run.
 
 - Authenticated AppShell wordmark `FreelanceOS` is a Next.js link to `/dashboard`. Public landing wordmark remains `/`.
 - EPIC-107 Public Landing implementation and E2E complete (P107-01 … P107-03). Documentation synchronized (P107-04). Later: Engineering Review PASS WITH FINDINGS (P107-05); production-like validation PASS WITH FINDINGS (P107-06); epic certification RELEASE BLOCKED.
