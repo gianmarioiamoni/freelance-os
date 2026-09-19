@@ -1,9 +1,10 @@
 # EPIC-108 — Findings Matrix
 
 **Epic:** EPIC-108 — Post-Release Hardening  
-**Scope of this record:** Stream A and Stream E documentation closure  
+**Scope of this record:** Stream A, Stream E, and Stream B documentation closure  
 **ER-108-A:** PASS  
 **ER-108-E:** PASS  
+**ER-108-B:** PASS  
 **Does not rewrite:** MASTER_PLAN §34 / §35, R1 certification, historical QA / UX / EPIC-107 rows
 
 ---
@@ -104,6 +105,62 @@
 
 ---
 
-## Still OPEN (not Stream A / E)
+## Stream B
 
-FINDING-QA-001, FINDING-INT-002, FINDING-INT-003, FINDING-UX-004, F-104-010, F-104-011, F-104-012.
+| Field | Value |
+|---|---|
+| **Status** | technically + documentally complete |
+| **ER** | ER-108-B PASS |
+| **Findings** | FINDING-QA-001 CLOSED; FINDING-INT-002 CLOSED; FINDING-INT-003 CLOSED |
+| **Phases** | P108-04 (evidence only), P108-04C (this record) |
+| **P108-05** | not required |
+
+No application or test code was changed for Stream B.
+
+---
+
+## FINDING-QA-001 — Flaky release-gate registration
+
+| Field | Value |
+|---|---|
+| **ID** | FINDING-QA-001 |
+| **Status** | CLOSED |
+| **Classification** | historical flake not reproduced |
+| **Evidence** | 3/3 isolated release-gate E2E PASS (`CI=true pnpm test:e2e --workers=1 tests/e2e/mvp-integration-journey.spec.ts`) |
+| **Fix** | none — no test/app change |
+| **Closure review** | ER-108-B PASS |
+| **Origin** | `docs/qa/qa-report.md` (historical OPEN / FLAKY at QA Gate) |
+
+---
+
+## FINDING-INT-002 — `auth.spec.ts` sign-out timing
+
+| Field | Value |
+|---|---|
+| **ID** | FINDING-INT-002 |
+| **Status** | CLOSED |
+| **Classification** | not reproduced |
+| **Evidence** | 2/2 sign-out E2E PASS (`should register, stay authenticated, and sign out`) |
+| **Verified behavior** | sign-out → `/`; `/dashboard` → `/sign-in`; re-login → `/onboarding` |
+| **Closure review** | ER-108-B PASS |
+| **Origin** | `docs/epics/MVP-INTEGRATION/engineering-review.md` (historical OPEN / NOT REPRODUCED) |
+
+---
+
+## FINDING-INT-003 — password-reset E2E
+
+| Field | Value |
+|---|---|
+| **ID** | FINDING-INT-003 |
+| **Status** | CLOSED |
+| **Classification** | E2E test environment PASS |
+| **Evidence** | 1/1 password-reset E2E PASS (`should recover a password from the email/password flow`; test-env token helper, no real email) |
+| **Production (separate)** | request → Gmail email → reset link → new password → old password rejected. Not E2E evidence. |
+| **Closure review** | ER-108-B PASS |
+| **Origin** | `docs/epics/MVP-INTEGRATION/engineering-review.md` (historical OPEN / NOT REPRODUCED) |
+
+---
+
+## Still OPEN (not Stream A / E / B)
+
+FINDING-UX-004, F-104-010, F-104-011, F-104-012.

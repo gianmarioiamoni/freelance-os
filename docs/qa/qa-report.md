@@ -266,3 +266,6 @@ This section does not rewrite the QA Gate snapshot above.
 | FINDING-INT-001 | OPEN / CONFIRMED | CLOSED | ER-108-A PASS. P108-02 `49c90ed`. Integration 224/224 host + LA |
 | FINDING-108-001 | — (not recorded at QA Gate) | CLOSED | ER-108-A PASS. P108-02B `7dcbc56` |
 | F-104-007 | OPEN (pre-existing) | CLOSED | ER-108-E PASS. P108-03 `38e8bf9`. NEXT_REDIRECT only; `DYNAMIC_SERVER_USAGE` not part of this close |
+| FINDING-QA-001 | OPEN / FLAKY | CLOSED | ER-108-B PASS. Isolated release-gate 3/3 PASS. No test/app fix |
+| FINDING-INT-002 | OPEN / NOT REPRODUCED | CLOSED | ER-108-B PASS. Sign-out E2E 2/2 PASS |
+| FINDING-INT-003 | OPEN / NOT REPRODUCED | CLOSED | ER-108-B PASS. Password-reset E2E 1/1 PASS. Production Gmail verification recorded separately |

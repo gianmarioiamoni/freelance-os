@@ -6,6 +6,7 @@ All notable changes to FreelanceOS are documented in this file.
 
 ### Fixed
 
+- EPIC-108 Stream B CLOSED (`docs/epics/EPIC-108/findings.md`, ER-108-B PASS). FINDING-QA-001 (historical flake, isolated release-gate 3/3), FINDING-INT-002 (sign-out E2E 2/2), FINDING-INT-003 (password-reset E2E 1/1; production Gmail verification recorded separately). No test/app change. P108-05 not required. Does not rewrite §34 / §35.
 - EPIC-108 Stream E CLOSED (`docs/epics/EPIC-108/findings.md`, ER-108-E PASS). F-104-007: dashboard workspace resolution outside `try`; `NEXT_REDIRECT` rethrown; real errors still log + ErrorState. `DYNAMIC_SERVER_USAGE` remains a historical EPIC-104 note. Does not rewrite §34 / §35.
 - EPIC-108 Stream A CLOSED (`docs/epics/EPIC-108/findings.md`, ER-108-A PASS). FINDING-QA-002 (`getDateRangePeriod` UTC getters), FINDING-INT-001 (`futureDate` UTC midnight fixture), FINDING-108-001 (`isDateInPeriod` UTC calendar comparison). Host and `TZ=America/Los_Angeles` evidence recorded. Does not rewrite §34 / §35.
 

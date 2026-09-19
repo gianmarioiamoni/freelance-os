@@ -961,6 +961,16 @@ Evidence: `docs/epics/EPIC-108/findings.md`. ER-108-E PASS. Does not rewrite the
 |---|---|---|---|
 | F-104-007 | CLOSED | APPLICATION | Dashboard context outside `try`; `NEXT_REDIRECT` rethrown. P108-03 `38e8bf9` |
 
+### Closed by EPIC-108 Stream B
+
+Evidence: `docs/epics/EPIC-108/findings.md`. ER-108-B PASS. P108-04 evidence only; no test/app change. Does not rewrite the QA Gate table above. Production password-reset verification is recorded separately and is not E2E evidence.
+
+| ID | Status | Classification | Notes |
+|---|---|---|---|
+| FINDING-QA-001 | CLOSED | historical flake not reproduced | Isolated release-gate 3/3 PASS |
+| FINDING-INT-002 | CLOSED | not reproduced | Sign-out E2E 2/2 PASS |
+| FINDING-INT-003 | CLOSED | E2E test environment PASS | Password-reset E2E 1/1 PASS |
+
 ### Implemented by EPIC-107
 
 EPIC-107 added public-root and dashboard-routing coverage. It does not close inherited findings. FINDING-QA-001 was not reproduced in P107-03; it remains OPEN.
