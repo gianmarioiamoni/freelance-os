@@ -9,7 +9,7 @@ import {
 import {
   PRODUCTION_EMAIL_UNCONFIGURED_MESSAGE,
   deliverProductionPasswordResetEmail,
-} from "@/infrastructure/email/resend-password-reset";
+} from "@/infrastructure/email/smtp-password-reset";
 
 export type PasswordResetEmailUser = {
   id: string;

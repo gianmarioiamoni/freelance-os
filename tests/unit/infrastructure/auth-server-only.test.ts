@@ -30,6 +30,9 @@ describe("Better Auth server/client boundary", () => {
     expect(
       source("src/infrastructure/email/password-reset-capture.ts"),
     ).toMatch(/import ["']server-only["']/);
+    expect(
+      source("src/infrastructure/email/smtp-password-reset.ts"),
+    ).toMatch(/import ["']server-only["']/);
   });
 
   it("does not import server auth into client modules", () => {
@@ -50,6 +53,9 @@ describe("Better Auth server/client boundary", () => {
       expect(contents).not.toMatch(/process\.env\.GOOGLE_/);
       expect(contents).not.toMatch(/from ["']@\/infrastructure\/email\//);
       expect(contents).not.toMatch(/RESEND_API_KEY/);
+      expect(contents).not.toMatch(/nodemailer/);
+      expect(contents).not.toMatch(/SMTP_/);
+      expect(contents).not.toMatch(/NEXT_PUBLIC_SMTP_/);
       expect(contents).not.toMatch(/AUTH_E2E_RUNTIME/);
     }
   });
@@ -63,10 +69,15 @@ describe("Better Auth server/client boundary", () => {
     expect(example).not.toMatch(/GOOGLE_CLIENT_ID=".{8,}"/);
     expect(example).not.toMatch(/GOOGLE_CLIENT_SECRET=".{8,}"/);
     expect(example).toMatch(/AUTH_EMAIL_DELIVERY=""/);
-    expect(example).toMatch(/RESEND_API_KEY=""/);
-    expect(example).toMatch(/AUTH_EMAIL_FROM=""/);
-    expect(example).not.toMatch(/RESEND_API_KEY=".{8,}"/);
-    expect(example).not.toMatch(/AUTH_EMAIL_FROM=".{8,}"/);
+    expect(example).toMatch(/SMTP_HOST=""/);
+    expect(example).toMatch(/SMTP_PORT=""/);
+    expect(example).toMatch(/SMTP_SECURE=""/);
+    expect(example).toMatch(/SMTP_USER=""/);
+    expect(example).toMatch(/SMTP_PASSWORD=""/);
+    expect(example).not.toMatch(/RESEND_API_KEY/);
+    expect(example).not.toMatch(/AUTH_EMAIL_FROM/);
+    expect(example).not.toMatch(/NEXT_PUBLIC_SMTP_/);
+    expect(example).not.toMatch(/SMTP_PASSWORD=".{8,}"/);
   });
 
   it("classifies production, optional, local/test, and E2E-only variables", () => {

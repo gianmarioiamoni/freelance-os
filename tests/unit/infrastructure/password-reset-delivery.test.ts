@@ -15,6 +15,10 @@ describe("password reset email delivery source", () => {
   it("does not interpolate tokens, URLs, or passwords into logs", () => {
     expect(deliverySource).toMatch(/console\.info\(DEVELOPMENT_DELIVERY_MESSAGE\)/);
     expect(deliverySource).toMatch(/deliverProductionPasswordResetEmail/);
+    expect(deliverySource).toMatch(
+      /from ["']@\/infrastructure\/email\/smtp-password-reset["']/,
+    );
+    expect(deliverySource).not.toMatch(/resend/i);
     expect(deliverySource).not.toMatch(/console\.\w+\([^)]*data\.(url|token)/);
     expect(deliverySource).not.toMatch(/console\.\w+\([^)]*message\.(url|token)/);
     expect(deliverySource).not.toMatch(/console\.\w+\([^)]*password/i);

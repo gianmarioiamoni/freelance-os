@@ -43,6 +43,7 @@ describe("Vercel deployment configuration", () => {
     expect(vercelRaw).not.toMatch(/TEST_DATABASE_URL/);
     expect(vercelRaw).not.toMatch(/GOOGLE_CLIENT/);
     expect(vercelRaw).not.toMatch(/RESEND_API_KEY/);
+    expect(vercelRaw).not.toMatch(/SMTP_/);
     expect(vercelRaw).not.toMatch(/BETTER_AUTH_SECRET/);
     expect(vercelRaw).not.toMatch(/DATABASE_URL/);
     expect(vercelRaw).not.toMatch(/projectId/);

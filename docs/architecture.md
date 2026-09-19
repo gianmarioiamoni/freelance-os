@@ -779,7 +779,7 @@ Better Auth 1.7.4 is the pinned authentication adapter. Persistence, a server-on
 
 Password recovery uses Better Auth's `requestPasswordReset` / `resetPassword` API and the existing `verification` table (`reset-password:${token}`). Recovery tokens expire after the library default of one hour and are consumed on use. `emailAndPassword.revokeSessionsOnPasswordReset` is enabled, so a successful reset deletes the user's Better Auth sessions. Public recovery pages are `/forgot-password` and `/reset-password`. Authenticated visitors are redirected away from `/forgot-password` but may remain on `/reset-password` so a valid token can be used.
 
-Email delivery is an Infrastructure boundary (`sendPasswordResetEmail`). `AUTH_EMAIL_DELIVERY` selects `development` (acknowledge only), `test` (in-process capture for automated tests), or `production` (Resend Free). Production send requires `RESEND_API_KEY` and `AUTH_EMAIL_FROM`. If either is missing, production mode warns and does not send. The production sender domain is an external Resend configuration; it is not frozen in the repository. Reset tokens, reset URLs, passwords, and session tokens are never written to application logs.
+Email delivery is an Infrastructure boundary (`sendPasswordResetEmail`). `AUTH_EMAIL_DELIVERY` selects `development` (acknowledge only), `test` (in-process capture for automated tests), or `production` (Gmail SMTP). Production send requires `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, and `SMTP_PASSWORD`. If any is missing, production mode warns and does not send. Reset tokens, reset URLs, passwords, and session tokens are never written to application logs.
 
 Google OAuth remains in the MVP release. It uses `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`. The provider is registered only when both values are present. The callback is Better Auth's catch-all handler at `/api/auth/callback/google`, derived from `BETTER_AUTH_URL` and the default `/api/auth` base path. Production `BETTER_AUTH_URL` is the Vercel origin once that hostname exists; the repository does not invent it. Client code never receives the client secret.
 
@@ -1407,7 +1407,7 @@ MVP production target (D-001): **Vercel**.
                        │
              ┌─────────┴─────────┐
              ▼                   ▼
-        PostgreSQL            Resend
+        PostgreSQL            Gmail SMTP
                            (password reset)
 ```
 
@@ -1453,8 +1453,11 @@ BETTER_AUTH_SECRET
 BETTER_AUTH_URL
 GOOGLE_CLIENT_ID
 GOOGLE_CLIENT_SECRET
-RESEND_API_KEY
-AUTH_EMAIL_FROM
+SMTP_HOST
+SMTP_PORT
+SMTP_SECURE
+SMTP_USER
+SMTP_PASSWORD
 ```
 
 Optional (all environments). Unset in production → production mode when `NODE_ENV=production`:
@@ -1604,7 +1607,7 @@ ADRs should record:
 | E2E testing | Playwright 1.63.0 |
 | Package manager | pnpm 10.22.0 |
 | Deployment | Vercel |
-| Email | Resend Free for password-reset delivery |
+| Email | Gmail SMTP for password-reset delivery |
 | AI | External LLM provider, future release |
 
 Foundation pins currently in use: Next.js 15.5.25, React 19.1.0, TypeScript 5.9.3, Prisma 6.19.3, Better Auth 1.7.4, PostgreSQL 17.
@@ -1683,7 +1686,7 @@ The following are intentionally not frozen yet:
 
 - exact PostgreSQL hosting provider;
 - production hostname / Vercel project;
-- verified Resend sending domain;
+- custom sending domain (Gmail SMTP is used without a purchased domain);
 - database schema/index design;
 - audit-log implementation;
 - holiday/vacation architecture;
