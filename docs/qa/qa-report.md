@@ -269,3 +269,4 @@ This section does not rewrite the QA Gate snapshot above.
 | FINDING-QA-001 | OPEN / FLAKY | CLOSED | ER-108-B PASS. Isolated release-gate 3/3 PASS. No test/app fix |
 | FINDING-INT-002 | OPEN / NOT REPRODUCED | CLOSED | ER-108-B PASS. Sign-out E2E 2/2 PASS |
 | FINDING-INT-003 | OPEN / NOT REPRODUCED | CLOSED | ER-108-B PASS. Password-reset E2E 1/1 PASS. Production Gmail verification recorded separately |
+| F-104-011 | OPEN (EPIC-104) | CLOSED | ER-108-D1 PASS. P108-06 `3d4ad4c`. Monthly Summary `<dl>` |

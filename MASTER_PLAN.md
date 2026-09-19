@@ -4,7 +4,7 @@
 **Document:** `MASTER_PLAN.md`\
 **Product:** FreelanceOS\
 **Canonical format:** Markdown\
-**Current phase:** MASTER_PLAN §35 GRANTED (`docs/release/production-certification.md`). D-005 PROVIDED — Product Owner approved production release. §34 READY FOR RELEASE on `2b58af4`. Production readiness: RELEASE GRANTED. EPIC-108 Stream A, Stream E, and Stream B complete (`docs/epics/EPIC-108/findings.md`). Remaining historical non-blocking findings stay OPEN.
+**Current phase:** MASTER_PLAN §35 GRANTED (`docs/release/production-certification.md`). D-005 PROVIDED — Product Owner approved production release. §34 READY FOR RELEASE on `2b58af4`. Production readiness: RELEASE GRANTED. EPIC-108 Stream A, Stream E, and Stream B complete; Stream D F-104-011 CLOSED (`docs/epics/EPIC-108/findings.md`). Remaining historical non-blocking findings stay OPEN.
 
 ------------------------------------------------------------------------
 
@@ -136,7 +136,7 @@ context is recovered from repository documentation.
 
 ``` text
 STATUS: UX Polish COMPLETE; EPIC-107 Public Landing COMPLETE through P107-06 and epic certification; MASTER_PLAN §34 READY FOR RELEASE; §35 GRANTED; EPIC-108 Stream A, Stream E, and Stream B complete
-NEXT: EPIC-108 remaining streams (C/D). Stream A, E, and B findings CLOSED — docs/epics/EPIC-108/findings.md
+NEXT: EPIC-108 remaining streams (C/D). F-104-011 CLOSED. Stream A, E, and B findings CLOSED — docs/epics/EPIC-108/findings.md
 Production Validation (§34): EXECUTED — READY FOR RELEASE — docs/release/production-validation.md
 Production Certification (§35): GRANTED — docs/release/production-certification.md
 Release gate resolution: docs/release/release-gate-resolution.md
@@ -1769,7 +1769,7 @@ non-blocking; F-104-000 is RESOLVED and is not listed:
   F-104-008     Loading skeletons / per-section loading not implemented       Medium     Open
   F-104-009     Performance acceptance criteria unevidenced                   Medium     Open
   F-104-010     Several accessibility assertions cannot fail                  Medium     Open
-  F-104-011     `dt`/`dd` markup without a `dl` ancestor                      Low        Open
+  F-104-011     `dt`/`dd` markup without a `dl` ancestor                      Low        CLOSED (EPIC-108 Stream D / ER-108-D1)
   F-104-012     Residual accessibility-specification gaps                     Low        Open
   F-104-013     Weekly aggregation absent; daily aggregation unconsumed       Low        Open
   F-104-014     `AnalyticsService` does not verify workspace membership       Low        Open
@@ -2115,9 +2115,9 @@ Next actions:
 ```
 
 Open/non-blocking findings remain and are carried forward (FINDING-UX-004,
-F-104-010 / 011 / 012).
+F-104-010 / 012).
 FINDING-QA-002, FINDING-INT-001, FINDING-108-001, F-104-007, FINDING-QA-001,
-FINDING-INT-002, and FINDING-INT-003 are CLOSED
+FINDING-INT-002, FINDING-INT-003, and F-104-011 are CLOSED
 (`docs/epics/EPIC-108/findings.md`). F-004 is CLOSED.
 
 This follows the methodology's rule that each Phase gets a focused
@@ -2203,6 +2203,7 @@ last_completed:
     - FINDING-QA-002 CLOSED (EPIC-108 Stream A / ER-108-A)
     - FINDING-108-001 CLOSED (EPIC-108 Stream A / ER-108-A)
     - F-104-007 CLOSED (EPIC-108 Stream E / ER-108-E)
+    - F-104-011 CLOSED (EPIC-108 Stream D / ER-108-D1)
     - FINDING-UX-001 CLOSED
     - FINDING-UX-002 CLOSED
     - FINDING-UX-003 CLOSED

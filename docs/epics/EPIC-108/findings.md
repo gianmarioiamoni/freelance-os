@@ -1,10 +1,11 @@
 # EPIC-108 — Findings Matrix
 
 **Epic:** EPIC-108 — Post-Release Hardening  
-**Scope of this record:** Stream A, Stream E, and Stream B documentation closure  
+**Scope of this record:** Stream A, Stream E, Stream B, and Stream D (F-104-011) documentation closure  
 **ER-108-A:** PASS  
 **ER-108-E:** PASS  
 **ER-108-B:** PASS  
+**ER-108-D1:** PASS  
 **Does not rewrite:** MASTER_PLAN §34 / §35, R1 certification, historical QA / UX / EPIC-107 rows
 
 ---
@@ -161,6 +162,37 @@ No application or test code was changed for Stream B.
 
 ---
 
+## Stream D
+
+| Field | Value |
+|---|---|
+| **Status** | in progress — F-104-011 CLOSED |
+| **ER** | ER-108-D1 PASS |
+| **Closed in this stream** | F-104-011 |
+| **Still open in this stream** | F-104-010, F-104-012 |
+
+| Phase | Commit | SHA |
+|---|---|---|
+| P108-06 | `fix(a11y): use description list for monthly summary` | `3d4ad4c11dc1c6fd7808b6a7469dc573e5eb7873` |
+
+---
+
+## F-104-011 — description-list markup without a `dl` ancestor
+
+| Field | Value |
+|---|---|
+| **ID** | F-104-011 |
+| **Status** | CLOSED |
+| **Root cause** | `dt`/`dd` without a `<dl>` parent |
+| **Fix** | Monthly Summary is a semantic description list (`<dl>` + four `div` groups of `dt`/`dd`) |
+| **Unchanged** | layout grid classes, visible text, values, `aria-label` |
+| **Evidence** | dashboard journey 1/1; semantic HTML/a11y 1/1 |
+| **Closure review** | ER-108-D1 PASS |
+| **Commit** | P108-06 `3d4ad4c11dc1c6fd7808b6a7469dc573e5eb7873` |
+| **Origin** | `docs/epics/EPIC-104/engineering-review.md` (historical OPEN) |
+
+---
+
 ## Still OPEN (not Stream A / E / B)
 
-FINDING-UX-004, F-104-010, F-104-011, F-104-012.
+FINDING-UX-004, F-104-010, F-104-012.

@@ -971,6 +971,14 @@ Evidence: `docs/epics/EPIC-108/findings.md`. ER-108-B PASS. P108-04 evidence onl
 | FINDING-INT-002 | CLOSED | not reproduced | Sign-out E2E 2/2 PASS |
 | FINDING-INT-003 | CLOSED | E2E test environment PASS | Password-reset E2E 1/1 PASS |
 
+### Closed by EPIC-108 Stream D (partial)
+
+Evidence: `docs/epics/EPIC-108/findings.md`. ER-108-D1 PASS. Stream D remains open for F-104-010 / F-104-012.
+
+| ID | Status | Classification | Notes |
+|---|---|---|---|
+| F-104-011 | CLOSED | ACCESSIBILITY | Monthly Summary `<dl>`; dashboard journey 1/1; semantic HTML 1/1. P108-06 `3d4ad4c` |
+
 ### Implemented by EPIC-107
 
 EPIC-107 added public-root and dashboard-routing coverage. It does not close inherited findings. FINDING-QA-001 was not reproduced in P107-03; it remains OPEN.
@@ -1728,9 +1736,9 @@ touch-target floor, and a textual (non-colour) utilization label.
 **Not** verified, despite being present in the suite: focus
 indicators, colour independence and contrast, and no-horizontal-scroll
 at 200 percent text scaling — those assertions cannot fail as written
-(F-104-010, open). The dashboard also renders `dt`/`dd` pairs with no
-`dl` ancestor (F-104-011) and uses `role="heading" aria-level={2}`
-rather than native `h2` (F-104-012).
+(F-104-010, open). Monthly Summary is a `<dl>` with `dt`/`dd` groups
+(F-104-011, CLOSED, EPIC-108 Stream D / ER-108-D1). The dashboard still
+uses `role="heading" aria-level={2}` rather than native `h2` (F-104-012).
 
 This is an accessibility baseline, not WCAG certification, and the
 dashboard portion of it is weaker than its test count suggests. No
