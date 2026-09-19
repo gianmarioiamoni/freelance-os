@@ -4,6 +4,10 @@ All notable changes to FreelanceOS are documented in this file.
 
 ## Unreleased
 
+### Fixed
+
+- EPIC-108 Stream A CLOSED (`docs/epics/EPIC-108/findings.md`, ER-108-A PASS). FINDING-QA-002 (`getDateRangePeriod` UTC getters), FINDING-INT-001 (`futureDate` UTC midnight fixture), FINDING-108-001 (`isDateInPeriod` UTC calendar comparison). Host and `TZ=America/Los_Angeles` evidence recorded. Does not rewrite §34 / §35.
+
 ### Added
 
 - MASTER_PLAN §35 Production Certification GRANTED after D-005. Validated build `2b58af4`. §34 remains READY FOR RELEASE. Historical non-blocking findings remain OPEN.

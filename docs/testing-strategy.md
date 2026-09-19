@@ -121,7 +121,7 @@ Current suite totals — **three separate suites, never combined**:
 
 ``` text
 Unit          392   pnpm test                            (vitest) — 392/392 PASS
-Integration   224   pnpm test:integration                (224/224 PASS on host TZ; FINDING-INT-001 CONFIRMED OPEN under America/Los_Angeles — 217 passed / 7 failed)
+Integration   224   pnpm test:integration                (224/224 PASS on host TZ and TZ=America/Los_Angeles — EPIC-108 Stream A; FINDING-INT-001 CLOSED)
 E2E            58   CI=true pnpm test:e2e --workers=1     (58/58 PASS)
 ```
 
@@ -942,6 +942,16 @@ Evidence: `docs/qa/qa-report.md`. Verdict: PASS WITH FINDINGS. Blocking findings
 | FINDING-QA-001 | OPEN | TEST DEFECT / FLAKY | Release-gate 5 pass / 1 flaky failure |
 | FINDING-QA-002 | OPEN | APPLICATION DEFECT | `getDateRangePeriod` custom-range TZ shift west of UTC |
 | F-104-007 | PRE-EXISTING | APPLICATION | Dashboard `NEXT_REDIRECT` logs; redirects still work |
+
+### Closed by EPIC-108 Stream A
+
+Evidence: `docs/epics/EPIC-108/findings.md`. ER-108-A PASS. Does not rewrite the QA Gate table above.
+
+| ID | Status | Classification | Notes |
+|---|---|---|---|
+| FINDING-QA-002 | CLOSED | APPLICATION DEFECT | `getDateRangePeriod` UTC getters; host + LA PASS. P108-01 `985e518` |
+| FINDING-INT-001 | CLOSED | TEST DEFECT | `futureDate` UTC midnight fixture; integration 224/224 host + LA. P108-02 `49c90ed` |
+| FINDING-108-001 | CLOSED | APPLICATION DEFECT (latent) | `isDateInPeriod` UTC calendar comparison; 6/6 host + LA. P108-02B `7dcbc56` |
 
 ### Implemented by EPIC-107
 

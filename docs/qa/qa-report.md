@@ -253,3 +253,15 @@ QA verdict preserved: **PASS WITH FINDINGS**. Blocking findings: **NONE**. Produ
 Open/non-blocking findings remain and are carried into UX Gate (§33). FINDING-QA-002 is not closed. FINDING-QA-001 is not converted into a deterministic PASS. FINDING-INT-002 and FINDING-INT-003 remain OPEN / NOT REPRODUCED.
 
 Do not start Production Certification from this gate.
+
+------------------------------------------------------------------------
+
+## 20. Post-release Stream A closure (EPIC-108)
+
+This section does not rewrite the QA Gate snapshot above.
+
+| ID | QA Gate status (historical) | Current status | Evidence |
+|---|---|---|---|
+| FINDING-QA-002 | OPEN | CLOSED | ER-108-A PASS. P108-01 `985e518`. `docs/epics/EPIC-108/findings.md` |
+| FINDING-INT-001 | OPEN / CONFIRMED | CLOSED | ER-108-A PASS. P108-02 `49c90ed`. Integration 224/224 host + LA |
+| FINDING-108-001 | — (not recorded at QA Gate) | CLOSED | ER-108-A PASS. P108-02B `7dcbc56` |

@@ -338,9 +338,9 @@ boundaries (PD-105-003).** Current-period constructors (`getTodayPeriod`,
 `getCurrentWeekPeriod`, `getCurrentMonthPeriod`, `getCurrentYearPeriod`)
 accept the workspace timezone as an explicit parameter and passed QA
 under host TZ and `America/New_York`. `getDateRangePeriod` (custom
-range) still uses local date getters and shifts the calendar day when
-the process timezone is west of UTC (FINDING-QA-002, OPEN, APPLICATION
-DEFECT, NON-BLOCKING). No period boundary is accepted from an
+range) uses UTC calendar getters so a requested calendar day does not
+shift when the process timezone is west of UTC (FINDING-QA-002, CLOSED,
+EPIC-108 Stream A / ER-108-A). No period boundary is accepted from an
 unauthenticated request parameter.
 
 ### Implemented by EPIC-104 and extended by EPIC-105
