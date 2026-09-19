@@ -11,12 +11,12 @@
 VALIDATION EXECUTION:     COMPLETE
 §34 / §36 GATE OUTCOME:   READY FOR RELEASE
 BLOCKING FINDINGS (§37):  NONE newly confirmed as Release Blocker
-PRODUCTION READINESS:     VALIDATED — RELEASE NOT GRANTED
-§35 CERTIFICATION:        NOT RUN / AWAITING PRODUCT OWNER APPROVAL
-PRODUCT OWNER APPROVAL:   NOT PROVIDED
+PRODUCTION READINESS:     RELEASE GRANTED
+§35 CERTIFICATION:        GRANTED — docs/release/production-certification.md
+PRODUCT OWNER APPROVAL:   D-005 PROVIDED
 ```
 
-This record updates §34 after hosted Vercel production validation and Gmail SMTP password-reset completion. It is not Production Certification. It does not grant §35. It does not invent Product Owner approval.
+This record is §34 Production Validation. §35 is recorded in `docs/release/production-certification.md`. Historical validation rows below are unchanged.
 
 MASTER_PLAN §34 concludes only with `READY FOR RELEASE` or `RELEASE BLOCKED`. Execution completeness is not a third release state. Certification is §35 only.
 
@@ -31,7 +31,8 @@ MASTER_PLAN §34 concludes only with `READY FOR RELEASE` or `RELEASE BLOCKED`. E
 | D-001–D-004 implementation | `8aa0266` | Vercel config, Google in MVP, Resend adapter, `AUTH_E2E_RUNTIME`. Not a §34 run. |
 | D-004 residual E2E | `f5592b3` (this SHA, prior chat) | Isolated `next start` 63/5 then **68/68**. F-004 auth burst **RESOLVED**. Not a §34 run. |
 | **This §34** | `f5592b3` | **RELEASE BLOCKED**. Local `pnpm start` workflow PASS. Fresh `CI=true pnpm test:e2e:start` **67/68** (one flake). Hosted Vercel not executed. Google/Resend production values EXTERNAL. |
-| Hosted + SMTP revalidation | `2b58af4` | **READY FOR RELEASE**. Vercel production + Neon + Gmail SMTP password-reset completion verified. Google OAuth production verified. F-004 CLOSED. Historical findings remain OPEN. §35 not run. |
+| Hosted + SMTP revalidation | `2b58af4` | **READY FOR RELEASE**. Vercel production + Neon + Gmail SMTP password-reset completion verified. Google OAuth production verified. F-004 CLOSED. Historical findings remain OPEN. |
+| §35 certification | `2b58af4` | **GRANTED**. D-005 PROVIDED. Not a §34 run. See `docs/release/production-certification.md`. |
 
 ---
 
@@ -96,9 +97,9 @@ No inherited finding is auto-ACCEPTED. None is newly classed as a §37 Release B
 §34 / §36 OUTCOME:  READY FOR RELEASE
 ```
 
-Reason: hosted Vercel + Neon + production Google + Gmail SMTP password-reset completion are verified. F-004 is CLOSED. Historical non-blocking findings remain OPEN. Product Owner approval is a §35 field and is NOT PROVIDED.
+Reason: hosted Vercel + Neon + production Google + Gmail SMTP password-reset completion are verified. F-004 is CLOSED. Historical non-blocking findings remain OPEN.
 
-§35 remains **not run**. Certification requires explicit Product Owner approval (D-005).
+§35 is recorded separately and is **GRANTED** after D-005. See `docs/release/production-certification.md`.
 
 ---
 

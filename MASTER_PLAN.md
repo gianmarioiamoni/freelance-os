@@ -4,7 +4,7 @@
 **Document:** `MASTER_PLAN.md`\
 **Product:** FreelanceOS\
 **Canonical format:** Markdown\
-**Current phase:** MASTER_PLAN §34 executed on `2b58af4` — READY FOR RELEASE (`docs/release/production-validation.md`). Hosted Vercel, Neon, production Google, and Gmail SMTP password-reset completion verified. F-004 CLOSED. §35 NOT RUN / AWAITING PRODUCT OWNER APPROVAL. D-005: NOT PROVIDED. Production readiness: VALIDATED — RELEASE NOT GRANTED.
+**Current phase:** MASTER_PLAN §35 GRANTED (`docs/release/production-certification.md`). D-005 PROVIDED — Product Owner approved production release. §34 READY FOR RELEASE on `2b58af4`. Production readiness: RELEASE GRANTED. Historical non-blocking findings remain OPEN.
 
 ------------------------------------------------------------------------
 
@@ -135,11 +135,12 @@ context is recovered from repository documentation.
 ## Overall
 
 ``` text
-STATUS: UX Polish COMPLETE; EPIC-107 Public Landing COMPLETE through P107-06 and epic certification; MASTER_PLAN §34 executed — READY FOR RELEASE
-NEXT: MASTER_PLAN §35 Production Certification — AWAITING PRODUCT OWNER APPROVAL (D-005)
+STATUS: UX Polish COMPLETE; EPIC-107 Public Landing COMPLETE through P107-06 and epic certification; MASTER_PLAN §34 READY FOR RELEASE; §35 GRANTED
+NEXT: none — Release 1 MVP certified. Historical non-blocking findings remain OPEN.
 Production Validation (§34): EXECUTED — READY FOR RELEASE — docs/release/production-validation.md
+Production Certification (§35): GRANTED — docs/release/production-certification.md
 Release gate resolution: docs/release/release-gate-resolution.md
-Production readiness: VALIDATED — RELEASE NOT GRANTED
+Production readiness: RELEASE GRANTED
 ```
 
 ## Completed planning artifacts
@@ -275,7 +276,7 @@ Status: COMPLETE
 Verdict: PASS WITH FINDINGS
 Evidence: `docs/ux/ux-review.md`
 Blocking findings: NONE
-Next: §34 executed on `2b58af4` — READY FOR RELEASE; §35 NOT RUN / AWAITING PRODUCT OWNER APPROVAL
+Next: §34 READY FOR RELEASE; §35 GRANTED (D-005 PROVIDED)
 
 UX Polish — after §33
 Status: COMPLETE
@@ -1018,7 +1019,7 @@ R0-E04 Workspace
 **Release gate (QA):** 5 pass / 1 flaky failure (FINDING-QA-001); focused PASS; isolated 3/3 PASS  
 **UX Gate:** COMPLETE — PASS WITH FINDINGS (`docs/ux/ux-review.md`). Blocking findings: NONE.  
 **UX Polish:** COMPLETE — `docs/ux/ux-review.md` §18.  
-**Next:** D-001–D-004 implemented and hosted-validated. MASTER_PLAN §34 last executed — READY FOR RELEASE (`docs/release/production-validation.md`). §35 DEFERRED / AWAITING PRODUCT OWNER APPROVAL. Production readiness: VALIDATED — RELEASE NOT GRANTED.
+**Next:** D-001–D-005 complete. MASTER_PLAN §34 READY FOR RELEASE. §35 GRANTED (`docs/release/production-certification.md`). Production readiness: RELEASE GRANTED.
 
 After individual MVP Epics are complete, perform an explicit integration
 phase.
@@ -1064,8 +1065,9 @@ It is the integration and validation step required before release gates.
 **HEAD at P107-03:** `2ee06fb`  
 **Engineering Review:** COMPLETE — PASS WITH FINDINGS (P107-05)  
 **Epic production-like validation:** COMPLETE — PASS WITH FINDINGS (P107-06)  
-**MASTER_PLAN §34:** EXECUTED — READY FOR RELEASE — `docs/release/production-validation.md`. Hosted blockers CLOSED. §35 DEFERRED / AWAITING PRODUCT OWNER APPROVAL.  
-**Production readiness:** VALIDATED — RELEASE NOT GRANTED
+**MASTER_PLAN §34:** EXECUTED — READY FOR RELEASE — `docs/release/production-validation.md`. Hosted blockers CLOSED.  
+**MASTER_PLAN §35:** GRANTED — `docs/release/production-certification.md`. D-005 PROVIDED.  
+**Production readiness:** RELEASE GRANTED
 
 At planning: unauthenticated `/` redirected to `/sign-in`. There was no public landing and no `/dashboard` route. The authenticated dashboard lived at `/`.
 
@@ -1617,7 +1619,7 @@ FINDING-QA-002 remains OPEN.
 
 # 34. Production Validation Gate
 
-**Status:** LAST EXECUTED — **READY FOR RELEASE**. Evidence: `docs/release/production-validation.md`. Candidate: `2b58af4` (2026-09-19 hosted production + Gmail SMTP). Hosted Vercel, Neon, production Google, and Gmail SMTP password-reset completion verified. F-004 CLOSED. Product Owner approval is a §35 field and is NOT PROVIDED. §35 NOT RUN.
+**Status:** LAST EXECUTED — **READY FOR RELEASE**. Evidence: `docs/release/production-validation.md`. Candidate: `2b58af4` (2026-09-19 hosted production + Gmail SMTP). Hosted Vercel, Neon, production Google, and Gmail SMTP password-reset completion verified. F-004 CLOSED. §35 GRANTED after D-005.
 
 Validate the exact build that will be deployed.
 
@@ -1634,7 +1636,7 @@ Minimum:
 -   [x] notifications — PASS
 -   [x] security baseline — PASS on exercised paths
 -   [x] environment variables — production Google + SMTP names set on Vercel (values not recorded)
--   [x] no release-blocking defects — no new §37 Release Blocker; historical findings remain OPEN; §34 outcome READY FOR RELEASE. §35 not granted.
+-   [x] no release-blocking defects — no new §37 Release Blocker; historical findings remain OPEN; §34 outcome READY FOR RELEASE. §35 GRANTED.
 
 The methodology requires Production Validation to validate exactly what
 will be deployed and concludes with either:
@@ -1655,11 +1657,12 @@ RELEASE BLOCKED
 
 # 35. Production Certification
 
+**Status:** **GRANTED**. Evidence: `docs/release/production-certification.md`. D-005 PROVIDED — Product Owner approved production release. Validated build: `2b58af4`. Date: 2026-09-19.
+
 Certification is a formal approval step after successful production
 validation.
 
 Only then is the build considered releasable.
-fileciteturn1file6L1914-L1918
 
 Certification record should contain:
 
@@ -2091,12 +2094,10 @@ The exact parallelization will be determined during each Epic plan.
 
 # 47. Current Next Action
 
-MASTER_PLAN §34 Production Validation has been revalidated on candidate
-`2b58af4`. Evidence: `docs/release/production-validation.md`. Gate
-outcome: **READY FOR RELEASE**. Hosted Vercel, Neon, production Google,
-and Gmail SMTP password-reset completion are verified. F-004 is CLOSED.
-Production readiness: VALIDATED — RELEASE NOT GRANTED. Product Owner
-approval: **NOT PROVIDED**.
+MASTER_PLAN §35 Production Certification is **GRANTED**. Evidence:
+`docs/release/production-certification.md`. D-005 PROVIDED. §34 remains
+**READY FOR RELEASE** on `2b58af4`. Production readiness: RELEASE
+GRANTED.
 
 EPIC-107 Engineering Review, production-like validation, and epic
 certification already exist and are not re-opened here.
@@ -2104,16 +2105,14 @@ certification already exist and are not re-opened here.
 Next actions:
 
 ``` text
-1. MASTER_PLAN §35 Production Certification remains DEFERRED
-2. Explicit Product Owner approval (D-005) is required for §35
-3. Do not invent Product Owner approval
+1. Release 1 MVP is certified
+2. Historical non-blocking findings remain OPEN
+3. Do not rewrite historical §34 rows
 ```
 
-§35 cannot grant release while Product Owner approval is absent. Do not
-run §35 until the Product Owner approves. Open/non-blocking findings
-remain and are carried forward (FINDING-UX-004, FINDING-QA-002,
-FINDING-INT-001/002/003, FINDING-QA-001, F-104-007, F-104-010 / 011 /
-012). F-004 is CLOSED.
+Open/non-blocking findings remain and are carried forward (FINDING-UX-004,
+FINDING-QA-002, FINDING-INT-001/002/003, FINDING-QA-001, F-104-007,
+F-104-010 / 011 / 012). F-004 is CLOSED.
 
 This follows the methodology's rule that each Phase gets a focused
 Cursor chat, a defined commit expectation, review, approval, and then
@@ -2162,10 +2161,11 @@ releases:
 
 last_completed:
   epic: EPIC-107
-  gate: Production Validation
-  reference: MASTER_PLAN.md §34
-  evidence: docs/release/production-validation.md
+  gate: Production Certification
+  reference: MASTER_PLAN.md §35
+  evidence: docs/release/production-certification.md
   production_validation: READY FOR RELEASE
+  production_certification: GRANTED
   ux_verdict: pass-with-findings
   ux_polish: COMPLETE
   qa_gate: MVP QA Gate
@@ -2174,7 +2174,7 @@ last_completed:
   qa_verdict: pass-with-findings
   documentation_gate: COMPLETE
   blocking_findings: none
-  production_readiness: validated-release-not-granted
+  production_readiness: release-granted
   candidate: 2b58af4
   tests:
     unit: 398
@@ -2207,15 +2207,16 @@ last_completed:
     - FINDING-UX-009 CLOSED
 
 next:
-  phase: Production Certification
+  phase: none
   epic: none
-  gate: MASTER_PLAN §35
-  reference: docs/release/release-gate-resolution.md
+  gate: none
+  reference: docs/release/production-certification.md
   production_validation: READY FOR RELEASE
   production_validation_reference: MASTER_PLAN.md §34
-  production_readiness: validated-release-not-granted
-  product_owner_approval: NOT PROVIDED
-  objective: Await explicit Product Owner approval (D-005). Do not invent approval. Do not grant release.
+  production_certification: GRANTED
+  production_readiness: release-granted
+  product_owner_approval: D-005 PROVIDED
+  objective: Release 1 MVP certified. Historical non-blocking findings remain OPEN.
   open_non_blocking_findings:
     - FINDING-INT-001
     - FINDING-INT-002

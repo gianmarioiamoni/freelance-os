@@ -6,7 +6,8 @@ All notable changes to FreelanceOS are documented in this file.
 
 ### Added
 
-- MASTER_PLAN §34 Production Validation revalidated on hosted Vercel + Neon + Gmail SMTP (`2b58af4`). Outcome: READY FOR RELEASE. Hosted deploy, production Google, and password-reset completion CLOSED. F-004 CLOSED. Custom domain not purchased. Gmail SMTP is the MVP mailer, not a high-scale transactional standard. §35 not run. Product Owner approval NOT PROVIDED.
+- MASTER_PLAN §35 Production Certification GRANTED after D-005. Validated build `2b58af4`. §34 remains READY FOR RELEASE. Historical non-blocking findings remain OPEN.
+- MASTER_PLAN §34 Production Validation revalidated on hosted Vercel + Neon + Gmail SMTP (`2b58af4`). Outcome: READY FOR RELEASE. Hosted deploy, production Google, and password-reset completion CLOSED. F-004 CLOSED. Custom domain not purchased. Gmail SMTP is the MVP mailer, not a high-scale transactional standard.
 - Production password-reset transport replaced Resend with Gmail SMTP / Nodemailer. Resend removed from the runtime.
 
 - MVP production infrastructure for D-001–D-004: Vercel deployment configuration, Google OAuth kept in the MVP release, then Gmail SMTP password-reset delivery, and E2E isolation (`AUTH_E2E_RUNTIME` on `pnpm test:e2e:start`). Isolated `next start` E2E later 68/68. Historical note: hosted deploy and production credentials were external at D-001–D-004 implementation. §35 not run.

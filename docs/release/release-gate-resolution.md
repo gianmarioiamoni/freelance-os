@@ -7,20 +7,21 @@
 **Current §34 candidate:** `2b58af442f0ab169f08eb0c216c467375acdb285`  
 **§34 candidate previously validated:** `f5592b3268e8514279b014f95dafbc2ff1581afc`  
 **Evidence:** `docs/release/production-validation.md`  
-**§35 Production Certification:** NOT RUN / AWAITING PRODUCT OWNER APPROVAL  
-**Product Owner approval:** NOT PROVIDED  
+**§35 Production Certification:** GRANTED (`docs/release/production-certification.md`)  
+**Product Owner approval:** D-005 PROVIDED  
 
 ```text
 CURRENT DECISION:     READY FOR RELEASE
-PRODUCTION READINESS: VALIDATED — RELEASE NOT GRANTED
+§35 CERTIFICATION:    GRANTED
+PRODUCTION READINESS: RELEASE GRANTED
 NEW EPIC:             NOT OPENED
 APPLICATION CHANGES:  NONE in this documentation update
 TESTS MODIFIED:       NONE
 ```
 
-The 2026-09-18 classification snapshot is preserved below. D-001–D-004 were implemented later; see §12. Hosted production + Gmail SMTP close-out is §13. Historical §34 rows were not rewritten.
+The 2026-09-18 classification snapshot is preserved below. D-001–D-004 were implemented later; see §12. Hosted production + Gmail SMTP close-out is §13. §35 grant is §14. Historical §34 rows were not rewritten.
 
-This record classifies remaining §34 items. It does not grant release. It does not accept findings. It does not close historical findings.
+This record does not auto-close historical findings.
 
 ---
 
@@ -30,15 +31,15 @@ This record classifies remaining §34 items. It does not grant release. It does 
 | --- | --- |
 | §34 execution | COMPLETE |
 | §34 / §36 outcome | **READY FOR RELEASE** |
-| Overall production readiness | **VALIDATED — RELEASE NOT GRANTED** |
+| Overall production readiness | **RELEASE GRANTED** |
 | Hosted production | `https://freelance-os-timeplan.vercel.app` (Vercel + Neon) |
 | Runtime validated | hosted production + prior local `pnpm start` |
-| Product Owner approval | NOT PROVIDED (§35 field) |
+| Product Owner approval | D-005 PROVIDED (§35 field) |
 | New §37 Release Blocker from last §34 run | NONE newly confirmed |
 
 Passed: production build; hosted Vercel deploy; Neon migrations; email/password; Google production E2E; Gmail SMTP password-reset completion; complete MVP workflow (local PV34F); Reports / Alerts / Notifications; F-004 CLOSED (68/68 isolated `next start`).
 
-Remaining exclusively for §35: explicit Product Owner approval (D-005). Historical findings stay OPEN and are not §34 blockers.
+§35 GRANTED after D-005. Historical findings stay OPEN and are not §34 blockers.
 
 ---
 
@@ -450,5 +451,22 @@ PRODUCTION READINESS:         VALIDATED — RELEASE NOT GRANTED
 ```
 
 Historical findings remain OPEN and are not §34 blockers: QA-001, QA-002, INT-001, INT-002, INT-003, UX-004, F-104-007, F-104-010, F-104-011, F-104-012.
+
+---
+
+## 14. §35 Production Certification (2026-09-19)
+
+D-005 is an explicit Product Owner decision: production release approved.
+
+Eligibility (`§10`) met: §34 `READY FOR RELEASE`; mandatory §34 items closed; D-005 in the certification record; §36 remains binary.
+
+```text
+§34:                          READY FOR RELEASE
+§35 PRODUCTION CERTIFICATION: GRANTED
+RELEASE:                      APPROVED BY PRODUCT OWNER (D-005)
+PRODUCTION READINESS:         RELEASE GRANTED
+```
+
+Evidence: `docs/release/production-certification.md`. Historical findings remain OPEN. F-004 remains CLOSED.
 
 
