@@ -163,9 +163,13 @@ export function isValidPeriod(period: AnalyticsPeriod): boolean {
 
 /**
  * Checks if a date falls within the given period (inclusive).
+ * Inputs are calendar dates at UTC midnight; local getters would shift the day
+ * when the process timezone is west of UTC (FINDING-108-001).
  */
 export function isDateInPeriod(date: Date, period: AnalyticsPeriod): boolean {
-  const dateOnly = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  const dateOnly = new Date(
+    Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()),
+  );
   return dateOnly >= period.startDate && dateOnly <= period.endDate;
 }
 
