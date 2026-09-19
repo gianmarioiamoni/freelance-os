@@ -102,6 +102,42 @@ describe("analytics-periods", () => {
       expect(period.startDate).toEqual(new Date("2026-09-15"));
       expect(period.endDate).toEqual(new Date("2026-09-15"));
     });
+
+    it("keeps the requested UTC calendar start day (QA-002)", () => {
+      const period = getDateRangePeriod(
+        new Date("2026-06-01T00:00:00.000Z"),
+        new Date("2026-06-30T00:00:00.000Z"),
+      );
+
+      expect(period.startDate.toISOString()).toBe("2026-06-01T00:00:00.000Z");
+    });
+
+    it("keeps the requested UTC calendar end day (QA-002)", () => {
+      const period = getDateRangePeriod(
+        new Date("2026-06-01T00:00:00.000Z"),
+        new Date("2026-06-30T00:00:00.000Z"),
+      );
+
+      expect(period.endDate.toISOString()).toBe("2026-06-30T00:00:00.000Z");
+    });
+
+    it("does not shift a same-day UTC-midnight range", () => {
+      const day = new Date("2026-06-01T00:00:00.000Z");
+      const period = getDateRangePeriod(day, day);
+
+      expect(period.startDate.toISOString()).toBe("2026-06-01T00:00:00.000Z");
+      expect(period.endDate.toISOString()).toBe("2026-06-01T00:00:00.000Z");
+    });
+
+    it("keeps both boundaries of a multi-day UTC-midnight range", () => {
+      const period = getDateRangePeriod(
+        new Date("2026-06-01T00:00:00.000Z"),
+        new Date("2026-06-30T00:00:00.000Z"),
+      );
+
+      expect(period.startDate.toISOString()).toBe("2026-06-01T00:00:00.000Z");
+      expect(period.endDate.toISOString()).toBe("2026-06-30T00:00:00.000Z");
+    });
   });
 
   describe("isValidPeriod", () => {

@@ -134,11 +134,19 @@ export function getMonthPeriod(year: number, month: number): AnalyticsPeriod {
 
 /**
  * Creates a period for a specific date range (inclusive, UTC midnight).
+ *
+ * Inputs are calendar dates, not instants. Reporting parses URL `YYYY-MM-DD`
+ * as UTC midnight (`toReportingPeriodKind`). Local getters would shift the
+ * requested day when the process timezone is west of UTC (FINDING-QA-002).
  */
 export function getDateRangePeriod(startDate: Date, endDate: Date): AnalyticsPeriod {
   return {
-    startDate: new Date(Date.UTC(startDate.getFullYear(), startDate.getMonth(), startDate.getDate())),
-    endDate: new Date(Date.UTC(endDate.getFullYear(), endDate.getMonth(), endDate.getDate())),
+    startDate: new Date(
+      Date.UTC(startDate.getUTCFullYear(), startDate.getUTCMonth(), startDate.getUTCDate()),
+    ),
+    endDate: new Date(
+      Date.UTC(endDate.getUTCFullYear(), endDate.getUTCMonth(), endDate.getUTCDate()),
+    ),
   };
 }
 
