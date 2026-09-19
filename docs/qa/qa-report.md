@@ -256,7 +256,7 @@ Do not start Production Certification from this gate.
 
 ------------------------------------------------------------------------
 
-## 20. Post-release Stream A closure (EPIC-108)
+## 20. Post-release EPIC-108 closure
 
 This section does not rewrite the QA Gate snapshot above.
 
@@ -265,3 +265,4 @@ This section does not rewrite the QA Gate snapshot above.
 | FINDING-QA-002 | OPEN | CLOSED | ER-108-A PASS. P108-01 `985e518`. `docs/epics/EPIC-108/findings.md` |
 | FINDING-INT-001 | OPEN / CONFIRMED | CLOSED | ER-108-A PASS. P108-02 `49c90ed`. Integration 224/224 host + LA |
 | FINDING-108-001 | — (not recorded at QA Gate) | CLOSED | ER-108-A PASS. P108-02B `7dcbc56` |
+| F-104-007 | OPEN (pre-existing) | CLOSED | ER-108-E PASS. P108-03 `38e8bf9`. NEXT_REDIRECT only; `DYNAMIC_SERVER_USAGE` not part of this close |

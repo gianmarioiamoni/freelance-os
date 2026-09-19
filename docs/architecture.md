@@ -559,12 +559,12 @@ The dashboard is labelled `Dashboard` in `src/lib/navigation.ts` (`href: "/dashb
 
 The route is dynamic (`ƒ /dashboard` in the build route table) because
 authentication reads `headers()`. This is intentional and correct for
-an authenticated workspace-scoped surface and must not be changed. The
-page-level `try`/`catch` currently intercepts Next.js control-flow
-signals including `NEXT_REDIRECT`; the redirect still reaches the user
-because `(app)/layout.tsx` performs the same workspace resolution
-outside any handler and wins. Recorded as F-104-007, confirmed and
-non-blocking.
+an authenticated workspace-scoped surface and must not be changed.
+Dashboard workspace resolution runs outside the page `try`/`catch`;
+`NEXT_REDIRECT` is not logged or mapped to ErrorState (F-104-007,
+CLOSED, EPIC-108 Stream E / ER-108-E). `(app)/layout.tsx` remains the
+workspace/auth authority. `DYNAMIC_SERVER_USAGE` is a historical
+EPIC-104 build observation and is not part of this NEXT_REDIRECT close.
 
 ### Public landing (EPIC-107)
 

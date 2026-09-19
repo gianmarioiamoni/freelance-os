@@ -4,7 +4,7 @@
 **Document:** `MASTER_PLAN.md`\
 **Product:** FreelanceOS\
 **Canonical format:** Markdown\
-**Current phase:** MASTER_PLAN §35 GRANTED (`docs/release/production-certification.md`). D-005 PROVIDED — Product Owner approved production release. §34 READY FOR RELEASE on `2b58af4`. Production readiness: RELEASE GRANTED. EPIC-108 Stream A technically complete (`docs/epics/EPIC-108/findings.md`). Remaining historical non-blocking findings stay OPEN.
+**Current phase:** MASTER_PLAN §35 GRANTED (`docs/release/production-certification.md`). D-005 PROVIDED — Product Owner approved production release. §34 READY FOR RELEASE on `2b58af4`. Production readiness: RELEASE GRANTED. EPIC-108 Stream A and Stream E technically complete (`docs/epics/EPIC-108/findings.md`). Remaining historical non-blocking findings stay OPEN.
 
 ------------------------------------------------------------------------
 
@@ -135,8 +135,8 @@ context is recovered from repository documentation.
 ## Overall
 
 ``` text
-STATUS: UX Polish COMPLETE; EPIC-107 Public Landing COMPLETE through P107-06 and epic certification; MASTER_PLAN §34 READY FOR RELEASE; §35 GRANTED; EPIC-108 Stream A technically complete
-NEXT: EPIC-108 remaining streams (E/B/C/D). Stream A findings CLOSED — docs/epics/EPIC-108/findings.md
+STATUS: UX Polish COMPLETE; EPIC-107 Public Landing COMPLETE through P107-06 and epic certification; MASTER_PLAN §34 READY FOR RELEASE; §35 GRANTED; EPIC-108 Stream A and Stream E technically complete
+NEXT: EPIC-108 remaining streams (B/C/D). Stream A and Stream E findings CLOSED — docs/epics/EPIC-108/findings.md
 Production Validation (§34): EXECUTED — READY FOR RELEASE — docs/release/production-validation.md
 Production Certification (§35): GRANTED — docs/release/production-certification.md
 Release gate resolution: docs/release/release-gate-resolution.md
@@ -294,7 +294,7 @@ FINDING-INT-003 OPEN / NOT REPRODUCED — TEST INFRASTRUCTURE
 FINDING-QA-001 OPEN / NON-BLOCKING — TEST DEFECT / FLAKY
 FINDING-QA-002 CLOSED — EPIC-108 Stream A / ER-108-A PASS
 FINDING-108-001 CLOSED — EPIC-108 Stream A / ER-108-A PASS
-F-104-007 PRE-EXISTING / NON-BLOCKING
+F-104-007 CLOSED — EPIC-108 Stream E / ER-108-E PASS
 FINDING-UX-001 CLOSED
 FINDING-UX-002 CLOSED
 FINDING-UX-003 CLOSED
@@ -1765,7 +1765,7 @@ non-blocking; F-104-000 is RESOLVED and is not listed:
   F-104-004     Contract `[validFrom, validTo)` validity unapplied             Medium     Open
   F-104-005     Workspace timezone unused for period boundaries               Medium     Open
   F-104-006     Analytics integration tests bound to the current month        High       Open
-  F-104-007     Page-level `catch` swallows Next.js control-flow signals      Medium     Open
+  F-104-007     Page-level `catch` swallows Next.js control-flow signals      Medium     CLOSED (EPIC-108 Stream E / ER-108-E)
   F-104-008     Loading skeletons / per-section loading not implemented       Medium     Open
   F-104-009     Performance acceptance criteria unevidenced                   Medium     Open
   F-104-010     Several accessibility assertions cannot fail                  Medium     Open
@@ -1809,8 +1809,9 @@ EPIC-105 findings F-105-001 through F-105-007 are closed; F-105-P-007
 optimization is required without a threshold from PD-105-008.
 
 Real debt recorded by MVP QA Gate (see `docs/qa/qa-report.md`). F-104-007
-remains OPEN / PRE-EXISTING / NON-BLOCKING (dashboard `NEXT_REDIRECT`
-logs). FINDING-QA-001 is a test defect, not application debt:
+is CLOSED (EPIC-108 Stream E / ER-108-E; NEXT_REDIRECT handling).
+`DYNAMIC_SERVER_USAGE` remains a historical EPIC-104 note and does not
+reopen F-104-007. FINDING-QA-001 is a test defect, not application debt:
 
   ID               Area                                                          Severity   Status
   ---------------- ------------------------------------------------------------- ---------- ------------
@@ -2108,13 +2109,13 @@ Next actions:
 
 ``` text
 1. Release 1 MVP is certified
-2. EPIC-108 Stream A is technically complete (QA-002, INT-001, FINDING-108-001 CLOSED)
+2. EPIC-108 Stream A and Stream E are technically complete
 3. Do not rewrite historical §34 rows
 ```
 
 Open/non-blocking findings remain and are carried forward (FINDING-UX-004,
-FINDING-INT-002/003, FINDING-QA-001, F-104-007, F-104-010 / 011 / 012).
-FINDING-QA-002, FINDING-INT-001, and FINDING-108-001 are CLOSED
+FINDING-INT-002/003, FINDING-QA-001, F-104-010 / 011 / 012).
+FINDING-QA-002, FINDING-INT-001, FINDING-108-001, and F-104-007 are CLOSED
 (`docs/epics/EPIC-108/findings.md`). F-004 is CLOSED.
 
 This follows the methodology's rule that each Phase gets a focused
@@ -2199,7 +2200,7 @@ last_completed:
     - FINDING-QA-001 OPEN / NON-BLOCKING / TEST DEFECT / FLAKY
     - FINDING-QA-002 CLOSED (EPIC-108 Stream A / ER-108-A)
     - FINDING-108-001 CLOSED (EPIC-108 Stream A / ER-108-A)
-    - F-104-007 PRE-EXISTING / NON-BLOCKING
+    - F-104-007 CLOSED (EPIC-108 Stream E / ER-108-E)
     - FINDING-UX-001 CLOSED
     - FINDING-UX-002 CLOSED
     - FINDING-UX-003 CLOSED
@@ -2220,12 +2221,11 @@ next:
   production_certification: GRANTED
   production_readiness: release-granted
   product_owner_approval: D-005 PROVIDED
-  objective: Release 1 MVP certified. EPIC-108 Stream A CLOSED. Remaining historical non-blocking findings stay OPEN.
+  objective: Release 1 MVP certified. EPIC-108 Stream A and Stream E CLOSED. Remaining historical non-blocking findings stay OPEN.
   open_non_blocking_findings:
     - FINDING-INT-002
     - FINDING-INT-003
     - FINDING-QA-001
-    - F-104-007
     - FINDING-UX-004
 ```
 

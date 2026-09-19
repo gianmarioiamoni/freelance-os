@@ -953,6 +953,14 @@ Evidence: `docs/epics/EPIC-108/findings.md`. ER-108-A PASS. Does not rewrite the
 | FINDING-INT-001 | CLOSED | TEST DEFECT | `futureDate` UTC midnight fixture; integration 224/224 host + LA. P108-02 `49c90ed` |
 | FINDING-108-001 | CLOSED | APPLICATION DEFECT (latent) | `isDateInPeriod` UTC calendar comparison; 6/6 host + LA. P108-02B `7dcbc56` |
 
+### Closed by EPIC-108 Stream E
+
+Evidence: `docs/epics/EPIC-108/findings.md`. ER-108-E PASS. Does not rewrite the QA Gate table above. `DYNAMIC_SERVER_USAGE` is a historical EPIC-104 note and does not reopen F-104-007.
+
+| ID | Status | Classification | Notes |
+|---|---|---|---|
+| F-104-007 | CLOSED | APPLICATION | Dashboard context outside `try`; `NEXT_REDIRECT` rethrown. P108-03 `38e8bf9` |
+
 ### Implemented by EPIC-107
 
 EPIC-107 added public-root and dashboard-routing coverage. It does not close inherited findings. FINDING-QA-001 was not reproduced in P107-03; it remains OPEN.

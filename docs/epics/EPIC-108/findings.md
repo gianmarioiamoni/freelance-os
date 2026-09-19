@@ -1,8 +1,9 @@
 # EPIC-108 — Findings Matrix
 
 **Epic:** EPIC-108 — Post-Release Hardening  
-**Scope of this record:** Stream A documentation closure  
+**Scope of this record:** Stream A and Stream E documentation closure  
 **ER-108-A:** PASS  
+**ER-108-E:** PASS  
 **Does not rewrite:** MASTER_PLAN §34 / §35, R1 certification, historical QA / UX / EPIC-107 rows
 
 ---
@@ -71,6 +72,38 @@
 
 ---
 
-## Still OPEN (not Stream A)
+## Stream E
 
-FINDING-QA-001, FINDING-INT-002, FINDING-INT-003, FINDING-UX-004, F-104-007, F-104-010, F-104-011, F-104-012.
+| Field | Value |
+|---|---|
+| **Status** | technically complete |
+| **ER** | ER-108-E PASS |
+| **Findings** | F-104-007 CLOSED |
+| **Phases** | P108-03, P108-03C (this record) |
+
+| Phase | Commit | SHA |
+|---|---|---|
+| P108-03 | `fix(workspace): preserve Next.js redirect semantics` | `38e8bf9d3198517e33f3b1a7ca1b7b94f6058869` |
+
+---
+
+## F-104-007 — page-level `catch` swallows Next.js `NEXT_REDIRECT`
+
+| Field | Value |
+|---|---|
+| **ID** | F-104-007 |
+| **Status** | CLOSED |
+| **Classification** | APPLICATION / operational warning (pre-existing) |
+| **Root cause** | dashboard `catch` wrapped `getCurrentWorkspaceContext()` and treated `NEXT_REDIRECT` as an application error |
+| **Fix** | workspace context resolved outside the `try`; if a `NEXT_REDIRECT` still enters the `catch`, it is rethrown |
+| **Real errors** | unchanged: `console.error` + `ErrorState` |
+| **Closure review** | ER-108-E PASS |
+| **Commit** | P108-03 `38e8bf9d3198517e33f3b1a7ca1b7b94f6058869` |
+| **Origin** | `docs/epics/EPIC-104/engineering-review.md` (historical OPEN) |
+| **Not in this close** | `DYNAMIC_SERVER_USAGE` remains a historical EPIC-104 observation; it is not part of the NEXT_REDIRECT fix and does not reopen F-104-007 |
+
+---
+
+## Still OPEN (not Stream A / E)
+
+FINDING-QA-001, FINDING-INT-002, FINDING-INT-003, FINDING-UX-004, F-104-010, F-104-011, F-104-012.
