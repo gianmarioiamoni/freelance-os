@@ -1,5 +1,5 @@
 // src/components/dashboard/MonthlyAnalytics.tsx
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { AnalyticsService } from "@/application/analytics/analytics-service";
 import type { MonthlyAnalytics } from "@/domain/analytics-types";
 import type { JSX } from "react";
@@ -17,7 +17,9 @@ export function MonthlyAnalytics({ analytics }: MonthlyAnalyticsProps): JSX.Elem
   return (
     <Card>
       <CardHeader>
-        <CardTitle role="heading" aria-level={2}>Monthly Summary</CardTitle>
+        <h2 className="font-heading text-base leading-snug font-medium group-data-[size=sm]/card:text-sm">
+          Monthly Summary
+        </h2>
       </CardHeader>
       <CardContent>
         <dl className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

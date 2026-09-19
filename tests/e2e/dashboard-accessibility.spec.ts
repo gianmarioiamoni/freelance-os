@@ -208,6 +208,13 @@ test.describe("Dashboard Accessibility", () => {
     await expect(page.getByRole("heading", { level: 2, name: /monthly summary/i })).toBeVisible();
     await expect(page.getByRole("heading", { level: 2, name: /client allocation/i })).toBeVisible();
     await expect(page.getByRole("heading", { level: 2, name: /contract utilization/i })).toBeVisible();
+    const clientAllocationCard = page
+      .locator("[data-slot=card]")
+      .filter({ has: page.getByRole("heading", { level: 2, name: /client allocation/i }) });
+    await expect(
+      clientAllocationCard.getByRole("heading", { level: 3, name: "Test Client" }),
+    ).toBeVisible();
+    await expect(page.getByText("Within contracted capacity")).toBeVisible();
 
     // Verify main landmark
     const main = page.getByRole("main");

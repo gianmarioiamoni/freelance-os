@@ -1,5 +1,5 @@
 // src/components/dashboard/ClientAllocation.tsx
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { EmptyState } from "@/components/states/EmptyState";
 import { AnalyticsService } from "@/application/analytics/analytics-service";
 import type { ClientAllocation } from "@/domain/analytics-types";
@@ -14,7 +14,9 @@ export function ClientAllocation({ allocations }: ClientAllocationProps): JSX.El
     return (
       <Card>
         <CardHeader>
-          <CardTitle role="heading" aria-level={2}>Client Allocation</CardTitle>
+          <h2 className="font-heading text-base leading-snug font-medium group-data-[size=sm]/card:text-sm">
+            Client Allocation
+          </h2>
         </CardHeader>
         <CardContent>
           <EmptyState
@@ -29,7 +31,9 @@ export function ClientAllocation({ allocations }: ClientAllocationProps): JSX.El
   return (
     <Card>
       <CardHeader>
-        <CardTitle role="heading" aria-level={2}>Client Allocation</CardTitle>
+        <h2 className="font-heading text-base leading-snug font-medium group-data-[size=sm]/card:text-sm">
+          Client Allocation
+        </h2>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
@@ -41,15 +45,17 @@ export function ClientAllocation({ allocations }: ClientAllocationProps): JSX.El
             return (
               <div key={allocation.clientId} className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 min-w-0 flex-1">
-                    <h3 className="font-medium truncate">
-                      {allocation.clientName}
-                      {allocation.isArchived && (
-                        <span className="ml-2 text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded">
-                          Archived
-                        </span>
-                      )}
+                  <div className="flex min-w-0 flex-1 items-center gap-2">
+                    <h3 className="min-w-0 flex-1 font-medium">
+                      <span className="block truncate" title={allocation.clientName}>
+                        {allocation.clientName}
+                      </span>
                     </h3>
+                    {allocation.isArchived ? (
+                      <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded">
+                        Archived
+                      </span>
+                    ) : null}
                   </div>
                   <div className="text-sm text-muted-foreground">
                     {percentage}

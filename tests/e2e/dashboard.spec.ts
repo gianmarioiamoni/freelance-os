@@ -134,7 +134,7 @@ test.describe("Dashboard Analytics E2E Journey", () => {
 
     // Each analytics section must expose an accessible section heading
     await expect(
-      page.getByRole("heading", { name: "Monthly Summary" }),
+      page.getByRole("heading", { level: 2, name: "Monthly Summary" }),
     ).toBeVisible();
 
     const monthlySummary = page.locator("dl").filter({ hasText: "Total Hours" });
@@ -142,11 +142,18 @@ test.describe("Dashboard Analytics E2E Journey", () => {
     await expect(monthlySummary.locator("dt")).toHaveCount(4);
     await expect(monthlySummary.locator("dd")).toHaveCount(4);
     await expect(
-      page.getByRole("heading", { name: "Client Allocation" }),
+      page.getByRole("heading", { level: 2, name: "Client Allocation" }),
+    ).toBeVisible();
+    const clientAllocationCard = page
+      .locator("[data-slot=card]")
+      .filter({ has: page.getByRole("heading", { level: 2, name: "Client Allocation" }) });
+    await expect(
+      clientAllocationCard.getByRole("heading", { level: 3, name: "ACME Corp" }),
     ).toBeVisible();
     await expect(
-      page.getByRole("heading", { name: "Contract Utilization" }),
+      page.getByRole("heading", { level: 2, name: "Contract Utilization" }),
     ).toBeVisible();
+    await expect(page.getByText("Within contracted capacity")).toBeVisible();
 
     // 13. Test sign-out behavior
     await page.getByRole("button", { name: "Sign out" }).click();

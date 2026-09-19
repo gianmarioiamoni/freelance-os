@@ -1,5 +1,5 @@
 // src/components/dashboard/ContractUtilization.tsx
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { EmptyState } from "@/components/states/EmptyState";
 import { AnalyticsService } from "@/application/analytics/analytics-service";
 import type { ContractUtilization } from "@/domain/analytics-types";
@@ -14,7 +14,9 @@ export function ContractUtilization({ utilizations }: ContractUtilizationProps):
     return (
       <Card>
         <CardHeader>
-          <CardTitle role="heading" aria-level={2}>Contract Utilization</CardTitle>
+          <h2 className="font-heading text-base leading-snug font-medium group-data-[size=sm]/card:text-sm">
+            Contract Utilization
+          </h2>
         </CardHeader>
         <CardContent>
           <EmptyState
@@ -29,7 +31,9 @@ export function ContractUtilization({ utilizations }: ContractUtilizationProps):
   return (
     <Card>
       <CardHeader>
-        <CardTitle role="heading" aria-level={2}>Contract Utilization</CardTitle>
+        <h2 className="font-heading text-base leading-snug font-medium group-data-[size=sm]/card:text-sm">
+          Contract Utilization
+        </h2>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
@@ -106,11 +110,18 @@ export function ContractUtilization({ utilizations }: ContractUtilizationProps):
                   </div>
                 )}
 
-                {utilization.utilizationPercentage && utilization.utilizationPercentage > 100 && (
+                {hasFiniteCapacity &&
+                utilization.utilizationPercentage !== null &&
+                utilization.utilizationPercentage > 100 ? (
                   <p className="text-xs text-destructive" role="alert">
                     Over contracted capacity by {AnalyticsService.formatPercentage(utilization.utilizationPercentage - 100)}
                   </p>
-                )}
+                ) : null}
+                {hasFiniteCapacity &&
+                utilization.utilizationPercentage !== null &&
+                utilization.utilizationPercentage <= 100 ? (
+                  <p className="text-xs text-muted-foreground">Within contracted capacity</p>
+                ) : null}
               </div>
             );
           })}

@@ -26,6 +26,16 @@ function shouldShowOngoingLabel(util: Pick<ContractUtilization, "isOngoing">): b
   return util.isOngoing;
 }
 
+function capacityStatusText(
+  util: Pick<ContractUtilization, "contractedMinutes" | "utilizationPercentage">,
+): "over" | "within" | null {
+  if (util.contractedMinutes === null || util.utilizationPercentage === null) {
+    return null;
+  }
+
+  return util.utilizationPercentage > 100 ? "over" : "within";
+}
+
 describe("ContractUtilization display logic (BR-105-016, F-105-014)", () => {
   // Case 1: finite validity + finite capacity
   it("finite validity + finite capacity: shows capacity, no ongoing label", () => {
@@ -80,5 +90,23 @@ describe("ContractUtilization display logic (BR-105-016, F-105-014)", () => {
     expect(hasFiniteCapacity(ongoingWithCapacity as ContractUtilization)).toBe(true);
     // isOngoing alone must not determine capacity display.
     expect(shouldShowOngoingLabel(ongoingWithCapacity as ContractUtilization)).toBe(true);
+  });
+
+  it("finite capacity at or below 100% is within contracted capacity, not a new threshold", () => {
+    expect(
+      capacityStatusText({ contractedMinutes: 4800, utilizationPercentage: 80 }),
+    ).toBe("within");
+    expect(
+      capacityStatusText({ contractedMinutes: 4800, utilizationPercentage: 100 }),
+    ).toBe("within");
+    expect(
+      capacityStatusText({ contractedMinutes: 4800, utilizationPercentage: 101 }),
+    ).toBe("over");
+  });
+
+  it("unlimited capacity has no within/over status text", () => {
+    expect(
+      capacityStatusText({ contractedMinutes: null, utilizationPercentage: 50 }),
+    ).toBeNull();
   });
 });
