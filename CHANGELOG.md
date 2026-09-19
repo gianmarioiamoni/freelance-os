@@ -6,6 +6,7 @@ All notable changes to FreelanceOS are documented in this file.
 
 ### Fixed
 
+- EPIC-108 Stream D CLOSED (`docs/epics/EPIC-108/findings.md`, ER-108-D1 / D2 / D3 PASS). F-104-011 (`<dl>`), F-104-012 (native headings / truncation / within-capacity text), F-104-010 (hardened dashboard a11y assertions; suite 11/11). P108-08 `8f5607e`. FINDING-UX-004 remains OPEN (Stream C). Does not rewrite §34 / §35.
 - EPIC-108 Stream D: F-104-012 CLOSED (`docs/epics/EPIC-108/findings.md`, ER-108-D2 PASS). Native `h2` card titles; truncated `clientName` remains in the heading DOM; `"Within contracted capacity"` for finite known percentage `<= 100`. Unit display 7/7; dashboard journey 1/1; semantic HTML/a11y 1/1. P108-07 `1f2cf71`. Stream D remains open for F-104-010. Does not rewrite §34 / §35.
 - EPIC-108 Stream D: F-104-011 CLOSED (`docs/epics/EPIC-108/findings.md`, ER-108-D1 PASS). Monthly Summary is a semantic `<dl>`. Dashboard journey 1/1; semantic HTML/a11y 1/1. P108-06 `3d4ad4c`. Stream D remains open for F-104-010 / F-104-012. Does not rewrite §34 / §35.
 - EPIC-108 Stream B CLOSED (`docs/epics/EPIC-108/findings.md`, ER-108-B PASS). FINDING-QA-001 (historical flake, isolated release-gate 3/3), FINDING-INT-002 (sign-out E2E 2/2), FINDING-INT-003 (password-reset E2E 1/1; production Gmail verification recorded separately). No test/app change. P108-05 not required. Does not rewrite §34 / §35.

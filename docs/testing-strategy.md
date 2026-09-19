@@ -172,15 +172,14 @@ and that an unauthenticated request to the dashboard lands on
 `/sign-in`. At EPIC-104 that dashboard URL was `/`. EPIC-107 moved it
 to `/dashboard`; unauthenticated `/` is now the public landing.
 
-Accessibility E2E coverage is **partial, and must not be cited as an
-accessibility audit** (F-104-010, open). Genuinely verified: the
-count of exactly three level-2 headings, absence of horizontal
-overflow at mobile width, a 40-pixel touch-target floor, and the
-textual utilization label. Not verified despite appearing in the
-suite: focus indicators, colour independence and contrast, and
-no-horizontal-scroll at 200 percent text scaling — those assertions
-are unsound and cannot fail. No automated accessibility scan (for
-example axe-core) exists anywhere in the repository.
+Accessibility E2E coverage is a **baseline, not a WCAG audit**
+(F-104-010, CLOSED, EPIC-108 Stream D / ER-108-D3). Verified: three
+level-2 headings, mobile overflow, a 40-pixel touch-target floor,
+textual utilization / within-capacity labels, skip-link target, a
+keyboard focus indicator, `emulateMedia` forced-colors / reduced-motion,
+and no horizontal overflow at a 640×360 (200 percent CSS) viewport. No
+automated accessibility scan (for example axe-core) exists anywhere in
+the repository.
 
 Two gaps are recorded rather than covered: the analytics error path is
 exercised by no test in any suite (F-104-016), and no test asserts the
@@ -971,14 +970,15 @@ Evidence: `docs/epics/EPIC-108/findings.md`. ER-108-B PASS. P108-04 evidence onl
 | FINDING-INT-002 | CLOSED | not reproduced | Sign-out E2E 2/2 PASS |
 | FINDING-INT-003 | CLOSED | E2E test environment PASS | Password-reset E2E 1/1 PASS |
 
-### Closed by EPIC-108 Stream D (partial)
+### Closed by EPIC-108 Stream D
 
-Evidence: `docs/epics/EPIC-108/findings.md`. ER-108-D1 PASS. ER-108-D2 PASS. Stream D remains open for F-104-010.
+Evidence: `docs/epics/EPIC-108/findings.md`. ER-108-D1 PASS. ER-108-D2 PASS. ER-108-D3 PASS. Stream D CLOSED.
 
 | ID | Status | Classification | Notes |
 |---|---|---|---|
 | F-104-011 | CLOSED | ACCESSIBILITY | Monthly Summary `<dl>`; dashboard journey 1/1; semantic HTML 1/1. P108-06 `3d4ad4c` |
 | F-104-012 | CLOSED | ACCESSIBILITY | Native `h2` card titles; truncated `clientName` remains in the heading DOM; `"Within contracted capacity"` for finite `<= 100`. Unit display 7/7; dashboard journey 1/1; semantic HTML/a11y 1/1. P108-07 `1f2cf71` |
+| F-104-010 | CLOSED | ACCESSIBILITY / TEST | Hardened dashboard a11y assertions; suite 11/11. P108-08 `8f5607e` |
 
 ### Implemented by EPIC-107
 
@@ -1731,18 +1731,16 @@ assert the FreelanceOS wordmark on Sign In, Forgot Password, and the
 Sign Out destination.
 
 EPIC-104 added `tests/e2e/dashboard-accessibility.spec.ts` for the `/`
-dashboard. Only part of it is sound evidence. Verified: exactly three
-level-2 headings, no horizontal overflow at mobile width, a 40-pixel
-touch-target floor, and a textual (non-colour) utilization label.
-**Not** verified, despite being present in the suite: focus
-indicators, colour independence and contrast, and no-horizontal-scroll
-at 200 percent text scaling — those assertions cannot fail as written
-(F-104-010, open). Monthly Summary is a `<dl>` with `dt`/`dd` groups
+dashboard (now `/dashboard`). The unsound assertion patterns are CLOSED
+(F-104-010, EPIC-108 Stream D / ER-108-D3). Verified: three level-2
+headings, mobile overflow, a 40-pixel touch-target floor, textual
+utilization / within-capacity labels, skip-link `#main-content`, a
+keyboard focus indicator, and no horizontal overflow at a 640×360
+viewport. Monthly Summary is a `<dl>` with `dt`/`dd` groups
 (F-104-011, CLOSED, EPIC-108 Stream D / ER-108-D1). Dashboard card titles
 are native `h2` (F-104-012, CLOSED, EPIC-108 Stream D / ER-108-D2).
 
-This is an accessibility baseline, not WCAG certification, and the
-dashboard portion of it is weaker than its test count suggests. No
+This is an accessibility baseline, not WCAG certification. No
 automated accessibility scan (for example axe-core) exists in the
 repository. Formal UX Review for the MVP is complete
 (`docs/ux/ux-review.md`, PASS WITH FINDINGS). A real accessibility

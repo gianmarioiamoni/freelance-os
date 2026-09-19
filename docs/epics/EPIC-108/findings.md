@@ -1,12 +1,13 @@
 # EPIC-108 — Findings Matrix
 
 **Epic:** EPIC-108 — Post-Release Hardening  
-**Scope of this record:** Stream A, Stream E, Stream B, and Stream D (F-104-011, F-104-012) documentation closure  
+**Scope of this record:** Stream A, Stream E, Stream B, and Stream D documentation closure  
 **ER-108-A:** PASS  
 **ER-108-E:** PASS  
 **ER-108-B:** PASS  
 **ER-108-D1:** PASS  
 **ER-108-D2:** PASS  
+**ER-108-D3:** PASS  
 **Does not rewrite:** MASTER_PLAN §34 / §35, R1 certification, historical QA / UX / EPIC-107 rows
 
 ---
@@ -167,15 +168,16 @@ No application or test code was changed for Stream B.
 
 | Field | Value |
 |---|---|
-| **Status** | in progress — F-104-011 CLOSED; F-104-012 CLOSED |
-| **ER** | ER-108-D1 PASS; ER-108-D2 PASS |
-| **Closed in this stream** | F-104-011, F-104-012 |
-| **Still open in this stream** | F-104-010 |
+| **Status** | technically complete |
+| **ER** | ER-108-D1 PASS; ER-108-D2 PASS; ER-108-D3 PASS |
+| **Findings** | F-104-011 CLOSED; F-104-012 CLOSED; F-104-010 CLOSED |
+| **Phases** | P108-06, P108-07, P108-08, P108-08C (this record) |
 
 | Phase | Commit | SHA |
 |---|---|---|
 | P108-06 | `fix(a11y): use description list for monthly summary` | `3d4ad4c11dc1c6fd7808b6a7469dc573e5eb7873` |
 | P108-07 | `fix(a11y): improve dashboard semantics` | `1f2cf7136c9e5f07fc2d9eca2d585a912dc1e5c7` |
+| P108-08 | `test(a11y): harden dashboard accessibility assertions` | `8f5607e7889b268417bc011e72a2e852e82707c0` |
 
 ---
 
@@ -213,6 +215,22 @@ No application or test code was changed for Stream B.
 
 ---
 
-## Still OPEN (not Stream A / E / B)
+## F-104-010 — several accessibility assertions cannot fail
 
-FINDING-UX-004, F-104-010.
+| Field | Value |
+|---|---|
+| **ID** | F-104-010 |
+| **Status** | CLOSED |
+| **Root cause** | Unsound / non-probative a11y assertions (invalid `:focus` pseudo, inert contrast `@media`, `body.style.zoom`, vacuous `if` loops) |
+| **Fix** | Semantic assertions for native headings, 200% CSS viewport overflow, `emulateMedia` forced-colors/reduced-motion, utilization and within-capacity text, skip-link target `#main-content`, and a real focus indicator |
+| **Removed** | `getComputedStyle(..., ':focus')`, unused contrast media injection, `body.style.zoom`, vacuous conditionals / `.sr-only` loops |
+| **Evidence** | dashboard accessibility suite 11/11; typecheck PASS; lint PASS |
+| **Closure review** | ER-108-D3 PASS |
+| **Commit** | P108-08 `8f5607e7889b268417bc011e72a2e852e82707c0` |
+| **Origin** | `docs/epics/EPIC-104/engineering-review.md` (historical OPEN) |
+
+---
+
+## Still OPEN (not Stream A / E / B / D)
+
+FINDING-UX-004 (Stream C; custom period selector; requires Product Owner decision).
