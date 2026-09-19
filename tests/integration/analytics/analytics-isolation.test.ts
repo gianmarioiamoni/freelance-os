@@ -274,9 +274,12 @@ describe("Analytics Workspace Isolation", () => {
       timezone: "UTC",
     };
 
-    // Record future time entry
-    const futureDate = new Date();
-    futureDate.setDate(futureDate.getDate() + 30); // 30 days in future
+    // Calendar date 30 UTC days ahead (UTC midnight). Local `setDate` would
+    // disagree with the UTC-midnight range used by getDateRangePeriod (INT-001).
+    const now = new Date();
+    const futureDate = new Date(
+      Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 30),
+    );
 
     await repositories.timeEntries.recordTimeEntry(workspace.workspaceId, {
       userId: workspace.userId,
