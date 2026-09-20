@@ -2,11 +2,12 @@
 
 **Epic:** EPIC-110
 **Release:** R1 consolidation (post EPIC-108 / EPIC-109)
-**Status:** P110-00 AUDIT COMPLETE — planning only
+**Status:** P110-01 VERIFY COMPLETE — P110-02 not started
 **HEAD:** `7c4e8379994ef32e7c1e27ab468040ba3735221c`
 
 ```text
 PLANNING:              P110-00 COMPLETE
+VERIFY:                P110-01 COMPLETE
 IMPLEMENTATION:        NOT STARTED
 R1 FREEZE:             NOT DECLARED
 NEW PRODUCT SCOPE:     FORBIDDEN
@@ -277,4 +278,16 @@ Billing, invoices, CSV/PDF, calendar UI, copy-previous, roles, Google linking, r
 
 ## P110-00 record
 
-Audit only. No `src/` or `tests/` change. Next phase is decided from this plan; do not auto-start P110-01.
+Audit only. No `src/` or `tests/` change.
+
+## P110-01 verification record
+
+HEAD at verify: `9cd62c52a27bcb27e71210c1fd9e9b4d868e68bf`. No `src/` or test assertion changes.
+
+| ID | Result | Disposition |
+|---|---|---|
+| F-103-003 | Create still uses uncontrolled contract `defaultValue`; eligibility uses initial `workDate`, not the live date input. Edit is read-only (`isEdit`). Create is server-validated (`validateContractForTimeEntry`). No integrity defect confirmed. UX reset still unverified. | **ACCEPTED R1 LIMITATION** |
+| P109-05 LA `updatedAt` | Targeted `updates mutable fields successfully`: 3/3 host PASS, 5/5 `TZ=America/Los_Angeles` PASS (vitest start 05:27 PDT). Not reproduced. Same-tick `Timestamptz(6)` collision remains theoretically possible. | **CLOSED / NOT REPRODUCED** |
+| Production docs vs R1 config | `vercel.json` Next.js + `prisma generate` + `migrate deploy` + `pnpm build`. `.env.example` SMTP_* / Google / no Resend. `smtp-password-reset.ts` is production transport. Origin `https://freelance-os-timeplan.vercel.app` in architecture + §35. Custom domain still a certified limitation. Historical §34 Resend rows left intact. Live hosted re-check remains P110-06. | **CLOSED TECHNICAL** (repo/docs vs certified config) |
+
+P110-02 scope unchanged: **F-105-013**, **F-103-002** only.
