@@ -1,6 +1,7 @@
 // tests/unit/features/reporting/reporting-types.test.ts
 import { describe, expect, it } from "vitest";
 import {
+  getReportingCalendarYear,
   parseReportPeriodParam,
   periodHref,
   toReportingPeriodKind,
@@ -113,5 +114,24 @@ describe("periodHref", () => {
     expect(periodHref("custom", "2026-01-01", "2026-03-31")).toBe(
       "/reports?period=custom&start=2026-01-01&end=2026-03-31",
     );
+  });
+});
+
+describe("getReportingCalendarYear — F-105-013", () => {
+  it("keeps the workspace-local year when UTC has already rolled over", () => {
+    const now = new Date("2027-01-01T02:00:00.000Z");
+    expect(now.getUTCFullYear()).toBe(2027);
+    expect(getReportingCalendarYear("America/New_York", now)).toBe(2026);
+  });
+
+  it("matches UTC year when the workspace is UTC", () => {
+    const now = new Date("2027-01-01T02:00:00.000Z");
+    expect(getReportingCalendarYear("UTC", now)).toBe(2027);
+  });
+
+  it("leaves mid-year reporting unchanged", () => {
+    const now = new Date("2026-09-20T12:00:00.000Z");
+    expect(getReportingCalendarYear("Europe/Rome", now)).toBe(2026);
+    expect(getReportingCalendarYear("UTC", now)).toBe(2026);
   });
 });

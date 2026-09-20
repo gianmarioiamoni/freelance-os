@@ -3,6 +3,7 @@ import { PageHeader } from "@/components/page/PageHeader";
 import { PageContent } from "@/components/page/PageContent";
 import { TimeEntryForm } from "@/features/time-entries/TimeEntryForm";
 import { createTimeEntryAction } from "@/features/time-entries/create-time-entry-action";
+import { clientsSelectableForCreate } from "@/features/time-entries/attach-time-entry-details";
 import { loadClientsAndContracts } from "@/features/time-entries/load-time-entries";
 import { EMPTY_TIME_ENTRY_FORM_VALUES } from "@/features/time-entries/time-entry-form-state";
 import type { JSX } from "react";
@@ -38,7 +39,7 @@ export default async function TimeTrackingNewPage({
             defaultValues={defaultValues}
             submitLabel="Create Entry"
             pendingLabel="Creating..."
-            clients={clients}
+            clients={clientsSelectableForCreate(clients)}
             contracts={contracts}
           />
         </div>

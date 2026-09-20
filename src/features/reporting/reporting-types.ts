@@ -1,4 +1,16 @@
 // src/features/reporting/reporting-types.ts
+import { getTodayInTimezone } from "@/lib/analytics-periods";
+
+/**
+ * Calendar year for annual reporting, derived from Workspace.timezone.
+ * Do not use process-local getFullYear() for this authority.
+ */
+export function getReportingCalendarYear(
+  timezone: string,
+  now: Date = new Date(),
+): number {
+  return getTodayInTimezone(timezone, now).year;
+}
 
 /**
  * Validated period kind accepted by the reports page.

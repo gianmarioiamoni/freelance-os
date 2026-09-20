@@ -76,6 +76,14 @@ describe("getTodayInTimezone — BR-105-014", () => {
     expect(auckland.month).toBe(1);
     expect(auckland.day).toBe(1);
   });
+
+  it("year-boundary: UTC is Jan 1 but workspace-local is still Dec 31", () => {
+    const now = new Date("2027-01-01T02:00:00.000Z");
+    const newYork = getTodayInTimezone("America/New_York", now);
+    expect(newYork.year).toBe(2026);
+    expect(newYork.month).toBe(12);
+    expect(newYork.day).toBe(31);
+  });
 });
 
 // ---------------------------------------------------------------------------

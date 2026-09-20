@@ -9,6 +9,7 @@ import { ContractReportTable } from "@/features/reporting/ContractReportTable";
 import { HoursByClientTable } from "@/features/reporting/HoursByClientTable";
 import { PeriodSelector } from "@/features/reporting/PeriodSelector";
 import {
+  getReportingCalendarYear,
   parseReportPeriodParam,
   toReportingPeriodKind,
   PERIOD_LABELS,
@@ -40,7 +41,7 @@ export default async function ReportsPage({
   const reportingService = new ReportingService(analyticsService);
 
   const now = new Date();
-  const currentYear = now.getFullYear();
+  const currentYear = getReportingCalendarYear(context.timezone, now);
 
   try {
     const [hoursByClient, contractReport, annualOverview] = await Promise.all([

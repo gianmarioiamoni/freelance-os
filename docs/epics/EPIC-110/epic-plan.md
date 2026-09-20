@@ -2,7 +2,7 @@
 
 **Epic:** EPIC-110
 **Release:** R1 consolidation (post EPIC-108 / EPIC-109)
-**Status:** P110-01 VERIFY COMPLETE — P110-02 not started
+**Status:** P110-02 APPLICATION CORRECTNESS COMPLETE — P110-03 not started
 **HEAD:** `7c4e8379994ef32e7c1e27ab468040ba3735221c`
 
 ```text
@@ -291,3 +291,14 @@ HEAD at verify: `9cd62c52a27bcb27e71210c1fd9e9b4d868e68bf`. No `src/` or test as
 | Production docs vs R1 config | `vercel.json` Next.js + `prisma generate` + `migrate deploy` + `pnpm build`. `.env.example` SMTP_* / Google / no Resend. `smtp-password-reset.ts` is production transport. Origin `https://freelance-os-timeplan.vercel.app` in architecture + §35. Custom domain still a certified limitation. Historical §34 Resend rows left intact. Live hosted re-check remains P110-06. | **CLOSED TECHNICAL** (repo/docs vs certified config) |
 
 P110-02 scope unchanged: **F-105-013**, **F-103-002** only.
+
+## P110-02 application-correctness record
+
+Fixes only F-105-013 and F-103-002. No new product capability. P110-03 not started.
+
+| ID | Root cause | Correction | Tests | Disposition |
+|---|---|---|---|---|
+| F-105-013 | Reports annual year used process-local `now.getFullYear()` instead of `Workspace.timezone`. | `getReportingCalendarYear` reuses `getTodayInTimezone`. | `reporting-types.test.ts` year-boundary + mid-year; `analytics-periods-p105-03` west-of-UTC year boundary. | **CORRECTED** — ready CLOSED after ER |
+| F-103-002 | `loadClientsAndContracts` returned ACTIVE-only; list join dropped archived-client rows. | Loader returns all workspace clients. List/edit join via `attachTimeEntryDetails`. Create uses `clientsSelectableForCreate`. | `attach-time-entry-details.test.ts`: active visible, archived historical visible, archived not selectable, foreign client dropped. | **CORRECTED** — ready CLOSED after ER |
+
+Non-blocking: Time Tracking "today" remains UTC calendar (unchanged). Custom reporting dates remain UTC getters (unchanged). Archived clients stay non-selectable for create.

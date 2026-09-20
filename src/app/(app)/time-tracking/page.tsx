@@ -4,6 +4,7 @@ import { PageContent } from "@/components/page/PageContent";
 import { Button } from "@/components/ui/button";
 import { TimeEntryList } from "@/features/time-entries/TimeEntryList";
 import { WeeklyTimesheet } from "@/features/time-entries/WeeklyTimesheet";
+import { attachTimeEntryDetails } from "@/features/time-entries/attach-time-entry-details";
 import { loadTimeEntriesForDate, loadTimeEntriesForWeek, loadClientsAndContracts } from "@/features/time-entries/load-time-entries";
 import { getWeekStartFromDate } from "@/lib/analytics-periods";
 import Link from "next/link";
@@ -67,12 +68,11 @@ export default async function TimeTrackingPage({
       loadClientsAndContracts(),
     ]);
 
-    // Enhance entries with client and contract details
-    const entriesWithDetails = timeEntries.map(entry => ({
-      ...entry,
-      client: clients.find(c => c.id === entry.clientId)!,
-      contract: contracts.find(c => c.id === entry.contractId)!,
-    })).filter(entry => entry.client && entry.contract);
+    const entriesWithDetails = attachTimeEntryDetails(
+      timeEntries,
+      clients,
+      contracts,
+    );
 
     const prevWeek = getPreviousWeek(weekStart);
     const nextWeek = getNextWeek(weekStart);
@@ -118,12 +118,11 @@ export default async function TimeTrackingPage({
     loadClientsAndContracts(),
   ]);
 
-  // Enhance entries with client and contract details
-  const entriesWithDetails = timeEntries.map(entry => ({
-    ...entry,
-    client: clients.find(c => c.id === entry.clientId)!,
-    contract: contracts.find(c => c.id === entry.contractId)!,
-  })).filter(entry => entry.client && entry.contract);
+  const entriesWithDetails = attachTimeEntryDetails(
+    timeEntries,
+    clients,
+    contracts,
+  );
 
   const prevDay = getPreviousDate(selectedDate);
   const nextDay = getNextDate(selectedDate);

@@ -26,12 +26,9 @@ export async function loadClientsAndContracts() {
   
   const allClients = await clients.listClients(context.workspaceId);
   const allContracts = await contracts.listContracts(context.workspaceId);
-  
-  // Filter to only active clients for new time entries
-  const activeClients = allClients.filter(client => client.status === "ACTIVE");
-  
+
   return {
-    clients: activeClients,
+    clients: allClients,
     contracts: allContracts,
   };
 }
