@@ -4,7 +4,7 @@
 **Document:** `MASTER_PLAN.md`\
 **Product:** FreelanceOS\
 **Canonical format:** Markdown\
-**Current phase:** MASTER_PLAN §35 GRANTED (`docs/release/production-certification.md`). D-005 PROVIDED — Product Owner approved production release. §34 READY FOR RELEASE on `2b58af4`. Production readiness: RELEASE GRANTED. EPIC-108 Stream A, Stream E, Stream B, and Stream D complete (`docs/epics/EPIC-108/findings.md`). Remaining historical non-blocking findings stay OPEN.
+**Current phase:** MASTER_PLAN §35 GRANTED (`docs/release/production-certification.md`). D-005 PROVIDED — Product Owner approved production release. §34 READY FOR RELEASE on `2b58af4`. Production readiness: RELEASE GRANTED. EPIC-108 CLOSED (ER PASS WITH FINDINGS). EPIC-109 CLOSED (ER PASS). FINDING-108-ER-001 CLOSED. F-104-006 CLOSED.
 
 ------------------------------------------------------------------------
 
@@ -135,8 +135,8 @@ context is recovered from repository documentation.
 ## Overall
 
 ``` text
-STATUS: UX Polish COMPLETE; EPIC-107 Public Landing COMPLETE through P107-06 and epic certification; MASTER_PLAN §34 READY FOR RELEASE; §35 GRANTED; EPIC-108 COMPLETE (ER PASS WITH FINDINGS)
-NEXT: none. EPIC-108 CLOSED — docs/epics/EPIC-108/engineering-review.md; findings.md
+STATUS: UX Polish COMPLETE; EPIC-107 Public Landing COMPLETE through P107-06 and epic certification; MASTER_PLAN §34 READY FOR RELEASE; §35 GRANTED; EPIC-108 COMPLETE (ER PASS WITH FINDINGS); EPIC-109 COMPLETE (ER PASS)
+NEXT: none. EPIC-109 CLOSED — docs/epics/EPIC-109/engineering-review.md
 Production Validation (§34): EXECUTED — READY FOR RELEASE — docs/release/production-validation.md
 Production Certification (§35): GRANTED — docs/release/production-certification.md
 Release gate resolution: docs/release/release-gate-resolution.md
@@ -1764,7 +1764,7 @@ non-blocking; F-104-000 is RESOLVED and is not listed:
   F-104-003     `isOngoing` derived from capacity, diverges from PD-104-004    Medium     Open
   F-104-004     Contract `[validFrom, validTo)` validity unapplied             Medium     Open
   F-104-005     Workspace timezone unused for period boundaries               Medium     Open
-  F-104-006     Analytics integration tests bound to the current month        High       Open
+  F-104-006     Analytics integration tests bound to the current month        High       CLOSED (EPIC-109 / ER-109)
   F-104-007     Page-level `catch` swallows Next.js control-flow signals      Medium     CLOSED (EPIC-108 Stream E / ER-108-E)
   F-104-008     Loading skeletons / per-section loading not implemented       Medium     Open
   F-104-009     Performance acceptance criteria unevidenced                   Medium     Open
@@ -1779,16 +1779,12 @@ non-blocking; F-104-000 is RESOLVED and is not listed:
   F-104-P-001   Analytics query performance — unevidenced                     Low        Open
   F-104-P-002   Timezone complexity — confirmed by F-104-005                  Medium     Open
 
-**F-104-006 expires on 2026-10-01.** Roughly twenty analytics
-integration tests hardcode September 2026 fixtures while asserting
-against the current month resolved from the system clock. The suite is
-green until 2026-09-30 and fails from 2026-10-01. Schedule it, with
-F-104-001, as the first EPIC-104 follow-up. The P105-01 corrective
-pass decoupled the analytics integration suite from the current month;
-E2E and some integration tests that use `new Date()` at runtime remain
-clock-sensitive and fail when the test runner's local clock crosses
-midnight while the server runs UTC. These are documented as the
-EPIC-105 environmental gate exception.
+**F-104-006 is CLOSED (EPIC-109 / ER-109).** Axis 1 (hardcoded September
+2026 vs current-month analytics) was remediated by P105-01. Axis 2
+(isolation `futureDate`) was closed as FINDING-INT-001 (EPIC-108 Stream
+A). Axis 3 (E2E local getters / local-midnight → ISO) was hardened in
+P109-02…P109-04. Host + `TZ=America/Los_Angeles` evidence: P109-05.
+The 2026-10-01 expiry applied to axis 1 only and is obsolete.
 
 F-104-003 and F-104-017 were resolved by EPIC-105: PD-105-004 settled
 ongoing ≡ `validTo === null` (independent from capacity) and
@@ -1802,7 +1798,7 @@ Real debt recorded by EPIC-105 (see `docs/epics/EPIC-105/epic-plan.md`
   ------------- ------------------------------------------------------------- ----------- -------
   F-105-008     Test comment arithmetic description imprecise                 Non-blocking Open
   F-105-013     Annual overview `year` / `now` latent inconsistency          Low          Open
-  F-104-006     Clock-sensitive E2E / integration tests (partially resolved)  High         Open
+  F-104-006     Clock-sensitive E2E / integration tests                       High         CLOSED (EPIC-109 / ER-109)
 
 EPIC-105 findings F-105-001 through F-105-007 are closed; F-105-P-007
 (performance N+1 concern) is evidenced and measured at MVP scale; no
@@ -2224,9 +2220,8 @@ next:
   production_certification: GRANTED
   production_readiness: release-granted
   product_owner_approval: D-005 PROVIDED
-  objective: Release 1 MVP certified. EPIC-108 CLOSED (ER PASS WITH FINDINGS).
-  open_non_blocking_findings:
-    - FINDING-108-ER-001
+  objective: Release 1 MVP certified. EPIC-108 CLOSED. EPIC-109 CLOSED (ER PASS).
+  open_non_blocking_findings: []
 ```
 
 ------------------------------------------------------------------------

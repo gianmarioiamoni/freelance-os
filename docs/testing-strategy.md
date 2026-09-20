@@ -188,13 +188,23 @@ analytics queries; the only timing assertion runs against a workspace
 with no time entries and therefore measures no aggregation
 (F-104-009).
 
-**Durability warning — F-104-006.** Roughly twenty analytics
-integration tests hardcode `Date.UTC(2026, 8, …)` fixtures while
-asserting against the current month resolved from the system clock.
-Those tests pass only until 2026-09-30. `analytics-isolation.test.ts`
-is immune because it passes explicit periods built with
-`getDateRangePeriod(...)`; new analytics tests should follow that
-pattern rather than relying on the current month.
+**Calendar-date test convention (EPIC-109 / ER-109).** F-104-006 is
+CLOSED. Do not build a deterministic calendar date from runner-local
+getters or from local midnight plus `toISOString().split("T")[0]`.
+
+- Time Tracking default “today” is the UTC calendar day. E2E uses
+  `utcTodayYmd()` from `tests/helpers/calendar-date.ts`.
+- Explicit calendar-date fixtures use `utcYmd`, `utcTodayYmd`,
+  `parseUtcYmd`, and `addUtcDays`. Do not add a generic `today()`.
+- Reporting / analytics current periods use `Workspace.timezone`
+  (`getTodayInTimezone`). Timezone-dependent E2E passes the timezone
+  explicitly (`Europe/Rome` unless the test declares another).
+- Custom reporting ranges remain UTC calendar getters (EPIC-108 Stream A).
+- Instant timestamps (`createdAt`, `updatedAt`, `resolvedAt`, `readAt`)
+  are not calendar dates.
+- Do not change production timezone authority to make tests deterministic.
+  Current-month analytics integration fixtures continue to use
+  `tests/integration/current-month-dates.ts`.
 
 Isolated E2E database contract:
 

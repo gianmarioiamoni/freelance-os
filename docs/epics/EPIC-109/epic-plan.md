@@ -2,20 +2,22 @@
 
 **Epic:** EPIC-109  
 **Release:** Post-R1 structured cycle  
-**MASTER_PLAN:** D-NEXT-001 = A  
-**Status:** PLANNING COMPLETE (P109-00)  
-**Dependencies:** EPIC-108 CLOSED (ER PASS WITH FINDINGS)  
+**MASTER_PLAN:** D-NEXT-001 = A
+**Status:** CLOSED — Engineering Review PASS (P109-06); documentation closure P109-07
+**Dependencies:** EPIC-108 CLOSED (ER PASS WITH FINDINGS)
 **Prior:** R1 GRANTED — do not reopen. EPIC-108 streams A/E/B/D/C CLOSED.
 
 ```text
 PLANNING:              COMPLETE (P109-00)
 INVENTORY:             COMPLETE (P109-01)
+IMPLEMENTATION:        COMPLETE (P109-02 … P109-04)
+REGRESSION MATRIX:     COMPLETE (P109-05, verification-only, no commit)
+ENGINEERING REVIEW:    PASS (P109-06)
+DOCUMENTATION:         COMPLETE (P109-07)
+FINDING-108-ER-001:    CLOSED
+F-104-006:             CLOSED (axes 1 / 2 / 3)
+F-103-006:             OPEN (out of scope)
 PRODUCT DECISIONS:     NONE REQUIRED
-BLOCKING DECISIONS:    NONE
-IMPLEMENTATION:        NOT STARTED
-ENGINEERING REVIEW:    NOT STARTED
-FINDING-108-ER-001:    OPEN (do not close until P109-06)
-F-104-006:             OPEN (axes classified in appendix; finding not closed)
 ```
 
 Planning baseline HEAD: `692403bd3c28174264cb2035376c7bd8e0a97e7c`  
@@ -242,24 +244,24 @@ One phase = one objective = one commit. Do not start a later phase inside an ear
 ### P109-05 — regression matrix
 
 - **Objective:** Host + non-UTC evidence for involved suites.
-- **Files likely:** none, or epic working notes only.
-- **AC:** AC-109-006, AC-109-007, AC-109-008.
+- **Files:** none (verification-only).
+- **AC:** AC-109-006, AC-109-007, AC-109-008. **Met.** No commit.
 - **Verification:** host TZ and `America/Los_Angeles`; no retries as a fix.
-- **Commit:** `test(epic-109): verify calendar-date suites on host and LA`
+- **Commit:** none (verification-only)
 
 ### P109-06 — Engineering Review
 
 - **Objective:** Independent ER. Close FINDING-108-ER-001 / F-104-006 only with evidence.
-- **Files likely:** `docs/epics/EPIC-109/engineering-review.md`
-- **AC:** Verdict recorded; findings closed only if evidenced.
+- **Files:** `docs/epics/EPIC-109/engineering-review.md`
+- **AC:** Verdict recorded; findings closed only if evidenced. **Met** — ER PASS.
 - **Verification:** ER document vs HEAD evidence.
 - **Commit:** `docs(epic-109): engineering review`
 
 ### P109-07 — documentation closure
 
 - **Objective:** Current-state docs match ER. Historical snapshots untouched.
-- **Files likely:** `MASTER_PLAN.md` (current status / next / debt only); `docs/testing-strategy.md` durability warning; `CHANGELOG.md`; EPIC-109 findings if needed.
-- **AC:** Current-state updated; §33–§35, R1, EPIC-108 preserved.
+- **Files:** `MASTER_PLAN.md` (current status / next / debt only); `docs/testing-strategy.md` calendar-date convention; `CHANGELOG.md`; this plan current-state.
+- **AC:** Current-state updated; §33–§35, R1, EPIC-108 preserved. **Met.**
 - **Verification:** no historical snapshot rewrite.
 - **Commit:** `docs(epic-109): close calendar-date hardening`
 
@@ -323,7 +325,7 @@ Update at the named phase only. Do not edit these documents in P109-00 except th
 | F-103-006 | OPEN — out of scope |
 | Stream A (QA-002, INT-001, 108-001) | CLOSED |
 
-Next phase: P109-02 — deterministic fixtures / helper.
+Next phase at planning: P109-02 — deterministic fixtures / helper.
 
 ---
 
@@ -382,3 +384,7 @@ Mismatch is test calendar extraction, not `workDate` persistence and not `Worksp
 - Dashboard/reports labels: runner-local month/year vs workspace `Europe/Rome`.
 
 Certified split unchanged: `workDate` UTC midnight date-only; Time Tracking default today = UTC calendar day; reporting current periods = `Workspace.timezone`; custom range = UTC getters. No new timezone authority. No application change. F-103-006 remains out of scope. Stream A closures remain CLOSED.
+
+### P109-06 / P109-07 closure
+
+EPIC-109 is **CLOSED** (ER PASS). FINDING-108-ER-001 **CLOSED**. F-104-006 **CLOSED** (axes 1 / 2 / 3). F-103-006 remains **OPEN**. The P109-01 inventory table above is the inventory snapshot and is not rewritten. LA full-integration `updatedAt` same-millisecond flake is out of scope (ER §5), not an EPIC-109 finding.
