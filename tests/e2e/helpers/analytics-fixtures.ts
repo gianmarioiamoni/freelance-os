@@ -1,22 +1,18 @@
 // tests/e2e/helpers/analytics-fixtures.ts
 import { expect, type Page } from "@playwright/test";
 
+import { utcTodayYmd, utcYmd } from "../../helpers/calendar-date";
 import { submitAndFollowActionRedirect } from "./server-action";
 
-/** First day of the current month, as the `yyyy-mm-dd` value the date inputs expect. */
+/** First UTC calendar day of the current UTC month, as `yyyy-mm-dd`. */
 export function firstDayOfCurrentMonth(): string {
   const now = new Date();
-  return new Date(now.getFullYear(), now.getMonth(), 1)
-    .toISOString()
-    .split("T")[0];
+  return utcYmd(now.getUTCFullYear(), now.getUTCMonth() + 1, 1);
 }
 
-/** Today, as the `yyyy-mm-dd` value the date inputs expect. */
+/** UTC calendar today, as the `yyyy-mm-dd` value the date inputs expect. */
 export function todayValue(): string {
-  const now = new Date();
-  return new Date(now.getFullYear(), now.getMonth(), now.getDate())
-    .toISOString()
-    .split("T")[0];
+  return utcTodayYmd();
 }
 
 /** Creates a client and returns the URL of its detail page. */
