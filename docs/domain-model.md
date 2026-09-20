@@ -162,7 +162,7 @@ EPIC-103 implementation, finalized by Product Owner decisions:
 - Future work dates are permitted (PD-103-004).
 - Duplicate entries for the same contract and date are permitted (PD-103-005). Overlapping entries are not validated.
 - `workDate` is a calendar date. Midnight-crossing work is not representable (OBD-003 open).
-- Creating an entry for an archived client is rejected; existing entries for an archived client remain readable and editable at the application layer. The current time-tracking views do not list them (finding F-103-002); analytics does include them, per PD-104-001 (see §9).
+- Creating an entry for an archived client is rejected; existing entries for an archived client remain readable, editable, and listed in time-tracking views (F-103-002 CLOSED, EPIC-110 / P110-02). Archived clients are not selectable for new entries. Analytics includes them, per PD-104-001 (see §9).
 - No rate, billing, utilization, or forecasting calculation is derived from a TimeEntry. Editing Contract commercial fields can still change historical interpretation (P102-F-001 open).
 - No audit trail exists for TimeEntry edits or deletions (OBD-008 open).
 
@@ -190,7 +190,7 @@ EPIC-104 implemented the aggregation layer for worked, billable, and non-billabl
 Rules established and proven:
 
 - **Stored associations are authoritative.** Analytics reads the `clientId` and `contractId` stored on each TimeEntry and never re-resolves them against current state. Changing a client's status does not alter historical totals.
-- **Archived clients are included (PD-104-001).** Analytics selects client rows by identifier with no `status` filter, so time recorded for a client that was later archived remains counted. This is a deliberate divergence from the ACTIVE-only join used by the time-tracking views (F-103-002).
+- **Archived clients are included (PD-104-001).** Analytics selects client rows by identifier with no `status` filter, so time recorded for a client that was later archived remains counted. Time-tracking lists also show historical entries for archived clients (F-103-002 CLOSED). Create selection remains ACTIVE-only.
 - **Archived is exposed, not hidden.** Each client allocation carries `isArchived`, which the dashboard renders as an explicit `Archived` label. Archived time is never silently omitted and never silently indistinguishable.
 - **Utilization uses all tracked time (PD-104-002).** The consumption numerator applies no `billable` filter, so billable and non-billable minutes both consume contracted capacity. Billable percentage and utilization percentage are therefore independent figures.
 - **Contracted capacity is the denominator.** Utilization compares consumption against `Contract.monthlyContractedMinutes`. When that value is absent, `utilizationPercentage` is `null`: no denominator is invented.

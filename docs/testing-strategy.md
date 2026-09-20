@@ -181,12 +181,11 @@ and no horizontal overflow at a 640×360 (200 percent CSS) viewport. No
 automated accessibility scan (for example axe-core) exists anywhere in
 the repository.
 
-Two gaps are recorded rather than covered: the analytics error path is
-exercised by no test in any suite (F-104-016), and no test asserts the
-Daily Average value (F-104-001). No performance baseline exists for
-analytics queries; the only timing assertion runs against a workspace
-with no time entries and therefore measures no aggregation
-(F-104-009).
+Two accepted gaps remain: the analytics error path is exercised by no
+dedicated test (F-104-016, Accepted). F-104-001 (hardcoded `/ 30` daily
+average) is CLOSED (EPIC-105 / P105-02, `getPeriodDays`). F-104-009 /
+F-104-P-001 were measured in EPIC-105; PD-105-008 accepts the baseline
+with no performance gate.
 
 **Calendar-date test convention (EPIC-109 / ER-109).** F-104-006 is
 CLOSED. Do not build a deterministic calendar date from runner-local
@@ -999,6 +998,17 @@ Evidence: `docs/epics/EPIC-108/findings.md`. C05 verification PASS. Stream C CLO
 | FINDING-UX-004 | CLOSED | UX | Custom Period Selector on `/reports`. URL `?period=custom&start=&end=`. JS validation authority; `noValidate` + `end.min` affordance. Reports E2E 22/22; unit 6/6. C01–C04 |
 
 `tests/e2e/reports.spec.ts` now also covers custom apply, same-day, preset-after-custom, invalid/incomplete range, keyboard submit, crafted custom URL, and 390×844 overflow.
+
+### Closed by EPIC-110
+
+Evidence: `docs/epics/EPIC-110/epic-plan.md` P110-02 / P110-04. Does not rewrite the QA Gate or EPIC-108 tables above. Historical §34 / §35 snapshots are not rewritten.
+
+| ID | Status | Classification | Notes |
+|---|---|---|---|
+| F-105-013 | CLOSED | APPLICATION | Annual reporting year from `getReportingCalendarYear` / `Workspace.timezone`. Year-boundary + mid-year unit evidence. P110-02 `15bc911` |
+| F-103-002 | CLOSED | APPLICATION | Historical TimeEntry rows for archived clients remain listed. Create selection stays ACTIVE-only. P110-02 `15bc911` |
+| F-103-003 | ACCEPTED R1 LIMITATION | UX | Uncontrolled contract `defaultValue`; server `validateContractForTimeEntry`. P110-01 |
+| P109-05 LA `updatedAt` | CLOSED / NOT REPRODUCED | TEST | Targeted host + `America/Los_Angeles` PASS. P110-01 |
 
 ### Implemented by EPIC-107
 

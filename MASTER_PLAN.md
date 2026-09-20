@@ -4,7 +4,7 @@
 **Document:** `MASTER_PLAN.md`\
 **Product:** FreelanceOS\
 **Canonical format:** Markdown\
-**Current phase:** MASTER_PLAN §35 GRANTED (`docs/release/production-certification.md`). D-005 PROVIDED — Product Owner approved production release. §34 READY FOR RELEASE on `2b58af4`. Production readiness: RELEASE GRANTED. EPIC-108 CLOSED (ER PASS WITH FINDINGS). EPIC-109 CLOSED (ER PASS). FINDING-108-ER-001 CLOSED. F-104-006 CLOSED.
+**Current phase:** MASTER_PLAN §35 GRANTED (`docs/release/production-certification.md`). D-005 PROVIDED — Product Owner approved production release. §34 READY FOR RELEASE on `2b58af4`. Production readiness: RELEASE GRANTED. EPIC-108 CLOSED (ER PASS WITH FINDINGS). EPIC-109 CLOSED (ER PASS). FINDING-108-ER-001 CLOSED. F-104-006 CLOSED. EPIC-110 P110-04: current finding registers reconciled. Actionable R1 findings = 0. R1 freeze not declared.
 
 ------------------------------------------------------------------------
 
@@ -135,8 +135,8 @@ context is recovered from repository documentation.
 ## Overall
 
 ``` text
-STATUS: UX Polish COMPLETE; EPIC-107 Public Landing COMPLETE through P107-06 and epic certification; MASTER_PLAN §34 READY FOR RELEASE; §35 GRANTED; EPIC-108 COMPLETE (ER PASS WITH FINDINGS); EPIC-109 COMPLETE (ER PASS)
-NEXT: none. EPIC-109 CLOSED — docs/epics/EPIC-109/engineering-review.md
+STATUS: UX Polish COMPLETE; EPIC-107 Public Landing COMPLETE through P107-06 and epic certification; MASTER_PLAN §34 READY FOR RELEASE; §35 GRANTED; EPIC-108 COMPLETE (ER PASS WITH FINDINGS); EPIC-109 COMPLETE (ER PASS); EPIC-110 P110-04 COMPLETE (registers reconciled). Actionable R1 findings = 0. R1 freeze NOT DECLARED.
+NEXT: EPIC-110 P110-05 engineering regression — docs/epics/EPIC-110/epic-plan.md
 Production Validation (§34): EXECUTED — READY FOR RELEASE — docs/release/production-validation.md
 Production Certification (§35): GRANTED — docs/release/production-certification.md
 Release gate resolution: docs/release/release-gate-resolution.md
@@ -163,7 +163,7 @@ MVP implementation: EPIC-101 COMPLETE; EPIC-102 COMPLETE; EPIC-103 COMPLETE; EPI
 MVP integration: COMPLETE / CLOSED — see docs/epics/MVP-INTEGRATION/engineering-review.md
 MVP QA Gate: PASS WITH FINDINGS — see docs/qa/qa-report.md
 Documentation Gate: COMPLETE — MASTER_PLAN.md §32
-Production deployment: NOT STARTED (no hosted target; local `pnpm start` validated — docs/release/production-validation.md)
+Production deployment: HOSTED — Vercel + Neon + Google OAuth + Gmail SMTP (`2b58af4`; docs/release/production-certification.md). Historical §34 rows are not rewritten.
 Authentication: IMPLEMENTED — see docs/epics/EPIC-003/engineering-review.md
 Workspace / authorization: IMPLEMENTED — see docs/epics/EPIC-004/engineering-review.md
 Testing / CI foundation: IMPLEMENTED — see docs/epics/EPIC-005/engineering-review.md
@@ -304,6 +304,20 @@ FINDING-UX-006 CLOSED
 FINDING-UX-007 CLOSED
 FINDING-UX-008 CLOSED
 FINDING-UX-009 CLOSED
+F-105-013 CLOSED — EPIC-110 / P110-02
+F-103-002 CLOSED — EPIC-110 / P110-02
+F-104-001 CLOSED — EPIC-105 / P105-02
+F-104-002 CLOSED — EPIC-105 / P105-02
+F-104-003 CLOSED — EPIC-105 / P105-04
+F-104-004 CLOSED — EPIC-105 / P105-04
+F-104-005 CLOSED — EPIC-105 / P105-03
+F-104-013 CLOSED — EPIC-105 / P105-03
+F-104-014 CLOSED — EPIC-105 / P105-02
+F-104-015 CLOSED — EPIC-105 / PD-105-010
+F-104-017 CLOSED — EPIC-105 / P105-04
+F-104-P-002 CLOSED — subsumed by F-104-005 / P105-03
+F-103-003 ACCEPTED R1 LIMITATION — EPIC-110 / P110-01
+P109-05 LA updatedAt CLOSED / NOT REPRODUCED — EPIC-110 / P110-01
 ```
 
 Present after EPIC-104:
@@ -1743,41 +1757,58 @@ Current expected technical-debt candidates:
 
 This list must be updated as implementation reveals real debt.
 
+Current R1 freeze disposition (EPIC-110 / P110-04). Historical §34 / §35
+and historical epic reviews are not rewritten.
+
+- Actionable R1 findings: none
+- Corrected by EPIC-110: F-105-013, F-103-002
+- Accepted for R1: F-103-003, F-103-005, F-103-006, F-103-P-002,
+  F-104-008, F-104-009 (measured; no gate), F-104-016, F-104-P-001
+  (measured; PD-105-008), F-105-008, F-P2-004, F-P3-002, F-004-001,
+  EPIC-003 F-002, OBD-003, OBD-006-as-shipped, PD-105-008,
+  FINDING-P04-002
+- Deferred: P102-F-001 / OBD-016, F-103-P-001 / OBD-008, F-060, F-061,
+  F-062, F-072, OBD-001, OBD-002, OBD-004, OBD-005, OBD-007, OBD-009,
+  OBD-010, OBD-011, OBD-012, CSV/PDF, invoice lifecycle, calendar,
+  copy-previous, EPIC-003 F-001, TD-001 … TD-007
+- Remaining before freeze: P110-05 regression, P110-06 production
+  evidence, P110-07 ER, P110-08 freeze record. Freeze is not declared.
+
 Real debt recorded by EPIC-103 (see
 `docs/epics/EPIC-103/engineering-review.md` §16):
 
   ID          Area                                                     Status
-  ----------- -------------------------------------------------------- --------
-  F-103-002   Archived-client entries absent from time-tracking views   Open
-  F-103-003   Contract-selector stale selection unverified              Open
-  F-103-005   Unused TimeEntry domain error classes                     Open
-  F-103-006   Invalid `?date=` falls back to today silently             Open
+  ----------- -------------------------------------------------------- ------------------------------------------
+  F-103-002   Archived-client entries absent from time-tracking views   CLOSED (EPIC-110 / P110-02)
+  F-103-003   Contract-selector stale selection unverified              ACCEPTED R1 LIMITATION (EPIC-110 / P110-01)
+  F-103-005   Unused TimeEntry domain error classes                     Accepted
+  F-103-006   Invalid `?date=` falls back to today silently             Accepted
 
 Real debt recorded by EPIC-104 (see
 `docs/epics/EPIC-104/engineering-review.md` §10 and §11). All are
 non-blocking; F-104-000 is RESOLVED and is not listed:
 
   ID            Area                                                          Severity   Status
-  ------------- ------------------------------------------------------------- ---------- -------
-  F-104-001     Daily average divides by a hardcoded 30                        Medium     Open
-  F-104-002     Percentage logic duplicated; shared service unreachable        Medium     Open
-  F-104-003     `isOngoing` derived from capacity, diverges from PD-104-004    Medium     Open
-  F-104-004     Contract `[validFrom, validTo)` validity unapplied             Medium     Open
-  F-104-005     Workspace timezone unused for period boundaries               Medium     Open
+  ------------- ------------------------------------------------------------- ---------- ------------------------------------------
+  F-104-001     Daily average divides by a hardcoded 30                        Medium     CLOSED (EPIC-105 / P105-02)
+  F-104-002     Percentage logic duplicated; shared service unreachable        Medium     CLOSED (EPIC-105 / P105-02)
+  F-104-003     `isOngoing` derived from capacity, diverges from PD-104-004    Medium     CLOSED (EPIC-105 / P105-04)
+  F-104-004     Contract `[validFrom, validTo)` validity unapplied             Medium     CLOSED (EPIC-105 / P105-04)
+  F-104-005     Workspace timezone unused for period boundaries               Medium     CLOSED (EPIC-105 / P105-03)
   F-104-006     Analytics integration tests bound to the current month        High       CLOSED (EPIC-109 / ER-109)
   F-104-007     Page-level `catch` swallows Next.js control-flow signals      Medium     CLOSED (EPIC-108 Stream E / ER-108-E)
-  F-104-008     Loading skeletons / per-section loading not implemented       Medium     Open
-  F-104-009     Performance acceptance criteria unevidenced                   Medium     Open
+  F-104-008     Loading skeletons / per-section loading not implemented       Medium     Accepted
+  F-104-009     Performance acceptance criteria unevidenced                   Medium     Accepted (measured; PD-105-008)
   F-104-010     Several accessibility assertions cannot fail                  Medium     CLOSED (EPIC-108 Stream D / ER-108-D3)
   F-104-011     `dt`/`dd` markup without a `dl` ancestor                      Low        CLOSED (EPIC-108 Stream D / ER-108-D1)
   F-104-012     Residual accessibility-specification gaps                     Low        CLOSED (EPIC-108 Stream D / ER-108-D2)
-  F-104-013     Weekly aggregation absent; daily aggregation unconsumed       Low        Open
-  F-104-014     `AnalyticsService` does not verify workspace membership       Low        Open
-  F-104-015     Locale-dependent period formatting and assertion              Low        Open
-  F-104-016     Analytics error path untested                                 Low        Open
-  F-104-017     PD-104-003 period end diverges from the decision text         Low        Open
-  F-104-P-001   Analytics query performance — unevidenced                     Low        Open
-  F-104-P-002   Timezone complexity — confirmed by F-104-005                  Medium     Open
+  F-104-013     Weekly aggregation absent; daily aggregation unconsumed       Low        CLOSED (EPIC-105 / P105-03)
+  F-104-014     `AnalyticsService` does not verify workspace membership       Low        CLOSED (EPIC-105 / P105-02)
+  F-104-015     Locale-dependent period formatting and assertion              Low        CLOSED (EPIC-105 / PD-105-010)
+  F-104-016     Analytics error path untested                                 Low        Accepted
+  F-104-017     PD-104-003 period end diverges from the decision text         Low        CLOSED (EPIC-105 / P105-04)
+  F-104-P-001   Analytics query performance — unevidenced                     Low        Accepted (measured; PD-105-008)
+  F-104-P-002   Timezone complexity — confirmed by F-104-005                  Medium     CLOSED (subsumed by F-104-005 / P105-03)
 
 **F-104-006 is CLOSED (EPIC-109 / ER-109).** Axis 1 (hardcoded September
 2026 vs current-month analytics) was remediated by P105-01. Axis 2
@@ -1795,9 +1826,9 @@ Real debt recorded by EPIC-105 (see `docs/epics/EPIC-105/epic-plan.md`
 §16.4 and `docs/epics/EPIC-105/engineering-review.md`):
 
   ID            Area                                                          Severity    Status
-  ------------- ------------------------------------------------------------- ----------- -------
-  F-105-008     Test comment arithmetic description imprecise                 Non-blocking Open
-  F-105-013     Annual overview `year` / `now` latent inconsistency          Low          Open
+  ------------- ------------------------------------------------------------- ----------- ------------------------------------------
+  F-105-008     Test comment arithmetic description imprecise                 Non-blocking Accepted
+  F-105-013     Annual overview `year` / `now` latent inconsistency          Low          CLOSED (EPIC-110 / P110-02)
   F-104-006     Clock-sensitive E2E / integration tests                       High         CLOSED (EPIC-109 / ER-109)
 
 EPIC-105 findings F-105-001 through F-105-007 are closed; F-105-P-007
@@ -2107,12 +2138,19 @@ Next actions:
 ``` text
 1. Release 1 MVP is certified
 2. EPIC-108 is CLOSED (ER PASS WITH FINDINGS)
-3. Do not rewrite historical §34 rows
+3. EPIC-109 is CLOSED (ER PASS)
+4. EPIC-110 P110-04 reconciled current registers (actionable R1 findings = 0)
+5. Next: P110-05 engineering regression
+6. Do not rewrite historical §34 / §35 rows
+7. Do not declare R1 frozen yet
 ```
 
 FINDING-UX-004, FINDING-QA-002, FINDING-INT-001, FINDING-108-001, F-104-007,
 FINDING-QA-001, FINDING-INT-002, FINDING-INT-003, F-104-011, F-104-012, and
 F-104-010 are CLOSED (`docs/epics/EPIC-108/findings.md`). F-004 is CLOSED.
+F-105-013 and F-103-002 are CLOSED (EPIC-110 / P110-02). F-103-003 is
+ACCEPTED R1 LIMITATION (EPIC-110 / P110-01). P109-05 LA `updatedAt` is
+CLOSED / NOT REPRODUCED (EPIC-110 / P110-01).
 
 This follows the methodology's rule that each Phase gets a focused
 Cursor chat, a defined commit expectation, review, approval, and then
@@ -2160,10 +2198,11 @@ releases:
     status: future
 
 last_completed:
-  epic: EPIC-107
+  epic: EPIC-110 P110-04
   gate: Production Certification
   reference: MASTER_PLAN.md §35
   evidence: docs/release/production-certification.md
+  epic_110: docs/epics/EPIC-110/epic-plan.md
   production_validation: READY FOR RELEASE
   production_certification: GRANTED
   ux_verdict: pass-with-findings
@@ -2209,19 +2248,49 @@ last_completed:
     - FINDING-UX-007 CLOSED
     - FINDING-UX-008 CLOSED
     - FINDING-UX-009 CLOSED
+    - F-105-013 CLOSED (EPIC-110 / P110-02)
+    - F-103-002 CLOSED (EPIC-110 / P110-02)
+    - F-104-001 CLOSED (EPIC-105 / P105-02)
+    - F-104-002 CLOSED (EPIC-105 / P105-02)
+    - F-104-003 CLOSED (EPIC-105 / P105-04)
+    - F-104-004 CLOSED (EPIC-105 / P105-04)
+    - F-104-005 CLOSED (EPIC-105 / P105-03)
+    - F-104-013 CLOSED (EPIC-105 / P105-03)
+    - F-104-014 CLOSED (EPIC-105 / P105-02)
+    - F-104-015 CLOSED (EPIC-105 / PD-105-010)
+    - F-104-017 CLOSED (EPIC-105 / P105-04)
+    - F-104-P-002 CLOSED (subsumed by F-104-005 / P105-03)
+    - F-103-003 ACCEPTED R1 LIMITATION (EPIC-110 / P110-01)
+    - P109-05 LA updatedAt CLOSED / NOT REPRODUCED (EPIC-110 / P110-01)
 
 next:
-  phase: none
-  epic: none
+  phase: P110-05
+  epic: EPIC-110
   gate: none
-  reference: docs/release/production-certification.md
+  reference: docs/epics/EPIC-110/epic-plan.md
   production_validation: READY FOR RELEASE
   production_validation_reference: MASTER_PLAN.md §34
   production_certification: GRANTED
   production_readiness: release-granted
   product_owner_approval: D-005 PROVIDED
-  objective: Release 1 MVP certified. EPIC-108 CLOSED. EPIC-109 CLOSED (ER PASS).
+  objective: R1 registers reconciled. Actionable R1 findings = 0. Freeze not declared.
   open_non_blocking_findings: []
+  accepted_r1_limitations:
+    - F-103-003
+    - F-103-005
+    - F-103-006
+    - F-103-P-002
+    - F-104-008
+    - F-104-016
+    - F-105-008
+    - F-P2-004
+    - F-P3-002
+    - F-004-001
+    - EPIC-003 F-002
+    - OBD-003
+    - OBD-006-as-shipped
+    - PD-105-008
+    - FINDING-P04-002
 ```
 
 ------------------------------------------------------------------------

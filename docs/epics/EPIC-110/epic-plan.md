@@ -2,15 +2,18 @@
 
 **Epic:** EPIC-110
 **Release:** R1 consolidation (post EPIC-108 / EPIC-109)
-**Status:** P110-02 APPLICATION CORRECTNESS COMPLETE — P110-03 not started
-**HEAD:** `7c4e8379994ef32e7c1e27ab468040ba3735221c`
+**Status:** P110-04 DOCUMENTATION CONSISTENCY COMPLETE — P110-05 not started
+**HEAD:** `15bc91128fc2fdec3369ba9933c3bdf673af7c2d`
 
 ```text
 PLANNING:              P110-00 COMPLETE
 VERIFY:                P110-01 COMPLETE
-IMPLEMENTATION:        NOT STARTED
+IMPLEMENTATION:        P110-02 COMPLETE
+P110-03:               SKIPPED BY DESIGN
+DOCUMENTATION:         P110-04 COMPLETE
 R1 FREEZE:             NOT DECLARED
 NEW PRODUCT SCOPE:     FORBIDDEN
+ACTIONABLE R1:         0
 ```
 
 This Epic is additive. It does not rewrite `MASTER_PLAN.md` §33 / §34 / §35, R1 certification, EPIC-108 closure, or EPIC-109 closure.
@@ -143,13 +146,7 @@ EPIC-108 streams A/E/B/D/C; EPIC-109 calendar-date; F-004; list in Current Certi
 
 ## R1 Actionable Items
 
-Only items that require work before freeze:
-
-1. **F-105-013** — derive reports year from `getTodayInTimezone(context.timezone)`, not `now.getFullYear()`. One-line application fix. P110-02.
-2. **F-103-002** — time-tracking daily/weekly (and edit “Unknown Client”) must still present entries whose client was archived after creation. Application/presentation fix. P110-02.
-3. **Current-state debt register** — mark technically shipped F-104-001/002/003/004/005/013/014/015/017/P-002 (and F-104-009 measured) CLOSED in **current** MASTER_PLAN debt tracking, with evidence pointers. P110-04. Do not rewrite §34/§35.
-
-No other application defects are classified FIX NOW.
+**None.** P110-02 corrected F-105-013 and F-103-002. P110-04 reconciled current registers. Accepted and deferred items remain explicit. Freeze is not declared (P110-05 … P110-08 remain).
 
 ---
 
@@ -166,6 +163,7 @@ No other application defects are classified FIX NOW.
 
 ## Accepted R1 Limitations
 
+- F-103-003 contract select `defaultValue` (P110-01)
 - F-103-006 silent invalid `?date=` fallback
 - F-103-005 unused error classes
 - F-103-P-002 full client/contract load at MVP volume
@@ -193,7 +191,7 @@ These are **not** R1 freeze work.
 
 ## Historical Findings
 
-Traceability only: all EPIC-108/109 CLOSED IDs; F-004; EPIC-003 F-003 (provider now Gmail SMTP); F-053/F-070 as delivered vision items; F-103-004 numbering; F-104-* items already implemented in EPIC-105 but still Open in the register until P110-04.
+Traceability only: all EPIC-108/109 CLOSED IDs; F-004; EPIC-003 F-003 (provider now Gmail SMTP); F-053/F-070 as delivered vision items; F-103-004 numbering; F-104-001/002/003/004/005/013/014/015/017/P-002 shipped in EPIC-105 and CLOSED in the current register by P110-04.
 
 ---
 
@@ -263,15 +261,15 @@ Billing, invoices, CSV/PDF, calendar UI, copy-previous, roles, Google linking, r
 
 | Area | Conclusion |
 |---|---|
-| Calendar/date | EPIC-109 removed the R1 calendar-date **test** inconsistency. F-105-013 remains the only **app** TZ leftover in reports year |
+| Calendar/date | EPIC-109 UTC today + workspace reporting TZ. F-105-013 CLOSED (P110-02) |
 | Auth | Certified email/password, reset, Google, sign-out, protected routes — no reopen |
 | Isolation | Fail-closed not-found; F-103-005 unused classes are not a bypass |
-| Reporting | Custom + presets certified EPIC-108; F-105-013 is year-label only |
+| Reporting | Custom + presets certified EPIC-108; annual year uses Workspace.timezone |
 | Alerts | R1 in-app alerts shipped; capacity email expansion deferred |
 | A11y | Closed in EPIC-108 Stream D; F-104-008 is loading UX, ACCEPT |
-| E2E | Calendar tests hardened; LA `updatedAt` is instant flake, not calendar-date |
+| E2E | Calendar tests hardened; LA `updatedAt` CLOSED / NOT REPRODUCED (P110-01) |
 | Production | F-004 / SMTP / Google / Vercel remain CLOSED in certification record |
-| Docs | Current debt table lags EPIC-105 closures — P110-04 |
+| Docs | Current registers reconciled in P110-04. Actionable R1 findings = 0 |
 | Product | R1 freeze ≠ R2 |
 
 ---
@@ -298,7 +296,21 @@ Fixes only F-105-013 and F-103-002. No new product capability. P110-03 not start
 
 | ID | Root cause | Correction | Tests | Disposition |
 |---|---|---|---|---|
-| F-105-013 | Reports annual year used process-local `now.getFullYear()` instead of `Workspace.timezone`. | `getReportingCalendarYear` reuses `getTodayInTimezone`. | `reporting-types.test.ts` year-boundary + mid-year; `analytics-periods-p105-03` west-of-UTC year boundary. | **CORRECTED** — ready CLOSED after ER |
-| F-103-002 | `loadClientsAndContracts` returned ACTIVE-only; list join dropped archived-client rows. | Loader returns all workspace clients. List/edit join via `attachTimeEntryDetails`. Create uses `clientsSelectableForCreate`. | `attach-time-entry-details.test.ts`: active visible, archived historical visible, archived not selectable, foreign client dropped. | **CORRECTED** — ready CLOSED after ER |
+| F-105-013 | Reports annual year used process-local `now.getFullYear()` instead of `Workspace.timezone`. | `getReportingCalendarYear` reuses `getTodayInTimezone`. | `reporting-types.test.ts` year-boundary + mid-year; `analytics-periods-p105-03` west-of-UTC year boundary. | **CLOSED** (P110-04 register) |
+| F-103-002 | `loadClientsAndContracts` returned ACTIVE-only; list join dropped archived-client rows. | Loader returns all workspace clients. List/edit join via `attachTimeEntryDetails`. Create uses `clientsSelectableForCreate`. | `attach-time-entry-details.test.ts`: active visible, archived historical visible, archived not selectable, foreign client dropped. | **CLOSED** (P110-04 register) |
 
 Non-blocking: Time Tracking "today" remains UTC calendar (unchanged). Custom reporting dates remain UTC getters (unchanged). Archived clients stay non-selectable for create.
+
+## P110-03 record
+
+Skipped by design. No actionable accessibility debt. F-104-010 / 011 / 012 remain CLOSED from EPIC-108 Stream D.
+
+## P110-04 documentation-consistency record
+
+Documentation only. No `src/`, `tests/`, config, or dependency change. Historical §33 / §34 / §35, R1 certification, EPIC-108, and EPIC-109 snapshots not rewritten.
+
+Formally CLOSED in current registers: F-105-013, F-103-002, F-104-001, F-104-002, F-104-003, F-104-004, F-104-005, F-104-013, F-104-014, F-104-015, F-104-017, F-104-P-002.
+
+Preserved P110-01: F-103-003 ACCEPTED R1 LIMITATION; P109-05 LA `updatedAt` CLOSED / NOT REPRODUCED; production-docs verification CLOSED TECHNICAL.
+
+Actionable R1 findings = 0. Freeze not declared. Next is P110-05.

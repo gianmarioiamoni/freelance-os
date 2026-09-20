@@ -4,7 +4,7 @@ FreelanceOS is a web application for freelancer operations management.
 
 ## Status
 
-Release 1 — MVP. UX Polish COMPLETE (`docs/ux/ux-review.md` §18). UX Gate PASS WITH FINDINGS. Documentation Gate COMPLETE (`MASTER_PLAN.md` §32). MVP QA Gate PASS WITH FINDINGS (`docs/qa/qa-report.md`). Blocking findings: NONE. Production readiness: RELEASE GRANTED. EPIC-107 Public Landing implementation COMPLETE. MASTER_PLAN §34 — READY FOR RELEASE (`docs/release/production-validation.md`). MASTER_PLAN §35 — GRANTED (`docs/release/production-certification.md`). D-005 PROVIDED. Hosted Vercel, Neon, production Google, and Gmail SMTP password-reset completion are verified. F-004 CLOSED. Historical non-blocking findings remain OPEN.
+Release 1 — MVP. UX Polish COMPLETE (`docs/ux/ux-review.md` §18). UX Gate PASS WITH FINDINGS. Documentation Gate COMPLETE (`MASTER_PLAN.md` §32). MVP QA Gate PASS WITH FINDINGS (`docs/qa/qa-report.md`). Blocking findings: NONE. Production readiness: RELEASE GRANTED. EPIC-107 Public Landing implementation COMPLETE. MASTER_PLAN §34 — READY FOR RELEASE (`docs/release/production-validation.md`). MASTER_PLAN §35 — GRANTED (`docs/release/production-certification.md`). D-005 PROVIDED. Hosted Vercel, Neon, production Google, and Gmail SMTP password-reset completion are verified. F-004 CLOSED. EPIC-110 P110-04: actionable R1 findings = 0. Accepted R1 limitations remain documented. R1 freeze is not declared. Historical §34 / §35 snapshots are unchanged.
 
 Planning and architecture documents are the source of truth. See [`MASTER_PLAN.md`](./MASTER_PLAN.md).
 

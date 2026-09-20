@@ -6,6 +6,7 @@ All notable changes to FreelanceOS are documented in this file.
 
 ### Fixed
 
+- EPIC-110 P110-04 current R1 registers reconciled. F-105-013 and F-103-002 CLOSED (P110-02). Stale F-104-001 / 002 / 003 / 004 / 005 / 013 / 014 / 015 / 017 / P-002 rows CLOSED as shipped in EPIC-105. F-103-003 ACCEPTED R1 LIMITATION. Actionable R1 findings = 0. Freeze not declared. Does not rewrite §34 / §35.
 - EPIC-109 CLOSED (`docs/epics/EPIC-109/engineering-review.md`, ER PASS). Calendar-date test hardening only: deterministic UTC helpers (`utcYmd`, `utcTodayYmd`, `parseUtcYmd`, `addUtcDays`); Time Tracking E2E today aligned to UTC calendar date; dashboard/reports clock-sensitive fixtures aligned (`Workspace.timezone` / `Europe/Rome` for current periods). Host + `TZ=America/Los_Angeles` verification. FINDING-108-ER-001 CLOSED. F-104-006 CLOSED (all three axes). No production behavior change. Does not rewrite §34 / §35.
 - EPIC-108 Engineering Review PASS WITH FINDINGS (`docs/epics/EPIC-108/engineering-review.md`). Streams A/E/B/D/C CLOSED. FINDING-108-ER-001 recorded (pre-existing time-tracking E2E today vs UTC; non-blocking). Does not rewrite §34 / §35.
 - EPIC-108 Stream C CLOSED (`docs/epics/EPIC-108/findings.md`, C05 verification PASS). FINDING-UX-004: Custom Period Selector on `/reports` (`?period=custom&start=YYYY-MM-DD&end=YYYY-MM-DD`). JS validation is authority; `noValidate` so native `end.min` does not swallow submit; `min` remains an affordance. Reports E2E 22/22; unit 6/6. C01 `0743996`; C02 `92c2808`; C03 `14b4c88`; C04 `977210b`. Does not rewrite §34 / §35.
