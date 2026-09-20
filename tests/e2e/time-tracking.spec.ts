@@ -1,6 +1,7 @@
 // tests/e2e/time-tracking.spec.ts
 import { expect, test } from "@playwright/test";
 
+import { utcTodayYmd } from "../helpers/calendar-date";
 import {
   registerAndCreateFirstWorkspace,
   uniqueE2EEmail,
@@ -10,15 +11,10 @@ const CLIENT_NAME = "Development Studio";
 const CONTRACT_RATE = "75";
 const UNKNOWN_TIME_ENTRY_ID = "00000000-0000-4000-8000-000000000099";
 
-// The entry form defaults the work date to today, so expectations follow the clock
-const TODAY = new Date();
-const TODAY_ISO = [
-  TODAY.getFullYear(),
-  String(TODAY.getMonth() + 1).padStart(2, "0"),
-  String(TODAY.getDate()).padStart(2, "0"),
-].join("-");
-const TODAY_URL = new RegExp(`/time-tracking\\?date=${TODAY_ISO}$`);
-const TODAY_DISPLAY = `${TODAY.getMonth() + 1}/${TODAY.getDate()}/${TODAY.getFullYear()}`;
+// Form default work date is UTC calendar today (`toISOString().split("T")[0]`).
+const TODAY = utcTodayYmd();
+const TODAY_URL = new RegExp(`/time-tracking\\?date=${TODAY}$`);
+const TODAY_DISPLAY = new Date(`${TODAY}T00:00:00.000Z`).toLocaleDateString();
 
 test("should complete authenticated time tracking journey", async ({ page }) => {
   const email = uniqueE2EEmail("e2e-time-tracking");
