@@ -9,12 +9,13 @@
 
 ```text
 PLANNING:              COMPLETE (P109-00)
+INVENTORY:             COMPLETE (P109-01)
 PRODUCT DECISIONS:     NONE REQUIRED
 BLOCKING DECISIONS:    NONE
 IMPLEMENTATION:        NOT STARTED
 ENGINEERING REVIEW:    NOT STARTED
 FINDING-108-ER-001:    OPEN (do not close until P109-06)
-F-104-006:             OPEN (close only if all three axes are resolved or classified)
+F-104-006:             OPEN (axes classified in appendix; finding not closed)
 ```
 
 Planning baseline HEAD: `692403bd3c28174264cb2035376c7bd8e0a97e7c`  
@@ -209,8 +210,8 @@ One phase = one objective = one commit. Do not start a later phase inside an ear
 ### P109-01 — inventory / root cause
 
 - **Objective:** Confirm every residual clock-sensitive site; classify F-104-006 axes.
-- **Files likely:** this epic-plan appendix only.
-- **AC:** Inventory complete; three F-104-006 axes classified; no test edits.
+- **Files:** this epic-plan appendix.
+- **AC:** Inventory complete; three F-104-006 axes classified; no test edits. **Met.**
 - **Verification:** no `src/` or `tests/` diff.
 - **Commit:** `docs(epic-109): inventory clock-sensitive calendar-date tests`
 
@@ -322,4 +323,62 @@ Update at the named phase only. Do not edit these documents in P109-00 except th
 | F-103-006 | OPEN — out of scope |
 | Stream A (QA-002, INT-001, 108-001) | CLOSED |
 
-Next phase: P109-01 — inventory / root cause.
+Next phase: P109-02 — deterministic fixtures / helper.
+
+---
+
+## Appendix — P109-01 Inventory
+
+Confirmed at HEAD `fc3c82993ea628c24d2ac2eaa7d256b0dfec5818`. Test files were read only; none were modified.
+
+Helpers already present: `tests/integration/current-month-dates.ts` (UTC current-month builders). Defective E2E builders: `todayValue` / `firstDayOfCurrentMonth` in `tests/e2e/helpers/analytics-fixtures.ts`. Shared `tests/helpers/calendar-date.ts` does not exist yet.
+
+### P109-01 Inventory
+
+| File / area | Pattern | Category | Status | Evidence | Planned phase |
+|---|---|---|---|---|---|
+| `tests/e2e/time-tracking.spec.ts` | `new Date()` + local `getFullYear`/`getMonth`/`getDate` → `TODAY_ISO` / `TODAY_DISPLAY` / `TODAY_URL` | calendar-date | OPEN — FINDING-108-ER-001 | Expected `2026-09-20` / `9/20/2026`; app UTC `date=2026-09-19` / `9/19/2026` (ER-108) | P109-03 |
+| `tests/e2e/helpers/analytics-fixtures.ts` `firstDayOfCurrentMonth` | local `new Date(y, m, 1)` then `toISOString().split("T")[0]` | calendar-date | OPEN residual | East-of-UTC local midnight → previous UTC Y-M-D | P109-02 |
+| `tests/e2e/helpers/analytics-fixtures.ts` `todayValue` | local `new Date(y, m, d)` then `toISOString().split("T")[0]` | calendar-date | OPEN residual | Same class, inverted vs time-tracking local getters | P109-02 |
+| `tests/e2e/reports.spec.ts` custom range | `todayValue()` as custom `start`/`end` | calendar-date | OPEN (inherits fixture) | `includedDay = todayValue()` then URL/subtitle | P109-04 (inherits P109-02) |
+| `tests/e2e/reports.spec.ts` annual caption (2 tests) | `new Date().getFullYear()` vs caption `Annual Overview — YYYY` | timezone behavior | OPEN residual | Workspace is `Europe/Rome`; runner local year is not `getTodayInTimezone` | P109-04 |
+| `tests/e2e/mvp-integration-journey.spec.ts` | `firstDayOfCurrentMonth()` `validFrom`; `todayValue()` `workDate` | calendar-date | OPEN (inherits fixture) | Contract + TimeEntry fixtures | P109-04 (inherits P109-02) |
+| `tests/e2e/dashboard.spec.ts` period heading | `now.toLocaleString("en-US", { month, year })` vs `Dashboard - …` | timezone behavior | OPEN residual | Asserts runner locale month; app uses `Workspace.timezone` (`Europe/Rome`) | P109-04 |
+| `tests/e2e/dashboard.spec.ts` `endOfYear` | `new Date(getFullYear(), 11, 31).toISOString().split("T")[0]` | calendar-date | OPEN residual | Local 31 Dec midnight → UTC Y-M-D may be 30 Dec | P109-04 |
+| `tests/e2e/dashboard.spec.ts` `createTestTimeEntries` | `createClientWithContract` default `validFrom` | calendar-date | OPEN (inherits fixture) | Defaults to `firstDayOfCurrentMonth()` | P109-04 (inherits P109-02) |
+| `tests/integration/current-month-dates.ts` | `getCurrentMonthPeriod()` + `Date.UTC` / `getUTC*` | calendar-date | OK | Fixtures follow clock-resolved UTC month; days 1–28 | — |
+| `analytics-product-decisions.test.ts` | `currentMonthDay` / `monthOffsetDay` | calendar-date | OK — axis 1 remediates | No `Date.UTC(2026, 8)` / no “assumes September 2026” | — |
+| `analytics-workspace-isolation.test.ts` | `currentMonthDay` | calendar-date | OK — axis 1 remediates | Same builders | — |
+| `dashboard-page.test.ts` | `currentMonthDay` / `monthOffsetDay` | calendar-date | OK — axis 1 remediates | Same builders | — |
+| `analytics-isolation.test.ts` futureDate | `Date.UTC(now.getUTCFullYear(), getUTCMonth(), getUTCDate() + 30)` | relative calendar | OK — axis 2 CLOSED TECHNICAL | Comment cites INT-001; explicit `timezone: "UTC"` | optional style only, not required |
+| `analytics-membership-guard.test.ts` | `getCurrentMonthPeriod()` default UTC | calendar-date via production helper | OK | Not local getters; not axis 3 | — |
+| `analytics-timezone-propagation.test.ts` | explicit `America/New_York` + fixed instant | timezone behavior | OK | Timezone passed explicitly | — |
+| `tests/unit/lib/analytics-periods.test.ts` | `vi.setSystemTime` ISO-Z; `getCurrentMonthPeriod("UTC")`; explicit `getMonthPeriod(2026, 9)` | timezone behavior | OK | Clock injected; timezone explicit. Historical September is not current-month coupling | — |
+| `analytics-periods.test.ts` a few `new Date("…T14:30:00")` / `T23:59:59` without `Z` | local parse of clock time | ambiguity | No new remediation | Date-only `"YYYY-MM-DD"` is UTC per ES. Datetime without `Z` is local; 14:30 does not cross UTC day on host/LA. Do not invent a fix | — |
+| `analytics-calculations.test.ts` | `Date.UTC(2026, 8, …)` with **explicit** period | non rilevante | OK | Hardcoded September vs explicit range, not vs `getCurrentMonthAnalytics()` | — |
+| `tests/e2e/auth.spec.ts` | no `new Date` / calendar getters | non rilevante | OK | Not this class (Stream B was `waitForURL`) | — |
+| Alert unit/integration `new Date()` | `createdAt` / `resolvedAt` / `readAt` | instant/TTL | OK | `notification-center.test.ts` passes `now` into `markNotificationRead` | — |
+
+### F-104-006 Axis Classification
+
+F-104-006 remains **OPEN** as a finding. Axes only:
+
+| Axis | Current status | Evidence | EPIC-109 action |
+|---|---|---|---|
+| 1. Hardcoded Sept 2026 vs current-month analytics | **REMEDIATED / CLOSED TECHNICAL** | P105-01 `current-month-dates.ts`. Named integration files use `currentMonthDay` / `monthOffsetDay`. No remaining `Date.UTC(2026, 8)` or “assumes current month is September 2026” in `tests/integration/**`. Original 2026-10-01 expiry does not apply to this axis | No rewrite. Do not reopen |
+| 2. `analytics-isolation` futureDate local `setDate` | **CLOSED TECHNICAL** (FINDING-INT-001) | UTC midnight + 30 UTC days; `timezone: "UTC"`; ER-108-A host + `TZ=America/Los_Angeles` 224/224 | No rewrite required. Optional later `addUtcDays` style only |
+| 3. E2E / leftover calendar-date construction | **OPEN** | FINDING-108-ER-001 (time-tracking local getters). Same class: `analytics-fixtures` local-midnight + `toISOString`; dashboard `endOfYear`; reports/dashboard year-month via runner local getters | P109-02 helper + fixture wiring; P109-03 time-tracking E2E; P109-04 remaining specs |
+
+Finding F-104-006 is not closed in P109-01.
+
+### Root Cause Conclusion
+
+Planning root-cause model is **confirmed**. No correction.
+
+Mismatch is test calendar extraction, not `workDate` persistence and not `Workspace.timezone`:
+
+- Time-tracking E2E: local getters vs app UTC `toISOString().split("T")[0]` (FINDING-108-ER-001).
+- E2E fixtures: local midnight `Date` then UTC ISO day (off-by-one east of UTC).
+- Dashboard/reports labels: runner-local month/year vs workspace `Europe/Rome`.
+
+Certified split unchanged: `workDate` UTC midnight date-only; Time Tracking default today = UTC calendar day; reporting current periods = `Workspace.timezone`; custom range = UTC getters. No new timezone authority. No application change. F-103-006 remains out of scope. Stream A closures remain CLOSED.
