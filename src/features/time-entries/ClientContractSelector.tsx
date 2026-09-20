@@ -3,6 +3,7 @@
 
 import { Field } from "@/components/forms/Field";
 import { formatBillingModel } from "@/features/contracts/contract-display";
+import { filterEligibleContracts } from "@/features/time-entries/eligible-contracts";
 import type { ClientRecord, ContractRecord } from "@/domain/persistence-types";
 import { useState, useMemo, type JSX } from "react";
 
@@ -36,26 +37,16 @@ export function ClientContractSelector({
   contractDescription,
 }: ClientContractSelectorProps): JSX.Element {
   const [clientId, setClientId] = useState(selectedClientId);
-  
-  // Filter contracts for the selected client and work date
-  const eligibleContracts = useMemo(() => {
-    if (!clientId || !workDate) return [];
-    
-    const clientContracts = contracts.filter(contract => contract.clientId === clientId);
-    
-    // Filter by work date validity
-    if (workDate) {
-      const workDateTime = new Date(workDate + "T00:00:00.000Z");
-      return clientContracts.filter(contract => {
-        const validFrom = new Date(contract.validFrom);
-        const validTo = contract.validTo ? new Date(contract.validTo) : null;
-        
-        return workDateTime >= validFrom && (!validTo || workDateTime < validTo);
-      });
-    }
-    
-    return clientContracts;
-  }, [clientId, contracts, workDate]);
+  const currentWorkDate = workDate ?? "";
+  const eligibleContracts = useMemo(
+    () => filterEligibleContracts(contracts, clientId, currentWorkDate),
+    [clientId, contracts, currentWorkDate],
+  );
+  const preselectedContractId = eligibleContracts.some(
+    (contract) => contract.id === selectedContractId,
+  )
+    ? selectedContractId
+    : "";
 
   if (isEdit) {
     return (
@@ -99,9 +90,10 @@ export function ClientContractSelector({
 
       <Field label="Contract" htmlFor="contractId" error={contractError}>
         <select
+          key={`${clientId}:${currentWorkDate}`}
           id="contractId"
           name="contractId"
-          defaultValue={selectedContractId}
+          defaultValue={preselectedContractId}
           required
           disabled={disabled || !clientId}
           className={SELECT_CLASS_NAME}

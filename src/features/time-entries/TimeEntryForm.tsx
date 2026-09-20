@@ -14,7 +14,7 @@ import {
   type TimeEntryFormValues,
 } from "@/features/time-entries/time-entry-form-state";
 import type { ClientRecord, ContractRecord } from "@/domain/persistence-types";
-import { useActionState, type JSX } from "react";
+import { useActionState, useState, type JSX } from "react";
 
 type TimeEntryFormProps = {
   action: TimeEntryFormAction;
@@ -44,6 +44,7 @@ export function TimeEntryForm({
 }: TimeEntryFormProps): JSX.Element {
   const [state, formAction, isPending] = useActionState(action, INITIAL_STATE);
   const values = state?.values ?? defaultValues;
+  const [workDate, setWorkDate] = useState(values.workDate);
   const fieldError = (field: keyof TimeEntryFormValues) =>
     state?.field === field ? state.error : undefined;
 
@@ -70,7 +71,7 @@ export function TimeEntryForm({
         contracts={contracts}
         selectedClientId={values.clientId}
         selectedContractId={values.contractId}
-        workDate={values.workDate}
+        workDate={workDate}
         clientError={fieldError("clientId")}
         contractError={fieldError("contractId")}
         disabled={isPending}
@@ -102,7 +103,8 @@ export function TimeEntryForm({
             name="workDate"
             type="date"
             required
-            defaultValue={values.workDate}
+            value={workDate}
+            onChange={(event) => setWorkDate(event.target.value)}
             disabled={isPending}
           />
         )}

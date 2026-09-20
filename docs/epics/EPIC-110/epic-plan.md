@@ -314,3 +314,13 @@ Formally CLOSED in current registers: F-105-013, F-103-002, F-104-001, F-104-002
 Preserved P110-01: F-103-003 ACCEPTED R1 LIMITATION; P109-05 LA `updatedAt` CLOSED / NOT REPRODUCED; production-docs verification CLOSED TECHNICAL.
 
 Actionable R1 findings = 0. Freeze not declared. Next is P110-05.
+
+## P110-06D record
+
+FINDING-110-P06-002: Add Time Entry contract eligibility used the initial `workDate` prop, not the live date input.
+
+Correction: `TimeEntryForm` owns live `workDate` state and passes it to `ClientContractSelector`. Filtering reuses `isContractValidForDate` via `filterEligibleContracts` (`[validFrom, validTo)`). Server `validateContractForTimeEntry` unchanged.
+
+Tests: `eligible-contracts.test.ts` (today / validFrom / before / validTo / client change / empty client). E2E `time-entry-contract-eligibility.spec.ts` (select client → change date → options update).
+
+Disposition: **CLOSED** in current EPIC-110 register after this phase. Not F-103-003. Not introduced by P110-02.
