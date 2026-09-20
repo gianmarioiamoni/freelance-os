@@ -18,6 +18,8 @@
 //   No monetary figures anywhere (BR-105-011 / PD-105-001).
 
 import { test, expect, type Page } from "@playwright/test";
+
+import { getTodayInTimezone } from "../../src/lib/analytics-periods";
 import {
   registerAndCreateFirstWorkspace,
   uniqueE2EEmail,
@@ -488,7 +490,7 @@ test.describe("tabular report sections", () => {
     ).toBeVisible();
 
     // Annual Overview table caption — label format "Annual Overview — YYYY".
-    const currentYear = new Date().getFullYear();
+    const { year: currentYear } = getTodayInTimezone("Europe/Rome");
     await expect(
       main.locator("caption").filter({ hasText: `Annual Overview — ${currentYear}` }),
     ).toBeVisible();
@@ -681,7 +683,7 @@ test.describe("accessibility", () => {
     await expect(
       main.locator("caption").filter({ hasText: "Contract Report" }),
     ).toBeVisible();
-    const currentYear = new Date().getFullYear();
+    const { year: currentYear } = getTodayInTimezone("Europe/Rome");
     await expect(
       main.locator("caption").filter({ hasText: `Annual Overview — ${currentYear}` }),
     ).toBeVisible();

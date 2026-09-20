@@ -1,11 +1,13 @@
 // tests/e2e/dashboard.spec.ts
 import { test, expect, type Page } from "@playwright/test";
-import { registerAndCreateFirstWorkspace, uniqueE2EEmail } from "./helpers/first-workspace";
 
+import { getTodayInTimezone } from "../../src/lib/analytics-periods";
+import { utcTodayYmd, utcYmd } from "../helpers/calendar-date";
 import {
   createClientWithContract,
   createTimeEntry,
 } from "./helpers/analytics-fixtures";
+import { registerAndCreateFirstWorkspace, uniqueE2EEmail } from "./helpers/first-workspace";
 import { submitAndFollowActionRedirect } from "./helpers/server-action";
 
 // Helper function to wait for analytics to load
@@ -58,11 +60,12 @@ test.describe("Dashboard Analytics E2E Journey", () => {
     await waitForAnalyticsDisplay(page);
 
     // 3. Verify current-month default period is reflected in the page title
-    const now = new Date();
-    const currentPeriodLabel = now.toLocaleString("en-US", {
+    const { year, month } = getTodayInTimezone("Europe/Rome");
+    const currentPeriodLabel = new Intl.DateTimeFormat("en-US", {
       month: "long",
       year: "numeric",
-    });
+      timeZone: "UTC",
+    }).format(new Date(Date.UTC(year, month - 1, 1)));
     await expect(page.getByRole("heading", { level: 1 })).toContainText(
       `Dashboard - ${currentPeriodLabel}`,
     );
@@ -237,9 +240,8 @@ test.describe("Dashboard Analytics E2E Journey", () => {
       workspaceName: "Contract Types Test",
     });
 
-    const endOfYear = new Date(new Date().getFullYear(), 11, 31)
-      .toISOString()
-      .split("T")[0];
+    const utcYear = Number(utcTodayYmd().slice(0, 4));
+    const endOfYear = utcYmd(utcYear, 12, 31);
 
     // Client with a capped contract (40h/month)
     await createClientWithContract(page, {
