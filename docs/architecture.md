@@ -1,7 +1,7 @@
 # FreelanceOS — System Architecture
 
 **Status:** Architecture Baseline — Authentication, workspace, testing/CI, UI foundation, client management, contract management, time tracking, analytics/dashboard, reporting, alert evaluation with in-app notification center, and MVP Integration COMPLETE / CLOSED (EPIC-003, EPIC-004, EPIC-005, EPIC-006, EPIC-101, EPIC-102, EPIC-103, EPIC-104, EPIC-105, EPIC-106, MVP-INTEGRATION). MVP QA Gate PASS WITH FINDINGS. Documentation Gate COMPLETE. UX Gate PASS WITH FINDINGS. UX Polish COMPLETE. EPIC-107 Public Landing COMPLETE. MASTER_PLAN §34 — READY FOR RELEASE (`docs/release/production-validation.md`). MASTER_PLAN §35 — GRANTED (`docs/release/production-certification.md`). D-005 PROVIDED. Hosted production is `https://freelance-os-timeplan.vercel.app`. Mail transport is Gmail SMTP / Nodemailer. Custom domain was not purchased. Public `/` landing; authenticated Dashboard at `/dashboard`. Production readiness: RELEASE GRANTED.  
-**Scope:** MVP  
+**Scope:** MVP (R1 baseline). R2 domain delta: `docs/release/r2-architecture-delta.md`. R1 remains FROZEN.  
 **Architectural style:** Modular Monolith  
 **Primary runtime:** Next.js / TypeScript  
 **Persistence:** PostgreSQL via Prisma ORM
@@ -456,13 +456,21 @@ Analytics/Application Services
 - billable amount calculation;
 - estimated revenue;
 - amount to invoice;
-- future invoice preparation.
+- future invoice preparation (historical wording).
 
 ### MVP boundary
 
 The MVP does not implement full electronic invoicing.
 
 Billing is a calculation capability, not an accounting system.
+
+### R2 boundary (2026-09-21)
+
+R2 does **not** add invoice generation or a fiscal invoice lifecycle (D2).
+R2 adds Invoice Tracking, Payment Tracking, and derived revenue
+(Accrued / Expected / Forecast). See `docs/release/r2-decision-pack.md`
+and `docs/release/r2-architecture-delta.md`. Profitability remains
+outside FreelanceOS (PIVA Balance).
 
 ---
 
@@ -1116,6 +1124,12 @@ Some of these are still open business decisions and must be finalized before imp
 
 Future invoice generation should snapshot billable lines rather than continuously recalculating already-issued invoices.
 
+**R2 supersession (2026-09-21):** invoice generation is out of scope.
+Invoice Tracking is an operational record, not a generated fiscal
+document. Whether Accrued Revenue reads live Contract fields or a
+TimeEntry commercial snapshot remains an open product decision
+(R2-OD-003). See `docs/release/r2-architecture-delta.md`.
+
 ---
 
 # 19. Alert Engine
@@ -1697,7 +1711,7 @@ The following are intentionally not frozen yet:
 - database schema/index design;
 - audit-log implementation;
 - holiday/vacation architecture;
-- invoice aggregate design;
+- invoice aggregate design (superseded for R2: Invoice Tracking, not generation — see `docs/release/r2-architecture-delta.md`);
 - AI provider and tool-calling architecture;
 - advanced caching strategy.
 

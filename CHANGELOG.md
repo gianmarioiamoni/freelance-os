@@ -4,6 +4,10 @@ All notable changes to FreelanceOS are documented in this file.
 
 ## Unreleased
 
+### Added
+
+- R2 discovery closed. Product decisions D1–D7 recorded as Revenue Operations (not Billing & Intelligence). Invoice Lifecycle withdrawn in favor of Invoice Tracking. Profitability / PIVA Balance boundary explicit. Canonical docs: `docs/release/r2-decision-pack.md`, `r2-architecture-delta.md`, `r2-epic-map.md`, `r2-open-decisions.md`. R1 remains FROZEN. No implementation epic opened.
+
 ### Fixed
 
 - EPIC-110 CLOSED. R1 FROZEN (`docs/release/r1-freeze.md`) on `c6712224` / deployment `6558481150`. P110-00…P110-02 PASS; P110-03 SKIPPED BY DESIGN; P110-04 PASS; P110-05 PASS; P110-06 / P110-06C intermediate findings resolved or superseded; P110-06D PASS; P110-06C FINAL PASS; P110-07 PASS; P110-08 FREEZE. FINDING-110-P06-001 CLOSED TECHNICAL. F-110-P06-002 CLOSED TECHNICAL / production-verified. Actionable R1 findings = 0. No next epic approved. Does not rewrite §34 / §35.

@@ -1,7 +1,7 @@
 # FreelanceOS — Domain Model + Business Rules
 
 **Status:** Draft domain baseline  
-**Scope:** MVP
+**Scope:** MVP (R1 baseline). R2 domain additions: `docs/release/r2-decision-pack.md`, `docs/release/r2-architecture-delta.md`.
 
 ## 1. Domain Objective
 
@@ -22,6 +22,12 @@ The model must preserve historical correctness and provide deterministic results
 - **Capacity** — user's available working time for a period.
 - **Alert** — system-generated operational condition requiring user awareness.
 - **Billing Period** — reporting period used to determine billable activity and accrued amount.
+- **Accrued Revenue** *(R2)* — consuntivo economic value of billable TimeEntries under the applicable Contract. Independent of invoice and payment.
+- **Expected Revenue** *(R2)* — economically expected value in the period from the contract and expected contractual capacity. Formula open (R2-OD-004).
+- **Forecast Revenue** *(R2)* — deterministic projection of Accrued Revenue to period end from current-period pace. Not ML/AI.
+- **Invoice Tracking** *(R2)* — operational record of an invoiced amount and date for a Contract. Not a fiscal invoice.
+- **Payment** *(R2)* — operational payment event against an Invoice Tracking record. Status is derived.
+- **PIVA Balance** *(external)* — system that owns costs, profitability, and fiscality / accounting. Not part of the FreelanceOS domain.
 
 ## 3. Core Entities
 
@@ -229,6 +235,14 @@ MVP calculates accrued/to-be-invoiced amounts but does not implement electronic 
 
 A later Invoice aggregate may snapshot the commercial lines used for an invoice so that subsequent contract changes cannot modify an already issued billing document.
 
+**R2 supersession (2026-09-21):** FreelanceOS does not generate fiscal invoices.
+R2 adds **Invoice Tracking** only (date, amount, currency, Contract, optional notes)
+to support payment tracking. Accrued / Expected / Forecast Revenue are separate
+from Invoice Tracking and Payment. Profitability is out of this domain
+(PIVA Balance). Whether TimeEntry commercial conditions are snapshotted for
+Accrued Revenue remains open (R2-OD-003). Canonical text:
+`docs/release/r2-decision-pack.md`.
+
 ## 13. Capacity Model
 
 The MVP may derive capacity from user-configured working hours/day and working days/week.
@@ -259,11 +273,11 @@ Example:
 - **OBD-004** — Holiday calendar model.
 - **OBD-005** — Vacation/absence model.
 - **OBD-006** — Exact capacity warning threshold.
-- **OBD-007** — Rules for editing/deleting entries after billing-period closure.
-- **OBD-008** — Audit requirements.
+- **OBD-007** — Rules for editing/deleting entries after billing-period closure. Still OPEN (R2-OD-014). Not decided by R2 D1–D7.
+- **OBD-008** — Audit requirements. Still OPEN (R2-OD-015). Not decided by R2 D1–D7.
 - **OBD-009** — Workspace roles and permissions.
-- **OBD-010** — Payment-term catalog and semantics.
-- **OBD-011** — Multi-currency behavior.
+- **OBD-010** — Payment-term catalog and semantics. Catalog deferred. R2 expected payment date uses `paymentTermsDays` (D5); null-days policy is R2-OD-008.
+- **OBD-011** — Multi-currency behavior. Direction CLOSED (D7): Contract currency, TimeEntry currency-agnostic, no FX, per-currency aggregates. Residual: R2-OD-011.
 - **OBD-012** — Whether contracted hours roll over or expire monthly.
 
 ## 17. Domain Design Acceptance Criteria

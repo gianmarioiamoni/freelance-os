@@ -1250,6 +1250,11 @@ committed business operation.
 
 MVP does not create a complete invoice lifecycle.
 
+R2 also does not create an invoice lifecycle. Persistence for Invoice
+Tracking and Payment is **not designed here**. See
+`docs/release/r2-architecture-delta.md`. Do not add tables from this
+section.
+
 Instead, billing calculations derive from:
 
 ``` text

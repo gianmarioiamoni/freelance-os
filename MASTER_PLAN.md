@@ -135,11 +135,15 @@ context is recovered from repository documentation.
 ## Overall
 
 ``` text
-STATUS: UX Polish COMPLETE; EPIC-107 Public Landing COMPLETE through P107-06 and epic certification; MASTER_PLAN §34 READY FOR RELEASE; §35 GRANTED; EPIC-108 COMPLETE (ER PASS WITH FINDINGS); EPIC-109 COMPLETE (ER PASS); EPIC-110 CLOSED (P110-00 PASS; P110-01 PASS; P110-02 PASS; P110-03 SKIPPED BY DESIGN; P110-04 PASS; P110-05 PASS; P110-06 / P110-06C intermediate findings resolved or superseded; P110-06D PASS; P110-06C FINAL PASS; P110-07 PASS; P110-08 FREEZE). Actionable R1 findings = 0. R1 FROZEN.
-NEXT: No next epic approved
+STATUS: UX Polish COMPLETE; EPIC-107 Public Landing COMPLETE through P107-06 and epic certification; MASTER_PLAN §34 READY FOR RELEASE; §35 GRANTED; EPIC-108 COMPLETE (ER PASS WITH FINDINGS); EPIC-109 COMPLETE (ER PASS); EPIC-110 CLOSED (P110-00 PASS; P110-01 PASS; P110-02 PASS; P110-03 SKIPPED BY DESIGN; P110-04 PASS; P110-05 PASS; P110-06 / P110-06C intermediate findings resolved or superseded; P110-06D PASS; P110-06C FINAL PASS; P110-07 PASS; P110-08 FREEZE). Actionable R1 findings = 0. R1 FROZEN. R2 discovery CLOSED — product decisions D1–D7 recorded; no R2 implementation epic opened.
+NEXT: R2 detailed planning is blocked on open product decisions (`docs/release/r2-open-decisions.md`). No implementation epic approved.
 Production Validation (§34): EXECUTED — READY FOR RELEASE — docs/release/production-validation.md
 Production Certification (§35): GRANTED — docs/release/production-certification.md
 R1 Freeze: FROZEN — docs/release/r1-freeze.md
+R2 Decision Pack: docs/release/r2-decision-pack.md
+R2 Architecture Delta: docs/release/r2-architecture-delta.md
+R2 Epic Map: docs/release/r2-epic-map.md
+R2 Open Decisions: docs/release/r2-open-decisions.md
 Release gate resolution: docs/release/release-gate-resolution.md
 Production readiness: RELEASE GRANTED
 ```
@@ -152,7 +156,13 @@ docs/
 ├── domain-model.md
 ├── architecture.md
 ├── storage.md
-└── testing-strategy.md
+├── testing-strategy.md
+└── release/
+    ├── r1-freeze.md
+    ├── r2-decision-pack.md
+    ├── r2-architecture-delta.md
+    ├── r2-epic-map.md
+    └── r2-open-decisions.md
 ```
 
 ## Current implementation status
@@ -497,6 +507,11 @@ Dashboard
 Analytics is a shared capability used by dashboard, reports, alerts, and
 billing calculations.
 
+R2 Revenue Operations (Accrued / Expected / Forecast, Invoice Tracking,
+Payment Tracking) is documented in `docs/release/r2-decision-pack.md`.
+It does not add a profitability or accounting module. The historical
+module name “Billing” remains the R1 calculation placeholder.
+
 ------------------------------------------------------------------------
 
 # 7. Core Domain Decisions
@@ -575,12 +590,15 @@ Release 0 — Foundation
         ↓
 Release 1 — MVP
         ↓
-Release 2 — Billing & Intelligence
+Release 2 — Revenue Operations
         ↓
 Release 3 — Integrations
         ↓
 Release 4 — AI
 ```
+
+Historical name “Release 2 — Billing & Intelligence” is superseded.
+Canonical R2 decisions: `docs/release/r2-decision-pack.md`.
 
 The releases are intentionally sequential.
 
@@ -1115,11 +1133,12 @@ UX Polish COMPLETE
 The following are explicitly outside Release 1:
 
 -   electronic invoicing / SDI
--   full invoice lifecycle
--   payment management
+-   full invoice lifecycle (R2 replaces this with Invoice Tracking only — D2)
+-   payment management (R1 non-goal; R2 adds operational Payment Tracking — D5)
 -   accounting
 -   expense management
 -   tax management
+-   profitability / cost accounting (owned by PIVA Balance; never FreelanceOS — D3)
 -   advanced team management
 -   native mobile applications
 -   calendar integrations
@@ -1132,57 +1151,88 @@ These may become later-release work.
 
 ------------------------------------------------------------------------
 
-# 19. Release 2 --- Billing & Intelligence
+# 19. Release 2 --- Revenue Operations
 
 ## Objective
 
-Expand FreelanceOS from operational tracking into a more complete
-commercial management system.
+Add Financial / Revenue Operations **secondary** to Time Tracking.
 
-Potential Epics:
+``` text
+TIME TRACKING > CONTRACT > REVENUE VISIBILITY > PAYMENT TRACKING
+```
 
-### R2-E01 --- Invoice Lifecycle
+FreelanceOS is not a billing, accounting, fiscal, profitability, or
+cost-accounting system. PIVA Balance owns costs, profitability, and
+fiscality / accounting. Integration with PIVA Balance is not R2.
 
--   invoice generation
--   invoice records
--   invoice status
--   invoice line items
--   invoice totals
--   historical billing snapshot
+Canonical decisions: `docs/release/r2-decision-pack.md` (D1–D7 APPROVED).
+Architecture delta: `docs/release/r2-architecture-delta.md`.
+Preliminary epic map: `docs/release/r2-epic-map.md`.
+Open decisions: `docs/release/r2-open-decisions.md`.
 
-### R2-E02 --- Payment Tracking
+No R2 implementation epic is opened here.
 
--   payment status
--   due dates
--   overdue tracking
--   payment history
+## In R2
 
-### R2-E03 --- Forecasting & Capacity
+-   Revenue visibility — Accrued, Expected, Forecast (D4)
+-   Invoice Tracking only (D2)
+-   Payment Tracking and simple discrepancies (D5, D6)
+-   Forecasting / capacity visibility consistent with D4 (capacity model still open)
+-   Advanced reporting / export only if explicitly decided (CSV/PDF open; Excel not assumed)
 
--   projected monthly usage
--   projected revenue
--   capacity forecast
--   workload/capacity analysis
+## Out of R2
 
-### R2-E04 --- Advanced Reporting & Export
+-   Invoice Lifecycle / generation / PDF / numbering / e-invoicing / line items / credit notes
+-   Profitability, cost allocation, tax, accounting calculations
+-   FX conversion and cross-currency aggregation
+-   Installment engine, ML/AI forecast, risk scoring
+-   PIVA Balance integration
 
-Potential:
+## Product priority
 
--   CSV
--   PDF
--   advanced filtering
--   richer annual analysis
+TIME TRACKING FIRST. TimeEntry remains currency-agnostic. Currency
+belongs to the Contract (D7).
 
-### R2-E05 --- Commercial Intelligence
+## Preliminary Epics
 
-Potential:
+Planning labels only. Not an implementation plan.
 
--   profitability indicators
--   contract performance
--   client concentration
--   trend analysis
+### R2-E01 --- Revenue Visibility
 
-Exact scope requires a future planning pass.
+Accrued Revenue and Expected Revenue. Independent of invoice and
+payment. Blocked on R2-OD-001, R2-OD-002, R2-OD-003, R2-OD-004.
+
+### R2-E02 --- Invoice Tracking
+
+Replaces withdrawn Invoice Lifecycle. Record invoice date, amount,
+currency, Contract, optional notes. No fiscal invoice engine.
+
+### R2-E03 --- Payment Tracking
+
+Expected payment date derived from `invoiceDate + paymentTermsDays`.
+Multiple actual payment events. Derived status and D6 alerts.
+
+### R2-E04 --- Forecasting & Capacity Visibility
+
+Deterministic Forecast Revenue from current-period pace. No ML/AI.
+Workspace capacity / capacity alerts remain R2-OD-013.
+
+### R2-E05 --- Advanced Reporting & Export
+
+Operational reporting extensions. CSV/PDF only if R2-OD-012 approves.
+Excel is not an R2 decision. No commercial intelligence / profitability.
+
+## Historical map (superseded)
+
+The previous “Billing & Intelligence” candidates were:
+
+-   R2-E01 Invoice Lifecycle — **withdrawn** (D2)
+-   R2-E02 Payment Tracking — retained, narrowed
+-   R2-E03 Forecasting & Capacity — retained, reduced
+-   R2-E04 Advanced Reporting & Export — retained, conditional
+-   R2-E05 Commercial Intelligence — **withdrawn** (D3)
+
+Do not plan or implement from the historical list.
 
 ------------------------------------------------------------------------
 
@@ -1879,15 +1929,21 @@ These decisions must be resolved before the Epics that depend on them.
   OBD-004   Holiday model                         Future
   OBD-005   Vacation/absence model                Future
   OBD-006   Capacity warning threshold            R1-E06
-  OBD-007   Post-closure edits/deletes            R2
-  OBD-008   Audit requirements                    R2
+  OBD-007   Post-closure edits/deletes            R2 if pulled in (R2-OD-014 OPEN)
+  OBD-008   Audit requirements                    R2 if pulled in (R2-OD-015 OPEN)
   OBD-009   Workspace roles                       R0/R1
-  OBD-010   Payment-term catalog                  R1-E02
-  OBD-011   Multi-currency                        R2
+  OBD-010   Payment-term catalog                  Deferred; D5 uses paymentTermsDays
+  OBD-011   Multi-currency                        Direction CLOSED (D7); residual R2-OD-011
   OBD-012   Contract-hour rollover/expiry         R1-E04/R1-E06
 
 The Product Owner must explicitly resolve decisions before they become
 hidden implementation assumptions.
+
+R2 product decisions D1–D7 are APPROVED
+(`docs/release/r2-decision-pack.md`). They do not close OBD-007 or
+OBD-008. OBD-011 direction is closed (Contract currency, TimeEntry
+currency-agnostic, no FX, per-currency aggregates). Residual R2
+questions live in `docs/release/r2-open-decisions.md`.
 
 EPIC-103 did not close any OBD. OBD-001 was not required because
 `DAILY` contracts are stored and selectable without any rate or
@@ -1961,6 +2017,9 @@ README
 MASTER_PLAN
 CHANGELOG
 relevant architecture documents
+docs/release/r1-freeze.md          when R1 status is in scope
+docs/release/r2-decision-pack.md   when R2 is in scope
+docs/release/r2-open-decisions.md  when R2 is in scope
 ```
 
 The methodology defines this as the standard context-recovery mechanism.
@@ -2154,8 +2213,9 @@ Next actions:
 4. EPIC-110 is CLOSED (P110-08 FREEZE)
 5. R1 is FROZEN on c6712224 / deployment 6558481150
 6. Actionable R1 findings = 0
-7. No next epic approved
-8. Do not rewrite historical §34 / §35 rows
+7. R2 discovery CLOSED — D1–D7 recorded; no implementation epic opened
+8. Next: resolve blocking R2 open product decisions, then R2 detailed planning
+9. Do not rewrite historical §34 / §35 rows
 ```
 
 FINDING-UX-004, FINDING-QA-002, FINDING-INT-001, FINDING-108-001, F-104-007,
@@ -2202,8 +2262,11 @@ releases:
     name: MVP
     status: frozen
   R2:
-    name: Billing & Intelligence
-    status: future
+    name: Revenue Operations
+    status: discovery-closed
+    decision_pack: docs/release/r2-decision-pack.md
+    open_decisions: docs/release/r2-open-decisions.md
+    implementation_epic: none
   R3:
     name: Integrations
     status: future
@@ -2289,14 +2352,17 @@ next:
   phase: none
   epic: none
   gate: none
-  reference: docs/release/r1-freeze.md
+  reference: docs/release/r2-decision-pack.md
+  r1_freeze_reference: docs/release/r1-freeze.md
   production_validation: READY FOR RELEASE
   production_validation_reference: MASTER_PLAN.md §34
   production_certification: GRANTED
   production_readiness: release-granted
   product_owner_approval: D-005 PROVIDED
   r1_freeze: frozen
-  objective: No next epic approved. R1 FROZEN. Actionable R1 findings = 0.
+  r2_discovery: closed
+  r2_approved_decisions: D1-D7
+  objective: R1 FROZEN. R2 discovery closed. No implementation epic approved. Blocking open product decisions in docs/release/r2-open-decisions.md.
   open_non_blocking_findings: []
   accepted_r1_limitations:
     - F-103-003
@@ -2321,8 +2387,8 @@ next:
     - F-103-P-001 / OBD-008
     - F-060 / F-061 / F-062 / F-072
     - OBD-001 / OBD-002 / OBD-004 / OBD-005 / OBD-007 / OBD-009 / OBD-010 / OBD-011 / OBD-012
-    - CSV/PDF
-    - invoice lifecycle
+    - CSV/PDF (R2-OD-012)
+    - invoice lifecycle (superseded by Invoice Tracking — D2)
     - calendar
     - copy-previous
     - EPIC-003 F-001

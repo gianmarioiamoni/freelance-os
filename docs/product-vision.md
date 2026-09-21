@@ -1,7 +1,7 @@
 # FreelanceOS — Product Vision + Functional Specification
 
 **Status:** Draft baseline for Product Discovery  
-**Scope:** MVP
+**Scope:** MVP (historical). R2 product decisions live in `docs/release/r2-decision-pack.md` and do not rewrite this MVP specification.
 
 ## 1. Product Vision
 
@@ -180,6 +180,8 @@ Support daily-rate contracts, with detailed rules for partial days and multiple 
 #### F-062 — Estimated revenue
 Show estimated revenue and amount to invoice; full invoice lifecycle is deferred.
 
+R2 (2026-09-21) replaces “invoice lifecycle” with Invoice Tracking and defines Accrued / Expected / Forecast Revenue. See `docs/release/r2-decision-pack.md`. These MVP lines remain historical R1 scope and were not delivered in R1 (PD-105-001).
+
 ### 7.8 Reporting
 
 #### F-070 — Period selection
@@ -240,10 +242,11 @@ The LLM must not become the source of truth for calculations.
 ## 10. MVP Non-Goals
 
 - Electronic invoicing / SDI
-- Payment management
-- Accounting
+- Payment management (R2 later adds operational Payment Tracking only — D5)
+- Accounting (PIVA Balance domain; never FreelanceOS — D3)
 - Expense management
 - Tax management
+- Profitability / cost accounting (PIVA Balance — D3)
 - Advanced team management
 - Native mobile application
 - Calendar/Slack/Teams integrations
@@ -290,14 +293,14 @@ The MVP is considered functionally complete when this end-to-end workflow works 
 | OD-008 | Audit log requirements |
 | OD-009 | Workspace roles |
 | OD-010 | Email notification policy |
-| OD-011 | CSV/PDF export |
-| OD-012 | Multi-currency |
+| OD-011 | CSV/PDF export — still open for R2 (R2-OD-012). Excel is not a decision. |
+| OD-012 | Multi-currency — direction closed by R2 D7; residual R2-OD-011. |
 
 ## 14. Release Structure
 
 - **Release 0 — Foundation:** architecture and technical infrastructure.
 - **Release 1 — MVP:** authentication, workspace, clients, contracts, time tracking, dashboard, reporting and alerts.
-- **Release 2 — Billing & Intelligence:** invoices, payment tracking, forecasting, capacity, advanced reporting and exports.
+- **Release 2 — Revenue Operations:** revenue visibility (Accrued / Expected / Forecast), Invoice Tracking (not Invoice Lifecycle), operational payment tracking, forecasting / capacity visibility, advanced reporting and exports if decided. Official decisions: `docs/release/r2-decision-pack.md`. Historical label “Billing & Intelligence” is superseded. Profitability is out of FreelanceOS (PIVA Balance).
 - **Release 3 — Integrations:** electronic invoicing, calendar and accounting integrations.
 - **Release 4 — AI:** natural-language analytics, timesheet assistant and business assistant.
 
