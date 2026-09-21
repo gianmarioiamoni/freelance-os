@@ -1129,11 +1129,10 @@ Future invoice generation should snapshot billable lines rather than continuousl
 
 **R2 supersession (2026-09-22):** invoice generation is out of scope.
 Invoice Tracking is an operational record, not a generated fiscal
-document. Accrued Revenue uses Commercial Snapshot semantics (R2-OD-003):
-historical work keeps the commercial value applicable when it occurred.
-The snapshot field does not exist in the current persistence model.
-R2-E01 planning classifies it as class B on the TimeEntry quantity fact
-(`docs/release/r2-e01-revenue-visibility.md` §8). Prisma names remain open.
+document. Accrued Revenue uses Commercial Snapshot semantics (R2-OD-003).
+P-E01-01 persists `snapshotBillingModel`, `snapshotRate`, and
+`snapshotCurrency` on TimeEntry. R2-OD-016 / R2-OD-017 are implemented.
+Canonical text: `docs/release/r2-e01-revenue-visibility.md`.
 
 ---
 
@@ -1717,7 +1716,6 @@ The following are intentionally not frozen yet:
 - audit-log implementation (out of R2 — R2-OD-015);
 - holiday/vacation architecture;
 - invoice aggregate design (superseded for R2: Invoice Tracking, not generation — persistence not designed; see `docs/release/r2-architecture-delta.md`);
-- commercial snapshot persistence mechanism (R2-OD-003 residual);
 - Invoice VOID UI and Invoice currency snapshot representation;
 - AI provider and tool-calling architecture;
 - advanced caching strategy.

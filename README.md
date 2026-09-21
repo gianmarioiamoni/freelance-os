@@ -6,7 +6,7 @@ FreelanceOS is a web application for freelancer operations management.
 
 Release 1 — MVP. UX Polish COMPLETE (`docs/ux/ux-review.md` §18). UX Gate PASS WITH FINDINGS. Documentation Gate COMPLETE (`MASTER_PLAN.md` §32). MVP QA Gate PASS WITH FINDINGS (`docs/qa/qa-report.md`). Blocking findings: NONE. Production readiness: RELEASE GRANTED. EPIC-107 Public Landing implementation COMPLETE. MASTER_PLAN §34 — READY FOR RELEASE (`docs/release/production-validation.md`). MASTER_PLAN §35 — GRANTED (`docs/release/production-certification.md`). D-005 PROVIDED. Hosted Vercel, Neon, production Google, and Gmail SMTP password-reset completion are verified. F-004 CLOSED. EPIC-110 CLOSED. R1 FROZEN (`docs/release/r1-freeze.md`) on `c6712224` / deployment `6558481150`. Actionable R1 findings = 0. Accepted R1 limitations remain documented. No next epic approved. Historical §34 / §35 snapshots are unchanged.
 
-Planning and architecture documents are the source of truth. See [`MASTER_PLAN.md`](./MASTER_PLAN.md). R2 Revenue Operations is the active next product evolution and remains in planning (`docs/release/r2-decision-pack.md`, `docs/release/r2-epic-map.md`). R2-E01 detailed plan: `docs/release/r2-e01-revenue-visibility.md` (P-E01-00 COMPLETE). No R2 implementation epic is approved. R2 is not production-ready.
+Planning and architecture documents are the source of truth. See [`MASTER_PLAN.md`](./MASTER_PLAN.md). R2 Revenue Operations is the active next product evolution. R2-E01 Revenue Visibility is COMPLETE / RELEASE-READY (`docs/release/r2-e01-revenue-visibility.md`). Next: R2-E02 Invoice Tracking. R2 is not production-ready.
 
 ## Prerequisites
 

@@ -135,8 +135,8 @@ context is recovered from repository documentation.
 ## Overall
 
 ``` text
-STATUS: UX Polish COMPLETE; EPIC-107 Public Landing COMPLETE through P107-06 and epic certification; MASTER_PLAN §34 READY FOR RELEASE; §35 GRANTED; EPIC-108 COMPLETE (ER PASS WITH FINDINGS); EPIC-109 COMPLETE (ER PASS); EPIC-110 CLOSED (P110-00 PASS; P110-01 PASS; P110-02 PASS; P110-03 SKIPPED BY DESIGN; P110-04 PASS; P110-05 PASS; P110-06 / P110-06C intermediate findings resolved or superseded; P110-06D PASS; P110-06C FINAL PASS; P110-07 PASS; P110-08 FREEZE). Actionable R1 findings = 0. R1 FROZEN. R2 Decision Workshop complete for in-scope decisions. R2 planning baseline recorded. R2-E01 P-E01-00 and P-E01-01 COMPLETE. Accrued not started. R2 is not production-ready.
-NEXT: R2-E01 P-E01-02 Accrued Revenue. E02–E05 detailed epic plans still required. R2 is not production-ready.
+STATUS: UX Polish COMPLETE; EPIC-107 Public Landing COMPLETE through P107-06 and epic certification; MASTER_PLAN §34 READY FOR RELEASE; §35 GRANTED; EPIC-108 COMPLETE (ER PASS WITH FINDINGS); EPIC-109 COMPLETE (ER PASS); EPIC-110 CLOSED (P110-00 PASS; P110-01 PASS; P110-02 PASS; P110-03 SKIPPED BY DESIGN; P110-04 PASS; P110-05 PASS; P110-06 / P110-06C intermediate findings resolved or superseded; P110-06D PASS; P110-06C FINAL PASS; P110-07 PASS; P110-08 FREEZE). Actionable R1 findings = 0. R1 FROZEN. R2 Decision Workshop complete for in-scope decisions. R2 planning baseline recorded. R2-E01 Revenue Visibility COMPLETE / RELEASE-READY (P-E01-00…P-E01-07). R2 is not production-ready.
+NEXT: R2-E02 Invoice Tracking. E02–E05 detailed epic plans still required. R2 is not production-ready.
 Production Validation (§34): EXECUTED — READY FOR RELEASE — docs/release/production-validation.md
 Production Certification (§35): GRANTED — docs/release/production-certification.md
 R1 Freeze: FROZEN — docs/release/r1-freeze.md
@@ -1160,15 +1160,17 @@ These may become later-release work.
 ## Status
 
 R1 remains certified / released / FROZEN. R2 is the active next product
-evolution and is **in planning**. Implementation has not started. R2 is
+evolution. R2-E01 Revenue Visibility is COMPLETE / RELEASE-READY.
+E02–E05 detailed plans and implementation have not started. R2 is
 not production-ready.
 
 Canonical decisions: `docs/release/r2-decision-pack.md`.
 Architecture delta: `docs/release/r2-architecture-delta.md`.
 Executable epic map: `docs/release/r2-epic-map.md`.
 Residual questions: `docs/release/r2-open-decisions.md`.
+E01 plan: `docs/release/r2-e01-revenue-visibility.md`.
 
-No R2 implementation epic is opened here.
+This section does not open E02–E05.
 
 ## Objective
 
@@ -1219,9 +1221,11 @@ R2-E05 Advanced Reporting & Export             (trailing; does not block E01–E
 ### R2-E01 --- Revenue Visibility
 
 Accrued Revenue and HOURLY Expected Revenue. Independent of invoice and
-payment. Detailed plan: `docs/release/r2-e01-revenue-visibility.md`
-(P-E01-00 COMPLETE). Commercial snapshot class B planned; Prisma names,
-R2-OD-016, and R2-OD-017 remain open. Implementation not started.
+payment. Detailed plan: `docs/release/r2-e01-revenue-visibility.md`.
+COMPLETE / RELEASE-READY (P-E01-00…P-E01-07). Commercial snapshot
+`snapshotBillingModel` / `snapshotRate` / `snapshotCurrency` on TimeEntry.
+R2-OD-016 and R2-OD-017 closed. Next R2 work is E02. R2 is not
+production-ready.
 
 ### R2-E02 --- Invoice Tracking
 
@@ -2244,10 +2248,10 @@ Next actions:
 7. R2 Decision Workshop complete for in-scope decisions
 8. R2 planning baseline recorded (`docs/release/r2-epic-map.md`)
 9. R2-E01 detailed plan complete (`docs/release/r2-e01-revenue-visibility.md`; P-E01-00)
-10. R2-E01 P-E01-01 COMPLETE — TimeEntry commercial snapshot persisted
-11. Next: R2-E01 P-E01-02 Accrued Revenue; E02–E05 detailed plans still required
-11. No R2 implementation epic opened. Do not mark R2 production-ready
-12. Do not rewrite historical §34 / §35 rows
+10. R2-E01 COMPLETE / RELEASE-READY (P-E01-00…P-E01-07)
+11. Next: R2-E02 Invoice Tracking; E02–E05 detailed plans still required
+12. Do not mark R2 production-ready
+13. Do not rewrite historical §34 / §35 rows
 ```
 
 FINDING-UX-004, FINDING-QA-002, FINDING-INT-001, FINDING-108-001, F-104-007,

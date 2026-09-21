@@ -8,7 +8,7 @@
 
 Approved D1–D7 and approved OD resolutions are **not** reopened here.
 
-Do not treat remaining items as implementation defaults. Do not invent WARNING thresholds, Forecast arithmetic, VOID UI, currency snapshot fields, CSV scope, Prisma snapshot names, DAILY same-day snapshot winners, or pre-snapshot TimeEntry backfill.
+Do not treat remaining items as implementation defaults. Do not invent WARNING thresholds, Forecast arithmetic, VOID UI, Invoice currency snapshot fields, or CSV scope. R2-OD-003 representation, R2-OD-016, and R2-OD-017 are closed.
 
 ---
 
@@ -105,8 +105,8 @@ These are the product / planning decisions still required before the correspondi
 | --- | --- |
 | Historical ID | R2-OD-016 |
 | Decision | Weighted-average daily rate: Σ(minutes under snapshot / total billable minutes for Contract/date × snapshot daily rate). No first/last-wins. |
-| Status | APPROVED. Accrued arithmetic is P-E01-02 |
-| Needed by | R2-E01 P-E01-02 |
+| Status | APPROVED / CLOSED. Implemented in P-E01-02 |
+| Needed by | R2-E01 (implemented) |
 
 ### 8. Pre-snapshot TimeEntry treatment
 
@@ -126,8 +126,8 @@ These are the product / planning decisions still required before the correspondi
 | R2-OD-001 | DAILY accrued: one billable day if at least one TimeEntry exists for that Contract on that calendar date; multiples count once; no work calendar | APPROVED |
 | R2-OD-002 | Published money rounds to nearest integer; do not prematurely round intermediates | APPROVED |
 | R2-OD-003 | Commercial Snapshot semantics for historical Accrued | APPROVED — TimeEntry `snapshotBillingModel` / `snapshotRate` / `snapshotCurrency` |
-| R2-OD-016 | DAILY same-day conflicting snapshots use weighted-average daily rate | APPROVED |
-| R2-OD-017 | Existing TimeEntries backfilled from current associated Contract | APPROVED |
+| R2-OD-016 | DAILY same-day conflicting snapshots use weighted-average daily rate | APPROVED / implemented |
+| R2-OD-017 | Existing TimeEntries backfilled from current associated Contract | APPROVED / implemented |
 | R2-OD-004 | Expected Revenue is HOURLY contractual capacity / pro-rata; null if capacity unavailable; DAILY has no Expected Revenue in R2 | APPROVED |
 | R2-OD-006 | 1 Contract → many Invoice; 1 Invoice → 1 Contract; tracking fields only | APPROVED |
 | R2-OD-007 | Optional reference; required invoiceDate; no competence period; editable; VOID / soft-delete | APPROVED (VOID UI residual) |
@@ -167,6 +167,6 @@ R2 detailed epic planning is **no longer blocked** on R2-OD-001, R2-OD-002, R2-O
 
 The residual questions above must be resolved during the epic that needs them. They must not be silently assumed in implementation.
 
-R2-E01 planning (`docs/release/r2-e01-revenue-visibility.md`) classified commercial-snapshot persistence as class B and added R2-OD-016 and R2-OD-017. It did not open implementation.
+R2-E01 (`docs/release/r2-e01-revenue-visibility.md`) implemented class-B snapshot, R2-OD-016, and R2-OD-017. E01 is COMPLETE / RELEASE-READY.
 
-No R2 implementation epic is opened by this register.
+This register does not open E02–E05 implementation. R2 is not production-ready.

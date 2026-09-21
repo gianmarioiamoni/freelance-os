@@ -1,15 +1,17 @@
 # R2 Epic Map — Planning Baseline
 
-**Status:** Executable planning baseline. R2-E01 detailed plan complete. Not implementation. No EPIC-2xx opened.  
+**Status:** Executable planning baseline. R2-E01 COMPLETE / RELEASE-READY. E02–E05 detailed plans still required. No EPIC-2xx opened. R2 is not production-ready.  
 **Date:** 2026-09-22  
 **Authority:** `docs/release/r2-decision-pack.md`  
 **E01 plan:** `docs/release/r2-e01-revenue-visibility.md`  
-**Does not:** authorize schema, migrations, APIs, UI, or implementation branches.
+**Does not:** authorize E02–E05 schema, migrations, APIs, UI, or implementation branches.
 
 ```text
-PLANNING BASELINE
-IMPLEMENTATION: NOT STARTED
+PLANNING BASELINE (E02–E05)
+R2-E01: COMPLETE / RELEASE-READY
+IMPLEMENTATION: E01 DONE; E02–E05 NOT STARTED
 R1: FROZEN / GRANTED
+R2: NOT PRODUCTION-READY
 ```
 
 Priority:
@@ -81,7 +83,7 @@ E01 and E02 may be planned and implemented in parallel. E03 is sequential on E02
 ## R2-E01 — Revenue Visibility
 
 Detailed plan: `docs/release/r2-e01-revenue-visibility.md`.  
-Status: **P-E01-00 COMPLETE. P-E01-01 COMPLETE.** Accrued not started.
+Status: **COMPLETE / RELEASE-READY.** P-E01-00…P-E01-07 COMPLETE. Engineering Review PASS WITH FINDINGS. QA PASS WITH FINDINGS. F-E01-001 CLOSED. F-E01-002 CLOSED.
 
 ### 1. Objective
 
@@ -108,14 +110,15 @@ See what work is already worth (Accrued) and what the HOURLY contract economical
 - Forecast Revenue (R2-E04).
 - Expected Revenue for DAILY.
 - Profitability, tax, FX rollup, accounting recognition, ML.
-- Inventing Prisma field names or resolving R2-OD-016 / R2-OD-017 by assumption.
+- Inventing Prisma field names for E02–E05 concepts. R2-OD-016 / R2-OD-017 are closed.
 
 ### 5. Dependencies
 
 - R1 TimeEntry and Contract.
 - Existing pro-rata capacity (PD-105-005).
-- Commercial snapshot class B (new field(s) on the TimeEntry quantity fact). Representation names still open (R2-OD-003 residual).
-- R2-OD-016 (DAILY same-day conflicting snapshots) and R2-OD-017 (pre-snapshot TimeEntry treatment) before the phases that need them.
+- Commercial snapshot class B implemented: TimeEntry `snapshotBillingModel`, `snapshotRate`, `snapshotCurrency` (R2-OD-003 residual CLOSED).
+- R2-OD-016 APPROVED (weighted-average daily rate). Implemented in P-E01-02.
+- R2-OD-017 APPROVED (existing TimeEntries backfilled from the current associated Contract). Implemented in P-E01-01.
 
 ### 6. Domain objects affected
 
@@ -125,15 +128,15 @@ See what work is already worth (Accrued) and what the HOURLY contract economical
 
 ### 7. Application services / capabilities affected
 
-- Candidate: `AnalyticsService` extension or a dedicated Revenue application service.
-- `ReportingService` / dashboard read paths if they publish money.
+- Implemented: `AnalyticsService` extension (`getAccruedRevenue` / `getExpectedRevenue`). No parallel RevenueService.
+- `ReportingService` / dashboard read paths publish Accrued / Expected on existing DTOs. UI does not render money.
 
 ### 8. Persistence impact
 
-- Classified in the E01 plan: **B — new field(s) on the TimeEntry quantity fact** for billing model, rate, and currency at work time. Not A. C not required. Names not invented.
-- Open: exact representation (R2-OD-003 residual); existing-row treatment (R2-OD-017); DAILY same-day collision (R2-OD-016).
+- Implemented: **B — TimeEntry** `snapshotBillingModel`, `snapshotRate`, `snapshotCurrency`. Not A. C not required.
+- Closed: R2-OD-003 residual; R2-OD-017 backfill; R2-OD-016 weighted-average daily rate.
 - Revenue totals remain derived unless a later plan proves persistence.
-- Migration authorized only in P-E01-01, not by this map.
+- Migration was P-E01-01 only.
 
 ### 9. Analytics / reporting impact
 
@@ -170,7 +173,7 @@ See what work is already worth (Accrued) and what the HOURLY contract economical
 
 ### 14. Product decisions still required
 
-- None for persistence. R2-OD-003 representation, R2-OD-016, and R2-OD-017 are closed/approved. Accrued arithmetic remains P-E01-02.
+- None for E01. R2-OD-003 representation, R2-OD-016, and R2-OD-017 are closed/implemented.
 
 ### 15. Risks / architectural constraints
 
@@ -554,7 +557,7 @@ Inspect R2 operational facts over existing period selection without building a s
 | --- | --- |
 | Rounding | APPROVED (R2-OD-002) — apply before any published money |
 | DAILY accrued | APPROVED (R2-OD-001) |
-| Commercial snapshot semantics | APPROVED; persistence is E01 dependency |
+| Commercial snapshot semantics | APPROVED; TimeEntry snapshot implemented in E01 |
 | Period closure | OUT OF R2 (R2-OD-014) |
 | Audit ledger | OUT OF R2 (R2-OD-015) |
 | Multi-currency | D7 + R2-OD-011; Invoice snapshot residual |
@@ -572,8 +575,8 @@ Do not implement these as assumptions.
 4. Exact Invoice VOID behaviour and UI semantics.
 5. Whether simple CSV export belongs in R2-E05.
 6. Commercial snapshot persistence: CLOSED — TimeEntry `snapshotBillingModel` / `snapshotRate` / `snapshotCurrency`.
-7. R2-OD-016 — APPROVED weighted-average daily rate (Accrued arithmetic in P-E01-02).
-8. R2-OD-017 — CLOSED — existing TimeEntries backfilled from current Contract.
+7. R2-OD-016 — APPROVED / implemented — weighted-average daily rate (P-E01-02).
+8. R2-OD-017 — CLOSED / implemented — existing TimeEntries backfilled from current Contract.
 
 ---
 
@@ -591,7 +594,7 @@ Vision → Architecture → Planning → Implementation → Engineering Review
 Release → Epic → Phase → Commit
 ```
 
-This document is the release-level planning baseline. R2-E01 detailed planning is complete (`docs/release/r2-e01-revenue-visibility.md`). It does not open implementation phases or invent commit hashes.
+This document is the release-level planning baseline. R2-E01 is COMPLETE / RELEASE-READY (`docs/release/r2-e01-revenue-visibility.md`). It does not open E02–E05 implementation or invent commit hashes.
 
 ### Release-level
 
@@ -599,9 +602,9 @@ This document is the release-level planning baseline. R2-E01 detailed planning i
 | --- | --- |
 | Vision | Complete — decision pack |
 | Architecture | Complete as domain delta — `r2-architecture-delta.md` |
-| Planning | This baseline. Detailed EPIC-2xx plans still required before implementation |
-| Implementation | Not started |
-| Engineering Review → Release | Not started. Do not mark R2 production-ready |
+| Planning | This baseline. E01 detailed plan complete. E02–E05 EPIC-2xx plans still required |
+| Implementation | R2-E01 COMPLETE / RELEASE-READY. E02–E05 not started |
+| Engineering Review → Release | E01 ER + QA complete. R2 release gates not started. Do not mark R2 production-ready |
 
 ### Proposed small phases (planning labels only)
 
@@ -611,12 +614,12 @@ This document is the release-level planning baseline. R2-E01 detailed planning i
 | --- | --- | --- |
 | P-E01-00 | Planning / architecture freeze | COMPLETE |
 | P-E01-01 | Persistence / domain foundation (class B snapshot; migration) | COMPLETE |
-| P-E01-02 | Accrued Revenue | Not started |
-| P-E01-03 | Expected Revenue | Not started |
-| P-E01-04 | Integration with existing analytics / reporting | Not started |
-| P-E01-05 | Engineering Review | Not started |
-| P-E01-06 | QA | Not started |
-| P-E01-07 | Documentation / Epic closure | Not started |
+| P-E01-02 | Accrued Revenue | COMPLETE |
+| P-E01-03 | Expected Revenue | COMPLETE |
+| P-E01-04 | Integration with existing analytics / reporting | COMPLETE |
+| P-E01-05 | Engineering Review | COMPLETE — PASS WITH FINDINGS |
+| P-E01-06 | QA | COMPLETE — PASS WITH FINDINGS |
+| P-E01-07 | Documentation / Epic closure | COMPLETE |
 
 **R2-E02**
 

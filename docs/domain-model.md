@@ -247,7 +247,8 @@ Accrued / Expected / Forecast Revenue are separate from Invoice Tracking
 and Payment. Profitability is out of this domain (PIVA Balance).
 Accrued uses Commercial Snapshot semantics (R2-OD-003). P-E01-01 persists
 `snapshotBillingModel`, `snapshotRate`, and `snapshotCurrency` on TimeEntry.
-R2-OD-016 / R2-OD-017 are approved. Accrued calculation is P-E01-02.
+R2-OD-016 / R2-OD-017 are implemented. Accrued and Expected are published
+by AnalyticsService (P-E01-02 / P-E01-03). E01 is COMPLETE / RELEASE-READY.
 Canonical text: `docs/release/r2-e01-revenue-visibility.md`.
 
 ## 13. Capacity Model

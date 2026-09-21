@@ -1,11 +1,11 @@
 # R2 Architecture Delta — Revenue Operations
 
-**Status:** Domain and persistence-planning delta. Technical implementation is not authorized.  
+**Status:** Domain and persistence-planning delta. R2-E01 snapshot / Accrued / Expected are implemented. Remaining R2 technical implementation is not authorized by this document.  
 **Date:** 2026-09-22  
 **Authority:** `docs/release/r2-decision-pack.md`  
 **Baseline:** R1 architecture (`docs/architecture.md`, `docs/domain-model.md`, `docs/storage.md`) remains the frozen R1 baseline.
 
-This document records what must change conceptually for R2. It does not authorize Prisma schema, migrations, APIs, UI, or services. It does not invent final Prisma field names unless they already exist in the repository.
+This document records what must change conceptually for R2. It does not authorize E02–E05 Prisma schema, migrations, APIs, UI, or services. It does not invent final Prisma field names unless they already exist in the repository.
 
 Legend:
 
@@ -96,9 +96,9 @@ No new Contract entity is implied.
 | Concept | Classification | Notes |
 | --- | --- | --- |
 | `TimeEntry` minutes, `billable`, `workDate`, `contractId` | EXISTING MODEL REUSED | Accrued quantity source |
-| Historical commercial snapshot | CONFIRMED REQUIREMENT | Semantics approved. **No field exists today.** P102-F-001 remains the R1 gap |
-| Snapshot persistence class | EXISTING MODEL REUSED / implemented | Class B on TimeEntry: `snapshotBillingModel`, `snapshotRate`, `snapshotCurrency`. P-E01-01 |
-| DAILY same-day conflicting snapshots | DOMAIN DECISION | R2-OD-016 weighted-average. Accrued arithmetic is P-E01-02 |
+| Historical commercial snapshot | EXISTING MODEL REUSED / implemented | TimeEntry `snapshotBillingModel`, `snapshotRate`, `snapshotCurrency`. P102-F-001 closed for Accrued |
+| Snapshot persistence class | EXISTING MODEL REUSED / implemented | Class B on TimeEntry. Implemented in P-E01-01 |
+| DAILY same-day conflicting snapshots | DOMAIN DECISION | R2-OD-016 weighted-average daily rate. Implemented in P-E01-02 |
 | Pre-snapshot TimeEntry treatment | DOMAIN DECISION | R2-OD-017 live-Contract backfill. Implemented in P-E01-01 migration |
 
 ---
@@ -125,7 +125,7 @@ No profitability, tax, accounting recognition, ML, or FX rollup.
 | Concept | Classification | Notes |
 | --- | --- | --- |
 | Accrued / Expected / Forecast totals | EXISTING MODEL REUSED (derived) | Read model unless a later plan proves persistence |
-| Application-service boundary | EXISTING MODEL REUSED | R2-E01 plan: extend `AnalyticsService`. `ReportingService` stays thin. No parallel RevenueService |
+| Application-service boundary | EXISTING MODEL REUSED | E01 implemented: extend `AnalyticsService`. `ReportingService` stays thin. No parallel RevenueService |
 | Forecast arithmetic | IMPLEMENTATION DETAIL STILL OPEN | R2-OD-005 residual |
 | Mixed-currency presentation | DOMAIN DECISION | Separate by currency (D7) |
 
@@ -248,7 +248,7 @@ No risk score, prediction, AI, or percentage-threshold engine for payments.
 
 ## 10. Data-model delta (planning only)
 
-No migrations. No invented Prisma names.
+No E02–E05 migrations. No invented Prisma names. E01 TimeEntry snapshot columns already exist.
 
 | Concept | Classification | Existing? | Planning note |
 | --- | --- | --- | --- |
@@ -288,7 +288,7 @@ PIVA Balance remains outside the monolith boundary.
 ### TECHNICAL IMPLEMENTATION TO BE PLANNED
 
 - Repository split for Invoice Tracking and Payment.
-- Revenue lives under AnalyticsService (R2-E01 plan). Do not add a parallel RevenueService in E01.
+- Revenue lives under AnalyticsService (R2-E01 implemented). Do not add a parallel RevenueService.
 - Reporting/export module if simple CSV is approved in R2-E05.
 
 ---
@@ -298,7 +298,7 @@ PIVA Balance remains outside the monolith boundary.
 | Historical statement | Disposition |
 | --- | --- |
 | Architecture §5.7 “future invoice preparation” | Superseded. Invoice Tracking only. |
-| Architecture §18 “future invoice generation should snapshot billable lines” | Superseded for generation. TimeEntry commercial snapshot is now R2-OD-003 (persistence TBD). |
+| Architecture §18 “future invoice generation should snapshot billable lines” | Superseded for generation. TimeEntry commercial snapshot is R2-OD-003 (`snapshotBillingModel` / `snapshotRate` / `snapshotCurrency`). |
 | Domain §12 “later Invoice aggregate may snapshot commercial lines” | Superseded as invoice-generation design. |
 | Storage §21 “MVP does not create a complete invoice lifecycle” | Still true. R2 also does not create that lifecycle. |
 | MASTER_PLAN historical R2-E01 Invoice Lifecycle | Withdrawn. |
@@ -322,6 +322,4 @@ R1 baseline documents keep their historical text. Canonical R2 meaning is this d
 - Allocation WARNING threshold
 - Invoice VOID UI
 - Invoice currency snapshot representation
-- Commercial snapshot Prisma names (class B is planned)
-- R2-OD-016 DAILY same-day conflicting snapshots
-- R2-OD-017 pre-snapshot TimeEntry treatment
+- Prisma names for Invoice / Payment / `allocatedMinutes`

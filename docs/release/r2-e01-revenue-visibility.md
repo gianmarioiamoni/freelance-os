@@ -3,7 +3,7 @@
 **Epic:** R2-E01 — Revenue Visibility  
 **Release:** Release 2 — Revenue Operations  
 **MASTER_PLAN identifier:** R2-E01 (`MASTER_PLAN.md` §19)  
-**Status:** P-E01-00 COMPLETE / P-E01-01 COMPLETE / P-E01-02 COMPLETE / P-E01-03 COMPLETE / P-E01-04 COMPLETE / P-E01-05 COMPLETE — Engineering Review PASS WITH FINDINGS / P-E01-06 COMPLETE — QA PASS WITH FINDINGS  
+**Status:** COMPLETE / RELEASE-READY — P-E01-00…P-E01-07 COMPLETE. Engineering Review PASS WITH FINDINGS. QA PASS WITH FINDINGS. F-E01-001 CLOSED. F-E01-002 CLOSED.  
 **Authority:** `docs/release/r2-decision-pack.md`  
 **Companions:** `docs/release/r2-epic-map.md`, `docs/release/r2-architecture-delta.md`, `docs/release/r2-open-decisions.md`  
 **Does not assign:** an EPIC-2xx number
@@ -16,10 +16,12 @@ P-E01-03  EXPECTED REVENUE                 COMPLETE
 P-E01-04  ANALYTICS / REPORTING INTEGRATION COMPLETE
 P-E01-05  ENGINEERING REVIEW               COMPLETE — PASS WITH FINDINGS
 P-E01-06  QA                               COMPLETE — PASS WITH FINDINGS
-P-E01-07  DOCUMENTATION / EPIC CLOSURE     NOT STARTED
+P-E01-07  DOCUMENTATION / EPIC CLOSURE     COMPLETE
 
+R2-E01: COMPLETE / RELEASE-READY
 IMPLEMENTATION: P-E01-01 + P-E01-02 + P-E01-03 + P-E01-04
 R1: FROZEN / GRANTED
+R2: NOT PRODUCTION-READY
 ```
 
 This plan is produced from the R2 planning baseline and from the R1
@@ -941,9 +943,9 @@ Full review: §19.
 VERDICT:                 PASS WITH FINDINGS
 BLOCKING FINDINGS:       NONE
 F-E01-001:               CLOSED
-F-E01-002:               OPEN — deferred to P-E01-07
-P-E01:                   NOT BLOCKED
-P-E01-07:                AUTHORIZED
+F-E01-002:               CLOSED — companions synchronized in P-E01-07
+P-E01:                   COMPLETE / RELEASE-READY
+P-E01-07:                COMPLETE
 PRODUCTION READINESS:    UNCHANGED (R2 not production-ready)
 ```
 
@@ -961,6 +963,21 @@ Full QA: §20.
 | Migration | No. |
 | Depends on | P-E01-06. |
 | Exit criteria | Docs state E01 implemented scope honestly; open residuals remain open; R2 still not production-ready until later release gates. |
+| Status | **COMPLETE** — E01 COMPLETE / RELEASE-READY |
+
+**HEAD closed:** this P-E01-07 commit.
+
+```text
+VERDICT:                 COMPLETE / RELEASE-READY
+F-E01-001:               CLOSED
+F-E01-002:               CLOSED
+BLOCKING FINDINGS:       NONE
+R2-E01:                  COMPLETE / RELEASE-READY
+NEXT R2 WORK:            R2-E02 Invoice Tracking
+PRODUCTION READINESS:    UNCHANGED (R2 not production-ready)
+```
+
+Full closure: §21.
 
 ---
 
@@ -1060,8 +1077,9 @@ No blocker. Accrued / Expected match the approved commercial semantics. P102-F-0
 | Area | Documentation |
 | Evidence | `docs/release/r2-epic-map.md` still says Accrued not started and P-E01-02…04 “Not started”. `docs/release/r2-architecture-delta.md` §13 still lists R2-OD-016 / R2-OD-017 as undecided. Both contradict this plan and the implemented commits. |
 | Impact | Planning companions are stale. Implementation and this plan remain the E01 authority. |
-| Remediation | Synchronize companions in P-E01-07. Do not rewrite R1 freeze snapshots. |
-| Release impact | Does not block P-E01. Deferred to P-E01-07. No PO decision. |
+| Remediation | Synchronized in P-E01-07. Do not rewrite R1 freeze snapshots. |
+| QA disposition | **CLOSED** — see §21. Companions aligned to implemented E01. |
+| Release impact | Does not block P-E01. Closed in P-E01-07. No PO decision. |
 
 ### Verified areas
 
@@ -1112,7 +1130,7 @@ Coverage notes (not findings): Accrued unit “later rate change does not rewrit
 
 **PASS WITH FINDINGS**
 
-No blocker. AC-01…AC-17 hold on existing unit and integration evidence. R1 hours / utilization / isolation / timezone / membership analytics remain green. F-E01-001 is closed after measurement. F-E01-002 stays open and is deferred to P-E01-07. No code remediation. No new product decision.
+No blocker. AC-01…AC-17 hold on existing unit and integration evidence. R1 hours / utilization / isolation / timezone / membership analytics remain green. F-E01-001 is closed after measurement. F-E01-002 was open at QA and is closed in P-E01-07. No code remediation. No new product decision.
 
 ### Commands executed
 
@@ -1221,9 +1239,9 @@ E01 adds two workspace-scoped `findMany` reads beside the existing hours path, i
 | --- | --- |
 | Severity | low |
 | Area | Documentation |
-| Status | **OPEN** — deferred to P-E01-07 |
-| Evidence | Unchanged from P-E01-05. Companions remain stale. Not remediated in QA. |
-| Impact | Planning companions contradict implemented E01. This plan remains the authority. |
+| Status | **CLOSED** — P-E01-07 |
+| Evidence | QA recorded companions stale. P-E01-07 synchronized `r2-epic-map.md` and `r2-architecture-delta.md`. |
+| Impact | None. Planning companions now match implemented E01. |
 | Remediation phase | P-E01-07 |
 
 No new finding.
@@ -1233,8 +1251,78 @@ No new finding.
 | Item | Value |
 | --- | --- |
 | Blocker | No |
-| E01 release-ready | Yes |
-| Open findings | F-E01-002 (low / documentation / P-E01-07) |
+| E01 release-ready | Yes — COMPLETE / RELEASE-READY after P-E01-07 |
+| Open findings | None. F-E01-001 CLOSED. F-E01-002 CLOSED. |
 | PO decision required | No |
-| P-E01-07 | Authorized. Not started by this QA. |
+| P-E01-07 | COMPLETE |
 | R2 production-ready | No |
+
+---
+
+## 21. P-E01-07 Documentation / Epic closure
+
+**Date:** 2026-09-22  
+**Phase:** P-E01-07  
+**Scope:** Documentation only. No application, schema, formula, or UX change.
+
+### Verdict
+
+**COMPLETE / RELEASE-READY**
+
+Companions identified by F-E01-002 are aligned to the implemented E01
+scope, Engineering Review, and QA Gate. No new product decision.
+R2-E01 is closed as an epic. R2 as a release is not production-ready.
+
+### F-E01-002 remediation
+
+| Companion | Alignment |
+| --- | --- |
+| `docs/release/r2-epic-map.md` | E01 / P-E01-02…P-E01-07 status set to implemented / COMPLETE. ER PASS WITH FINDINGS. QA PASS WITH FINDINGS. |
+| `docs/release/r2-architecture-delta.md` | R2-OD-016 and R2-OD-017 recorded as approved and implemented. Snapshot columns exist. Removed from §13 undecided list. |
+| `docs/release/r2-open-decisions.md` | R2-OD-016 / R2-OD-017 remain APPROVED / CLOSED and marked implemented. Residuals #1–#5 unchanged. |
+| `MASTER_PLAN.md` | §4 / §19 / next-actions: E01 COMPLETE / RELEASE-READY. Next work = R2-E02. |
+| `CHANGELOG.md` | Unreleased entry for E01 closure. Historical rows not rewritten. |
+| `README.md` | Status line: E01 COMPLETE / RELEASE-READY. Next = E02. R2 not production-ready. |
+| `docs/architecture.md` | §18 snapshot columns exist. §35 commercial-snapshot residual removed. |
+| `docs/domain-model.md` | §12 Accrued / Expected published; E01 COMPLETE / RELEASE-READY. |
+| `docs/product-vision.md` | §14 E01 COMPLETE / RELEASE-READY. E02–E05 remain in planning. |
+
+R1 freeze / certification / production-validation snapshots were not rewritten.
+
+### Documented E01 semantics (unchanged)
+
+- Accrued: TimeEntry quantity + commercial snapshot. HOURLY additive. DAILY one billable day, minute-weighted (R2-OD-016). Out-of-validity history retained.
+- Expected: live HOURLY Contract × pro-rata capacity. Null capacity → null. DAILY → null.
+- Snapshot baseline: `snapshotBillingModel` / `snapshotRate` / `snapshotCurrency` captured at TimeEntry create. Contract edit does not rewrite. Backfill R2-OD-017.
+- Mixed currency: per-currency figures only. No FX. No mixed-currency total.
+- Timezone: `Workspace.timezone` for periods / today. DAILY grouping uses stored UTC-midnight `workDate`.
+- Live Contract vs historical snapshot: Expected rereads live Contract. Accrued reads snapshot only.
+- Reporting: `MonthlyAnalytics` / `ContractReport` / `AnnualOverview` publish the same AnalyticsService figures. HoursByClient remains hours-only. UI does not render money.
+
+### QA evidence (from P-E01-06; not re-run)
+
+| Item | Value |
+| --- | --- |
+| QA Verdict | PASS WITH FINDINGS |
+| F-E01-001 | CLOSED |
+| F-E01-002 | CLOSED (this phase) |
+| Unit | 504 / 504 |
+| Integration Accrued / Expected / revenue / reporting / snapshot / weekly | 71 / 71 |
+| Integration isolation / membership / timezone / product decisions | 34 / 34 |
+| Integration performance | 1 / 1 |
+| Typecheck / lint / build | PASS |
+| AC-01…AC-17 | PASS |
+| Performance baseline | Annual overview 26 ms at 100 clients / 50 contracts / 1000 TimeEntries. E01 adds 2 parallel reads per month. No serial N+1. |
+| Blocker | None |
+
+Unit 504 is the full unit suite from the QA run. It is not a sum of the focused Accrued / Expected / Analytics / Reporting subsets.
+
+### Final status
+
+```text
+R2-E01 Revenue Visibility = COMPLETE / RELEASE-READY
+
+NEXT:                      R2-E02 Invoice Tracking
+E02 / E03 / E04 / E05:     NOT COMPLETE
+R2 PRODUCTION-READY:       NO
+```
