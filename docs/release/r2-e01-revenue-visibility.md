@@ -3,7 +3,7 @@
 **Epic:** R2-E01 — Revenue Visibility  
 **Release:** Release 2 — Revenue Operations  
 **MASTER_PLAN identifier:** R2-E01 (`MASTER_PLAN.md` §19)  
-**Status:** P-E01-00 COMPLETE / P-E01-01 COMPLETE / P-E01-02 COMPLETE / P-E01-03 COMPLETE / P-E01-04 COMPLETE  
+**Status:** P-E01-00 COMPLETE / P-E01-01 COMPLETE / P-E01-02 COMPLETE / P-E01-03 COMPLETE / P-E01-04 COMPLETE / P-E01-05 COMPLETE — Engineering Review PASS WITH FINDINGS  
 **Authority:** `docs/release/r2-decision-pack.md`  
 **Companions:** `docs/release/r2-epic-map.md`, `docs/release/r2-architecture-delta.md`, `docs/release/r2-open-decisions.md`  
 **Does not assign:** an EPIC-2xx number
@@ -14,7 +14,7 @@ P-E01-01  PERSISTENCE / DOMAIN FOUNDATION  COMPLETE
 P-E01-02  ACCRUED REVENUE                  COMPLETE
 P-E01-03  EXPECTED REVENUE                 COMPLETE
 P-E01-04  ANALYTICS / REPORTING INTEGRATION COMPLETE
-P-E01-05  ENGINEERING REVIEW               NOT STARTED
+P-E01-05  ENGINEERING REVIEW               COMPLETE — PASS WITH FINDINGS
 P-E01-06  QA                               NOT STARTED
 P-E01-07  DOCUMENTATION / EPIC CLOSURE     NOT STARTED
 
@@ -906,6 +906,20 @@ Test evidence:
 | Migration | No. |
 | Depends on | P-E01-04. |
 | Exit criteria | ER recorded; no silent product decisions; P102-F-001 closed **for Accrued** only. |
+| Status | **COMPLETE** — PASS WITH FINDINGS |
+
+**HEAD reviewed:** `cafa537611f4f26f1f8de26b286bdb7776e9dd23`
+
+```text
+VERDICT:                 PASS WITH FINDINGS
+BLOCKING FINDINGS:       NONE
+P102-F-001 (Accrued):    CLOSED
+P-E01:                   NOT BLOCKED
+P-E01-06 QA:             AUTHORIZED
+PRODUCTION READINESS:    UNCHANGED (R2 not production-ready)
+```
+
+Full review: §19.
 
 ### P-E01-06 — QA
 
@@ -993,3 +1007,78 @@ question unless the Product Owner later extends R2-OD-003 to Expected.
 - Marking R2 production-ready
 - Rewriting R1 freeze, production-validation, or certification snapshots
 - Inventing Prisma field names, WARNING thresholds, Forecast formulas, VOID UX, or CSV scope
+
+---
+
+## 19. P-E01-05 Engineering Review
+
+**Date:** 2026-09-22  
+**Phase:** P-E01-05  
+**Reviewed HEAD:** `cafa537611f4f26f1f8de26b286bdb7776e9dd23`  
+(`ef255c5` P-E01-01 · `e0d9fe1`/`59fa01d` P-E01-02 · `ad6b609` P-E01-03 · `cafa537` P-E01-04)
+
+### Verdict
+
+**PASS WITH FINDINGS**
+
+No blocker. Accrued / Expected match the approved commercial semantics. P102-F-001 is closed **for Accrued only**. No silent product decision. No Forecast, FX, mixed-currency total, Invoice, Payment, or `allocatedMinutes`. Schema was not changed after P-E01-01.
+
+### Findings
+
+#### F-E01-001
+
+| Field | Value |
+| --- | --- |
+| Severity | low |
+| Area | Performance |
+| Evidence | `AnalyticsService.getMonthlyAnalytics` always loads hours + `listTimeEntriesForPeriod` + `listExpectedContracts`. `/reports` always calls `getAnnualOverview`, which runs that composition 12 times. `AnnualOverviewTable` / `ContractReportTable` / dashboard Monthly Summary still render hours only. |
+| Impact | Extra period TimeEntry and Contract reads on every dashboard and reports load. Correctness is unaffected. Cost is unmeasured. |
+| Remediation | Measure `/dashboard` and `/reports` in P-E01-06. Optimize only if QA shows a real latency problem. Do not change formulas. |
+| Release impact | Does not block P-E01. Measure in P-E01-06. May be deferred if QA is acceptable. No PO decision. |
+
+#### F-E01-002
+
+| Field | Value |
+| --- | --- |
+| Severity | low |
+| Area | Documentation |
+| Evidence | `docs/release/r2-epic-map.md` still says Accrued not started and P-E01-02…04 “Not started”. `docs/release/r2-architecture-delta.md` §13 still lists R2-OD-016 / R2-OD-017 as undecided. Both contradict this plan and the implemented commits. |
+| Impact | Planning companions are stale. Implementation and this plan remain the E01 authority. |
+| Remediation | Synchronize companions in P-E01-07. Do not rewrite R1 freeze snapshots. |
+| Release impact | Does not block P-E01. Deferred to P-E01-07. No PO decision. |
+
+### Verified areas
+
+- Accrued HOURLY: `billableMinutes / 60 × snapshotRate`; non-billable excluded; additive; snapshot not live Contract.
+- Accrued DAILY: one billable day per Contract / stored UTC-midnight `workDate`; R2-OD-016 minute-weighted denominator = all billable minutes for that Contract/date; mixed-currency terms stay in `snapshotCurrency`; no FX.
+- Accrued retains out-of-validity historical TimeEntries; create still rejects new out-of-validity work.
+- Expected HOURLY: live rate × `calculateProRataCapacity / 60`. Null capacity → null. DAILY → null. `[validFrom, validTo)` with exclusive `validTo`. Ongoing through period end. Overlap 0 + capacity → 0, not null. No TimeEntry / snapshot read (`listExpectedContracts` is validity-overlap only).
+- Snapshot write: create captures live Contract; update duration/billable/description does not recapture; Contract update does not rewrite TimeEntry snapshots; new TimeEntry captures current Contract; migration `20260922010000_add_time_entry_commercial_snapshot` backfills from associated Contract. No later schema change.
+- Timezone: `Workspace.timezone` resolves periods / today. DAILY grouping uses `getCalendarDateKey` (UTC calendar date). Stored `workDate` is not reinterpreted as an instant. UTC / Rome / Tokyo / New York cases hold.
+- Currency: Accrued by snapshot currency; Expected by live Contract currency; no mixed total; no year monetary total; HoursByClient remains hours-only.
+- Architecture: formulas in `accrued-revenue.ts` / `expected-revenue.ts` owned by `AnalyticsService`. `ReportingService` orchestrates. No `RevenueService`. Repository queries are `workspaceId`-scoped. Membership guard on every read.
+- DTO: `MonthlyAnalytics`, `ContractReport`, `AnnualOverview` carry per-currency Accrued / Expected. No Forecast field. UI does not render money (accepted P-E01-04 limitation).
+- Relevance: Accrued = in-period TimeEntries; Expected = validity overlap; R1 utilization remains validity ∪ consumption. Not the same predicate.
+- R1 hours / utilization / isolation / timezone analytics unchanged.
+
+### Test evidence
+
+Executed for this review (no new tests added):
+
+| Suite | Result |
+| --- | --- |
+| Unit analytics Accrued / Expected / AnalyticsService / pro-rata / calculations + reporting + TimeEntry services | 132 passed / 132 |
+| Integration Accrued / Expected / revenue-reporting / reporting-service / commercial snapshot / migrations | 68 passed / 68 |
+| R1 analytics isolation / workspace isolation / membership / timezone / product decisions | 34 passed / 34 |
+
+**Total: 234 passed / 234. Failed: 0. Skipped: 0.**
+
+Coverage notes (not findings): Accrued unit “later rate change does not rewrite history” is tautological; historical immutability is proven by integration snapshot + Accrued tests. Duration-update / hard-delete Accrued quantity is implied by the derived formula and the snapshot write tests, not re-asserted as a dedicated Accrued case.
+
+### Release impact
+
+- F-E01-001 / F-E01-002 do **not** block P-E01.
+- P-E01-06 QA is authorized. Measure F-E01-001 there.
+- F-E01-002 is deferred to P-E01-07.
+- No Product Owner decision is required.
+- P-E01-06 is **not** started by this review.
