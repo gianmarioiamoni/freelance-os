@@ -8,6 +8,8 @@ import type {
   WeeklyAnalytics,
   ClientAllocation,
   ContractUtilization,
+  ExpectedContractFact,
+  ExpectedRevenue,
 } from "@/domain/analytics-types";
 import type { AnalyticsRepository, WorkspaceMemberRepository } from "@/domain/repositories";
 import type { WorkspaceContext } from "@/application/workspace/workspace-context";
@@ -15,6 +17,7 @@ import {
   calculateAccruedRevenue,
   publishMonetaryAmount,
 } from "@/application/analytics/accrued-revenue";
+import { calculateExpectedRevenue } from "@/application/analytics/expected-revenue";
 import { getCurrentMonthPeriod, getPeriodDays, isValidPeriod } from "@/lib/analytics-periods";
 import { UnauthorizedWorkspaceAccessError } from "@/domain/workspace-errors";
 
@@ -186,6 +189,33 @@ export class AnalyticsService {
   }
 
   /**
+   * Authoritative Expected Revenue for a resolved AnalyticsPeriod.
+   * Uses live Contract commercial configuration + PD-105-005 pro-rata only.
+   * Independent of TimeEntry, Accrued, Forecast, Invoice, and Payment.
+   */
+  async getExpectedRevenue(
+    context: WorkspaceContext,
+    period: AnalyticsPeriod,
+  ): Promise<ExpectedRevenue> {
+    await this.requireMembership(context);
+
+    if (!isValidPeriod(period)) {
+      throw new AnalyticsError("Invalid period: start date must be <= end date");
+    }
+
+    const contracts = await this.analytics.listExpectedContracts(
+      context.workspaceId,
+      period,
+    );
+
+    return AnalyticsService.calculateExpectedRevenue(
+      period,
+      contracts,
+      context.timezone,
+    );
+  }
+
+  /**
    * Pure Accrued calculation. Exposed for unit tests and later consumers.
    * `timezone` is the workspace IANA zone that resolved `period`.
    */
@@ -195,6 +225,23 @@ export class AnalyticsService {
     timezone: string,
   ): AccruedRevenue {
     return calculateAccruedRevenue(period, entries, timezone);
+  }
+
+  /**
+   * Pure Expected calculation. Exposed for unit tests and later consumers.
+   * `timezone` is the workspace IANA zone that resolved `period`.
+   */
+  static calculateExpectedRevenue(
+    period: AnalyticsPeriod,
+    contracts: readonly ExpectedContractFact[],
+    timezone: string,
+  ): ExpectedRevenue {
+    return calculateExpectedRevenue(
+      period,
+      contracts,
+      timezone,
+      AnalyticsService.calculateProRataCapacity,
+    );
   }
 
   /**

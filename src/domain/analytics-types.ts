@@ -168,3 +168,49 @@ export type AccruedRevenue = {
   byCurrency: AccruedAmount[];
   byContract: AccruedByContract[];
 };
+
+/**
+ * Live Contract commercial configuration consumed by Expected Revenue.
+ * Independent of TimeEntry quantity and of Accrued snapshots.
+ */
+export type ExpectedContractFact = {
+  contractId: string;
+  billingModel: "HOURLY" | "DAILY";
+  rate: string;
+  currency: string;
+  monthlyContractedMinutes: number | null;
+  validFrom: Date;
+  validTo: Date | null;
+};
+
+/**
+ * One published Expected figure in a single live Contract currency.
+ * There is no mixed-currency total (D7 / R2-OD-002).
+ */
+export type ExpectedAmount = {
+  currency: string;
+  unrounded: number;
+  published: number;
+};
+
+/**
+ * Expected for one Contract in its live currency.
+ * `null` when Expected is not available (DAILY, or HOURLY without capacity).
+ */
+export type ExpectedByContract = {
+  contractId: string;
+  currency: string;
+  unrounded: number | null;
+  published: number | null;
+};
+
+/**
+ * Authoritative Expected Revenue for a reporting period.
+ * Grouped by live Contract currency. No FX and no mixed-currency grand total.
+ */
+export type ExpectedRevenue = {
+  period: AnalyticsPeriod;
+  timezone: string;
+  byCurrency: ExpectedAmount[];
+  byContract: ExpectedByContract[];
+};

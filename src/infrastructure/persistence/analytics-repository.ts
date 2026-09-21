@@ -5,6 +5,7 @@ import type {
   DailyAnalytics,
   ClientAllocation,
   ContractUtilization,
+  ExpectedContractFact,
 } from "@/domain/analytics-types";
 import type { TimeEntryRecord } from "@/domain/persistence-types";
 import type { AnalyticsRepository } from "@/domain/repositories";
@@ -221,6 +222,37 @@ export function createAnalyticsRepository(db: PrismaExecutor): AnalyticsReposito
           orderBy: [{ workDate: "asc" }, { createdAt: "asc" }],
         });
         return rows.map(mapTimeEntry);
+      });
+    },
+
+    async listExpectedContracts(
+      workspaceId: string,
+      period: AnalyticsPeriod,
+    ): Promise<ExpectedContractFact[]> {
+      return withPersistenceErrors(async () => {
+        // Validity overlap only. TimeEntry consumption is not a relevance signal
+        // for Expected (R2-OD-004). Archived clients are included (PD-104-001).
+        const rows = await db.contract.findMany({
+          where: {
+            workspaceId,
+            validFrom: { lte: period.endDate },
+            OR: [
+              { validTo: null },
+              { validTo: { gt: period.startDate } },
+            ],
+          },
+          orderBy: [{ id: "asc" }],
+        });
+
+        return rows.map((row) => ({
+          contractId: row.id,
+          billingModel: row.billingModel,
+          rate: row.rate.toFixed(4),
+          currency: row.currency,
+          monthlyContractedMinutes: row.monthlyContractedMinutes,
+          validFrom: row.validFrom,
+          validTo: row.validTo,
+        }));
       });
     },
   };

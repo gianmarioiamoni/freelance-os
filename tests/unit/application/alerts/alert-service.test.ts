@@ -150,6 +150,7 @@ function makeMockAnalyticsService(utilizations: ContractUtilization[]): Analytic
       getClientAllocations: vi.fn(),
       getContractUtilizations: vi.fn().mockResolvedValue(utilizations),
       listTimeEntriesForPeriod: vi.fn(),
+      listExpectedContracts: vi.fn(),
     },
     makeMockMembers(),
   );

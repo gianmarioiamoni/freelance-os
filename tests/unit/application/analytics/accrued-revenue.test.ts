@@ -477,6 +477,7 @@ describe("AnalyticsService Accrued Revenue", () => {
           getClientAllocations: vi.fn(),
           getContractUtilizations: vi.fn(),
           listTimeEntriesForPeriod: vi.fn(),
+          listExpectedContracts: vi.fn(),
         },
         {
           getMember: vi.fn().mockResolvedValue(membership),
@@ -503,6 +504,7 @@ describe("AnalyticsService Accrued Revenue", () => {
           getClientAllocations: vi.fn(),
           getContractUtilizations: vi.fn(),
           listTimeEntriesForPeriod,
+          listExpectedContracts: vi.fn(),
         },
         {
           getMember: vi.fn().mockResolvedValue(null),
@@ -528,6 +530,7 @@ describe("AnalyticsService Accrued Revenue", () => {
           getClientAllocations: vi.fn(),
           getContractUtilizations: vi.fn(),
           listTimeEntriesForPeriod,
+          listExpectedContracts: vi.fn(),
         } satisfies AnalyticsRepository,
         {
           getMember: vi.fn().mockResolvedValue(membership),

@@ -110,6 +110,7 @@ function createMemoryDependencies(
       getClientAllocations: unused,
       getContractUtilizations: unused,
       listTimeEntriesForPeriod: unused,
+      listExpectedContracts: unused,
     },
   };
 

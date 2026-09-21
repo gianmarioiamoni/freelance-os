@@ -29,6 +29,7 @@ import type {
   DailyAnalytics,
   ClientAllocation,
   ContractUtilization,
+  ExpectedContractFact,
 } from "@/domain/analytics-types";
 
 export type WorkspaceRepository = {
@@ -209,6 +210,10 @@ export type AnalyticsRepository = {
     workspaceId: string,
     period: AnalyticsPeriod,
   ): Promise<TimeEntryRecord[]>;
+  listExpectedContracts(
+    workspaceId: string,
+    period: AnalyticsPeriod,
+  ): Promise<ExpectedContractFact[]>;
 };
 
 export type PersistenceRepositories = {

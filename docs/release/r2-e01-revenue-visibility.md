@@ -3,7 +3,7 @@
 **Epic:** R2-E01 — Revenue Visibility  
 **Release:** Release 2 — Revenue Operations  
 **MASTER_PLAN identifier:** R2-E01 (`MASTER_PLAN.md` §19)  
-**Status:** P-E01-00 COMPLETE / P-E01-01 COMPLETE / P-E01-02 COMPLETE / EXPECTED NOT STARTED  
+**Status:** P-E01-00 COMPLETE / P-E01-01 COMPLETE / P-E01-02 COMPLETE / P-E01-03 COMPLETE / EXPECTED COMPLETE  
 **Authority:** `docs/release/r2-decision-pack.md`  
 **Companions:** `docs/release/r2-epic-map.md`, `docs/release/r2-architecture-delta.md`, `docs/release/r2-open-decisions.md`  
 **Does not assign:** an EPIC-2xx number
@@ -12,13 +12,13 @@
 P-E01-00  PLANNING / ARCHITECTURE FREEZE   COMPLETE
 P-E01-01  PERSISTENCE / DOMAIN FOUNDATION  COMPLETE
 P-E01-02  ACCRUED REVENUE                  COMPLETE
-P-E01-03  EXPECTED REVENUE                 NOT STARTED
+P-E01-03  EXPECTED REVENUE                 COMPLETE
 P-E01-04  ANALYTICS / REPORTING INTEGRATION NOT STARTED
 P-E01-05  ENGINEERING REVIEW               NOT STARTED
 P-E01-06  QA                               NOT STARTED
 P-E01-07  DOCUMENTATION / EPIC CLOSURE     NOT STARTED
 
-IMPLEMENTATION: P-E01-01 + P-E01-02
+IMPLEMENTATION: P-E01-01 + P-E01-02 + P-E01-03
 R1: FROZEN / GRANTED
 ```
 
@@ -793,6 +793,50 @@ Test evidence:
 | Migration | No. |
 | Depends on | P-E01-01 (for shared service extension). May proceed in parallel with P-E01-02 after P-E01-01. |
 | Exit criteria | AC-04, AC-05, AC-06, AC-07 (Expected half), AC-13 hold. |
+| Status | **COMPLETE** |
+
+Implemented:
+
+- Calculation owner: `AnalyticsService.getExpectedRevenue` /
+  `AnalyticsService.calculateExpectedRevenue`
+  (`src/application/analytics/expected-revenue.ts`).
+- Source: live Contract `billingModel`, `rate`, `currency`,
+  `monthlyContractedMinutes`, `[validFrom, validTo)`.
+- HOURLY + capacity: `liveRate × (calculateProRataCapacity / 60)`.
+- HOURLY + `monthlyContractedMinutes === null` → Expected `null`.
+- DAILY → Expected `null`. No daily capacity is invented.
+- Pro-rata: PD-105-005 via existing `calculateProRataCapacity`.
+  `[validFrom, validTo)`; ongoing `validTo === null` overlaps through
+  the period end. Overlap `0` with capacity present → `0`, not null.
+- Periods: existing `AnalyticsPeriod` / `Workspace.timezone` constructors.
+  Current / historical / ongoing / custom ranges already resolved by the caller.
+- Live values: Expected rereads the current Contract. R2-OD-003 does not apply.
+  A later live rate change rewrites Expected; Accrued snapshots stay unchanged.
+- Currency: live Contract currency, grouped separately. No FX. No mixed total.
+- Published money: `Math.round(unrounded_total)` once per published figure.
+- Isolation: `requireMembership` + workspace-scoped
+  `AnalyticsRepository.listExpectedContracts` (validity overlap only;
+  TimeEntry consumption is not a relevance signal).
+- Archived-client contracts contribute when validity overlaps the period.
+- Not introduced: Forecast, Invoice, Payment, `allocatedMinutes`, mixed-currency
+  total, dashboard/report money publication (P-E01-04).
+
+Expected vs Accrued:
+
+| | Accrued | Expected |
+| --- | --- | --- |
+| Source | TimeEntry quantity + snapshot | Live Contract capacity |
+| HOURLY | `billableMinutes / 60 × snapshotRate` | `liveRate × (proRataMinutes / 60)` |
+| DAILY | unique billable day (R2-OD-016) | `null` |
+| Null capacity | n/a | `null` |
+| Rate | snapshot (R2-OD-003) | live Contract |
+| TimeEntry | required | never read |
+
+Test evidence:
+
+- Unit: `tests/unit/application/analytics/expected-revenue.test.ts`
+- Integration: `tests/integration/analytics/expected-revenue.test.ts`
+- R1 / Accrued analytics regression suites remain the baseline.
 
 ### P-E01-04 — Integration with existing analytics / reporting
 
