@@ -368,7 +368,9 @@ These are **not** approved implementation assumptions.
 | R2-OD-013 residual | Contract Time Allocation WARNING threshold | R2-E04 |
 | R2-OD-007 residual | Exact Invoice VOID UI / list / restore semantics | R2-E02 |
 | R2-OD-011 residual | Invoice currency snapshot representation | R2-E02 |
-| R2-OD-003 residual | Commercial snapshot persistence mechanism | R2-E01 |
+| R2-OD-003 residual | Commercial snapshot Prisma representation (class B planned in `r2-e01-revenue-visibility.md`) | R2-E01 P-E01-01 |
+| R2-OD-016 | DAILY same-day conflicting snapshots | R2-E01 P-E01-02 |
+| R2-OD-017 | Pre-snapshot TimeEntry treatment | R2-E01 P-E01-01 |
 
 Direction already approved and **not** reopened:
 
@@ -507,7 +509,7 @@ See `docs/release/r2-architecture-delta.md`.
 | --- | --- |
 | APPROVED | D1, D2, D3, D4, D5, D6, D7 |
 | APPROVED OD resolutions | R2-OD-001, R2-OD-002, R2-OD-003 (semantics), R2-OD-004, R2-OD-006, R2-OD-007 (product), R2-OD-008, R2-OD-009, R2-OD-010, R2-OD-011 (product), R2-OD-013 (product), R2-OD-014, R2-OD-015 |
-| RESIDUAL PLANNING / PRODUCT | R2-OD-005 arithmetic, R2-OD-012 CSV-in-E05, allocation WARNING threshold, VOID UI, Invoice currency snapshot, commercial snapshot persistence |
+| RESIDUAL PLANNING / PRODUCT | R2-OD-005 arithmetic, R2-OD-012 CSV-in-E05, allocation WARNING threshold, VOID UI, Invoice currency snapshot, commercial snapshot Prisma names (class B planned), R2-OD-016, R2-OD-017 |
 | DEFERRED / FUTURE | FX, installment engine, PIVA Balance integration, e-invoicing, calendar integration, AI, Excel, profitability, advanced grace / risk, workspace capacity alerts, period-close, audit ledger |
 
 ---

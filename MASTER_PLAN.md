@@ -135,8 +135,8 @@ context is recovered from repository documentation.
 ## Overall
 
 ``` text
-STATUS: UX Polish COMPLETE; EPIC-107 Public Landing COMPLETE through P107-06 and epic certification; MASTER_PLAN §34 READY FOR RELEASE; §35 GRANTED; EPIC-108 COMPLETE (ER PASS WITH FINDINGS); EPIC-109 COMPLETE (ER PASS); EPIC-110 CLOSED (P110-00 PASS; P110-01 PASS; P110-02 PASS; P110-03 SKIPPED BY DESIGN; P110-04 PASS; P110-05 PASS; P110-06 / P110-06C intermediate findings resolved or superseded; P110-06D PASS; P110-06C FINAL PASS; P110-07 PASS; P110-08 FREEZE). Actionable R1 findings = 0. R1 FROZEN. R2 Decision Workshop complete for in-scope decisions. R2 planning baseline recorded. No R2 implementation epic opened. R2 is not production-ready.
-NEXT: R2 detailed epic planning from `docs/release/r2-epic-map.md`. Residual planning questions in `docs/release/r2-open-decisions.md`. No implementation epic approved.
+STATUS: UX Polish COMPLETE; EPIC-107 Public Landing COMPLETE through P107-06 and epic certification; MASTER_PLAN §34 READY FOR RELEASE; §35 GRANTED; EPIC-108 COMPLETE (ER PASS WITH FINDINGS); EPIC-109 COMPLETE (ER PASS); EPIC-110 CLOSED (P110-00 PASS; P110-01 PASS; P110-02 PASS; P110-03 SKIPPED BY DESIGN; P110-04 PASS; P110-05 PASS; P110-06 / P110-06C intermediate findings resolved or superseded; P110-06D PASS; P110-06C FINAL PASS; P110-07 PASS; P110-08 FREEZE). Actionable R1 findings = 0. R1 FROZEN. R2 Decision Workshop complete for in-scope decisions. R2 planning baseline recorded. R2-E01 detailed plan complete (`docs/release/r2-e01-revenue-visibility.md`; P-E01-00). No R2 implementation epic opened. R2 is not production-ready.
+NEXT: R2-E01 implementation remains blocked on remaining E01 residuals (R2-OD-003 representation, R2-OD-016, R2-OD-017). E02–E05 detailed epic plans still required. No implementation epic approved.
 Production Validation (§34): EXECUTED — READY FOR RELEASE — docs/release/production-validation.md
 Production Certification (§35): GRANTED — docs/release/production-certification.md
 R1 Freeze: FROZEN — docs/release/r1-freeze.md
@@ -144,6 +144,7 @@ R2 Decision Pack: docs/release/r2-decision-pack.md
 R2 Architecture Delta: docs/release/r2-architecture-delta.md
 R2 Epic Map: docs/release/r2-epic-map.md
 R2 Open Decisions: docs/release/r2-open-decisions.md
+R2-E01 plan: docs/release/r2-e01-revenue-visibility.md
 Release gate resolution: docs/release/release-gate-resolution.md
 Production readiness: RELEASE GRANTED
 ```
@@ -162,7 +163,8 @@ docs/
     ├── r2-decision-pack.md
     ├── r2-architecture-delta.md
     ├── r2-epic-map.md
-    └── r2-open-decisions.md
+    ├── r2-open-decisions.md
+    └── r2-e01-revenue-visibility.md
 ```
 
 ## Current implementation status
@@ -1217,7 +1219,9 @@ R2-E05 Advanced Reporting & Export             (trailing; does not block E01–E
 ### R2-E01 --- Revenue Visibility
 
 Accrued Revenue and HOURLY Expected Revenue. Independent of invoice and
-payment. Commercial snapshot persistence is an implementation dependency.
+payment. Detailed plan: `docs/release/r2-e01-revenue-visibility.md`
+(P-E01-00 COMPLETE). Commercial snapshot class B planned; Prisma names,
+R2-OD-016, and R2-OD-017 remain open. Implementation not started.
 
 ### R2-E02 --- Invoice Tracking
 
@@ -2239,9 +2243,10 @@ Next actions:
 6. Actionable R1 findings = 0
 7. R2 Decision Workshop complete for in-scope decisions
 8. R2 planning baseline recorded (`docs/release/r2-epic-map.md`)
-9. Next: detailed R2 epic planning; residual questions in `docs/release/r2-open-decisions.md`
-10. No R2 implementation epic opened. Do not mark R2 production-ready
-11. Do not rewrite historical §34 / §35 rows
+9. R2-E01 detailed plan complete (`docs/release/r2-e01-revenue-visibility.md`; P-E01-00)
+10. Next: remaining R2-E01 residuals (R2-OD-003 representation, R2-OD-016, R2-OD-017) before P-E01-01; E02–E05 detailed plans still required
+11. No R2 implementation epic opened. Do not mark R2 production-ready
+12. Do not rewrite historical §34 / §35 rows
 ```
 
 FINDING-UX-004, FINDING-QA-002, FINDING-INT-001, FINDING-108-001, F-104-007,

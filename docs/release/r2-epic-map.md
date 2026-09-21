@@ -1,8 +1,9 @@
 # R2 Epic Map — Planning Baseline
 
-**Status:** Executable planning baseline. Not implementation. No EPIC-2xx opened.  
+**Status:** Executable planning baseline. R2-E01 detailed plan complete. Not implementation. No EPIC-2xx opened.  
 **Date:** 2026-09-22  
 **Authority:** `docs/release/r2-decision-pack.md`  
+**E01 plan:** `docs/release/r2-e01-revenue-visibility.md`  
 **Does not:** authorize schema, migrations, APIs, UI, or implementation branches.
 
 ```text
@@ -79,6 +80,9 @@ E01 and E02 may be planned and implemented in parallel. E03 is sequential on E02
 
 ## R2-E01 — Revenue Visibility
 
+Detailed plan: `docs/release/r2-e01-revenue-visibility.md`.  
+Status: **P-E01-00 COMPLETE**. Implementation not started.
+
 ### 1. Objective
 
 Publish deterministic Accrued Revenue and Expected Revenue so the freelancer understands the economic value of recorded work and of HOURLY contractual capacity — without invoicing or accounting.
@@ -104,13 +108,14 @@ See what work is already worth (Accrued) and what the HOURLY contract economical
 - Forecast Revenue (R2-E04).
 - Expected Revenue for DAILY.
 - Profitability, tax, FX rollup, accounting recognition, ML.
-- Inventing the commercial snapshot persistence design before E01 planning.
+- Inventing Prisma field names or resolving R2-OD-016 / R2-OD-017 by assumption.
 
 ### 5. Dependencies
 
 - R1 TimeEntry and Contract.
 - Existing pro-rata capacity (PD-105-005).
-- Commercial snapshot persistence plan (R2-OD-003 residual).
+- Commercial snapshot class B (new field(s) on the TimeEntry quantity fact). Representation names still open (R2-OD-003 residual).
+- R2-OD-016 (DAILY same-day conflicting snapshots) and R2-OD-017 (pre-snapshot TimeEntry treatment) before the phases that need them.
 
 ### 6. Domain objects affected
 
@@ -125,9 +130,10 @@ See what work is already worth (Accrued) and what the HOURLY contract economical
 
 ### 8. Persistence impact
 
-- Confirmed: historical commercial snapshot required; **no field exists**.
-- Open: snapshot mechanism.
+- Classified in the E01 plan: **B — new field(s) on the TimeEntry quantity fact** for billing model, rate, and currency at work time. Not A. C not required. Names not invented.
+- Open: exact representation (R2-OD-003 residual); existing-row treatment (R2-OD-017); DAILY same-day collision (R2-OD-016).
 - Revenue totals remain derived unless a later plan proves persistence.
+- Migration authorized only in P-E01-01, not by this map.
 
 ### 9. Analytics / reporting impact
 
@@ -164,7 +170,9 @@ See what work is already worth (Accrued) and what the HOURLY contract economical
 
 ### 14. Product decisions still required
 
-- Commercial snapshot persistence mechanism (residual #6).
+- R2-OD-003 residual: class-B representation names (implementation detail for P-E01-01).
+- R2-OD-016: DAILY same-day conflicting snapshots.
+- R2-OD-017: treatment of TimeEntries that exist before the snapshot.
 
 ### 15. Risks / architectural constraints
 
@@ -565,7 +573,9 @@ Do not implement these as assumptions.
 3. Invoice currency snapshot representation.
 4. Exact Invoice VOID behaviour and UI semantics.
 5. Whether simple CSV export belongs in R2-E05.
-6. Commercial snapshot persistence detail (field / write timing). The product meaning is already approved.
+6. Commercial snapshot persistence: class B approved as the planning class; representation names remain open (R2-OD-003 residual).
+7. R2-OD-016 — DAILY same-day conflicting snapshots (needed by P-E01-02).
+8. R2-OD-017 — pre-snapshot TimeEntry treatment (needed by P-E01-01).
 
 ---
 
@@ -583,7 +593,7 @@ Vision → Architecture → Planning → Implementation → Engineering Review
 Release → Epic → Phase → Commit
 ```
 
-This document completes **Planning** at release baseline level. It does not open implementation phases or invent commit hashes.
+This document is the release-level planning baseline. R2-E01 detailed planning is complete (`docs/release/r2-e01-revenue-visibility.md`). It does not open implementation phases or invent commit hashes.
 
 ### Release-level
 
@@ -597,15 +607,18 @@ This document completes **Planning** at release baseline level. It does not open
 
 ### Proposed small phases (planning labels only)
 
-**R2-E01**
+**R2-E01** — detailed plan: `docs/release/r2-e01-revenue-visibility.md`
 
-| Phase | Intent |
-| --- | --- |
-| E01-P00 | Detailed epic plan, including commercial snapshot persistence design |
-| E01-P01 | Accrued / Expected domain + application calculations |
-| E01-P02 | Snapshot persistence required by R2-OD-003 |
-| E01-P03 | Publish figures on existing dashboard / report surfaces |
-| E01-P04 | Tests, documentation, Engineering Review |
+| Phase | Intent | Status |
+| --- | --- | --- |
+| P-E01-00 | Planning / architecture freeze | COMPLETE |
+| P-E01-01 | Persistence / domain foundation (class B snapshot; migration) | Not started |
+| P-E01-02 | Accrued Revenue | Not started |
+| P-E01-03 | Expected Revenue | Not started |
+| P-E01-04 | Integration with existing analytics / reporting | Not started |
+| P-E01-05 | Engineering Review | Not started |
+| P-E01-06 | QA | Not started |
+| P-E01-07 | Documentation / Epic closure | Not started |
 
 **R2-E02**
 

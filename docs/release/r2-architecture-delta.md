@@ -97,7 +97,10 @@ No new Contract entity is implied.
 | --- | --- | --- |
 | `TimeEntry` minutes, `billable`, `workDate`, `contractId` | EXISTING MODEL REUSED | Accrued quantity source |
 | Historical commercial snapshot | CONFIRMED REQUIREMENT | Semantics approved. **No field exists today.** P102-F-001 remains the R1 gap |
-| Snapshot field name / table / write timing | IMPLEMENTATION DETAIL STILL OPEN | Do not invent Prisma names here. R2-E01 planning dependency |
+| Snapshot persistence class | DOMAIN / PLANNING DECISION | R2-E01 plan: **class B** — persist billing model, rate, and currency on the TimeEntry quantity fact. Class A false. Class C not required. See `docs/release/r2-e01-revenue-visibility.md` §8 |
+| Snapshot field name / columns vs structured value | IMPLEMENTATION DETAIL STILL OPEN | Do not invent Prisma names here. P-E01-01 |
+| DAILY same-day conflicting snapshots | IMPLEMENTATION DETAIL STILL OPEN | R2-OD-016. Product decision required |
+| Pre-snapshot TimeEntry treatment | IMPLEMENTATION DETAIL STILL OPEN | R2-OD-017. Product / data-meaning decision required |
 
 ---
 
@@ -123,7 +126,7 @@ No profitability, tax, accounting recognition, ML, or FX rollup.
 | Concept | Classification | Notes |
 | --- | --- | --- |
 | Accrued / Expected / Forecast totals | EXISTING MODEL REUSED (derived) | Read model unless a later plan proves persistence |
-| Application-service boundary | IMPLEMENTATION DETAIL STILL OPEN | Extend AnalyticsService vs a dedicated Revenue service |
+| Application-service boundary | EXISTING MODEL REUSED | R2-E01 plan: extend `AnalyticsService`. `ReportingService` stays thin. No parallel RevenueService |
 | Forecast arithmetic | IMPLEMENTATION DETAIL STILL OPEN | R2-OD-005 residual |
 | Mixed-currency presentation | DOMAIN DECISION | Separate by currency (D7) |
 
@@ -253,7 +256,7 @@ No migrations. No invented Prisma names.
 | Invoice | CONFIRMED REQUIREMENT | No | 1 Contract : N Invoice; VOID / soft-delete; editable; no fiscal fields |
 | Payment event | CONFIRMED REQUIREMENT | No | Many per Invoice; editable / deletable; status derived |
 | Contract `allocatedMinutes` | CONFIRMED REQUIREMENT | No | Optional total project budget. Distinct from `monthlyContractedMinutes` |
-| Historical commercial snapshot | CONFIRMED REQUIREMENT | No | Required by R2-OD-003. R2-E01 persistence dependency |
+| Historical commercial snapshot | CONFIRMED REQUIREMENT | No | Class B on TimeEntry quantity fact. Names TBD in P-E01-01. See `r2-e01-revenue-visibility.md` |
 | Derived payment status | CONFIRMED REQUIREMENT | n/a | Function of payment events, not a source of truth |
 | Invoice VOID state | CONFIRMED REQUIREMENT | No | Soft-delete semantics. UI residual |
 | Contract currency immutability | CONFIRMED REQUIREMENT | Write rule only | After first monetary record |
@@ -286,7 +289,7 @@ PIVA Balance remains outside the monolith boundary.
 ### TECHNICAL IMPLEMENTATION TO BE PLANNED
 
 - Repository split for Invoice Tracking and Payment.
-- Whether Revenue lives under Analytics or a new application module.
+- Revenue lives under AnalyticsService (R2-E01 plan). Do not add a parallel RevenueService in E01.
 - Reporting/export module if simple CSV is approved in R2-E05.
 
 ---
@@ -320,4 +323,6 @@ R1 baseline documents keep their historical text. Canonical R2 meaning is this d
 - Allocation WARNING threshold
 - Invoice VOID UI
 - Invoice currency snapshot representation
-- Commercial snapshot persistence mechanism
+- Commercial snapshot Prisma names (class B is planned)
+- R2-OD-016 DAILY same-day conflicting snapshots
+- R2-OD-017 pre-snapshot TimeEntry treatment

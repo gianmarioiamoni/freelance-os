@@ -1131,8 +1131,9 @@ Future invoice generation should snapshot billable lines rather than continuousl
 Invoice Tracking is an operational record, not a generated fiscal
 document. Accrued Revenue uses Commercial Snapshot semantics (R2-OD-003):
 historical work keeps the commercial value applicable when it occurred.
-The snapshot field does not exist in the current persistence model and
-is an R2-E01 planning dependency. See `docs/release/r2-architecture-delta.md`.
+The snapshot field does not exist in the current persistence model.
+R2-E01 planning classifies it as class B on the TimeEntry quantity fact
+(`docs/release/r2-e01-revenue-visibility.md` §8). Prisma names remain open.
 
 ---
 

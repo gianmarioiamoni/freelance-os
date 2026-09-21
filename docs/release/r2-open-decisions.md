@@ -8,7 +8,7 @@
 
 Approved D1–D7 and approved OD resolutions are **not** reopened here.
 
-Do not treat remaining items as implementation defaults. Do not invent WARNING thresholds, Forecast arithmetic, VOID UI, currency snapshot fields, or CSV scope.
+Do not treat remaining items as implementation defaults. Do not invent WARNING thresholds, Forecast arithmetic, VOID UI, currency snapshot fields, CSV scope, Prisma snapshot names, DAILY same-day snapshot winners, or pre-snapshot TimeEntry backfill.
 
 ---
 
@@ -25,7 +25,7 @@ Do not treat remaining items as implementation defaults. Do not invent WARNING t
 
 ## Residual questions that must be resolved during epic planning
 
-These are the only product / planning decisions still required before the corresponding implementation phases. They are **not** approved assumptions.
+These are the product / planning decisions still required before the corresponding implementation phases. They are **not** approved assumptions.
 
 ### 1. Contract Time Allocation WARNING threshold
 
@@ -94,13 +94,40 @@ These are the only product / planning decisions still required before the corres
 | Field | Value |
 | --- | --- |
 | Historical ID | R2-OD-003 residual; P102-F-001 / proposed OBD-016 |
-| Question | How is the historical commercial value stored so Accrued does not reread live Contract rate / billing model? |
-| Why | Commercial Snapshot semantics are approved. The current persistence model has no snapshot field. TimeEntry stores `contractId` only. |
-| Constraint | Do not invent Prisma field names or a snapshot table in this register. R2-E01 must plan the mechanism. |
-| Impact | Blocks historically correct Accrued implementation in R2-E01. |
-| Owner | Architect during R2-E01 planning |
-| Status | APPROVED — persistence dependency |
-| Needed by | R2-E01 |
+| Question | Exact representation of the historical commercial value (names / columns vs structured value) so Accrued does not reread live Contract rate / billing model / currency? |
+| Why | Commercial Snapshot semantics are approved. R2-E01 planning classified the mechanism as **class B**: new field(s) on the TimeEntry quantity fact storing billing model, rate, and currency applicable when the work occurred. Current persistence has none of those on TimeEntry. Class A is false. Class C (revision table) is not required. Class D (forbid commercial edits) is not approved. |
+| Constraint | Do not invent Prisma field names in this register. P-E01-01 finalizes representation inside class B. |
+| Impact | Blocks P-E01-01 schema work until names are chosen as an implementation detail — not a new product meaning. |
+| Owner | Architect during P-E01-01 |
+| Status | APPROVED — persistence class B; representation names still open |
+| Needed by | R2-E01 P-E01-01 |
+| Plan | `docs/release/r2-e01-revenue-visibility.md` §8 |
+
+### 7. DAILY same-day conflicting commercial snapshots
+
+| Field | Value |
+| --- | --- |
+| Historical ID | R2-OD-016 |
+| Question | When two billable TimeEntries on the same DAILY Contract / calendar date were captured under different snapshotted commercial values, which value applies to the single accrued billable day? |
+| Why | R2-OD-001 counts that date once. R2-OD-003 forbids rewriting historical commercial meaning. E01 planning found the collision when a Contract rate / billing model / currency changes between two same-day creates. |
+| Constraint | Do not invent first-entry, last-entry, or average defaults. |
+| Impact | Blocks P-E01-02 for that DAILY edge case. Uncontested same-day multiples (identical snapshots) remain implementable. |
+| Owner | Product Owner during R2-E01 implementation planning |
+| Status | OPEN |
+| Needed by | R2-E01 P-E01-02 |
+
+### 8. Pre-snapshot TimeEntry treatment
+
+| Field | Value |
+| --- | --- |
+| Historical ID | R2-OD-017 |
+| Question | How are TimeEntries that already exist before the commercial snapshot is persisted treated? |
+| Why | Production R1 data has `contractId` only (P102-F-001). No historical rate can be reconstructed if the live Contract was already edited. |
+| Constraint | Do not assume live-Contract backfill, null Accrued, or live-Contract fallback. Each changes historical meaning. |
+| Impact | Blocks P-E01-01 migration of existing rows. New TimeEntries can capture a snapshot without this decision. |
+| Owner | Product Owner during P-E01-01 |
+| Status | OPEN |
+| Needed by | R2-E01 P-E01-01 |
 
 ---
 
@@ -110,7 +137,7 @@ These are the only product / planning decisions still required before the corres
 | --- | --- | --- |
 | R2-OD-001 | DAILY accrued: one billable day if at least one TimeEntry exists for that Contract on that calendar date; multiples count once; no work calendar | APPROVED |
 | R2-OD-002 | Published money rounds to nearest integer; do not prematurely round intermediates | APPROVED |
-| R2-OD-003 | Commercial Snapshot semantics for historical Accrued | APPROVED — persistence dependency |
+| R2-OD-003 | Commercial Snapshot semantics for historical Accrued | APPROVED — class B planned; representation names still open |
 | R2-OD-004 | Expected Revenue is HOURLY contractual capacity / pro-rata; null if capacity unavailable; DAILY has no Expected Revenue in R2 | APPROVED |
 | R2-OD-006 | 1 Contract → many Invoice; 1 Invoice → 1 Contract; tracking fields only | APPROVED |
 | R2-OD-007 | Optional reference; required invoiceDate; no competence period; editable; VOID / soft-delete | APPROVED (VOID UI residual) |
@@ -148,6 +175,8 @@ The Decision Workshop is complete for decisions currently in scope.
 
 R2 detailed epic planning is **no longer blocked** on R2-OD-001, R2-OD-002, R2-OD-003 semantics, R2-OD-004, R2-OD-006, R2-OD-008, R2-OD-009, R2-OD-010, R2-OD-014, or R2-OD-015.
 
-The six residual questions above must be resolved during the epic that needs them. They must not be silently assumed in implementation.
+The residual questions above must be resolved during the epic that needs them. They must not be silently assumed in implementation.
+
+R2-E01 planning (`docs/release/r2-e01-revenue-visibility.md`) classified commercial-snapshot persistence as class B and added R2-OD-016 and R2-OD-017. It did not open implementation.
 
 No R2 implementation epic is opened by this register.
