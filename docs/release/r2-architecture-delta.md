@@ -1,16 +1,19 @@
 # R2 Architecture Delta — Revenue Operations
 
-**Status:** Domain delta only. Technical implementation is not planned here.  
-**Date:** 2026-09-21  
+**Status:** Domain and persistence-planning delta. Technical implementation is not authorized.  
+**Date:** 2026-09-22  
 **Authority:** `docs/release/r2-decision-pack.md`  
 **Baseline:** R1 architecture (`docs/architecture.md`, `docs/domain-model.md`, `docs/storage.md`) remains the frozen R1 baseline.
 
-This document records what must change conceptually for R2. It does not authorize Prisma schema, migrations, APIs, UI, or services.
+This document records what must change conceptually for R2. It does not authorize Prisma schema, migrations, APIs, UI, or services. It does not invent final Prisma field names unless they already exist in the repository.
 
 Legend:
 
 - **DOMAIN DECISION** — product/domain meaning is approved or already present in R1.
-- **TECHNICAL IMPLEMENTATION TO BE PLANNED** — design work for a later architecture/planning chat.
+- **CONFIRMED REQUIREMENT** — R2 needs this concept. Persistence may not exist yet.
+- **IMPLEMENTATION DETAIL STILL OPEN** — design work for epic planning. Not a product decision.
+- **EXISTING MODEL REUSED** — R1 fact R2 must consume.
+- **TECHNICAL IMPLEMENTATION TO BE PLANNED** — later architecture/planning work.
 
 ---
 
@@ -23,9 +26,12 @@ Legend:
 | TimeEntry duration in integer minutes | Unchanged |
 | TimeEntry `contractId` association | Unchanged |
 | TimeEntry currency-agnostic | **DOMAIN DECISION** (D7) |
+| TimeEntry hard-delete and immutable `workDate` / `clientId` / `contractId` | Unchanged R1 (EPIC-103) |
 | Contract `[validFrom, validTo)` and no client overlap | Unchanged |
 | Shared analytics as calculation owner for hours / utilization | Unchanged until a later plan says otherwise |
-| AlertService as deterministic rule evaluator | Reuse when technically appropriate (D6) |
+| Existing pro-rata `monthlyContractedMinutes` capacity | **EXISTING MODEL REUSED** (R2-OD-004) |
+| AlertService as deterministic rule evaluator | Reuse when technically appropriate (D6, R2-OD-013) |
+| Period-close / dedicated audit ledger | **Not introduced** (R2-OD-014, R2-OD-015) |
 | R1 accepted limitations | Historical; not silently redesigned |
 
 ---
@@ -34,15 +40,18 @@ Legend:
 
 These already exist. R2 must not invent a second source of truth.
 
-| Fact | R1 location | R2 use |
-| --- | --- | --- |
-| `Contract.currency` ISO-4217 | EPIC-102 | Economic currency authority (D7) |
-| `Contract.paymentTermsDays` / `paymentTermsNote` | EPIC-102 | Expected payment date (D5) |
-| `Contract.billingModel`, `rate` | EPIC-102 | Accrued / Expected Revenue (D4) |
-| `Contract.monthlyContractedMinutes` | EPIC-102 | Expected capacity input (formula still open) |
-| `Workspace.currency` | EPIC-004 | Create-form default only. **Not** a reporting base currency (D7) |
-| `TimeEntry` + `billable` | EPIC-103 | Accrued source facts |
-| `AlertService` | EPIC-106 | Candidate host for payment alerts |
+| Fact | R1 location | R2 use | Classification |
+| --- | --- | --- | --- |
+| `Contract.currency` ISO-4217 | EPIC-102 | Economic currency authority (D7, R2-OD-011) | EXISTING MODEL REUSED |
+| `Contract.paymentTermsDays` / `paymentTermsNote` | EPIC-102 | Expected payment date (D5, R2-OD-008) | EXISTING MODEL REUSED |
+| `Contract.billingModel`, `rate` | EPIC-102 | Accrued / Expected Revenue (D4) | EXISTING MODEL REUSED |
+| `Contract.monthlyContractedMinutes` | EPIC-102 | HOURLY Expected Revenue capacity (R2-OD-004) | EXISTING MODEL REUSED |
+| `Workspace.currency` | EPIC-004 | Create-form default only. **Not** a reporting base currency (D7) | EXISTING MODEL REUSED |
+| `Workspace.timezone` | EPIC-004 / EPIC-105 | Period boundaries; likely “today” for overdue | EXISTING MODEL REUSED |
+| `TimeEntry` + `billable` | EPIC-103 | Accrued quantity facts (D4, R2-OD-001) | EXISTING MODEL REUSED |
+| Pro-rata capacity overlap | EPIC-105 / PD-105-005 | Expected Revenue period capacity | EXISTING MODEL REUSED |
+| `AlertService` | EPIC-106 | Candidate host for payment and allocation alerts | EXISTING MODEL REUSED |
+| `AnalyticsService` / `ReportingService` | EPIC-104 / EPIC-105 | Hours / utilization; candidate host or sibling for revenue reads | EXISTING MODEL REUSED |
 
 ---
 
@@ -53,13 +62,21 @@ These already exist. R2 must not invent a second source of truth.
 - Currency belongs to the Contract.
 - Contract determines the currency of economic conditions, Invoice Tracking, and Payment Tracking.
 - Payment terms used for expected payment date are `paymentTermsDays` (D5).
-- A payment-term catalog (OBD-010) is not required to express D5.
+- `paymentTermsDays = null` produces no `dueDate` and no automatic overdue (R2-OD-008).
+- A payment-term catalog (OBD-010) is not required.
+- Contract currency may change only before monetary records exist. After the first Invoice or Payment event, currency is immutable (R2-OD-011).
+- Optional Contract / Project Time Allocation uses `allocatedMinutes`, distinct from `monthlyContractedMinutes` (R2-OD-013).
 
-### TECHNICAL IMPLEMENTATION TO BE PLANNED
+### Persistence planning
 
-- Whether Contract write rules change when Invoice Tracking or Payment records exist.
-- What happens if `currency` or `paymentTermsDays` is edited after those records exist (R2-OD-008, R2-OD-011).
-- No new Contract entity is implied.
+| Concept | Classification | Notes |
+| --- | --- | --- |
+| `currency`, `rate`, `billingModel`, `paymentTermsDays`, `monthlyContractedMinutes` | EXISTING MODEL REUSED | Do not duplicate |
+| Currency immutability after first monetary record | CONFIRMED REQUIREMENT | Write-rule change. No new column implied |
+| `allocatedMinutes` | CONFIRMED REQUIREMENT | Optional Contract-level total time budget. **Not in current schema.** Conceptual name only |
+| Allocation WARNING threshold | IMPLEMENTATION DETAIL STILL OPEN | Product decision still required |
+
+No new Contract entity is implied.
 
 ---
 
@@ -68,16 +85,19 @@ These already exist. R2 must not invent a second source of truth.
 ### DOMAIN DECISION
 
 - TimeEntry remains currency-agnostic (D7).
-- Accrued Revenue reads TimeEntry billable quantity plus Contract economic conditions (D4).
+- Accrued Revenue reads TimeEntry billable quantity plus the commercial value applicable when the work occurred (D4, R2-OD-003).
+- DAILY: one accrued billable day if at least one TimeEntry exists for that Contract on that calendar date; multiple entries count once; no work calendar (R2-OD-001).
 - TimeEntry is not an invoice line and is not converted to a fiscal document.
+- Period-close edit/delete rules are out of R2 (R2-OD-014).
+- Dedicated TimeEntry audit is out of R2 (R2-OD-015).
 
-### TECHNICAL IMPLEMENTATION TO BE PLANNED
+### Persistence planning
 
-- Whether Accrued Revenue reads live Contract fields or a commercial snapshot (R2-OD-003 / P102-F-001 / proposed OBD-016). **Not decided.**
-- Period-closure edit/delete rules (OBD-007 / R2-OD-014). **Not decided.**
-- TimeEntry audit (OBD-008 / R2-OD-015). **Not decided.**
-
-Do not add snapshots, closure, or audit in implementation planning until the Product Owner decides.
+| Concept | Classification | Notes |
+| --- | --- | --- |
+| `TimeEntry` minutes, `billable`, `workDate`, `contractId` | EXISTING MODEL REUSED | Accrued quantity source |
+| Historical commercial snapshot | CONFIRMED REQUIREMENT | Semantics approved. **No field exists today.** P102-F-001 remains the R1 gap |
+| Snapshot field name / table / write timing | IMPLEMENTATION DETAIL STILL OPEN | Do not invent Prisma names here. R2-E01 planning dependency |
 
 ---
 
@@ -88,26 +108,24 @@ Do not add snapshots, closure, or audit in implementation planning until the Pro
 Revenue is not Invoice Tracking and not Payment.
 
 ```text
-TimeEntry + Contract conditions     → Accrued Revenue
-Contract / expected capacity        → Expected Revenue
-Current-period actual pace          → Forecast Revenue
+TimeEntry + historical commercial value  → Accrued Revenue
+HOURLY Contract / pro-rata capacity      → Expected Revenue
+DAILY                                    → no Expected Revenue in R2
+Accrued + elapsed time in current period → Forecast Revenue (linear)
 ```
 
-Hourly Accrued direction: `billable minutes / 60 × hourly rate`.  
-Daily Accrued direction: `billable days × daily rate` (billable-day rule still open).
+Published amounts round to the nearest integer. Intermediate calculations are not prematurely rounded (R2-OD-002).
 
 No profitability, tax, accounting recognition, ML, or FX rollup.
 
-### TECHNICAL IMPLEMENTATION TO BE PLANNED
+### Persistence planning
 
-- Application-service boundary: extend AnalyticsService vs a dedicated Revenue service.
-- Read-time calculation vs persisted totals (storage.md currently prefers derived totals).
-- Dashboard / report surfaces.
-- Exact Expected and Forecast formulas (R2-OD-004, R2-OD-005).
-- Daily-rate rule (R2-OD-001) and rounding (R2-OD-002).
-- How mixed-currency workspaces present figures (separate by currency — D7).
-
-Revenue is a **derived read model** unless a later technical plan proves a persistence requirement.
+| Concept | Classification | Notes |
+| --- | --- | --- |
+| Accrued / Expected / Forecast totals | EXISTING MODEL REUSED (derived) | Read model unless a later plan proves persistence |
+| Application-service boundary | IMPLEMENTATION DETAIL STILL OPEN | Extend AnalyticsService vs a dedicated Revenue service |
+| Forecast arithmetic | IMPLEMENTATION DETAIL STILL OPEN | R2-OD-005 residual |
+| Mixed-currency presentation | DOMAIN DECISION | Separate by currency (D7) |
 
 ---
 
@@ -117,25 +135,31 @@ Revenue is a **derived read model** unless a later technical plan proves a persi
 
 New operational concept. Not an Invoice aggregate for generation or fiscal lifecycle.
 
-Minimum meaning:
+Approved meaning (R2-OD-006 / R2-OD-007):
 
-- invoiceDate
-- invoicedAmount
-- currency (must match Contract)
-- contract association
-- optional notes
-
-Independent of Accrued Revenue.
+- one Contract → many Invoice; one Invoice → exactly one Contract
+- `invoiceDate` required
+- amount
+- currency tied to Contract
+- optional free-text reference
+- no competence period
+- editable
+- VOID / soft-delete instead of physical delete
+- `dueDate` only when `paymentTermsDays` is present
+- status derived from payment events
 
 Historical architecture text that assumed “future invoice generation should snapshot billable lines” is **superseded** for R2 (`docs/architecture.md` §18, `docs/domain-model.md` §12).
 
-### TECHNICAL IMPLEMENTATION TO BE PLANNED
+### Persistence planning
 
-- Persistence name and repository.
-- Cardinality (R2-OD-006).
-- Optional reference / period association / edit rules (R2-OD-007).
-- UI surface and authorization.
-- No line-item table, numbering sequence, PDF, or credit-note model.
+| Concept | Classification | Notes |
+| --- | --- | --- |
+| Invoice Tracking record | CONFIRMED REQUIREMENT | New operational aggregate. No current table |
+| Cardinality 1 Contract : N Invoice | DOMAIN DECISION | |
+| VOID / soft-delete | CONFIRMED REQUIREMENT | Not physical delete. Exact UI residual |
+| Invoice currency field vs live Contract currency | IMPLEMENTATION DETAIL STILL OPEN | Must not conflict with D7 or R2-OD-011 |
+| Persistence name, repository, indexes | IMPLEMENTATION DETAIL STILL OPEN | Do not invent Prisma names here |
+| Invoice lines / numbering / PDF / credit notes | Out of R2 | Do not model |
 
 ---
 
@@ -145,29 +169,31 @@ Historical architecture text that assumed “future invoice generation should sn
 
 New operational event. Multiple events per Invoice Tracking record.
 
-Conceptual fields: paymentDate, amount, currency, optional notes.
+Conceptual fields: paymentDate, amount, currency consistent with Contract, optional notes.
 
 Derived:
 
 ```text
-totalPaid    = sum(payment.amount)
-outstanding  = invoicedAmount - totalPaid
-expectedPaymentDate = invoiceDate + contract.paymentTermsDays
+paidAmount            = sum(paymentEvents.amount)
+expectedPaymentDate   = invoiceDate + contract.paymentTermsDays
+                      = absent when paymentTermsDays is null
+UNPAID / PARTIAL / PAID / MISMATCH  from paidAmount vs invoice amount
+PAYMENT_OVERDUE       = dueDate < today AND paidAmount < invoice.amount
 ```
 
-Minimum derived statuses: NOT_DUE, OVERDUE, PARTIALLY_PAID, PAID, OVERPAID.
-
-OVERDUE: `today > expectedPaymentDate AND outstanding > 0`.
+Payment events may be edited and deleted. Status is recalculated. No ledger / reversal model (R2-OD-010).
 
 Currency must match Contract. No installment engine.
 
-### TECHNICAL IMPLEMENTATION TO BE PLANNED
+### Persistence planning
 
-- Payment repository and write/read services.
-- Status derivation function (pure domain).
-- Behavior when `paymentTermsDays` is null (R2-OD-008).
-- Edit/delete of payment events (R2-OD-010).
-- “Today” timezone authority (R1 uses `Workspace.timezone` for periods; reuse is likely but not designed here).
+| Concept | Classification | Notes |
+| --- | --- | --- |
+| Payment event | CONFIRMED REQUIREMENT | New operational event. No current table |
+| Derived payment status | DOMAIN DECISION | Do not persist as independent truth |
+| Edit / delete of events | DOMAIN DECISION | Triggers recalculation |
+| “Today” timezone | IMPLEMENTATION DETAIL STILL OPEN | R1 uses `Workspace.timezone` for periods; reuse is likely |
+| Repository / write services | IMPLEMENTATION DETAIL STILL OPEN | |
 
 ---
 
@@ -175,16 +201,22 @@ Currency must match Contract. No installment engine.
 
 ### DOMAIN DECISION
 
-Initial payment alerts: PAYMENT_OVERDUE, PAYMENT_PARTIAL, PAYMENT_MISMATCH.
+Payment alerts: `PAYMENT_OVERDUE`, `PAYMENT_PARTIAL`, `PAYMENT_MISMATCH`. Deterministic only.
 
-Deterministic only. No risk score, prediction, AI, or percentage-threshold engine.
+Allocation alerts: project / Contract operational alerts against `allocatedMinutes`. None when `allocatedMinutes` is null.
 
-### TECHNICAL IMPLEMENTATION TO BE PLANNED
+No workspace `CAPACITY_WARNING` / `CAPACITY_EXCEEDED` in R2 (R2-OD-013). PD-106-001 remains deferred as a workspace-capacity question and is not pulled into R2.
 
-- Extension of existing AlertService vs a payment-specific evaluator.
-- Dedup keys, trigger (on-write vs other), resolution rules.
-- Exact PARTIAL vs MISMATCH predicates (R2-OD-009).
-- Capacity alerts remain a separate open product question (R2-OD-013 / PD-106-001).
+No risk score, prediction, AI, or percentage-threshold engine for payments.
+
+### Persistence planning
+
+| Concept | Classification | Notes |
+| --- | --- | --- |
+| Existing Alert / Notification model | EXISTING MODEL REUSED | Extend types / dedup keys |
+| Payment alert predicates | DOMAIN DECISION | R2-OD-009 |
+| Allocation WARNING threshold | IMPLEMENTATION DETAIL STILL OPEN | Do not invent |
+| On-write vs other trigger | IMPLEMENTATION DETAIL STILL OPEN | TimeEntry mutations already trigger AlertService |
 
 ---
 
@@ -198,25 +230,47 @@ Deterministic only. No risk score, prediction, AI, or percentage-threshold engin
 - ISO 4217.
 - No FX conversion, no workspace-base aggregation, no historical FX store, no external FX API.
 - Economic aggregations are per currency.
+- Contract currency is immutable after the first Invoice or Payment event.
 
-### TECHNICAL IMPLEMENTATION TO BE PLANNED
+### Persistence planning
 
-- Validation that Invoice/Payment currency cannot diverge from Contract.
-- Contract.currency mutation after money records exist (R2-OD-011).
-- Per-currency presentation in reports.
+| Concept | Classification | Notes |
+| --- | --- | --- |
+| Contract currency write rule | CONFIRMED REQUIREMENT | Mutation guard after first monetary record |
+| Invoice currency snapshot | IMPLEMENTATION DETAIL STILL OPEN | See residual #3 |
+| Per-currency report presentation | DOMAIN DECISION | No cross-currency totals |
 
 `Workspace.currency` stays an R1 default. It must not become a hidden reporting base.
 
 ---
 
-## 10. Module boundary sketch
+## 10. Data-model delta (planning only)
+
+No migrations. No invented Prisma names.
+
+| Concept | Classification | Existing? | Planning note |
+| --- | --- | --- | --- |
+| Invoice | CONFIRMED REQUIREMENT | No | 1 Contract : N Invoice; VOID / soft-delete; editable; no fiscal fields |
+| Payment event | CONFIRMED REQUIREMENT | No | Many per Invoice; editable / deletable; status derived |
+| Contract `allocatedMinutes` | CONFIRMED REQUIREMENT | No | Optional total project budget. Distinct from `monthlyContractedMinutes` |
+| Historical commercial snapshot | CONFIRMED REQUIREMENT | No | Required by R2-OD-003. R2-E01 persistence dependency |
+| Derived payment status | CONFIRMED REQUIREMENT | n/a | Function of payment events, not a source of truth |
+| Invoice VOID state | CONFIRMED REQUIREMENT | No | Soft-delete semantics. UI residual |
+| Contract currency immutability | CONFIRMED REQUIREMENT | Write rule only | After first monetary record |
+| Invoice currency snapshot | IMPLEMENTATION DETAIL STILL OPEN | n/a | Reconcile with D7 / R2-OD-011 |
+| Accrued / Expected / Forecast tables | IMPLEMENTATION DETAIL STILL OPEN | Derived preferred | Persist only if a later plan proves need |
+| `monthlyContractedMinutes`, `rate`, `currency`, `paymentTermsDays` | EXISTING MODEL REUSED | Yes | Do not conflate with `allocatedMinutes` |
+
+---
+
+## 11. Module boundary sketch
 
 Conceptual only. Not a folder or class design.
 
 ```text
 Time Tracking (unchanged core)
         ↓
-Contract (currency, rates, payment terms)
+Contract (currency, rates, payment terms, optional allocatedMinutes)
         ↓
 Revenue (derived: Accrued / Expected / Forecast)
         ↓
@@ -224,7 +278,7 @@ Invoice Tracking (operational record)
         ↓
 Payment (events → derived status)
         ↓
-Alerts (payment discrepancy rules)
+Alerts (payment discrepancy + allocation rules)
 ```
 
 PIVA Balance remains outside the monolith boundary.
@@ -233,31 +287,37 @@ PIVA Balance remains outside the monolith boundary.
 
 - Repository split for Invoice Tracking and Payment.
 - Whether Revenue lives under Analytics or a new application module.
-- Reporting/export module if CSV/PDF is approved (R2-OD-012).
+- Reporting/export module if simple CSV is approved in R2-E05.
 
 ---
 
-## 11. Superseded architectural language
+## 12. Superseded architectural language
 
 | Historical statement | Disposition |
 | --- | --- |
 | Architecture §5.7 “future invoice preparation” | Superseded. Invoice Tracking only. |
-| Architecture §18 “future invoice generation should snapshot billable lines” | Superseded for generation. TimeEntry snapshot remains R2-OD-003. |
+| Architecture §18 “future invoice generation should snapshot billable lines” | Superseded for generation. TimeEntry commercial snapshot is now R2-OD-003 (persistence TBD). |
 | Domain §12 “later Invoice aggregate may snapshot commercial lines” | Superseded as invoice-generation design. |
 | Storage §21 “MVP does not create a complete invoice lifecycle” | Still true. R2 also does not create that lifecycle. |
-| MASTER_PLAN R2-E01 Invoice Lifecycle | Withdrawn. |
-| MASTER_PLAN R2-E05 Commercial Intelligence / profitability | Withdrawn. |
+| MASTER_PLAN historical R2-E01 Invoice Lifecycle | Withdrawn. |
+| MASTER_PLAN historical R2-E05 Commercial Intelligence / profitability | Withdrawn. |
+| Workspace capacity alerts as R2 default | Withdrawn (R2-OD-013). |
 
 R1 baseline documents keep their historical text. Canonical R2 meaning is this delta plus the decision pack.
 
 ---
 
-## 12. What this document does not decide
+## 13. What this document does not decide
 
 - Prisma models or migrations
+- Final Prisma field names for new concepts
 - API routes or Server Actions
 - UI routes or components
 - Exact service class names
 - Index / constraint design
 - Whether revenue totals are persisted
-- Closure of OBD-007, OBD-008, OBD-001, OBD-002, OBD-016
+- Forecast arithmetic
+- Allocation WARNING threshold
+- Invoice VOID UI
+- Invoice currency snapshot representation
+- Commercial snapshot persistence mechanism

@@ -6,6 +6,7 @@ All notable changes to FreelanceOS are documented in this file.
 
 ### Added
 
+- R2 Revenue Operations planning baseline. Decision Workshop complete for in-scope decisions. D1–D7 and approved OD resolutions recorded (DAILY accrued, rounding, commercial snapshot semantics, Expected Revenue, invoice/payment model, currency immutability, Contract Time Allocation). Residual planning questions remain (Forecast arithmetic, allocation WARNING threshold, Invoice VOID UI, Invoice currency snapshot, CSV-in-E05, commercial snapshot persistence). Executable epic map: R2-E01…R2-E05. R1 remains FROZEN / GRANTED. No implementation, schema, or migration. R2 is not production-ready.
 - R2 discovery closed. Product decisions D1–D7 recorded as Revenue Operations (not Billing & Intelligence). Invoice Lifecycle withdrawn in favor of Invoice Tracking. Profitability / PIVA Balance boundary explicit. Canonical docs: `docs/release/r2-decision-pack.md`, `r2-architecture-delta.md`, `r2-epic-map.md`, `r2-open-decisions.md`. R1 remains FROZEN. No implementation epic opened.
 
 ### Fixed

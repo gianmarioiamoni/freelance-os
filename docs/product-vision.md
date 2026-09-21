@@ -1,7 +1,7 @@
 # FreelanceOS — Product Vision + Functional Specification
 
 **Status:** Draft baseline for Product Discovery  
-**Scope:** MVP (historical). R2 product decisions live in `docs/release/r2-decision-pack.md` and do not rewrite this MVP specification.
+**Scope:** MVP (historical). R2 product decisions live in `docs/release/r2-decision-pack.md`. This MVP specification is not rewritten. R2 is in planning and is not production-ready.
 
 ## 1. Product Vision
 
@@ -175,12 +175,12 @@ Highlight current operational anomalies and threshold warnings.
 For hourly contracts, calculate billable amount from billable duration and hourly rate.
 
 #### F-061 — Daily rate
-Support daily-rate contracts, with detailed rules for partial days and multiple entries to be defined during Domain Design.
+Support daily-rate contracts, with detailed rules for partial days and multiple entries to be defined during Domain Design. R2-OD-001 later approved one accrued billable day per Contract per calendar date with at least one TimeEntry; multiples count once.
 
 #### F-062 — Estimated revenue
 Show estimated revenue and amount to invoice; full invoice lifecycle is deferred.
 
-R2 (2026-09-21) replaces “invoice lifecycle” with Invoice Tracking and defines Accrued / Expected / Forecast Revenue. See `docs/release/r2-decision-pack.md`. These MVP lines remain historical R1 scope and were not delivered in R1 (PD-105-001).
+R2 (2026-09-22) replaces “invoice lifecycle” with Invoice Tracking and defines Accrued / Expected / Forecast Revenue plus optional Contract Time Allocation. See `docs/release/r2-decision-pack.md`. These MVP lines remain historical R1 scope and were not delivered in R1 (PD-105-001).
 
 ### 7.8 Reporting
 
@@ -221,7 +221,9 @@ Show a warning when recorded work exceeds configured capacity.
 
 ## 8. Forecast
 
-Forecasting is explicitly deferred from the first MVP. A later release may estimate expected monthly consumption from current pace, elapsed working days and historical behavior.
+Forecasting is explicitly deferred from the first MVP.
+
+R2 Forecast is a simple deterministic linear projection of Accrued Revenue using elapsed time in the current reporting period. No ML, AI, or historical-behaviour engine. Exact arithmetic remains a residual R2-E04 planning question (`docs/release/r2-open-decisions.md`).
 
 ## 9. AI Scope
 
@@ -242,7 +244,7 @@ The LLM must not become the source of truth for calculations.
 ## 10. MVP Non-Goals
 
 - Electronic invoicing / SDI
-- Payment management (R2 later adds operational Payment Tracking only — D5)
+- Payment management (R1 non-goal; R2 adds operational Payment Tracking only — D5)
 - Accounting (PIVA Balance domain; never FreelanceOS — D3)
 - Expense management
 - Tax management
@@ -283,24 +285,24 @@ The MVP is considered functionally complete when this end-to-end workflow works 
 
 | ID | Decision |
 |---|---|
-| OD-001 | Detailed billing rules for daily-rate contracts |
-| OD-002 | Amount rounding rules |
+| OD-001 | Detailed billing rules for daily-rate contracts — R2-OD-001 APPROVED |
+| OD-002 | Amount rounding rules — R2-OD-002 APPROVED |
 | OD-003 | Time entries crossing midnight |
 | OD-004 | Holiday handling |
 | OD-005 | Vacation handling |
 | OD-006 | Working calendar model |
-| OD-007 | Editing entries in already billed/closed periods |
-| OD-008 | Audit log requirements |
+| OD-007 | Editing entries in already billed/closed periods — OUT OF R2 (R2-OD-014) |
+| OD-008 | Audit log requirements — OUT OF R2 (R2-OD-015) |
 | OD-009 | Workspace roles |
 | OD-010 | Email notification policy |
-| OD-011 | CSV/PDF export — still open for R2 (R2-OD-012). Excel is not a decision. |
-| OD-012 | Multi-currency — direction closed by R2 D7; residual R2-OD-011. |
+| OD-011 | CSV/PDF export — PDF out of core R2; simple CSV residual in R2-E05 (R2-OD-012). Excel is not a decision. |
+| OD-012 | Multi-currency — closed by R2 D7 + R2-OD-011; Invoice currency snapshot residual. |
 
 ## 14. Release Structure
 
 - **Release 0 — Foundation:** architecture and technical infrastructure.
 - **Release 1 — MVP:** authentication, workspace, clients, contracts, time tracking, dashboard, reporting and alerts.
-- **Release 2 — Revenue Operations:** revenue visibility (Accrued / Expected / Forecast), Invoice Tracking (not Invoice Lifecycle), operational payment tracking, forecasting / capacity visibility, advanced reporting and exports if decided. Official decisions: `docs/release/r2-decision-pack.md`. Historical label “Billing & Intelligence” is superseded. Profitability is out of FreelanceOS (PIVA Balance).
+- **Release 2 — Revenue Operations:** revenue visibility (Accrued / Expected / Forecast), Invoice Tracking (not Invoice Lifecycle), operational payment tracking, deterministic linear Forecast, optional Contract Time Allocation, advanced reporting and simple export if decided. Official decisions: `docs/release/r2-decision-pack.md`. Planning baseline: `docs/release/r2-epic-map.md`. Historical label “Billing & Intelligence” is superseded. Profitability is out of FreelanceOS (PIVA Balance). R2 remains in planning.
 - **Release 3 — Integrations:** electronic invoicing, calendar and accounting integrations.
 - **Release 4 — AI:** natural-language analytics, timesheet assistant and business assistant.
 

@@ -1,14 +1,14 @@
 # R2 Open Decisions Register
 
-**Status:** Active register  
-**Date:** 2026-09-21  
+**Status:** Residual register after Decision Workshop  
+**Date:** 2026-09-22  
 **Product decisions owner:** Product Owner  
-**Technical planning owner:** Architect (after product decisions)  
+**Technical planning owner:** Architect (during epic planning)  
 **Authority:** `docs/release/r2-decision-pack.md`
 
-Do not implement around these questions. Do not treat implementation defaults as policy.
+Approved D1–D7 and approved OD resolutions are **not** reopened here.
 
-Approved D1–D7 are **not** repeated here.
+Do not treat remaining items as implementation defaults. Do not invent WARNING thresholds, Forecast arithmetic, VOID UI, currency snapshot fields, or CSV scope.
 
 ---
 
@@ -16,223 +16,111 @@ Approved D1–D7 are **not** repeated here.
 
 | Status | Meaning |
 | --- | --- |
-| OPEN | Product Owner must decide |
-| DIRECTION CLOSED | D1–D7 answered the direction; a residual question remains |
-| DEFERRED | Explicitly not required to start R2 unless the Product Owner pulls it in |
+| APPROVED | Product Owner decided. Recorded in the decision pack |
+| APPROVED — persistence dependency | Product semantics approved; current persistence does not yet contain the required field |
+| DIRECTION APPROVED / residual OPEN | Direction closed; a planning or implementation question remains |
+| OUT OF R2 | Explicitly not in R2. Historical OBD may remain open for a later release |
 
 ---
 
-## Open product decisions
+## Residual questions that must be resolved during epic planning
 
-### R2-OD-001 — Daily-rate / billable-day semantics
+These are the only product / planning decisions still required before the corresponding implementation phases. They are **not** approved assumptions.
 
-| Field | Value |
-| --- | --- |
-| Historical ID | OBD-001 / product OD-001 / testing TD-001 (testing-strategy) |
-| Question | What is a billable day for Accrued Revenue on DAILY contracts? How are partial days and multiple TimeEntries on the same date treated? |
-| Why | D4 defines Accrued Daily as `billable days × daily rate` but does not define “billable day”. |
-| Impact | Blocks DAILY Accrued Revenue. HOURLY Accrued direction is already approved. |
-| Owner | Product Owner |
-| Status | OPEN |
-| Needed by | R2-E01 |
-
----
-
-### R2-OD-002 — Monetary rounding and precision
+### 1. Contract Time Allocation WARNING threshold
 
 | Field | Value |
 | --- | --- |
-| Historical ID | OBD-002 / product OD-002 |
-| Question | How are monetary amounts rounded and at which step (per entry, per day, per period, at display)? What precision is published? |
-| Why | D4–D6 introduce published money. R1 never closed rounding. |
-| Impact | Blocks every published revenue, invoice, payment, and outstanding figure. |
+| Historical ID | R2-OD-013 residual; PD-106-001 is a different (workspace) question |
+| Question | At what consumption / allocation ratio does a Contract Time Allocation WARNING fire? |
+| Why | R2-OD-013 approves optional `allocatedMinutes` and forbids inventing the threshold. |
+| Impact | Blocks allocation WARNING alerts in R2-E04. EXCEEDED at 100% of allocation is not assumed. |
 | Owner | Product Owner |
-| Status | OPEN |
-| Needed by | R2-E01, R2-E02, R2-E03 |
-
----
-
-### R2-OD-003 — Accrued Revenue after Contract commercial edits
-
-| Field | Value |
-| --- | --- |
-| Historical ID | P102-F-001 / proposed OBD-016 |
-| Question | After rate, billing model, or other commercial Contract fields change, does Accrued Revenue follow the live Contract or a historical commercial snapshot? |
-| Why | TimeEntry stores `contractId` only. D4 says Accrued uses the applicable Contract conditions and does not choose live vs snapshot. Invoice-generation snapshots are withdrawn (D2). |
-| Impact | Historical correctness of Accrued Revenue and of any later revenue report. |
-| Owner | Product Owner |
-| Status | OPEN |
-| Needed by | R2-E01 |
-
----
-
-### R2-OD-004 — Expected Revenue formula
-
-| Field | Value |
-| --- | --- |
-| Historical ID | — (new; D4 gives direction only) |
-| Question | What is the exact Expected Revenue formula per billing model and period (including pro-rata, open-ended contracts, null capacity, partial validity overlap)? |
-| Why | D4 forbids a complex financial model but does not specify the calculation. |
-| Impact | Blocks Expected Revenue. |
-| Owner | Product Owner |
-| Status | OPEN |
-| Needed by | R2-E01 |
-
----
-
-### R2-OD-005 — Forecast Revenue formula
-
-| Field | Value |
-| --- | --- |
-| Historical ID | product vision §8 (narrowed by D4) |
-| Question | What is the exact pace formula (calendar days vs working days, treatment of elapsed = 0, period containing today)? |
-| Why | D4 approves deterministic current-period pace only. It rejects ML/AI/history engines. The arithmetic is not specified. |
-| Impact | Blocks Forecast Revenue. |
-| Owner | Product Owner |
-| Status | OPEN |
+| Status | DIRECTION APPROVED / residual OPEN |
 | Needed by | R2-E04 |
 
----
-
-### R2-OD-006 — Invoice Tracking cardinality
+### 2. Exact Forecast calculation semantics
 
 | Field | Value |
 | --- | --- |
-| Historical ID | — |
-| Question | How many Invoice Tracking records may exist per Contract (and per period, if any)? |
-| Why | D2 lists fields, not cardinality. |
-| Impact | Invoice Tracking model and UI. |
-| Owner | Product Owner |
-| Status | OPEN |
+| Historical ID | R2-OD-005 |
+| Question | What is the exact linear Forecast arithmetic? |
+| Why | Direction is approved: simple deterministic linear Forecast from Accrued and elapsed time in the current reporting period. No ML, AI, or extra signals. The implementation must still define the items below. |
+| Must define | current-period elapsed time; projected full-period value; behaviour when elapsed time is zero; behaviour when Accrued is zero; behaviour for historical periods |
+| Impact | Blocks Forecast Revenue in R2-E04. |
+| Owner | Product Owner during R2-E04 planning |
+| Status | DIRECTION APPROVED / residual OPEN |
+| Needed by | R2-E04 |
+
+### 3. Invoice currency snapshot representation
+
+| Field | Value |
+| --- | --- |
+| Historical ID | R2-OD-011 residual; D7 |
+| Question | Does an Invoice persist its own currency value, or does it always read live `Contract.currency`? |
+| Why | D7 ties Invoice currency to Contract. R2-OD-011 makes Contract currency immutable after the first monetary record, so live Contract currency and Invoice currency cannot diverge under the approved mutation rule. A persisted snapshot would be defensive historical stability, not FX. |
+| Constraint | Do not introduce a rule that conflicts with D7 (must match Contract at write time) or R2-OD-011 (no retroactive conversion). |
+| Impact | Invoice persistence in R2-E02. |
+| Owner | Architect during R2-E02 planning; Product Owner if the choice changes historical meaning |
+| Status | DIRECTION APPROVED / residual OPEN |
 | Needed by | R2-E02 |
 
----
-
-### R2-OD-007 — Invoice Tracking reference, period, and edit rules
+### 4. Exact Invoice VOID behaviour and UI semantics
 
 | Field | Value |
 | --- | --- |
-| Historical ID | — |
-| Question | Is an optional external reference allowed (not fiscal numbering)? Is the record associated with a period? What edit/delete rules apply after payments exist? |
-| Why | D2 lists the minimum fields only. |
-| Impact | Invoice Tracking completeness and payment integrity. |
-| Owner | Product Owner |
-| Status | OPEN |
+| Historical ID | R2-OD-007 residual |
+| Question | How is VOID presented, filtered, restored (if at all), and excluded from active payment tracking? |
+| Why | Product decision is VOID / soft-delete, not physical delete, and no fiscal immutability. UI and list semantics are not decided. |
+| Impact | Invoice Tracking UI and payment integrity in R2-E02 / R2-E03. |
+| Owner | Product Owner during R2-E02 planning |
+| Status | DIRECTION APPROVED / residual OPEN |
 | Needed by | R2-E02, R2-E03 |
 
----
-
-### R2-OD-008 — Null payment terms
+### 5. Simple CSV export in R2-E05
 
 | Field | Value |
 | --- | --- |
-| Historical ID | OBD-010 residual |
-| Question | If `contract.paymentTermsDays` is null, how is Expected Payment Date derived (or is Invoice Tracking forbidden until days are set)? |
-| Why | D5 formula is `invoiceDate + paymentTermsDays`. R1 allows null days. A catalog is not required for D5. |
-| Impact | Expected payment date and OVERDUE derivation. |
-| Owner | Product Owner |
-| Status | OPEN |
-| Needed by | R2-E03 |
-
-OBD-010 (payment-term catalog) remains **DEFERRED**. D5 does not need a catalog.
-
----
-
-### R2-OD-009 — PAYMENT_PARTIAL vs PAYMENT_MISMATCH
-
-| Field | Value |
-| --- | --- |
-| Historical ID | — |
-| Question | What exact predicates distinguish PARTIAL, MISMATCH, and OVERPAID alerts/statuses? |
-| Why | D6 names the alerts. D5 names statuses. The boundary between “partial as expected” and “mismatch” is not defined. |
-| Impact | Alert correctness. |
-| Owner | Product Owner |
-| Status | OPEN |
-| Needed by | R2-E03 |
-
----
-
-### R2-OD-010 — Payment event mutation
-
-| Field | Value |
-| --- | --- |
-| Historical ID | — |
-| Question | May Actual Payment events be edited or deleted? If yes, with which constraints? |
-| Why | D5 defines recording events, not their lifecycle. |
-| Impact | Payment write model and audit-adjacent behavior (without closing OBD-008). |
-| Owner | Product Owner |
-| Status | OPEN |
-| Needed by | R2-E03 |
-
----
-
-### R2-OD-011 — Contract currency change after money records
-
-| Field | Value |
-| --- | --- |
-| Historical ID | OBD-011 residual |
-| Question | May `Contract.currency` change after Invoice Tracking or Payment records exist? If yes, what happens to existing records? |
-| Why | D7 requires Invoice/Payment coherence with Contract currency and forbids FX. Mutation policy is not stated. |
-| Impact | Multi-currency integrity. |
-| Owner | Product Owner |
-| Status | DIRECTION CLOSED (D7) / residual OPEN |
-| Needed by | R2-E02, R2-E03 |
-
----
-
-### R2-OD-012 — CSV / PDF in R2
-
-| Field | Value |
-| --- | --- |
-| Historical ID | product OD-011; freeze deferred “CSV/PDF” |
-| Question | Is CSV export in R2? Is PDF export in R2? Neither? |
-| Why | Advanced reporting is a candidate theme. Excel is **not** a decision and must not be assumed. |
+| Historical ID | R2-OD-012; product OD-011 |
+| Question | Does a simple tabular / CSV export belong in R2-E05? |
+| Why | Document / PDF generation is out of core R2. A simple tabular export may be included only if R2-E05 planning shows low complexity and clear value. Excel is not a decision. |
 | Impact | R2-E05 scope. |
-| Owner | Product Owner |
-| Status | OPEN |
+| Owner | Product Owner during R2-E05 planning |
+| Status | DIRECTION APPROVED / residual OPEN |
 | Needed by | R2-E05 |
 
----
-
-### R2-OD-013 — Capacity visibility and capacity alerts
+### 6. Commercial snapshot persistence detail
 
 | Field | Value |
 | --- | --- |
-| Historical ID | PD-106-001 deferred; OBD-006 shipped for contract warning only |
-| Question | Does R2 include a workspace capacity model and/or CAPACITY_WARNING / CAPACITY_EXCEEDED? Or is capacity visibility limited to existing contract utilization plus Forecast Revenue? |
-| Why | Product direction lists “Forecasting / Capacity visibility”. R1 deferred the workspace capacity model for lack of domain semantics. |
-| Impact | R2-E04 scope. Must not invent a capacity domain. |
-| Owner | Product Owner |
-| Status | OPEN |
-| Needed by | R2-E04 |
+| Historical ID | R2-OD-003 residual; P102-F-001 / proposed OBD-016 |
+| Question | How is the historical commercial value stored so Accrued does not reread live Contract rate / billing model? |
+| Why | Commercial Snapshot semantics are approved. The current persistence model has no snapshot field. TimeEntry stores `contractId` only. |
+| Constraint | Do not invent Prisma field names or a snapshot table in this register. R2-E01 must plan the mechanism. |
+| Impact | Blocks historically correct Accrued implementation in R2-E01. |
+| Owner | Architect during R2-E01 planning |
+| Status | APPROVED — persistence dependency |
+| Needed by | R2-E01 |
 
 ---
 
-### R2-OD-014 — Period closure / post-closure TimeEntry edits
+## Approved resolutions (closed in this register)
 
-| Field | Value |
-| --- | --- |
-| Historical ID | OBD-007 / product OD-007 / MASTER_PLAN TD-002 |
-| Question | Does R2 introduce billing-period closure? If a period is closed, may TimeEntries be edited or deleted? |
-| Why | Listed as needed-by R2 historically. Freeze deferred it. D1–D7 do not decide it. Invoice Tracking does not require closure. |
-| Impact | TimeEntry write rules and Accrued stability. Not automatically in R2. |
-| Owner | Product Owner |
-| Status | OPEN |
-| Needed by | Only if pulled into R2 |
-
----
-
-### R2-OD-015 — Audit requirements
-
-| Field | Value |
-| --- | --- |
-| Historical ID | OBD-008 / F-103-P-001 / MASTER_PLAN TD-001 |
-| Question | Does R2 require an audit trail (TimeEntry and/or Invoice Tracking / Payment)? If yes, what is recorded? |
-| Why | Listed as needed-by R2 historically. Freeze deferred it. D1–D7 do not decide it. |
-| Impact | Persistence and compliance-adjacent scope. Not automatically in R2. |
-| Owner | Product Owner |
-| Status | OPEN |
-| Needed by | Only if pulled into R2 |
+| ID | Decision | Status |
+| --- | --- | --- |
+| R2-OD-001 | DAILY accrued: one billable day if at least one TimeEntry exists for that Contract on that calendar date; multiples count once; no work calendar | APPROVED |
+| R2-OD-002 | Published money rounds to nearest integer; do not prematurely round intermediates | APPROVED |
+| R2-OD-003 | Commercial Snapshot semantics for historical Accrued | APPROVED — persistence dependency |
+| R2-OD-004 | Expected Revenue is HOURLY contractual capacity / pro-rata; null if capacity unavailable; DAILY has no Expected Revenue in R2 | APPROVED |
+| R2-OD-006 | 1 Contract → many Invoice; 1 Invoice → 1 Contract; tracking fields only | APPROVED |
+| R2-OD-007 | Optional reference; required invoiceDate; no competence period; editable; VOID / soft-delete | APPROVED (VOID UI residual) |
+| R2-OD-008 | `paymentTermsDays = null` → no dueDate, no automatic overdue; no default days | APPROVED |
+| R2-OD-009 | paidAmount sum; UNPAID / PARTIAL / PAID / MISMATCH; PAYMENT_OVERDUE independent | APPROVED |
+| R2-OD-010 | Payment events editable / deletable; status derived; no ledger | APPROVED |
+| R2-OD-011 | Contract currency mutable only before monetary records; then immutable; no FX | APPROVED (Invoice snapshot residual) |
+| R2-OD-013 | Optional Contract `allocatedMinutes`; no workspace capacity alerts | APPROVED (WARNING threshold residual) |
+| R2-OD-014 | No period-close / accounting-lock in R2 | OUT OF R2 |
+| R2-OD-015 | No dedicated audit ledger in R2 | OUT OF R2 |
 
 ---
 
@@ -242,10 +130,13 @@ OBD-010 (payment-term catalog) remains **DEFERRED**. D5 does not need a catalog.
 | --- | --- |
 | D1–D7 | APPROVED — decision pack |
 | OBD-011 direction (no FX, Contract currency, TimeEntry agnostic, per-currency aggregates) | CLOSED by D7 |
+| OBD-011 mutation after money records | CLOSED by R2-OD-011 |
+| OBD-007 / OBD-008 in R2 | OUT OF R2 — remain historically open for a later release |
 | OBD-010 catalog | DEFERRED — days field is enough for D5 |
 | Excel export | Not a decision — out of R2 |
-| Invoice Lifecycle / generation | Out of scope — D2 |
+| Invoice Lifecycle / generation / fiscal PDF | Out of scope — D2 / R2-OD-012 |
 | Profitability / PIVA Balance integration | Out of scope — D3 |
+| Workspace capacity alerts | Out of scope — R2-OD-013 |
 | Installment engine, grace %, risk, AI forecast | Out of scope — D5 / D6 / D4 |
 | Calendar view / calendar integration | Not R2 |
 
@@ -253,13 +144,10 @@ OBD-010 (payment-term catalog) remains **DEFERRED**. D5 does not need a catalog.
 
 ## Planning implication
 
-A complete deterministic R2 implementation plan is **blocked** until at least:
+The Decision Workshop is complete for decisions currently in scope.
 
-- R2-OD-002 (all money)
-- R2-OD-001 and R2-OD-003 and R2-OD-004 (Revenue Visibility)
-- R2-OD-006 (Invoice Tracking)
-- R2-OD-008 and R2-OD-009 (Payment Tracking)
-- R2-OD-005 and R2-OD-013 (Forecast / capacity)
-- R2-OD-012 (export)
+R2 detailed epic planning is **no longer blocked** on R2-OD-001, R2-OD-002, R2-OD-003 semantics, R2-OD-004, R2-OD-006, R2-OD-008, R2-OD-009, R2-OD-010, R2-OD-014, or R2-OD-015.
 
-R2-OD-014 and R2-OD-015 block R2 only if the Product Owner pulls closure or audit into R2.
+The six residual questions above must be resolved during the epic that needs them. They must not be silently assumed in implementation.
+
+No R2 implementation epic is opened by this register.

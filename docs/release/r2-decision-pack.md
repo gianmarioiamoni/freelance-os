@@ -1,8 +1,9 @@
 # R2 Decision Pack — Revenue Operations
 
-**Status:** APPROVED product decisions recorded; open decisions explicit  
-**Date:** 2026-09-21  
+**Status:** APPROVED product baseline recorded; residual planning questions explicit  
+**Date:** 2026-09-22  
 **Release:** Release 2 — Revenue Operations  
+**Workshop:** Decision Workshop complete for decisions currently in scope  
 **Supersedes naming:** “Release 2 — Billing & Intelligence” (`MASTER_PLAN.md` §8 / §19 historical)  
 **Does not reopen:** R1 FROZEN (`docs/release/r1-freeze.md`, candidate `c6712224`, freeze commit `8f79216d`)  
 **Owner of product decisions:** Product Owner  
@@ -11,10 +12,10 @@ Canonical companions:
 
 | Artifact | Role |
 | --- | --- |
-| This document | Approved R2 product boundary and D1–D7 |
-| `docs/release/r2-architecture-delta.md` | Domain delta vs technical work still to plan |
-| `docs/release/r2-epic-map.md` | Preliminary capability map — not an implementation plan |
-| `docs/release/r2-open-decisions.md` | Decisions still required before deterministic implementation |
+| This document | Approved R2 product boundary, D1–D7, and approved OD resolutions |
+| `docs/release/r2-architecture-delta.md` | Domain delta and persistence planning (no schema) |
+| `docs/release/r2-epic-map.md` | Executable R2 planning baseline |
+| `docs/release/r2-open-decisions.md` | Residual planning/product questions |
 | `MASTER_PLAN.md` §19 | Canonical R2 scope pointer |
 
 No implementation, schema, API, or UI is authorized by this pack.
@@ -23,19 +24,25 @@ No implementation, schema, API, or UI is authorized by this pack.
 
 ## 1. Product boundary
 
+Official R2 name: **Revenue Operations**.
+
 FreelanceOS is **not**:
 
-- a billing / invoicing system
-- an accounting system
-- a fiscal / tax system
-- a profitability system
-- a cost-accounting system
+- billing / accounting software
+- fiscal accounting
+- profitability / cost accounting
+- invoice generation
+- payment processing
+- AI / ML forecasting
 
-FreelanceOS **is** an operations system whose core remains:
+FreelanceOS **is** an operations system whose R2 layer is:
 
-1. tracking of activities and time
-2. understanding the economic value of work
-3. operational tracking of invoices and payments
+1. operational revenue visibility
+2. invoice tracking
+3. operational payment tracking / reconciliation
+4. contract / project time allocation
+5. deterministic forecasting / capacity visibility
+6. advanced reporting / export where explicitly scoped
 
 The economic layer is secondary to Time Tracking.
 
@@ -55,52 +62,34 @@ PIVA Balance is the system that owns costs, profitability, and fiscality / accou
 
 ---
 
-## 2. Approved product decisions
+## 2. Approved high-level decisions
 
 These are PRODUCT DECISIONS APPROVED. They are not proposals.
 
-### D1 — Product Boundary — APPROVED
+### D1 — Time Tracking first — APPROVED
 
-FreelanceOS remains Time Tracking first. Economic features support understanding of work value and operational invoice/payment tracking. They do not turn the product into billing, accounting, fiscal, profitability, or cost-accounting software.
+R2 remains centered on operational Time Tracking and revenue visibility. No fiscal / accounting / profitability model.
 
-### D2 — Invoice Scope — APPROVED
+### D2 — Invoice Tracking only — APPROVED
 
-Complete Invoice Lifecycle / invoice management is **out of scope**.
-
-FreelanceOS must not generate or fiscally manage invoices.
+Invoice Lifecycle / generation is withdrawn. R2 tracks invoices; it does not generate fiscal invoices.
 
 **Out of R2:**
 
 - invoice generation
-- invoice PDF
-- invoice numbering
+- invoice PDF / fiscal document generation
+- invoice numbering / SDI
 - e-invoicing
 - fiscal invoice workflow
 - invoice line-item engine
-- credit notes
+- credit / debit notes
 - accounting invoice lifecycle
 
 **In R2:** INVOICE TRACKING only.
 
-Minimum record:
+### D3 — Profitability out — APPROVED
 
-- invoice date
-- invoiced amount
-- currency
-- link to Contract
-- optional notes
-
-Purpose: support payment tracking.
-
-### D3 — Profitability Boundary / PIVA Balance — APPROVED
-
-Profitability calculation is **out of FreelanceOS**.
-
-PIVA Balance owns:
-
-- costs
-- profitability
-- fiscality / accounting, in its own domain
+Profitability, PIVA balance, costs and fiscality remain outside R2. No R2 integration with that domain.
 
 **Out of FreelanceOS / out of R2:**
 
@@ -111,89 +100,74 @@ PIVA Balance owns:
 - accounting calculations
 - FreelanceOS ↔ PIVA Balance integration
 
-### D4 — Revenue Semantics — APPROVED
+### D4 — Accrued / Expected / Forecast independent — APPROVED
 
-FreelanceOS distinguishes three concepts. They are not invoice or payment.
+Accrued, Expected and Forecast are separate operational concepts. No ML / AI.
 
 | Concept | Meaning | Source |
 | --- | --- | --- |
-| Accrued Revenue | Consuntivo economic value of billable work already recorded | TimeEntry + applicable Contract + Contract economic conditions |
-| Expected Revenue | Economically expected value in the period from the contract and expected contractual capacity / quantity | Contract / expected capacity |
-| Forecast Revenue | Deterministic projection of Accrued Revenue to period end from observed current-period pace | Current-period actual pace |
+| Accrued Revenue | Consuntivo economic value of billable work already recorded | TimeEntry + applicable historical commercial value (R2-OD-003) |
+| Expected Revenue | Contract-capacity value for the reporting period | Contract / contractual capacity. Independent of TimeEntry, Invoice, Payment |
+| Forecast Revenue | Deterministic linear projection of Accrued to period end | Accrued + elapsed time in the current reporting period (R2-OD-005 direction) |
 
-Accrued formulas (direction approved; daily “billable day” and rounding remain open — see register):
+Accrued formulas:
 
 - Hourly: `billable minutes / 60 × hourly rate`
-- Daily: `billable days × daily rate`
+- Daily: `billable days × daily rate`, where a billable day follows R2-OD-001
 
 Accrued Revenue is independent of invoice and payment.
 
 Forecast Revenue is **not** ML, AI, a statistical forecasting engine, a probabilistic forecast, or accounting revenue recognition.
 
 ```text
-TimeEntry                    → Accrued Revenue
-Contract / expected capacity → Expected Revenue
-Current-period actual pace   → Forecast Revenue
+TimeEntry + commercial snapshot   → Accrued Revenue
+Contract / contractual capacity   → Expected Revenue
+Current-period Accrued + elapsed  → Forecast Revenue
 ```
 
 Revenue, Invoice Tracking, and Payment Tracking remain separate.
 
-### D5 — Payment Tracking — APPROVED
+### D5 — Operational payments — APPROVED
 
 Operational payment tracking. Not accounts receivable / accounting.
 
 ```text
-Contract
-  → payment terms
-  → Invoice Tracking
-  → Expected Payment
-  → Actual Payment
-  → Payment Status / Discrepancy
+expected payment date = invoiceDate + paymentTermsDays
 ```
 
-Expected payment date is **derived**, not an initially arbitrary editable field:
+Multiple payment events are supported. Invoice payment status is **derived**.
 
-```text
-expectedPaymentDate = invoiceDate + contract.paymentTermsDays
-```
-
-Actual Payment is a manual event. Multiple payment events per invoice tracking record are required.
-
-Payment (conceptual):
+Payment event (conceptual):
 
 - paymentDate
 - amount
-- currency
+- currency consistent with Contract
 - optional notes
 
-Payment status is **derived**. Minimum statuses:
+Amount-derived invoice payment status (R2-OD-009):
 
-- NOT_DUE
-- OVERDUE
-- PARTIALLY_PAID
-- PAID
-- OVERPAID
+| paidAmount vs invoice amount | Status |
+| --- | --- |
+| 0 | UNPAID |
+| > 0 and < invoice amount | PARTIAL |
+| = invoice amount | PAID |
+| > invoice amount | MISMATCH |
+
+`PAYMENT_OVERDUE` is independent of amount status:
 
 ```text
-outstanding = invoicedAmount - totalPaid
-OVERDUE     = today > expectedPaymentDate AND outstanding > 0
+dueDate < today AND paidAmount < invoice.amount
 ```
 
-No payment schedule / installment engine in the first version. Partial payments are sufficient.
+PARTIAL + OVERDUE is valid. No payment schedule / installment engine.
 
-### D6 — Payment Discrepancies / Alerts — APPROVED
+D5’s earlier combined status list (NOT_DUE / OVERDUE / PARTIALLY_PAID / PAID / OVERPAID) is **superseded** by R2-OD-009. Overdue is an independent deterministic condition, not a mutually exclusive amount status.
 
-Simple, deterministic discrepancies only:
+### D6 — Deterministic payment alerts / status — APPROVED
 
-1. timing discrepancy
-2. amount discrepancy
-3. outstanding / overdue
+`PAYMENT_OVERDUE` / `PAYMENT_PARTIAL` / `PAYMENT_MISMATCH` are deterministic.
 
-Initial alerts:
-
-- PAYMENT_OVERDUE
-- PAYMENT_PARTIAL
-- PAYMENT_MISMATCH
+No risk scores, percentages, AI, or probabilistic thresholds.
 
 Reuse existing `AlertService` when technically appropriate.
 
@@ -204,17 +178,16 @@ Reuse existing `AlertService` when technically appropriate.
 - payment prediction
 - AI
 - sophisticated rule engines
-- advanced grace periods (future decision)
+- advanced grace periods
 
-### D7 — Multi-Currency — APPROVED
+### D7 — Currency — APPROVED
 
-Minimal multi-currency.
+Currency belongs to Contract. No FX. Aggregates must remain separated by currency.
 
-- Currency belongs to the Contract.
-- The Contract determines the currency of economic conditions.
 - TimeEntry is currency-agnostic.
 - Invoice Tracking and Payment Tracking must be consistent with Contract currency.
 - Use ISO 4217 codes (EUR, USD, GBP, CHF, …).
+- Contract currency may change only before monetary records exist (R2-OD-011).
 
 **Not in R2:**
 
@@ -223,18 +196,190 @@ Minimal multi-currency.
 - historical exchange-rate engine
 - external FX APIs
 - cross-currency financial aggregation
-
-Cross-currency economic aggregations must be separated by currency.
+- retroactive currency conversion
 
 **Principle:** TIME TRACKING REMAINS CURRENCY-AGNOSTIC.
-
-D7 closes the **direction** of OBD-011. Residual details: `docs/release/r2-open-decisions.md` (R2-OD-011).
 
 Existing R1 `Workspace.currency` remains a create-form default for Contract. It is **not** a reporting base currency.
 
 ---
 
-## 3. R2 scope
+## 3. Approved open-decision resolutions
+
+These close the corresponding register entries as **product decisions**. They do not invent Prisma fields, APIs, or UI.
+
+### R2-OD-001 — DAILY accrued rule — APPROVED
+
+A DAILY Contract contributes one accrued billable day if at least one TimeEntry exists for that Contract on that calendar date.
+
+- Multiple entries on the same day count once.
+- No work-calendar model.
+
+Accrued Daily remains `billable days × daily rate`. BR-007 still applies: only billable work contributes to Accrued Revenue.
+
+### R2-OD-002 — Monetary rounding — APPROVED
+
+Published / displayed monetary amounts are rounded to the nearest integer.
+
+- Do not prematurely round intermediate calculations.
+- No accounting-grade monetary precision is introduced.
+
+R1 `NUMERIC(19,4)` rate storage remains the existing persistence representation. Rounding is a publication rule, not a new money type.
+
+### R2-OD-003 — Historical commercial meaning — APPROVED
+
+Commercial Snapshot semantics.
+
+- Historical accrued revenue uses the commercial value applicable when the work occurred.
+- Later Contract changes must not rewrite historical revenue.
+- New work uses the current commercial value.
+
+**Persistence dependency:** the current R1 model stores `TimeEntry.contractId` only. No historical commercial snapshot field exists (`P102-F-001` / proposed OBD-016). Do not invent the field here. R2-E01 must plan the persistence mechanism before Accrued implementation.
+
+### R2-OD-004 — Expected Revenue — APPROVED
+
+Expected Revenue is Contract-capacity based and independent of TimeEntry, Invoice and Payment.
+
+For HOURLY:
+
+- use contractual capacity applicable to the reporting period
+- respect Contract validity
+- reuse existing pro-rata capacity semantics (`docs/domain-model.md` §9 / PD-105-005)
+- if contractual capacity is unavailable (`monthlyContractedMinutes` null), Expected Revenue = null
+
+DAILY does not receive Expected Revenue in R2: there is no contractual expected-day capacity model.
+
+No calendar inference or heuristic capacity.
+
+### R2-OD-006 — Invoice model — APPROVED
+
+MVP:
+
+- one Contract → many Invoice
+- one Invoice → exactly one Contract
+- `invoiceDate` required
+- amount
+- currency tied to Contract
+- status derived from payment events
+- optional reference
+- `dueDate` where `paymentTermsDays` allows it
+- payment events
+
+**No:** invoice lines, pro-forma, credit / debit notes, recurring invoice engine, PDF fiscal generation, fiscal numbering, SDI, accounting semantics.
+
+### R2-OD-007 — Invoice reference / period / editing — APPROVED (product)
+
+- reference is optional free text
+- `invoiceDate` is required
+- no invoice competence period in R2
+- Invoice remains editable
+- historical invoices are not physically deleted
+- use VOID / soft-delete semantics when removed from active tracking
+- no fiscal immutability model
+
+Exact VOID UI / list / restore behaviour remains a planning residual (`docs/release/r2-open-decisions.md`).
+
+### R2-OD-008 — Missing payment terms — APPROVED
+
+`paymentTermsDays = null` means:
+
+- no `dueDate`
+- no automatic overdue state
+
+Do not assume 30 days or another default.
+
+### R2-OD-009 — Payment status — APPROVED
+
+```text
+paidAmount = sum(paymentEvents.amount)
+```
+
+Amount status: UNPAID / PARTIAL / PAID / MISMATCH as in D5.
+
+`PAYMENT_OVERDUE` is independent: `dueDate < today AND paidAmount < invoice.amount`.
+
+No tolerance, percentage threshold, risk model or AI.
+
+### R2-OD-010 — Payment event editing — APPROVED
+
+Payment events may be edited and deleted in R2.
+
+- Invoice payment status is derived, not independent persisted truth.
+- Payment mutations trigger recalculation of derived state.
+- No immutable ledger / reversal-event / audit-ledger model in R2.
+
+### R2-OD-011 — Contract currency mutation — APPROVED (product)
+
+Contract currency may be changed before monetary records exist.
+
+Once the first monetary record exists, Contract currency is immutable.
+
+No FX or retroactive currency conversion.
+
+**Reconciliation with Invoice currency:** D7 requires Invoice / Payment consistency with Contract currency. After the first Invoice or Payment event exists, Contract currency cannot change, so live Contract currency and historical Invoice currency cannot diverge under this rule. Whether Invoice persists its own currency snapshot for defensive historical stability is a remaining planning question — not a conflicting product rule.
+
+### R2-OD-013 — Contract Time Allocation — APPROVED (product)
+
+R2 does **not** introduce generic workspace capacity alerts.
+
+R2 supports optional Contract / Project Time Allocation:
+
+- `allocatedMinutes` is an optional Contract-level total time budget
+- manually configurable and editable
+- conceptually distinct from `monthlyContractedMinutes`
+- TimeEntry consumption is compared against `allocatedMinutes`
+- no allocation alert exists when `allocatedMinutes = null`
+
+Allocation alerts are project / Contract operational alerts, not workspace capacity alerts.
+
+```text
+monthlyContractedMinutes = recurring contractual capacity
+allocatedMinutes         = total project / Contract time budget
+```
+
+Do not conflate them.
+
+The exact WARNING threshold is **not** a product decision. Do not invent one.
+
+### R2-OD-014 — Period closure — APPROVED OUT OF R2
+
+Do not introduce period-close / accounting-lock semantics in R2.
+
+OBD-007 remains historically open for a later release. It does not block R2.
+
+### R2-OD-015 — Audit — APPROVED OUT OF R2
+
+Do not introduce a dedicated audit ledger in R2.
+
+Normal application persistence / history remains sufficient.
+
+OBD-008 remains historically open for a later release. It does not block R2.
+
+---
+
+## 4. Residual planning / product questions
+
+These are **not** approved implementation assumptions.
+
+| ID | Topic | Needed by |
+| --- | --- | --- |
+| R2-OD-005 | Exact Forecast arithmetic (elapsed time, zero cases, historical periods) | R2-E04 |
+| R2-OD-012 | Whether simple tabular / CSV export belongs in R2-E05. PDF / document generation is out of core R2 | R2-E05 |
+| R2-OD-013 residual | Contract Time Allocation WARNING threshold | R2-E04 |
+| R2-OD-007 residual | Exact Invoice VOID UI / list / restore semantics | R2-E02 |
+| R2-OD-011 residual | Invoice currency snapshot representation | R2-E02 |
+| R2-OD-003 residual | Commercial snapshot persistence mechanism | R2-E01 |
+
+Direction already approved and **not** reopened:
+
+- Forecast is simple deterministic linear from Accrued + elapsed time. No ML / AI / extra signals (R2-OD-005).
+- Document / PDF generation is not part of core R2 (R2-OD-012).
+
+Full residual text: `docs/release/r2-open-decisions.md`.
+
+---
+
+## 5. R2 scope
 
 R2 concentrates on Financial / Revenue Operations, always secondary to Time Tracking.
 
@@ -242,14 +387,14 @@ R2 concentrates on Financial / Revenue Operations, always secondary to Time Trac
 | --- | --- | --- |
 | Revenue visibility | Yes | Accrued + Expected; Forecast is the projection companion |
 | Invoice Tracking | Yes | Tracking record only |
-| Payment Tracking & Reconciliation | Yes | D5 / D6 |
-| Forecasting / Capacity visibility | Conditional | Forecast Revenue per D4; workspace capacity / capacity alerts remain open (R2-OD-013) |
-| Advanced Reporting & Export | Conditional | Advanced filtering may be considered; CSV/PDF are not assumed until R2-OD-012; Excel is not an R2 decision |
-| Cross-cutting | Only as required | Currency, rounding, historical commercial meaning |
+| Payment Tracking & Reconciliation | Yes | D5 / D6 / R2-OD-009 |
+| Forecasting / Contract Time Allocation | Yes | Linear Forecast + optional `allocatedMinutes`. No workspace capacity alerts |
+| Advanced Reporting & Export | Conditional | Advanced filtering in scope for planning; simple CSV only if R2-E05 planning justifies it; no fiscal PDF |
+| Cross-cutting | Yes as required | Currency, rounding, commercial snapshot |
 
 ---
 
-## 4. Out of scope
+## 6. Out of scope
 
 ### Out of FreelanceOS (product boundary)
 
@@ -268,6 +413,9 @@ R2 concentrates on Financial / Revenue Operations, always secondary to Time Trac
 - profitability, client commercial scoring, tax / accounting calculations
 - PIVA Balance integration
 - Excel export (never approved)
+- workspace capacity model / generic capacity alerts
+- period-close / accounting-lock
+- dedicated audit ledger
 - calendar integration (R3)
 - accounting-system adapters (R3)
 - AI assistants (R4)
@@ -275,12 +423,13 @@ R2 concentrates on Financial / Revenue Operations, always secondary to Time Trac
 
 ---
 
-## 5. Domain boundaries
+## 7. Domain boundaries
 
 | Concept | Owner | R2 role |
 | --- | --- | --- |
-| TimeEntry | FreelanceOS | Source of Accrued Revenue; currency-agnostic |
-| Contract | FreelanceOS | Economic conditions, currency, payment terms, expected capacity |
+| TimeEntry | FreelanceOS | Source of Accrued quantity; currency-agnostic |
+| Contract | FreelanceOS | Economic conditions, currency, payment terms, expected capacity, optional `allocatedMinutes` |
+| Commercial snapshot | FreelanceOS | Historical Accrued commercial value. Persistence not yet present |
 | Accrued / Expected / Forecast Revenue | FreelanceOS | Derived economic visibility |
 | Invoice Tracking | FreelanceOS | Operational record |
 | Payment | FreelanceOS | Operational events + derived status |
@@ -289,76 +438,81 @@ R2 concentrates on Financial / Revenue Operations, always secondary to Time Trac
 
 ---
 
-## 6. Historical R2 themes — reconciliation
+## 8. Historical R2 themes — reconciliation
 
 | Previous theme | Disposition |
 | --- | --- |
 | R2-E01 Invoice Lifecycle | **INVALID.** Replaced by Invoice Tracking (D2). |
-| R2-E02 Payment Tracking | **VALID** within D5 / D6. |
-| R2-E03 Forecasting & Capacity | **REDUCED.** Forecast Revenue + capacity visibility only. No ML/AI. Workspace capacity model not decided. |
-| R2-E04 Advanced Reporting & Export | **CONDITIONAL.** CSV/PDF possible; Excel not assumed. |
+| R2-E02 Payment Tracking | **VALID** within D5 / D6 / R2-OD-009. |
+| R2-E03 Forecasting & Capacity | **RENAMED / REDUCED.** Forecast Revenue + Contract Time Allocation. No ML/AI. No workspace capacity alerts. |
+| R2-E04 Advanced Reporting & Export | **CONDITIONAL.** Simple CSV possible in R2-E05; PDF / document generation out of core R2. Excel not assumed. |
 | R2-E05 Commercial Intelligence | **INVALID** as profitability / commercial scoring. Useful operational analytics fold into reporting. |
 
 The label “Billing & Intelligence” is **not binding**. Official R2 name: **Revenue Operations**.
 
+Current executable map: `docs/release/r2-epic-map.md`.
+
 ---
 
-## 7. Gated historical OBDs
+## 9. Gated historical OBDs
 
 | ID | Decision | R2 status |
 | --- | --- | --- |
-| OBD-007 | Period closure / post-closure edit-delete | **OPEN.** Not decided. Not invented here. See R2-OD-014. |
-| OBD-008 | Audit / TimeEntry audit | **OPEN.** Not decided. Not invented here. See R2-OD-015. |
-| OBD-011 | Multi-currency | **Direction CLOSED by D7.** Residual: currency change after Invoice/Payment exist (R2-OD-011). |
+| OBD-007 | Period closure / post-closure edit-delete | **OUT OF R2** (R2-OD-014). Remains historically open for a later release. |
+| OBD-008 | Audit / TimeEntry audit | **OUT OF R2** (R2-OD-015). Remains historically open for a later release. |
+| OBD-011 | Multi-currency | **Direction CLOSED by D7.** Mutation after monetary records: CLOSED by R2-OD-011. Residual: Invoice currency snapshot representation. |
 
-R1 freeze deferred these items. Freeze deferral is historical. It does not close them and does not force them into R2.
+R1 freeze deferred these items. Freeze deferral is historical. It does not force them into R2.
 
 ---
 
-## 8. Historical conflicts
+## 10. Historical conflicts
 
 | Conflict | Classification |
 | --- | --- |
-| Revenue / billing calculation ambiguities | **RESOLVED BY PRODUCT DECISION** at semantic level (D4). Residual formulas: R2-OD-001, R2-OD-002, R2-OD-004, R2-OD-005. |
+| Revenue / billing calculation ambiguities | **RESOLVED BY PRODUCT DECISION** (D4, R2-OD-001, R2-OD-002, R2-OD-004). Forecast arithmetic residual: R2-OD-005. |
 | EPIC-105 “billing → R2-E02” vs MASTER_PLAN separate invoice/payment | **RESOLVED BY PRODUCT DECISION.** Invoice Tracking and Payment Tracking are separate. Invoice Lifecycle is withdrawn. |
-| Invoice commercial snapshot vs TimeEntry commercial snapshot | **OPEN PRODUCT DECISION** for TimeEntry / Accrued source of truth (R2-OD-003). Invoice-generation snapshot is **HISTORICAL / NO LONGER RELEVANT** (D2). |
-| OBD needed-by R2 vs freeze deferral | **HISTORICAL.** Needed-by is re-evaluated per epic. 007/008 remain open. D7 closes OBD-011 direction. |
-| Capacity alerts vs forecasting | **OPEN PRODUCT DECISION** (R2-OD-013). |
+| Invoice commercial snapshot vs TimeEntry commercial snapshot | **RESOLVED as product semantics** (R2-OD-003 Commercial Snapshot). Persistence mechanism is an R2-E01 planning dependency. Invoice-generation snapshot is **HISTORICAL / NO LONGER RELEVANT** (D2). |
+| OBD needed-by R2 vs freeze deferral | **HISTORICAL.** 007/008 are out of R2. D7 + R2-OD-011 close OBD-011 direction and mutation. |
+| Capacity alerts vs forecasting | **RESOLVED BY PRODUCT DECISION.** No workspace capacity alerts. Contract Time Allocation instead (R2-OD-013). WARNING threshold still open. |
 | Calendar view vs calendar integration | **HISTORICAL / NO LONGER RELEVANT** to R2. Calendar view was deferred in EPIC-103; calendar integration remains R3. |
 | TD ID collisions (`MASTER_PLAN` TD-* vs `testing-strategy` TD-* vs EPIC-001 TD-*) | **DOCUMENTATION CONFLICT.** Do not reuse IDs. Do not “fix” history in this pack. |
-| Excel in EPIC-105 non-goals vs product OD-011 CSV/PDF | **RESOLVED.** Excel was never a Product Owner decision. Not R2. |
+| Excel in EPIC-105 non-goals vs product OD-011 CSV/PDF | **RESOLVED.** Excel was never a Product Owner decision. Not R2. PDF / document generation is out of core R2. |
 
 R1 accepted limitations remain historical. They are not R2 bugs unless the Product Owner reopens them.
 
 ---
 
-## 9. Architectural implications
+## 11. Architectural implications
 
 Domain implications (not an implementation plan):
 
-- Contract already carries `currency` and `paymentTermsDays` in R1. R2 consumes them; it does not reinvent them.
-- TimeEntry stays currency-agnostic and remains the Accrued source fact.
+- Contract already carries `currency`, `paymentTermsDays`, `billingModel`, `rate`, and `monthlyContractedMinutes` in R1. R2 consumes them; it does not reinvent them.
+- `allocatedMinutes` is a new optional Contract concept. It does not exist in the current persistence model.
+- TimeEntry stays currency-agnostic and remains the Accrued quantity fact.
+- Historical Accrued requires a commercial snapshot that does not yet exist in persistence.
 - Invoice Tracking and Payment are new operational aggregates.
 - Payment status and discrepancies are derived.
 - Revenue is a derived read model unless a later technical plan proves a persistence need.
-- Payment alerts should extend the existing deterministic AlertService.
-- No FX, profitability, invoice-generation, or accounting modules.
+- Payment alerts and allocation alerts should extend the existing deterministic AlertService.
+- No FX, profitability, invoice-generation, period-close, audit-ledger, or accounting modules.
 
 See `docs/release/r2-architecture-delta.md`.
 
 ---
 
-## 10. Decision status
+## 12. Decision status
 
 | Kind | Items |
 | --- | --- |
 | APPROVED | D1, D2, D3, D4, D5, D6, D7 |
-| OPEN | `docs/release/r2-open-decisions.md` |
-| DEFERRED / FUTURE | FX, installment engine, PIVA Balance integration, e-invoicing, calendar integration, AI, Excel, profitability, advanced grace / risk |
+| APPROVED OD resolutions | R2-OD-001, R2-OD-002, R2-OD-003 (semantics), R2-OD-004, R2-OD-006, R2-OD-007 (product), R2-OD-008, R2-OD-009, R2-OD-010, R2-OD-011 (product), R2-OD-013 (product), R2-OD-014, R2-OD-015 |
+| RESIDUAL PLANNING / PRODUCT | R2-OD-005 arithmetic, R2-OD-012 CSV-in-E05, allocation WARNING threshold, VOID UI, Invoice currency snapshot, commercial snapshot persistence |
+| DEFERRED / FUTURE | FX, installment engine, PIVA Balance integration, e-invoicing, calendar integration, AI, Excel, profitability, advanced grace / risk, workspace capacity alerts, period-close, audit ledger |
 
 ---
 
-## 11. R1 integrity
+## 13. R1 integrity
 
 R1 remains FROZEN / GRANTED.
 

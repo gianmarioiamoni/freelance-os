@@ -1,11 +1,17 @@
-# R2 Epic Map — Preliminary
+# R2 Epic Map — Planning Baseline
 
-**Status:** Preliminary capability map. Not an implementation plan. Not approved epics.  
-**Date:** 2026-09-21  
+**Status:** Executable planning baseline. Not implementation. No EPIC-2xx opened.  
+**Date:** 2026-09-22  
 **Authority:** `docs/release/r2-decision-pack.md`  
-**Does not:** open an implementation epic, assign EPIC-2xx numbers, or schedule phases.
+**Does not:** authorize schema, migrations, APIs, UI, or implementation branches.
 
-Priority for later planning:
+```text
+PLANNING BASELINE
+IMPLEMENTATION: NOT STARTED
+R1: FROZEN / GRANTED
+```
+
+Priority:
 
 ```text
 TIME TRACKING (exists)
@@ -17,8 +23,6 @@ REVENUE VISIBILITY
 PAYMENT TRACKING
 ```
 
-Invoice Tracking precedes Payment Tracking. Forecast depends on Accrued. Export depends on the figures it would export.
-
 ---
 
 ## Historical map (superseded)
@@ -26,187 +30,622 @@ Invoice Tracking precedes Payment Tracking. Forecast depends on Accrued. Export 
 | Old ID | Old name | Disposition |
 | --- | --- | --- |
 | R2-E01 | Invoice Lifecycle | **Withdrawn.** Replaced by Invoice Tracking. |
-| R2-E02 | Payment Tracking | Retained, narrowed to D5 / D6. |
-| R2-E03 | Forecasting & Capacity | Retained, reduced. No ML/AI. |
-| R2-E04 | Advanced Reporting & Export | Retained, conditional. Excel not assumed. |
+| R2-E02 | Payment Tracking | Retained as current R2-E03, narrowed to D5 / D6. |
+| R2-E03 | Forecasting & Capacity | Retained as current R2-E04. No ML/AI. Workspace capacity withdrawn. |
+| R2-E04 | Advanced Reporting & Export | Retained as current R2-E05, conditional CSV. |
 | R2-E05 | Commercial Intelligence | **Withdrawn.** No profitability / client scoring. |
 
 ---
 
-## Proposed map
+## Dependency order
 
-IDs below are planning labels only.
-
-### R2-E01 — Revenue Visibility
-
-**Purpose.** Show Accrued Revenue and Expected Revenue so the freelancer understands the economic value of recorded work and of the contract — without invoicing or accounting.
-
-**Scope.**
-
-- Accrued Revenue from TimeEntry + Contract conditions (D4).
-- Expected Revenue from Contract / expected capacity (D4 direction).
-- Per-currency presentation (D7).
-- Surfaces that reuse shared calculation services (dashboard / reports — exact UI later).
-
-**Non-scope.**
-
-- Invoice generation or Invoice Tracking (R2-E02).
-- Payment (R2-E03).
-- Forecast Revenue (R2-E04).
-- Profitability, tax, FX rollup, accounting recognition.
-
-**Dependencies.**
-
-- R1 TimeEntry and Contract.
-- R2-OD-001 (daily), R2-OD-002 (rounding), R2-OD-003 (live vs snapshot), R2-OD-004 (Expected formula).
-
-**Open decisions.** R2-OD-001, R2-OD-002, R2-OD-003, R2-OD-004.
-
-**Expected outcome.** Deterministic Accrued and Expected figures, currency-separated, independent of invoice and payment.
-
----
-
-### R2-E02 — Invoice Tracking
-
-**Purpose.** Register operational invoice tracking records so payments can be expected and reconciled. Not fiscal invoicing.
-
-**Scope.**
-
-- Invoice Tracking record: invoiceDate, invoicedAmount, currency, Contract, optional notes (D2).
-- Currency consistent with Contract (D7).
-
-**Non-scope.**
-
-- Generation, PDF, numbering, e-invoicing, line items, credit notes, fiscal workflow, accounting lifecycle.
-- Payment events (R2-E03).
-- Treating the record as Accrued Revenue.
-
-**Dependencies.**
-
-- R1 Contract (`currency`, `paymentTermsDays`).
-- R2-OD-006, R2-OD-007, R2-OD-002 (stored amounts), R2-OD-011.
-
-**Open decisions.** R2-OD-006, R2-OD-007, R2-OD-011.
-
-**Expected outcome.** One or more Invoice Tracking records can be stored and listed per Contract, sufficient to drive Payment Tracking.
-
----
-
-### R2-E03 — Payment Tracking & Reconciliation
-
-**Purpose.** Track expected vs actual payments operationally and surface simple discrepancies.
-
-**Scope.**
-
-- Derived expected payment date (D5).
-- Multiple Actual Payment events per Invoice Tracking record.
-- Derived status and outstanding (D5).
-- Discrepancies and alerts PAYMENT_OVERDUE, PAYMENT_PARTIAL, PAYMENT_MISMATCH (D6).
-- Reuse AlertService when technically appropriate.
-
-**Non-scope.**
-
-- Accounts receivable / accounting.
-- Installment / schedule engine.
-- Risk scoring, prediction, AI, percentage-threshold engines, advanced grace periods.
-
-**Dependencies.**
-
-- R2-E02 Invoice Tracking.
-- Contract.paymentTermsDays.
-- R2-OD-008, R2-OD-009, R2-OD-010, R2-OD-002.
-
-**Open decisions.** R2-OD-008, R2-OD-009, R2-OD-010.
-
-**Expected outcome.** Payment status is always derivable. Overdue / partial / mismatch conditions are visible without an accounting subsystem.
-
----
-
-### R2-E04 — Forecasting & Capacity Visibility
-
-**Purpose.** Project Accrued Revenue to period end from current pace, and show capacity visibility consistent with existing contract capacity — without a financial or ML engine.
-
-**Scope.**
-
-- Forecast Revenue per D4 (deterministic, current-period pace only).
-- Capacity visibility that does not invent a new profitability model.
-- No historical-behavior statistical engine (product vision §8 “historical behavior” is **not** adopted; D4 is narrower).
-
-**Non-scope.**
-
-- ML / AI / probabilistic forecast.
-- Accounting forecasts.
-- Workspace monthly capacity model unless R2-OD-013 approves it.
-- Capacity alerts unless R2-OD-013 approves them (PD-106-001 remains deferred until decided).
-
-**Dependencies.**
-
-- R2-E01 Accrued Revenue.
-- R1 contract utilization / pro-rata capacity.
-- R2-OD-005, R2-OD-013.
-
-**Open decisions.** R2-OD-005, R2-OD-013.
-
-**Expected outcome.** A deterministic end-of-period Accrued projection and a clear statement of capacity visibility that does not require a new capacity domain unless the Product Owner adds one.
-
----
-
-### R2-E05 — Advanced Reporting & Export
-
-**Purpose.** Extend operational reporting so revenue, invoice tracking, and payment status can be inspected and, if approved, exported.
-
-**Scope (candidate, not assumed).**
-
-- Advanced filtering on existing / R2 operational facts.
-- CSV and/or PDF only if R2-OD-012 says so.
-- Richer period analysis that remains operational, not commercial intelligence.
-
-**Non-scope.**
-
-- Excel (not a Product Owner decision).
-- Profitability, client scoring, concentration-as-intelligence.
-- Fiscal or accounting reports.
-- Cross-currency totals (D7).
-
-**Dependencies.**
-
-- R2-E01 at minimum for revenue reports.
-- R2-E02 / R2-E03 if invoice/payment columns are in scope.
-- R2-OD-012.
-
-**Open decisions.** R2-OD-012.
-
-**Expected outcome.** Reporting remains a read model over shared services. Export is present only if explicitly approved.
-
----
-
-## Cross-cutting (not a standalone implementation epic yet)
-
-These are not a sixth implementation epic. They gate the map above.
-
-| Topic | Handling |
-| --- | --- |
-| Rounding (OBD-002) | R2-OD-002 — required before any published money |
-| Daily-rate semantics (OBD-001) | R2-OD-001 — required before DAILY Accrued |
-| Commercial snapshot (P102-F-001 / OBD-016) | R2-OD-003 |
-| Period closure (OBD-007) | R2-OD-014 — not in the map until decided |
-| Audit (OBD-008) | R2-OD-015 — not in the map until decided |
-| Multi-currency residuals | D7 + R2-OD-011 |
-
----
-
-## Suggested later planning order
-
-Not a schedule. Dependency order only:
+Conceptual product order:
 
 ```text
 R2-E01 Revenue Visibility
+        ↓
 R2-E02 Invoice Tracking
+        ↓
 R2-E03 Payment Tracking & Reconciliation
-R2-E04 Forecasting & Capacity Visibility
-R2-E05 Advanced Reporting & Export
 ```
 
-R2-E02 / R2-E03 can be planned in parallel with R2-E01 once their own opens are answered. They do not depend on Accrued Revenue (D4).
+```text
+R2-E04 Forecasting & Contract Time Allocation
+        depends on R2-E01
+        depends on existing TimeEntry / Contract analytics
+        depends on Contract Time Allocation semantics
+```
 
-No EPIC-2xx is opened by this document.
+```text
+R2-E05 Advanced Reporting & Export
+        depends on finalized revenue / invoice / payment semantics
+        must not block E01–E03 operational flows
+```
+
+Safe parallelization:
+
+| Work | May start when |
+| --- | --- |
+| R2-E01 | R1 Contract + TimeEntry exist (now) |
+| R2-E02 | R1 Contract exists (now). Does **not** depend on Accrued |
+| R2-E03 | After R2-E02 Invoice Tracking exists |
+| R2-E04 Forecast | After R2-E01 Accrued exists |
+| R2-E04 `allocatedMinutes` | After Contract write-path is available; may proceed in parallel with E02 |
+| R2-E05 | After the figures it reports are semantically stable. Revenue-only reports may follow E01; invoice/payment columns follow E02/E03 |
+
+E01 and E02 may be planned and implemented in parallel. E03 is sequential on E02. E04 is sequential on E01 for Forecast. E05 is a trailing read-model epic.
+
+---
+
+## R2-E01 — Revenue Visibility
+
+### 1. Objective
+
+Publish deterministic Accrued Revenue and Expected Revenue so the freelancer understands the economic value of recorded work and of HOURLY contractual capacity — without invoicing or accounting.
+
+### 2. User value
+
+See what work is already worth (Accrued) and what the HOURLY contract economically expects in the period (Expected), separated by currency.
+
+### 3. In scope
+
+- Accrued Revenue from TimeEntry + historical commercial value (D4, R2-OD-003).
+- HOURLY Accrued: `billable minutes / 60 × hourly rate`.
+- DAILY Accrued: one billable day per Contract per calendar date with at least one TimeEntry; multiples count once (R2-OD-001).
+- Expected Revenue for HOURLY from contractual capacity, validity, and existing pro-rata semantics (R2-OD-004).
+- Expected Revenue = null when HOURLY contractual capacity is unavailable.
+- Published amounts rounded to nearest integer; intermediates not prematurely rounded (R2-OD-002).
+- Per-currency presentation (D7).
+- Surfaces that reuse shared calculation services (dashboard / reports — exact UI in the later epic plan).
+
+### 4. Explicitly out of scope
+
+- Invoice Tracking (R2-E02) and Payment (R2-E03).
+- Forecast Revenue (R2-E04).
+- Expected Revenue for DAILY.
+- Profitability, tax, FX rollup, accounting recognition, ML.
+- Inventing the commercial snapshot persistence design before E01 planning.
+
+### 5. Dependencies
+
+- R1 TimeEntry and Contract.
+- Existing pro-rata capacity (PD-105-005).
+- Commercial snapshot persistence plan (R2-OD-003 residual).
+
+### 6. Domain objects affected
+
+- TimeEntry (read; snapshot write if the persistence plan requires it).
+- Contract (read commercial conditions for new work).
+- Derived Accrued / Expected Revenue.
+
+### 7. Application services / capabilities affected
+
+- Candidate: `AnalyticsService` extension or a dedicated Revenue application service.
+- `ReportingService` / dashboard read paths if they publish money.
+
+### 8. Persistence impact
+
+- Confirmed: historical commercial snapshot required; **no field exists**.
+- Open: snapshot mechanism.
+- Revenue totals remain derived unless a later plan proves persistence.
+
+### 9. Analytics / reporting impact
+
+- First publication of monetary figures in analytics / reporting.
+- Must stay on shared calculation services (A-006).
+- Aggregates separated by currency.
+
+### 10. Alerts / notifications impact
+
+- None in this epic.
+
+### 11. Authorization / workspace isolation
+
+- All reads workspace-scoped via existing `WorkspaceContext`.
+- No browser-supplied tenant grant.
+- OBD-009 roles unchanged.
+
+### 12. E2E implications
+
+- Accrued changes when billable TimeEntries change.
+- Later Contract rate changes must not rewrite historical Accrued (once snapshot exists).
+- HOURLY Expected follows pro-rata capacity; null capacity → null Expected.
+- DAILY Expected is absent.
+- Mixed-currency workspaces never show a single converted total.
+
+### 13. Acceptance criteria
+
+- Accrued is independent of Invoice and Payment.
+- DAILY billable-day rule matches R2-OD-001.
+- Published money matches R2-OD-002.
+- Historical Accrued uses work-time commercial value.
+- HOURLY Expected uses contractual capacity / pro-rata or is null.
+- Workspace isolation holds.
+
+### 14. Product decisions still required
+
+- Commercial snapshot persistence mechanism (residual #6).
+
+### 15. Risks / architectural constraints
+
+- Implementing Accrued against live Contract fields would violate R2-OD-003.
+- Do not introduce accounting-grade money types.
+- Do not treat BR-007 as revoked: Accrued remains billable work.
+- R1 P102-F-001 is the historical gap this epic must close, not a reason to skip the snapshot.
+
+---
+
+## R2-E02 — Invoice Tracking
+
+### 1. Objective
+
+Register operational invoice tracking records so payments can be expected and reconciled. Not fiscal invoicing.
+
+### 2. User value
+
+Record that an invoice exists for a Contract, with date, amount, and optional reference, without generating a fiscal document.
+
+### 3. In scope
+
+- 1 Contract → many Invoice; 1 Invoice → exactly 1 Contract (R2-OD-006).
+- `invoiceDate`, amount, currency tied to Contract, optional reference.
+- `dueDate` only when `paymentTermsDays` is present (R2-OD-008).
+- Invoice remains editable.
+- VOID / soft-delete instead of physical delete (R2-OD-007).
+- Currency mutation guard: Contract currency immutable after the first monetary record (R2-OD-011).
+
+### 4. Explicitly out of scope
+
+- Generation, PDF, numbering, e-invoicing, line items, credit / debit notes, pro-forma, recurring engine, SDI, fiscal workflow.
+- Payment events (R2-E03).
+- Treating the record as Accrued Revenue.
+- Invoice competence period.
+- Fiscal immutability.
+
+### 5. Dependencies
+
+- R1 Contract (`currency`, `paymentTermsDays`).
+- Residual VOID UI and Invoice currency snapshot questions.
+
+Independent of R2-E01.
+
+### 6. Domain objects affected
+
+- New Invoice Tracking aggregate.
+- Contract (currency immutability write rule).
+
+### 7. Application services / capabilities affected
+
+- New Invoice Tracking application service.
+- Contract update path (currency mutation guard).
+
+### 8. Persistence impact
+
+- Confirmed: new Invoice Tracking record; VOID / soft-delete.
+- Open: table/field names; Invoice currency snapshot vs live Contract currency.
+- No invoice-line table.
+
+### 9. Analytics / reporting impact
+
+- Invoice facts become available to R2-E05.
+- Invoice is not Accrued and must not be summed into Accrued.
+
+### 10. Alerts / notifications impact
+
+- None until R2-E03.
+
+### 11. Authorization / workspace isolation
+
+- Invoice is workspace-scoped through Contract / explicit `workspaceId`.
+- Server-side membership required for every read/write.
+- Resource ids are not tenant grants.
+
+### 12. E2E implications
+
+- Create / edit / VOID Invoice on a Contract.
+- Reject Invoice currency that diverges from Contract.
+- Reject Contract currency change after the first Invoice exists.
+- VOID removes the record from active tracking without physical delete.
+- `paymentTermsDays = null` yields no due date.
+
+### 13. Acceptance criteria
+
+- Cardinality and fields match R2-OD-006 / R2-OD-007.
+- No fiscal document is generated.
+- Historical invoices are not physically deleted.
+- Workspace isolation holds.
+
+### 14. Product decisions still required
+
+- Exact Invoice VOID UI / list / restore semantics (residual #4).
+- Invoice currency snapshot representation (residual #3).
+
+### 15. Risks / architectural constraints
+
+- Do not silently reuse historical “invoice generation snapshot” language.
+- Do not invent a default `paymentTermsDays`.
+- Currency snapshot must not become an FX or retroactive-conversion mechanism.
+
+---
+
+## R2-E03 — Payment Tracking & Reconciliation
+
+### 1. Objective
+
+Track expected versus actual payments operationally and surface simple deterministic discrepancies.
+
+### 2. User value
+
+Know whether an invoice is unpaid, partial, paid, mismatched, and/or overdue — without an accounting subsystem.
+
+### 3. In scope
+
+- Derived expected payment date: `invoiceDate + paymentTermsDays` (D5).
+- Multiple payment events per Invoice.
+- `paidAmount = sum(paymentEvents.amount)`.
+- Derived amount status: UNPAID / PARTIAL / PAID / MISMATCH (R2-OD-009).
+- Independent `PAYMENT_OVERDUE` when `dueDate < today AND paidAmount < invoice.amount`.
+- Alerts: `PAYMENT_OVERDUE`, `PAYMENT_PARTIAL`, `PAYMENT_MISMATCH` (D6).
+- Payment events editable and deletable; status recalculated (R2-OD-010).
+- Reuse `AlertService` when technically appropriate.
+
+### 4. Explicitly out of scope
+
+- Accounts receivable / accounting.
+- Installment / schedule engine.
+- Risk scoring, prediction, AI, percentage thresholds, grace periods.
+- Immutable ledger / reversal events / audit ledger.
+- Overdue when `paymentTermsDays` is null.
+
+### 5. Dependencies
+
+- R2-E02 Invoice Tracking.
+- `Contract.paymentTermsDays`.
+- Likely `Workspace.timezone` for “today”.
+
+### 6. Domain objects affected
+
+- New Payment event.
+- Invoice Tracking (derived status).
+- Alert / Notification.
+
+### 7. Application services / capabilities affected
+
+- Payment write/read service.
+- Pure domain status derivation.
+- `AlertService` extension.
+
+### 8. Persistence impact
+
+- Confirmed: Payment event records.
+- Confirmed: status is derived, not independent persisted truth.
+- Open: repository shape; overdue “today” timezone authority (reuse likely).
+
+### 9. Analytics / reporting impact
+
+- Payment status / paid / outstanding become reportable facts for R2-E05.
+- Must not alter Accrued or Expected.
+
+### 10. Alerts / notifications impact
+
+- New deterministic payment alert types.
+- Dedup / resolve rules to be designed.
+- Existing CONTRACT_WARNING / CONTRACT_EXCEEDED unchanged.
+
+### 11. Authorization / workspace isolation
+
+- Payment events scoped through Invoice / Contract / workspace.
+- Server-side membership on every mutation.
+- Alert and notification queries remain `workspaceId` + `userId` scoped.
+
+### 12. E2E implications
+
+- Multiple payments update derived status.
+- Edit / delete payment recalculates status.
+- PARTIAL + OVERDUE can appear together.
+- Over-payment is MISMATCH, not a hidden PAID.
+- Null payment terms never produce OVERDUE.
+
+### 13. Acceptance criteria
+
+- Status always derivable from events.
+- Predicates match R2-OD-009 with no tolerance.
+- Alerts are deterministic.
+- Workspace isolation holds.
+
+### 14. Product decisions still required
+
+- VOID invoices’ interaction with payment lists (depends on residual #4).
+- No new payment-status product decision.
+
+### 15. Risks / architectural constraints
+
+- Do not persist status as a second source of truth.
+- Do not introduce D5’s superseded mutually exclusive OVERDUE amount status.
+- Do not add percentage / risk logic in the evaluator.
+
+---
+
+## R2-E04 — Forecasting & Contract Time Allocation
+
+### 1. Objective
+
+Project Accrued Revenue to period end with a simple linear Forecast, and compare TimeEntry consumption against an optional Contract / Project time budget.
+
+### 2. User value
+
+See where current-period Accrued is heading, and whether a Contract’s total allocated time is being consumed — without ML or a workspace capacity model.
+
+### 3. In scope
+
+- Deterministic linear Forecast from Accrued and elapsed time in the current reporting period (R2-OD-005 direction).
+- Optional Contract `allocatedMinutes`, manually configurable and editable (R2-OD-013).
+- Consumption compared against `allocatedMinutes`.
+- No allocation alert when `allocatedMinutes` is null.
+- Allocation alerts are Contract / project operational alerts.
+
+### 4. Explicitly out of scope
+
+- ML / AI / probabilistic / historical-behaviour engines.
+- Extra forecasting signals beyond Accrued + elapsed time.
+- Workspace capacity model and generic `CAPACITY_WARNING` / `CAPACITY_EXCEEDED`.
+- Conflating `allocatedMinutes` with `monthlyContractedMinutes`.
+- Inventing the WARNING threshold.
+
+### 5. Dependencies
+
+- R2-E01 Accrued Revenue (Forecast).
+- Existing TimeEntry / Contract analytics (consumption, periods).
+- Contract Time Allocation semantics (R2-OD-013).
+- Residual Forecast arithmetic and WARNING threshold.
+
+### 6. Domain objects affected
+
+- Contract (`allocatedMinutes` concept).
+- TimeEntry (consumption read).
+- Derived Forecast Revenue.
+- Alert / Notification (allocation).
+
+### 7. Application services / capabilities affected
+
+- Revenue / analytics read path for Forecast.
+- Contract write path for `allocatedMinutes`.
+- `AlertService` for allocation alerts once the threshold exists.
+
+### 8. Persistence impact
+
+- Confirmed: optional `allocatedMinutes` on Contract. **Not in current schema.** Conceptual name only.
+- Forecast remains derived.
+- WARNING threshold is configuration or a constant only after the Product Owner decides it.
+
+### 9. Analytics / reporting impact
+
+- Forecast is a current-period projection companion to Accrued.
+- Allocation consumption may appear on contract / report surfaces.
+
+### 10. Alerts / notifications impact
+
+- New Contract allocation alerts only after the WARNING threshold is decided.
+- No workspace capacity alerts.
+
+### 11. Authorization / workspace isolation
+
+- Same workspace-scoped Contract and TimeEntry rules as R1.
+- Allocation alerts inherit existing Alert / Notification isolation.
+
+### 12. E2E implications
+
+- Forecast uses only Accrued and elapsed time once arithmetic is defined.
+- Setting / clearing `allocatedMinutes` enables / disables allocation alerts.
+- `monthlyContractedMinutes` utilization alerts remain a separate R1 mechanism.
+
+### 13. Acceptance criteria
+
+- Forecast is linear and deterministic; no ML.
+- `allocatedMinutes` is optional and distinct from monthly capacity.
+- Null allocation produces no allocation alert.
+- Workspace isolation holds.
+
+### 14. Product decisions still required
+
+- Exact Forecast arithmetic (residual #2).
+- Allocation WARNING threshold (residual #1).
+
+### 15. Risks / architectural constraints
+
+- Product vision §8 “historical behavior” is **not** adopted.
+- Do not treat PD-106-001 workspace capacity as approved.
+- Do not ship allocation WARNING with an invented percentage.
+
+---
+
+## R2-E05 — Advanced Reporting & Export
+
+### 1. Objective
+
+Extend operational reporting so revenue, invoice tracking, and payment status can be inspected and, if justified, exported as a simple table.
+
+### 2. User value
+
+Inspect R2 operational facts over existing period selection without building a second source of truth or a document generator.
+
+### 3. In scope
+
+- Advanced filtering on existing / R2 operational facts.
+- Revenue / invoice / payment columns once those semantics are finalized.
+- Simple tabular / CSV export **only if** planning shows low complexity and clear value (R2-OD-012 residual).
+- Shared calculation services only.
+
+### 4. Explicitly out of scope
+
+- Core-R2 document / PDF / fiscal generation.
+- Excel.
+- Profitability, client scoring, commercial intelligence.
+- Cross-currency totals (D7).
+- Blocking E01–E03 until export is decided.
+
+### 5. Dependencies
+
+- R2-E01 for revenue reports.
+- R2-E02 / R2-E03 if invoice / payment columns are included.
+- Residual CSV decision.
+
+### 6. Domain objects affected
+
+- None as write model. Read models over TimeEntry, Contract, Invoice, Payment, derived revenue.
+
+### 7. Application services / capabilities affected
+
+- `ReportingService` / analytics read path.
+- Optional export adapter if CSV is approved.
+
+### 8. Persistence impact
+
+- None expected. Reports remain derived.
+- No document store.
+
+### 9. Analytics / reporting impact
+
+- This epic **is** the reporting impact of R2.
+- Must not duplicate revenue / payment formulas.
+
+### 10. Alerts / notifications impact
+
+- None.
+
+### 11. Authorization / workspace isolation
+
+- Same RSC / `WorkspaceContext` rules as EPIC-105 `/reports`.
+- Period parameters are view state, not tenant grants.
+
+### 12. E2E implications
+
+- Revenue / invoice / payment figures agree with the originating services.
+- Per-currency separation.
+- Export, if present, is tabular and non-fiscal.
+
+### 13. Acceptance criteria
+
+- Reporting remains a read model over shared services.
+- No fiscal PDF exists.
+- CSV exists only if explicitly approved during this epic’s planning.
+- Workspace isolation holds.
+
+### 14. Product decisions still required
+
+- Whether simple CSV belongs in this epic (residual #5).
+
+### 15. Risks / architectural constraints
+
+- Do not let export pull document-generation architecture into the monolith.
+- Do not wait to start E01–E03 on this epic.
+
+---
+
+## Cross-cutting (not a standalone epic)
+
+| Topic | Handling |
+| --- | --- |
+| Rounding | APPROVED (R2-OD-002) — apply before any published money |
+| DAILY accrued | APPROVED (R2-OD-001) |
+| Commercial snapshot semantics | APPROVED; persistence is E01 dependency |
+| Period closure | OUT OF R2 (R2-OD-014) |
+| Audit ledger | OUT OF R2 (R2-OD-015) |
+| Multi-currency | D7 + R2-OD-011; Invoice snapshot residual |
+| Workspace isolation | Unchanged R1 rule for every new aggregate |
+
+---
+
+## Remaining product decisions
+
+Do not implement these as assumptions.
+
+1. Contract Time Allocation WARNING threshold.
+2. Exact Forecast calculation semantics (elapsed time, full-period projection, elapsed = 0, Accrued = 0, historical periods).
+3. Invoice currency snapshot representation.
+4. Exact Invoice VOID behaviour and UI semantics.
+5. Whether simple CSV export belongs in R2-E05.
+6. Commercial snapshot persistence detail (field / write timing). The product meaning is already approved.
+
+---
+
+## R2 implementation phasing
+
+Methodology (`MASTER_PLAN.md` §2):
+
+```text
+Vision → Architecture → Planning → Implementation → Engineering Review
+  → QA → Documentation → UX Review → UX Polish
+  → Production Validation → Certification → Release
+```
+
+```text
+Release → Epic → Phase → Commit
+```
+
+This document completes **Planning** at release baseline level. It does not open implementation phases or invent commit hashes.
+
+### Release-level
+
+| Stage | R2 status |
+| --- | --- |
+| Vision | Complete — decision pack |
+| Architecture | Complete as domain delta — `r2-architecture-delta.md` |
+| Planning | This baseline. Detailed EPIC-2xx plans still required before implementation |
+| Implementation | Not started |
+| Engineering Review → Release | Not started. Do not mark R2 production-ready |
+
+### Proposed small phases (planning labels only)
+
+**R2-E01**
+
+| Phase | Intent |
+| --- | --- |
+| E01-P00 | Detailed epic plan, including commercial snapshot persistence design |
+| E01-P01 | Accrued / Expected domain + application calculations |
+| E01-P02 | Snapshot persistence required by R2-OD-003 |
+| E01-P03 | Publish figures on existing dashboard / report surfaces |
+| E01-P04 | Tests, documentation, Engineering Review |
+
+**R2-E02**
+
+| Phase | Intent |
+| --- | --- |
+| E02-P00 | Detailed epic plan, including VOID UI and currency snapshot choice |
+| E02-P01 | Invoice Tracking persistence + domain |
+| E02-P02 | Application service, authorization, Contract currency guard |
+| E02-P03 | Invoice Tracking UI |
+| E02-P04 | Tests, documentation, Engineering Review |
+
+**R2-E03**
+
+| Phase | Intent |
+| --- | --- |
+| E03-P00 | Detailed epic plan |
+| E03-P01 | Payment events + derived status |
+| E03-P02 | Payment alerts via AlertService |
+| E03-P03 | Payment UI |
+| E03-P04 | Tests, documentation, Engineering Review |
+
+**R2-E04**
+
+| Phase | Intent |
+| --- | --- |
+| E04-P00 | Detailed epic plan; resolve Forecast arithmetic and WARNING threshold |
+| E04-P01 | Forecast calculation on Accrued |
+| E04-P02 | `allocatedMinutes` + consumption |
+| E04-P03 | Allocation alerts (only after threshold exists) |
+| E04-P04 | Surfaces, tests, documentation, Engineering Review |
+
+**R2-E05**
+
+| Phase | Intent |
+| --- | --- |
+| E05-P00 | Detailed epic plan; decide CSV |
+| E05-P01 | Reporting extensions over finalized R2 facts |
+| E05-P02 | Simple tabular export only if approved |
+| E05-P03 | Tests, documentation, Engineering Review |
+
+Release gates (QA, UX, Production Validation, Certification, Release) run after the implemented R2 scope is reviewable. They are not claimed here.
+
+No EPIC-2xx number is assigned by this document.

@@ -1,7 +1,7 @@
 # FreelanceOS — System Architecture
 
 **Status:** Architecture Baseline — Authentication, workspace, testing/CI, UI foundation, client management, contract management, time tracking, analytics/dashboard, reporting, alert evaluation with in-app notification center, and MVP Integration COMPLETE / CLOSED (EPIC-003, EPIC-004, EPIC-005, EPIC-006, EPIC-101, EPIC-102, EPIC-103, EPIC-104, EPIC-105, EPIC-106, MVP-INTEGRATION). MVP QA Gate PASS WITH FINDINGS. Documentation Gate COMPLETE. UX Gate PASS WITH FINDINGS. UX Polish COMPLETE. EPIC-107 Public Landing COMPLETE. MASTER_PLAN §34 — READY FOR RELEASE (`docs/release/production-validation.md`). MASTER_PLAN §35 — GRANTED (`docs/release/production-certification.md`). D-005 PROVIDED. Hosted production is `https://freelance-os-timeplan.vercel.app`. Mail transport is Gmail SMTP / Nodemailer. Custom domain was not purchased. Public `/` landing; authenticated Dashboard at `/dashboard`. Production readiness: RELEASE GRANTED.  
-**Scope:** MVP (R1 baseline). R2 domain delta: `docs/release/r2-architecture-delta.md`. R1 remains FROZEN.  
+**Scope:** MVP (R1 baseline). R2 domain delta: `docs/release/r2-architecture-delta.md`. R2 planning baseline: `docs/release/r2-epic-map.md`. R1 remains FROZEN. R2 is in planning and is not production-ready.  
 **Architectural style:** Modular Monolith  
 **Primary runtime:** Next.js / TypeScript  
 **Persistence:** PostgreSQL via Prisma ORM
@@ -464,13 +464,14 @@ The MVP does not implement full electronic invoicing.
 
 Billing is a calculation capability, not an accounting system.
 
-### R2 boundary (2026-09-21)
+### R2 boundary (2026-09-22)
 
 R2 does **not** add invoice generation or a fiscal invoice lifecycle (D2).
-R2 adds Invoice Tracking, Payment Tracking, and derived revenue
-(Accrued / Expected / Forecast). See `docs/release/r2-decision-pack.md`
-and `docs/release/r2-architecture-delta.md`. Profitability remains
-outside FreelanceOS (PIVA Balance).
+R2 adds Invoice Tracking, Payment Tracking, derived revenue
+(Accrued / Expected / Forecast), and optional Contract Time Allocation.
+See `docs/release/r2-decision-pack.md` and
+`docs/release/r2-architecture-delta.md`. Profitability remains
+outside FreelanceOS (PIVA Balance). R2 remains in planning.
 
 ---
 
@@ -482,8 +483,10 @@ Evaluate deterministic rules such as:
 
 - contract utilization warning;
 - contract exceeded;
-- capacity warning (DEFERRED — PD-106-001);
-- capacity exceeded (DEFERRED — PD-106-001).
+- capacity warning (DEFERRED — PD-106-001; not pulled into R2);
+- capacity exceeded (DEFERRED — PD-106-001; not pulled into R2);
+- payment overdue / partial / mismatch (R2 planned — D6);
+- contract time-allocation alerts (R2 planned — R2-OD-013; WARNING threshold not decided).
 
 The alert engine should consume analytics/application services rather than duplicate calculations.
 
@@ -1120,15 +1123,16 @@ The billing calculation service must own:
 - rounding;
 - currency rules.
 
-Some of these are still open business decisions and must be finalized before implementation.
+R2 product decisions close daily Accrued (R2-OD-001), publication rounding (R2-OD-002), and Contract currency / no-FX (D7, R2-OD-011). Residual planning questions are listed in `docs/release/r2-open-decisions.md`.
 
 Future invoice generation should snapshot billable lines rather than continuously recalculating already-issued invoices.
 
-**R2 supersession (2026-09-21):** invoice generation is out of scope.
+**R2 supersession (2026-09-22):** invoice generation is out of scope.
 Invoice Tracking is an operational record, not a generated fiscal
-document. Whether Accrued Revenue reads live Contract fields or a
-TimeEntry commercial snapshot remains an open product decision
-(R2-OD-003). See `docs/release/r2-architecture-delta.md`.
+document. Accrued Revenue uses Commercial Snapshot semantics (R2-OD-003):
+historical work keeps the commercial value applicable when it occurred.
+The snapshot field does not exist in the current persistence model and
+is an R2-E01 planning dependency. See `docs/release/r2-architecture-delta.md`.
 
 ---
 
@@ -1709,9 +1713,11 @@ The following are intentionally not frozen yet:
 - production hostname / Vercel project;
 - custom sending domain (Gmail SMTP is used without a purchased domain);
 - database schema/index design;
-- audit-log implementation;
+- audit-log implementation (out of R2 — R2-OD-015);
 - holiday/vacation architecture;
-- invoice aggregate design (superseded for R2: Invoice Tracking, not generation — see `docs/release/r2-architecture-delta.md`);
+- invoice aggregate design (superseded for R2: Invoice Tracking, not generation — persistence not designed; see `docs/release/r2-architecture-delta.md`);
+- commercial snapshot persistence mechanism (R2-OD-003 residual);
+- Invoice VOID UI and Invoice currency snapshot representation;
 - AI provider and tool-calling architecture;
 - advanced caching strategy.
 
