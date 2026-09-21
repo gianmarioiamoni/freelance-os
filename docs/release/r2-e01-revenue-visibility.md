@@ -3,7 +3,7 @@
 **Epic:** R2-E01 — Revenue Visibility  
 **Release:** Release 2 — Revenue Operations  
 **MASTER_PLAN identifier:** R2-E01 (`MASTER_PLAN.md` §19)  
-**Status:** P-E01-00 COMPLETE / P-E01-01 COMPLETE / P-E01-02 COMPLETE / P-E01-03 COMPLETE / P-E01-04 COMPLETE / P-E01-05 COMPLETE — Engineering Review PASS WITH FINDINGS  
+**Status:** P-E01-00 COMPLETE / P-E01-01 COMPLETE / P-E01-02 COMPLETE / P-E01-03 COMPLETE / P-E01-04 COMPLETE / P-E01-05 COMPLETE — Engineering Review PASS WITH FINDINGS / P-E01-06 COMPLETE — QA PASS WITH FINDINGS  
 **Authority:** `docs/release/r2-decision-pack.md`  
 **Companions:** `docs/release/r2-epic-map.md`, `docs/release/r2-architecture-delta.md`, `docs/release/r2-open-decisions.md`  
 **Does not assign:** an EPIC-2xx number
@@ -15,7 +15,7 @@ P-E01-02  ACCRUED REVENUE                  COMPLETE
 P-E01-03  EXPECTED REVENUE                 COMPLETE
 P-E01-04  ANALYTICS / REPORTING INTEGRATION COMPLETE
 P-E01-05  ENGINEERING REVIEW               COMPLETE — PASS WITH FINDINGS
-P-E01-06  QA                               NOT STARTED
+P-E01-06  QA                               COMPLETE — PASS WITH FINDINGS
 P-E01-07  DOCUMENTATION / EPIC CLOSURE     NOT STARTED
 
 IMPLEMENTATION: P-E01-01 + P-E01-02 + P-E01-03 + P-E01-04
@@ -933,6 +933,21 @@ Full review: §19.
 | Migration | No. |
 | Depends on | P-E01-05. |
 | Exit criteria | Blocking QA findings = 0 or explicitly deferred by Product Owner. |
+| Status | **COMPLETE** — PASS WITH FINDINGS |
+
+**HEAD reviewed:** `0e171a93e881b50c1e1102f251af6cf803732b84`
+
+```text
+VERDICT:                 PASS WITH FINDINGS
+BLOCKING FINDINGS:       NONE
+F-E01-001:               CLOSED
+F-E01-002:               OPEN — deferred to P-E01-07
+P-E01:                   NOT BLOCKED
+P-E01-07:                AUTHORIZED
+PRODUCTION READINESS:    UNCHANGED (R2 not production-ready)
+```
+
+Full QA: §20.
 
 ### P-E01-07 — Documentation / Epic closure
 
@@ -1033,8 +1048,9 @@ No blocker. Accrued / Expected match the approved commercial semantics. P102-F-0
 | Area | Performance |
 | Evidence | `AnalyticsService.getMonthlyAnalytics` always loads hours + `listTimeEntriesForPeriod` + `listExpectedContracts`. `/reports` always calls `getAnnualOverview`, which runs that composition 12 times. `AnnualOverviewTable` / `ContractReportTable` / dashboard Monthly Summary still render hours only. |
 | Impact | Extra period TimeEntry and Contract reads on every dashboard and reports load. Correctness is unaffected. Cost is unmeasured. |
-| Remediation | Measure `/dashboard` and `/reports` in P-E01-06. Optimize only if QA shows a real latency problem. Do not change formulas. |
-| Release impact | Does not block P-E01. Measure in P-E01-06. May be deferred if QA is acceptable. No PO decision. |
+| Remediation | Measured in P-E01-06. No optimization. |
+| QA disposition | **CLOSED** — see §20. Acceptable at the P105-06 reference volume. No serial N+1 introduced by E01. |
+| Release impact | Does not block P-E01. Closed in P-E01-06. No PO decision. |
 
 #### F-E01-002
 
@@ -1082,3 +1098,143 @@ Coverage notes (not findings): Accrued unit “later rate change does not rewrit
 - F-E01-002 is deferred to P-E01-07.
 - No Product Owner decision is required.
 - P-E01-06 is **not** started by this review.
+
+---
+
+## 20. P-E01-06 QA Gate
+
+**Date:** 2026-09-22  
+**Phase:** P-E01-06  
+**Reviewed HEAD:** `0e171a93e881b50c1e1102f251af6cf803732b84`  
+**Host clock:** Europe/Rome (CEST, UTC+2)
+
+### Verdict
+
+**PASS WITH FINDINGS**
+
+No blocker. AC-01…AC-17 hold on existing unit and integration evidence. R1 hours / utilization / isolation / timezone / membership analytics remain green. F-E01-001 is closed after measurement. F-E01-002 stays open and is deferred to P-E01-07. No code remediation. No new product decision.
+
+### Commands executed
+
+| Command | Result |
+| --- | --- |
+| `pnpm test:db:migrate` | PASS — no pending migrations |
+| `pnpm lint` | PASS |
+| `pnpm typecheck` | PASS |
+| Focused unit Analytics / Reporting / periods / Accrued / Expected | PASS — 232 / 232 |
+| Full unit (`pnpm test` analytics+reporting+time-entries filter resolved to the unit suite) | PASS — 504 / 504 |
+| Integration Accrued / Expected / revenue / reporting / snapshot / weekly | PASS — 71 / 71 |
+| Integration isolation / membership / timezone / product decisions | PASS — 34 / 34 |
+| Integration performance (`reporting-performance.test.ts`) | PASS — 1 / 1 |
+| `pnpm build` | PASS |
+
+E2E and the R1 release-gate journey were not executed. E01 does not change those surfaces (no money UI; no auth/onboarding change).
+
+### Test matrix
+
+| Suite | Passed | Failed | Skipped | Result |
+| --- | --- | --- | --- | --- |
+| Unit Accrued | 31 | 0 | 0 | PASS |
+| Unit Expected | 21 | 0 | 0 | PASS |
+| Unit Analytics (service / calculations / pro-rata) | 60 | 0 | 0 | PASS |
+| Unit Reporting | 4 | 0 | 0 | PASS |
+| Unit periods | 68 | 0 | 0 | PASS |
+| Unit reporting features (custom period / display / types) | 48 | 0 | 0 | PASS |
+| Unit suite (all unit files in the QA run) | 504 | 0 | 0 | PASS |
+| Integration Accrued | 16 | 0 | 0 | PASS |
+| Integration Expected | 12 | 0 | 0 | PASS |
+| Integration revenue reporting | 8 | 0 | 0 | PASS |
+| Integration ReportingService | 21 | 0 | 0 | PASS |
+| Integration commercial snapshot | 6 | 0 | 0 | PASS |
+| Integration weekly analytics | 8 | 0 | 0 | PASS |
+| Integration isolation / membership / timezone / product decisions | 34 | 0 | 0 | PASS |
+| Integration performance baseline | 1 | 0 | 0 | PASS |
+| Lint | — | 0 | 0 | PASS |
+| Typecheck | — | 0 | 0 | PASS |
+| Build | — | 0 | 0 | PASS |
+
+### Acceptance criteria
+
+| ID | Result | Evidence |
+| --- | --- | --- |
+| AC-01 | PASS | Accrued unit HOURLY + integration snapshot rate |
+| AC-02 | PASS | Integration: live Contract rate change leaves historical Accrued unchanged |
+| AC-03 | PASS | Accrued unit/integration DAILY one billable day per Contract/date |
+| AC-04 | PASS | Expected unit/integration live rate × pro-rata |
+| AC-05 | PASS | Expected null when `monthlyContractedMinutes` is null |
+| AC-06 | PASS | Expected null for DAILY |
+| AC-07 | PASS | Expected `[validFrom, validTo)`; Accrued retains out-of-validity history |
+| AC-08 | PASS | Per-currency Accrued (snapshot) and Expected (live); no FX; no mixed total |
+| AC-09 | PASS | Unrounded intermediates; published half-up; DAILY weighted then rounded |
+| AC-10 | PASS | Isolation / membership / foreign Contract/TimeEntry / reporting isolation |
+| AC-11 | PASS | Non-billable excluded from Accrued and from the DAILY denominator |
+| AC-12 | PASS | Archived-client Accrued / Expected / reporting |
+| AC-13 | PASS | `Workspace.timezone`; current / historical / custom / ongoing; ± offset |
+| AC-14 | PASS | MonthlyAnalytics / CurrentMonthAnalytics / ContractReport / AnnualOverview share AnalyticsService figures |
+| AC-15 | PASS | No Invoice / Payment types or reads |
+| AC-16 | PASS | No Forecast field; HoursByClient hours-only; no year mixed monetary total |
+| AC-17 | PASS | R1 hours / utilization / isolation / timezone / membership suites green |
+
+### Performance — F-E01-001
+
+Surfaces measured: `getMonthlyAnalytics`, `getCurrentMonthAnalytics`, `getAnnualOverview` (×12).
+
+Latency at the P105-06 reference volume (100 clients / 50 contracts / 1000 TimeEntries):
+
+| Surface | Elapsed |
+| --- | --- |
+| `getContractReport` month | 22 ms |
+| `getAnnualOverview` 2025 (12 × `getMonthlyAnalytics`) | 26 ms |
+| weekly aggregation | 3 ms |
+| `getContractReport` year | 10 ms |
+
+Query counts (instrumented Prisma query events; 50 contracts / 200 TimeEntries on 2026-09-15):
+
+| Surface | Queries | Elapsed | E01 incremental |
+| --- | --- | --- | --- |
+| `getMonthlyAnalytics` | 61 | 21 ms | +2 parallel (`listTimeEntriesForPeriod`, `listExpectedContracts`) |
+| `getCurrentMonthAnalytics` | 62 | 12 ms | same composition as monthly |
+| `getAnnualOverview` ×12 | 168 | 19 ms | +24 parallel (12 × 2) |
+
+Of the 61 monthly queries, 50 are the pre-existing concurrent R1 out-of-validity `COUNT`s (`getContractUtilizations`, F-105-P-007). They are not serial N+1 and were not introduced by E01.
+
+E01 adds two workspace-scoped `findMany` reads beside the existing hours path, in `Promise.all`. Annual overview already fanned out 12 months in R1; E01 adds 24 reads inside that fan-out. No new serial N+1.
+
+**F-E01-001: CLOSED.** Latency is acceptable at the declared reference volume. No formula change. No optimization.
+
+### Findings
+
+#### F-E01-001
+
+| Field | Value |
+| --- | --- |
+| Severity | low |
+| Area | Performance |
+| Status | **CLOSED** |
+| Evidence | Annual overview 26 ms at 100/50/1000. Extra E01 reads are 2 per month and 24 per year, parallel. No serial N+1. |
+| Impact | None observed. Correctness unaffected. |
+| Remediation phase | None. Do not optimize speculatively. |
+
+#### F-E01-002
+
+| Field | Value |
+| --- | --- |
+| Severity | low |
+| Area | Documentation |
+| Status | **OPEN** — deferred to P-E01-07 |
+| Evidence | Unchanged from P-E01-05. Companions remain stale. Not remediated in QA. |
+| Impact | Planning companions contradict implemented E01. This plan remains the authority. |
+| Remediation phase | P-E01-07 |
+
+No new finding.
+
+### Release readiness
+
+| Item | Value |
+| --- | --- |
+| Blocker | No |
+| E01 release-ready | Yes |
+| Open findings | F-E01-002 (low / documentation / P-E01-07) |
+| PO decision required | No |
+| P-E01-07 | Authorized. Not started by this QA. |
+| R2 production-ready | No |
