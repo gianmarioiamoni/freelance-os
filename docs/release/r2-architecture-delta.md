@@ -97,10 +97,9 @@ No new Contract entity is implied.
 | --- | --- | --- |
 | `TimeEntry` minutes, `billable`, `workDate`, `contractId` | EXISTING MODEL REUSED | Accrued quantity source |
 | Historical commercial snapshot | CONFIRMED REQUIREMENT | Semantics approved. **No field exists today.** P102-F-001 remains the R1 gap |
-| Snapshot persistence class | DOMAIN / PLANNING DECISION | R2-E01 plan: **class B** — persist billing model, rate, and currency on the TimeEntry quantity fact. Class A false. Class C not required. See `docs/release/r2-e01-revenue-visibility.md` §8 |
-| Snapshot field name / columns vs structured value | IMPLEMENTATION DETAIL STILL OPEN | Do not invent Prisma names here. P-E01-01 |
-| DAILY same-day conflicting snapshots | IMPLEMENTATION DETAIL STILL OPEN | R2-OD-016. Product decision required |
-| Pre-snapshot TimeEntry treatment | IMPLEMENTATION DETAIL STILL OPEN | R2-OD-017. Product / data-meaning decision required |
+| Snapshot persistence class | EXISTING MODEL REUSED / implemented | Class B on TimeEntry: `snapshotBillingModel`, `snapshotRate`, `snapshotCurrency`. P-E01-01 |
+| DAILY same-day conflicting snapshots | DOMAIN DECISION | R2-OD-016 weighted-average. Accrued arithmetic is P-E01-02 |
+| Pre-snapshot TimeEntry treatment | DOMAIN DECISION | R2-OD-017 live-Contract backfill. Implemented in P-E01-01 migration |
 
 ---
 
@@ -256,7 +255,7 @@ No migrations. No invented Prisma names.
 | Invoice | CONFIRMED REQUIREMENT | No | 1 Contract : N Invoice; VOID / soft-delete; editable; no fiscal fields |
 | Payment event | CONFIRMED REQUIREMENT | No | Many per Invoice; editable / deletable; status derived |
 | Contract `allocatedMinutes` | CONFIRMED REQUIREMENT | No | Optional total project budget. Distinct from `monthlyContractedMinutes` |
-| Historical commercial snapshot | CONFIRMED REQUIREMENT | No | Class B on TimeEntry quantity fact. Names TBD in P-E01-01. See `r2-e01-revenue-visibility.md` |
+| Historical commercial snapshot | EXISTING MODEL REUSED | Yes (P-E01-01) | TimeEntry `snapshotBillingModel`, `snapshotRate`, `snapshotCurrency` |
 | Derived payment status | CONFIRMED REQUIREMENT | n/a | Function of payment events, not a source of truth |
 | Invoice VOID state | CONFIRMED REQUIREMENT | No | Soft-delete semantics. UI residual |
 | Contract currency immutability | CONFIRMED REQUIREMENT | Write rule only | After first monetary record |

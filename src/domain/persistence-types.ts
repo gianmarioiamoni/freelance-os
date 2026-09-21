@@ -78,6 +78,9 @@ export type TimeEntryRecord = {
   durationMinutes: number;
   description: string | null;
   billable: boolean;
+  snapshotBillingModel: BillingModel;
+  snapshotRate: string;
+  snapshotCurrency: string;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -187,6 +190,9 @@ export type RecordTimeEntryInput = {
   durationMinutes: number;
   description?: string | null;
   billable: boolean;
+  snapshotBillingModel?: BillingModel;
+  snapshotRate?: string;
+  snapshotCurrency?: string;
 };
 
 export type UpdateTimeEntryInput = {

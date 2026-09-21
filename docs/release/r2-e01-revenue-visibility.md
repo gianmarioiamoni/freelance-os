@@ -3,15 +3,14 @@
 **Epic:** R2-E01 — Revenue Visibility  
 **Release:** Release 2 — Revenue Operations  
 **MASTER_PLAN identifier:** R2-E01 (`MASTER_PLAN.md` §19)  
-**Status:** PLANNING COMPLETE / IMPLEMENTATION NOT STARTED  
+**Status:** P-E01-00 COMPLETE / P-E01-01 COMPLETE / ACCRUED NOT STARTED  
 **Authority:** `docs/release/r2-decision-pack.md`  
 **Companions:** `docs/release/r2-epic-map.md`, `docs/release/r2-architecture-delta.md`, `docs/release/r2-open-decisions.md`  
-**Does not:** authorize application code, Prisma schema, migrations, APIs, UI, or tests beyond this planning artifact  
 **Does not assign:** an EPIC-2xx number
 
 ```text
-P-E01-00  PLANNING / ARCHITECTURE FREEZE   COMPLETE (this document)
-P-E01-01  PERSISTENCE / DOMAIN FOUNDATION  NOT STARTED
+P-E01-00  PLANNING / ARCHITECTURE FREEZE   COMPLETE
+P-E01-01  PERSISTENCE / DOMAIN FOUNDATION  COMPLETE
 P-E01-02  ACCRUED REVENUE                  NOT STARTED
 P-E01-03  EXPECTED REVENUE                 NOT STARTED
 P-E01-04  ANALYTICS / REPORTING INTEGRATION NOT STARTED
@@ -19,7 +18,7 @@ P-E01-05  ENGINEERING REVIEW               NOT STARTED
 P-E01-06  QA                               NOT STARTED
 P-E01-07  DOCUMENTATION / EPIC CLOSURE     NOT STARTED
 
-IMPLEMENTATION: NOT STARTED
+IMPLEMENTATION: P-E01-01 ONLY
 R1: FROZEN / GRANTED
 ```
 
@@ -388,10 +387,14 @@ period machinery.
 
 ### 8.1 Evidence
 
-`TimeEntry` persists: `workspaceId`, `userId`, `clientId`, `contractId`,
-`workDate`, `durationMinutes`, `description`, `billable`, timestamps.
+`TimeEntry` persists quantity facts plus the P-E01-01 commercial snapshot:
 
-It does **not** persist rate, billing model, or currency.
+- `snapshotBillingModel` (`BillingModel`)
+- `snapshotRate` (`Decimal(19,4)`)
+- `snapshotCurrency` (`Char(3)`)
+
+These are historical snapshot columns on the TimeEntry quantity fact.
+They are not live Contract fields.
 
 `Contract` persists live `billingModel`, `rate`, `currency`.
 `updateContract` may change those fields after TimeEntries exist
@@ -424,8 +427,16 @@ Tracking currency-bearing (D7). Duration remains currency-agnostic.
 | **C. Dedicated historical commercial snapshot / Contract revision table** | **Not required** by the approved semantic. Would also work, but it introduces Contract versioning that R1 explicitly deferred and that R2-OD-003 does not demand. |
 | **D. Other minimal mechanism** (forbid commercial edits; force a new Contract on rate change) | **Not selected.** That is a product-policy change, not approved, and it contradicts the current R1 write default. |
 
-Prisma field names, column vs structured value, indexes, and constraints
-are **not invented here**. P-E01-01 finalizes representation inside class B.
+P-E01-01 representation (class B, implemented):
+
+| Column | Type |
+| --- | --- |
+| `snapshotBillingModel` | `BillingModel` |
+| `snapshotRate` | `Decimal(19,4)` |
+| `snapshotCurrency` | `CHAR(3)` |
+
+Migration `20260922010000_add_time_entry_commercial_snapshot` backfills
+existing rows from the live associated Contract (R2-OD-017).
 
 ### 8.4 Write timing (planning constraints, not schema)
 
@@ -435,16 +446,16 @@ are **not invented here**. P-E01-01 finalizes representation inside class B.
 - **TimeEntry delete:** snapshot goes with the row (hard-delete).
 - **TimeEntry recreate:** new row captures current Contract commercial value.
 
-### 8.5 Still OPEN
+### 8.5 Decision status after P-E01-01
 
-| ID | Question | Blocks |
-| --- | --- | --- |
-| R2-OD-003 residual | Exact representation inside class B (names, columns vs structured value). Not a new product meaning. | P-E01-01 |
-| R2-OD-016 | Which snapshot applies when two DAILY billable TimeEntries on the same Contract / date were captured under different commercial values? | P-E01-02 DAILY Accrued |
-| R2-OD-017 | How are existing TimeEntries (no snapshot) treated at migration? | P-E01-01 migration |
+| ID | Status |
+| --- | --- |
+| R2-OD-003 residual | **CLOSED** as `snapshotBillingModel` / `snapshotRate` / `snapshotCurrency` on TimeEntry |
+| R2-OD-016 | **APPROVED** — weighted-average daily rate by billable minutes. Calculation is P-E01-02 |
+| R2-OD-017 | **APPROVED** — migrate/backfill existing TimeEntries from the current associated Contract |
 
-Do not implement Accrued against live Contract fields while these are
-unresolved. Do not invent answers in implementation.
+Accrued calculation remains P-E01-02. Do not reread live Contract commercial
+fields for historical Accrued.
 
 ---
 
@@ -685,7 +696,7 @@ No implementation commit is created by this plan.
 | Depends on | None. |
 | Exit criteria | Plan committed; no `src/` / Prisma / R1 snapshot changes; open decisions remain explicit. |
 
-**Status: COMPLETE with this document.**
+**Status: COMPLETE.**
 
 ### P-E01-01 — Persistence / domain foundation
 
@@ -699,6 +710,7 @@ No implementation commit is created by this plan.
 | Migration | **Yes.** |
 | Depends on | P-E01-00; R2-OD-017 for existing-row policy. |
 | Exit criteria | New TimeEntries persist billing model + rate + currency at create; live Contract edits leave those values intact; R1 TimeEntry behaviour otherwise unchanged. |
+| Status | **COMPLETE** |
 
 ### P-E01-02 — Accrued Revenue
 
@@ -706,7 +718,7 @@ No implementation commit is created by this plan.
 | --- | --- |
 | Objective | Authoritative Accrued in AnalyticsService. |
 | Scope | HOURLY additive; DAILY unique billable day; BR-007; validity retain; per-currency; publication rounding. |
-| Dependencies | P-E01-01. **R2-OD-016 must be decided before DAILY same-day conflicting-snapshot cases are implemented.** |
+| Dependencies | P-E01-01. R2-OD-016 is APPROVED (weighted-average daily rate). |
 | Non-scope | Expected; Forecast; UI polish beyond what is required to call the service in tests. |
 | Tests | §13 HOURLY, DAILY, rounding, validity, isolation. |
 | Migration | No. |
@@ -817,11 +829,11 @@ Do not resolve these in implementation.
 4. Invoice VOID UX / restore → E02 (R2-OD-007 residual)
 5. CSV scope → E05 (R2-OD-012)
 
-### Owned by E01
+### Closed in E01
 
-6. **R2-OD-003 residual** — exact class-B representation (names / columns). Product meaning approved. Implementation detail for P-E01-01.
-7. **R2-OD-016 (NEW)** — DAILY same-day conflicting snapshots. Product decision. Blocks P-E01-02 for that edge case.
-8. **R2-OD-017 (NEW)** — backfill / treatment of TimeEntries that exist before the snapshot exists. Product / data-meaning decision. Blocks P-E01-01 migration of existing rows.
+6. **R2-OD-003 residual** — `snapshotBillingModel` / `snapshotRate` / `snapshotCurrency` on TimeEntry.
+7. **R2-OD-016** — weighted-average daily rate by billable minutes. Accrued arithmetic is P-E01-02.
+8. **R2-OD-017** — existing TimeEntries backfilled from the current associated Contract.
 
 Expected remains live-Contract for rate and capacity. That is reused R1
 semantics, not a new snapshot, and is not listed as an open product

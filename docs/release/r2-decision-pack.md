@@ -368,9 +368,9 @@ These are **not** approved implementation assumptions.
 | R2-OD-013 residual | Contract Time Allocation WARNING threshold | R2-E04 |
 | R2-OD-007 residual | Exact Invoice VOID UI / list / restore semantics | R2-E02 |
 | R2-OD-011 residual | Invoice currency snapshot representation | R2-E02 |
-| R2-OD-003 residual | Commercial snapshot Prisma representation (class B planned in `r2-e01-revenue-visibility.md`) | R2-E01 P-E01-01 |
-| R2-OD-016 | DAILY same-day conflicting snapshots | R2-E01 P-E01-02 |
-| R2-OD-017 | Pre-snapshot TimeEntry treatment | R2-E01 P-E01-01 |
+| R2-OD-003 residual | CLOSED — TimeEntry `snapshotBillingModel` / `snapshotRate` / `snapshotCurrency` | R2-E01 P-E01-01 |
+| R2-OD-016 | APPROVED — weighted-average daily rate; Accrued arithmetic in P-E01-02 | R2-E01 P-E01-02 |
+| R2-OD-017 | CLOSED — existing TimeEntries backfilled from current Contract | R2-E01 P-E01-01 |
 
 Direction already approved and **not** reopened:
 

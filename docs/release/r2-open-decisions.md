@@ -94,13 +94,9 @@ These are the product / planning decisions still required before the correspondi
 | Field | Value |
 | --- | --- |
 | Historical ID | R2-OD-003 residual; P102-F-001 / proposed OBD-016 |
-| Question | Exact representation of the historical commercial value (names / columns vs structured value) so Accrued does not reread live Contract rate / billing model / currency? |
-| Why | Commercial Snapshot semantics are approved. R2-E01 planning classified the mechanism as **class B**: new field(s) on the TimeEntry quantity fact storing billing model, rate, and currency applicable when the work occurred. Current persistence has none of those on TimeEntry. Class A is false. Class C (revision table) is not required. Class D (forbid commercial edits) is not approved. |
-| Constraint | Do not invent Prisma field names in this register. P-E01-01 finalizes representation inside class B. |
-| Impact | Blocks P-E01-01 schema work until names are chosen as an implementation detail — not a new product meaning. |
-| Owner | Architect during P-E01-01 |
-| Status | APPROVED — persistence class B; representation names still open |
-| Needed by | R2-E01 P-E01-01 |
+| Decision | TimeEntry columns `snapshotBillingModel`, `snapshotRate` (`Decimal(19,4)`), `snapshotCurrency` |
+| Status | APPROVED / CLOSED by P-E01-01 |
+| Needed by | R2-E01 (implemented) |
 | Plan | `docs/release/r2-e01-revenue-visibility.md` §8 |
 
 ### 7. DAILY same-day conflicting commercial snapshots
@@ -108,12 +104,8 @@ These are the product / planning decisions still required before the correspondi
 | Field | Value |
 | --- | --- |
 | Historical ID | R2-OD-016 |
-| Question | When two billable TimeEntries on the same DAILY Contract / calendar date were captured under different snapshotted commercial values, which value applies to the single accrued billable day? |
-| Why | R2-OD-001 counts that date once. R2-OD-003 forbids rewriting historical commercial meaning. E01 planning found the collision when a Contract rate / billing model / currency changes between two same-day creates. |
-| Constraint | Do not invent first-entry, last-entry, or average defaults. |
-| Impact | Blocks P-E01-02 for that DAILY edge case. Uncontested same-day multiples (identical snapshots) remain implementable. |
-| Owner | Product Owner during R2-E01 implementation planning |
-| Status | OPEN |
+| Decision | Weighted-average daily rate: Σ(minutes under snapshot / total billable minutes for Contract/date × snapshot daily rate). No first/last-wins. |
+| Status | APPROVED. Accrued arithmetic is P-E01-02 |
 | Needed by | R2-E01 P-E01-02 |
 
 ### 8. Pre-snapshot TimeEntry treatment
@@ -121,13 +113,9 @@ These are the product / planning decisions still required before the correspondi
 | Field | Value |
 | --- | --- |
 | Historical ID | R2-OD-017 |
-| Question | How are TimeEntries that already exist before the commercial snapshot is persisted treated? |
-| Why | Production R1 data has `contractId` only (P102-F-001). No historical rate can be reconstructed if the live Contract was already edited. |
-| Constraint | Do not assume live-Contract backfill, null Accrued, or live-Contract fallback. Each changes historical meaning. |
-| Impact | Blocks P-E01-01 migration of existing rows. New TimeEntries can capture a snapshot without this decision. |
-| Owner | Product Owner during P-E01-01 |
-| Status | OPEN |
-| Needed by | R2-E01 P-E01-01 |
+| Decision | Migration backfills every existing TimeEntry from its current associated Contract. No null snapshots. No Contract revision reconstruction. |
+| Status | APPROVED / CLOSED by P-E01-01 |
+| Needed by | R2-E01 (implemented) |
 
 ---
 
@@ -137,7 +125,9 @@ These are the product / planning decisions still required before the correspondi
 | --- | --- | --- |
 | R2-OD-001 | DAILY accrued: one billable day if at least one TimeEntry exists for that Contract on that calendar date; multiples count once; no work calendar | APPROVED |
 | R2-OD-002 | Published money rounds to nearest integer; do not prematurely round intermediates | APPROVED |
-| R2-OD-003 | Commercial Snapshot semantics for historical Accrued | APPROVED — class B planned; representation names still open |
+| R2-OD-003 | Commercial Snapshot semantics for historical Accrued | APPROVED — TimeEntry `snapshotBillingModel` / `snapshotRate` / `snapshotCurrency` |
+| R2-OD-016 | DAILY same-day conflicting snapshots use weighted-average daily rate | APPROVED |
+| R2-OD-017 | Existing TimeEntries backfilled from current associated Contract | APPROVED |
 | R2-OD-004 | Expected Revenue is HOURLY contractual capacity / pro-rata; null if capacity unavailable; DAILY has no Expected Revenue in R2 | APPROVED |
 | R2-OD-006 | 1 Contract → many Invoice; 1 Invoice → 1 Contract; tracking fields only | APPROVED |
 | R2-OD-007 | Optional reference; required invoiceDate; no competence period; editable; VOID / soft-delete | APPROVED (VOID UI residual) |

@@ -81,7 +81,7 @@ E01 and E02 may be planned and implemented in parallel. E03 is sequential on E02
 ## R2-E01 — Revenue Visibility
 
 Detailed plan: `docs/release/r2-e01-revenue-visibility.md`.  
-Status: **P-E01-00 COMPLETE**. Implementation not started.
+Status: **P-E01-00 COMPLETE. P-E01-01 COMPLETE.** Accrued not started.
 
 ### 1. Objective
 
@@ -170,9 +170,7 @@ See what work is already worth (Accrued) and what the HOURLY contract economical
 
 ### 14. Product decisions still required
 
-- R2-OD-003 residual: class-B representation names (implementation detail for P-E01-01).
-- R2-OD-016: DAILY same-day conflicting snapshots.
-- R2-OD-017: treatment of TimeEntries that exist before the snapshot.
+- None for persistence. R2-OD-003 representation, R2-OD-016, and R2-OD-017 are closed/approved. Accrued arithmetic remains P-E01-02.
 
 ### 15. Risks / architectural constraints
 
@@ -573,9 +571,9 @@ Do not implement these as assumptions.
 3. Invoice currency snapshot representation.
 4. Exact Invoice VOID behaviour and UI semantics.
 5. Whether simple CSV export belongs in R2-E05.
-6. Commercial snapshot persistence: class B approved as the planning class; representation names remain open (R2-OD-003 residual).
-7. R2-OD-016 — DAILY same-day conflicting snapshots (needed by P-E01-02).
-8. R2-OD-017 — pre-snapshot TimeEntry treatment (needed by P-E01-01).
+6. Commercial snapshot persistence: CLOSED — TimeEntry `snapshotBillingModel` / `snapshotRate` / `snapshotCurrency`.
+7. R2-OD-016 — APPROVED weighted-average daily rate (Accrued arithmetic in P-E01-02).
+8. R2-OD-017 — CLOSED — existing TimeEntries backfilled from current Contract.
 
 ---
 
@@ -612,7 +610,7 @@ This document is the release-level planning baseline. R2-E01 detailed planning i
 | Phase | Intent | Status |
 | --- | --- | --- |
 | P-E01-00 | Planning / architecture freeze | COMPLETE |
-| P-E01-01 | Persistence / domain foundation (class B snapshot; migration) | Not started |
+| P-E01-01 | Persistence / domain foundation (class B snapshot; migration) | COMPLETE |
 | P-E01-02 | Accrued Revenue | Not started |
 | P-E01-03 | Expected Revenue | Not started |
 | P-E01-04 | Integration with existing analytics / reporting | Not started |

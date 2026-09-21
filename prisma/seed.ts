@@ -109,6 +109,29 @@ const TIME_ENTRIES = [
   },
 ] as const;
 
+const CONTRACT_SNAPSHOTS = {
+  [CONTRACT_NORTHWIND_H1_ID]: {
+    snapshotBillingModel: "HOURLY" as const,
+    snapshotRate: "80.0000",
+    snapshotCurrency: "EUR",
+  },
+  [CONTRACT_NORTHWIND_D2_ID]: {
+    snapshotBillingModel: "DAILY" as const,
+    snapshotRate: "500.0000",
+    snapshotCurrency: "EUR",
+  },
+  [CONTRACT_CONTOSO_ID]: {
+    snapshotBillingModel: "HOURLY" as const,
+    snapshotRate: "65.0000",
+    snapshotCurrency: "EUR",
+  },
+  [CONTRACT_ARCHIVED_ID]: {
+    snapshotBillingModel: "HOURLY" as const,
+    snapshotRate: "50.0000",
+    snapshotCurrency: "EUR",
+  },
+} as const;
+
 async function seed(): Promise<void> {
   await prisma.workspace.upsert({
     where: { id: WORKSPACE_ID },
@@ -322,6 +345,7 @@ async function seed(): Promise<void> {
   });
 
   for (const entry of TIME_ENTRIES) {
+    const snapshot = CONTRACT_SNAPSHOTS[entry.contractId];
     await prisma.timeEntry.upsert({
       where: { id: entry.id },
       create: {
@@ -334,6 +358,7 @@ async function seed(): Promise<void> {
         durationMinutes: entry.durationMinutes,
         description: entry.description,
         billable: entry.billable,
+        ...snapshot,
       },
       update: {
         workspaceId: WORKSPACE_ID,
@@ -344,6 +369,7 @@ async function seed(): Promise<void> {
         durationMinutes: entry.durationMinutes,
         description: entry.description,
         billable: entry.billable,
+        ...snapshot,
       },
     });
   }

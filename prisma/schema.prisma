@@ -137,6 +137,11 @@ model TimeEntry {
   durationMinutes Int
   description     String?  @db.Text
   billable        Boolean
+  /// Commercial value applicable when the work was recorded (R2-OD-003).
+  snapshotBillingModel BillingModel
+  /// Positive monetary rate snapshot. CHECK (snapshotRate > 0) is enforced in SQL.
+  snapshotRate         Decimal      @db.Decimal(19, 4)
+  snapshotCurrency     String       @db.Char(3)
   createdAt       DateTime @default(now()) @db.Timestamptz(6)
   updatedAt       DateTime @updatedAt @db.Timestamptz(6)
 

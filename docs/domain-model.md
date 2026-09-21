@@ -245,10 +245,10 @@ R2 adds **Invoice Tracking** only (date, amount, currency tied to Contract,
 optional reference, VOID / soft-delete) to support payment tracking.
 Accrued / Expected / Forecast Revenue are separate from Invoice Tracking
 and Payment. Profitability is out of this domain (PIVA Balance).
-Accrued uses Commercial Snapshot semantics (R2-OD-003). E01 planning
-classifies persistence as class B (new field(s) on the TimeEntry quantity
-fact). Prisma names, R2-OD-016, and R2-OD-017 remain open. Canonical text:
-`docs/release/r2-e01-revenue-visibility.md`.
+Accrued uses Commercial Snapshot semantics (R2-OD-003). P-E01-01 persists
+`snapshotBillingModel`, `snapshotRate`, and `snapshotCurrency` on TimeEntry.
+R2-OD-016 / R2-OD-017 are approved. Accrued calculation is P-E01-02.
+Canonical text: `docs/release/r2-e01-revenue-visibility.md`.
 
 ## 13. Capacity Model
 

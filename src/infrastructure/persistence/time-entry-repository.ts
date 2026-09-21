@@ -1,15 +1,61 @@
 // src/infrastructure/persistence/time-entry-repository.ts
-import type { RecordTimeEntryInput, UpdateTimeEntryInput } from "@/domain/persistence-types";
+import { RecordNotFoundError } from "@/domain/persistence-errors";
+import type { BillingModel, RecordTimeEntryInput, UpdateTimeEntryInput } from "@/domain/persistence-types";
 import type { TimeEntryRepository } from "@/domain/repositories";
 import { withPersistenceErrors } from "@/infrastructure/persistence/map-prisma-error";
 import { mapTimeEntry } from "@/infrastructure/persistence/mappers";
 import type { PrismaExecutor } from "@/infrastructure/persistence/prisma-executor";
 
+type CommercialSnapshot = {
+  snapshotBillingModel: BillingModel;
+  snapshotRate: string;
+  snapshotCurrency: string;
+};
+
+async function resolveCommercialSnapshot(
+  db: PrismaExecutor,
+  workspaceId: string,
+  input: RecordTimeEntryInput,
+): Promise<CommercialSnapshot> {
+  if (input.snapshotBillingModel && input.snapshotRate && input.snapshotCurrency) {
+    return {
+      snapshotBillingModel: input.snapshotBillingModel,
+      snapshotRate: input.snapshotRate,
+      snapshotCurrency: input.snapshotCurrency,
+    };
+  }
+
+  const contract = await db.contract.findFirst({
+    where: {
+      id: input.contractId,
+      workspaceId,
+      clientId: input.clientId,
+    },
+    select: {
+      billingModel: true,
+      rate: true,
+      currency: true,
+    },
+  });
+
+  if (!contract) {
+    throw new RecordNotFoundError("Contract", input.contractId);
+  }
+
+  return {
+    snapshotBillingModel: contract.billingModel,
+    snapshotRate: contract.rate.toFixed(4),
+    snapshotCurrency: contract.currency,
+  };
+}
+
 export function createTimeEntryRepository(db: PrismaExecutor): TimeEntryRepository {
   return {
     recordTimeEntry(workspaceId: string, input: RecordTimeEntryInput) {
-      return withPersistenceErrors(async () =>
-        mapTimeEntry(
+      return withPersistenceErrors(async () => {
+        const snapshot = await resolveCommercialSnapshot(db, workspaceId, input);
+
+        return mapTimeEntry(
           await db.timeEntry.create({
             data: {
               workspaceId,
@@ -20,10 +66,13 @@ export function createTimeEntryRepository(db: PrismaExecutor): TimeEntryReposito
               durationMinutes: input.durationMinutes,
               description: input.description ?? null,
               billable: input.billable,
+              snapshotBillingModel: snapshot.snapshotBillingModel,
+              snapshotRate: snapshot.snapshotRate,
+              snapshotCurrency: snapshot.snapshotCurrency,
             },
           }),
-        ),
-      );
+        );
+      });
     },
 
     async getTimeEntry(workspaceId: string, timeEntryId: string) {

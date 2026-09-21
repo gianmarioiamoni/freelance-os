@@ -100,6 +100,9 @@ export function mapTimeEntry(row: TimeEntry): TimeEntryRecord {
     durationMinutes: row.durationMinutes,
     description: row.description,
     billable: row.billable,
+    snapshotBillingModel: row.snapshotBillingModel,
+    snapshotRate: row.snapshotRate.toFixed(4),
+    snapshotCurrency: row.snapshotCurrency,
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
   };

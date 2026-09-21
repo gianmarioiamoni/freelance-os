@@ -18,6 +18,24 @@ describe("migration-based test schema", () => {
       "20260911011900_establish_persistence_invariants",
       "20260911224009_establish_better_auth_persistence",
       "20260912180000_index_workspace_member_user_id",
+      "20260922010000_add_time_entry_commercial_snapshot",
+    ]);
+  });
+
+  it("persists non-null TimeEntry commercial snapshot columns", async () => {
+    const columns = await prisma.$queryRaw<Array<{ column_name: string; is_nullable: string }>>`
+      SELECT column_name, is_nullable
+      FROM information_schema.columns
+      WHERE table_schema = 'public'
+        AND table_name = 'TimeEntry'
+        AND column_name IN ('snapshotBillingModel', 'snapshotRate', 'snapshotCurrency')
+      ORDER BY column_name
+    `;
+
+    expect(columns).toEqual([
+      { column_name: "snapshotBillingModel", is_nullable: "NO" },
+      { column_name: "snapshotCurrency", is_nullable: "NO" },
+      { column_name: "snapshotRate", is_nullable: "NO" },
     ]);
   });
 

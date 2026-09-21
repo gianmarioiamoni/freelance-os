@@ -34,8 +34,7 @@ export async function createTimeEntry(
 
   validateTimeEntryInput(recordInput);
 
-  // Validate contract eligibility and business rules
-  await validateContractForTimeEntry(
+  const contract = await validateContractForTimeEntry(
     context,
     input.clientId,
     input.contractId,
@@ -44,6 +43,10 @@ export async function createTimeEntry(
     contracts,
   );
 
-  // Create the time entry
-  return await timeEntries.recordTimeEntry(context.workspaceId, recordInput);
+  return await timeEntries.recordTimeEntry(context.workspaceId, {
+    ...recordInput,
+    snapshotBillingModel: contract.billingModel,
+    snapshotRate: contract.rate,
+    snapshotCurrency: contract.currency,
+  });
 }

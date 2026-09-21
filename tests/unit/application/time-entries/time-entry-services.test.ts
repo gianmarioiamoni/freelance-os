@@ -83,6 +83,9 @@ function timeEntryRecord(overrides: Partial<TimeEntryRecord> = {}): TimeEntryRec
     durationMinutes: 120,
     description: "Development work",
     billable: true,
+    snapshotBillingModel: "HOURLY",
+    snapshotRate: "100.0000",
+    snapshotCurrency: "EUR",
     createdAt: new Date("2024-01-15T10:00:00.000Z"),
     updatedAt: new Date("2024-01-15T10:00:00.000Z"),
     ...overrides,
@@ -113,8 +116,12 @@ describe("createTimeEntry", () => {
         workspaceId === context.workspaceId && contractId === contract.id ? contract : null,
     } as any;
 
+    let capturedInput: Record<string, unknown> | null = null;
     const timeEntries: TimeEntryRepository = {
-      recordTimeEntry: async (workspaceId: string, input: any) => expectedEntry,
+      recordTimeEntry: async (_workspaceId: string, input: any) => {
+        capturedInput = input;
+        return expectedEntry;
+      },
     } as any;
 
     const result = await createTimeEntry(
@@ -126,13 +133,21 @@ describe("createTimeEntry", () => {
         durationMinutes: 120,
         description: "Development work",
         billable: true,
-      },
+        snapshotRate: "999.0000",
+        snapshotCurrency: "USD",
+        snapshotBillingModel: "DAILY",
+      } as any,
       clients,
       contracts,
       timeEntries,
     );
 
     expect(result).toBe(expectedEntry);
+    expect(capturedInput).toMatchObject({
+      snapshotBillingModel: "HOURLY",
+      snapshotRate: "100.00",
+      snapshotCurrency: "EUR",
+    });
   });
 
   it("rejects archived client", async () => {

@@ -1,7 +1,7 @@
 // tests/integration/persistence/foreign-keys.test.ts
 import { describe, expect, it } from "vitest";
 
-import { ForeignKeyViolationError } from "@/domain/persistence-errors";
+import { ForeignKeyViolationError, RecordNotFoundError } from "@/domain/persistence-errors";
 
 import { createWorkspaceGraph } from "./fixtures";
 import { date, repositories } from "./helpers";
@@ -39,7 +39,7 @@ describe("foreign key and workspace constraints", () => {
         durationMinutes: 60,
         billable: true,
       }),
-    ).rejects.toBeInstanceOf(ForeignKeyViolationError);
+    ).rejects.toBeInstanceOf(RecordNotFoundError);
 
     await expect(
       repositories.alerts.createAlert(workspaceB.workspaceId, {
