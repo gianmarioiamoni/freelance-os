@@ -3,7 +3,7 @@
 **Epic:** R2-E01 — Revenue Visibility  
 **Release:** Release 2 — Revenue Operations  
 **MASTER_PLAN identifier:** R2-E01 (`MASTER_PLAN.md` §19)  
-**Status:** P-E01-00 COMPLETE / P-E01-01 COMPLETE / P-E01-02 COMPLETE / P-E01-03 COMPLETE / EXPECTED COMPLETE  
+**Status:** P-E01-00 COMPLETE / P-E01-01 COMPLETE / P-E01-02 COMPLETE / P-E01-03 COMPLETE / P-E01-04 COMPLETE  
 **Authority:** `docs/release/r2-decision-pack.md`  
 **Companions:** `docs/release/r2-epic-map.md`, `docs/release/r2-architecture-delta.md`, `docs/release/r2-open-decisions.md`  
 **Does not assign:** an EPIC-2xx number
@@ -13,12 +13,12 @@ P-E01-00  PLANNING / ARCHITECTURE FREEZE   COMPLETE
 P-E01-01  PERSISTENCE / DOMAIN FOUNDATION  COMPLETE
 P-E01-02  ACCRUED REVENUE                  COMPLETE
 P-E01-03  EXPECTED REVENUE                 COMPLETE
-P-E01-04  ANALYTICS / REPORTING INTEGRATION NOT STARTED
+P-E01-04  ANALYTICS / REPORTING INTEGRATION COMPLETE
 P-E01-05  ENGINEERING REVIEW               NOT STARTED
 P-E01-06  QA                               NOT STARTED
 P-E01-07  DOCUMENTATION / EPIC CLOSURE     NOT STARTED
 
-IMPLEMENTATION: P-E01-01 + P-E01-02 + P-E01-03
+IMPLEMENTATION: P-E01-01 + P-E01-02 + P-E01-03 + P-E01-04
 R1: FROZEN / GRANTED
 ```
 
@@ -772,8 +772,8 @@ Implemented:
 - Published money: `Math.round(unrounded_total)` once per published figure.
 - Isolation: `requireMembership` + workspace-scoped
   `AnalyticsRepository.listTimeEntriesForPeriod`.
-- Not introduced: Expected, Forecast, Invoice, Payment, mixed-currency total,
-  dashboard/report money publication (P-E01-04).
+- Not introduced: Expected, Forecast, Invoice, Payment, mixed-currency total.
+  Dashboard/report publication is P-E01-04.
 
 Test evidence:
 
@@ -819,7 +819,7 @@ Implemented:
   TimeEntry consumption is not a relevance signal).
 - Archived-client contracts contribute when validity overlaps the period.
 - Not introduced: Forecast, Invoice, Payment, `allocatedMinutes`, mixed-currency
-  total, dashboard/report money publication (P-E01-04).
+  total. Dashboard/report publication is P-E01-04.
 
 Expected vs Accrued:
 
@@ -850,6 +850,49 @@ Test evidence:
 | Migration | No. |
 | Depends on | P-E01-02, P-E01-03. |
 | Exit criteria | AC-14, AC-15, AC-16, AC-17 hold on the existing surfaces. |
+| Status | **COMPLETE** |
+
+Implemented application/reporting integration (no formula change):
+
+- Calculation owner remains `AnalyticsService.getAccruedRevenue` /
+  `getExpectedRevenue` / `calculateAccruedRevenue` / `calculateExpectedRevenue`.
+- `AnalyticsService.getMonthlyAnalytics` / `getCurrentMonthAnalytics` compose
+  R1 hours with `accrued` and `expected` in parallel
+  (`getMonthlyAnalytics` + `listTimeEntriesForPeriod` + `listExpectedContracts`).
+- `ReportingService.getContractReport` publishes the same AnalyticsService
+  figures for the resolved period (`contractUtilizations` + `accrued` + `expected`).
+- `ReportingService.getAnnualOverview` inherits per-month revenue through
+  `MonthlyAnalytics`. Month buckets stay per-currency. No year mixed-currency total.
+- `ReportingService.getHoursByClient` stays hours-only. No client-level revenue
+  aggregation exists; inventing one would be a false client association.
+- Dashboard RSC already consumes `getCurrentMonthAnalytics`. The DTO now carries
+  Accrued / Expected. Monthly Summary / report tables are unchanged: no approved
+  money UX. No new pages, cards, tables, CSV, PDF, or Forecast.
+- Currency: `AccruedRevenue` / `ExpectedRevenue` remain per-currency. No FX.
+  No mixed-currency total on MonthlyAnalytics, ContractReport, or AnnualOverview.
+- Isolation: membership guard + workspace-scoped repository reads unchanged.
+
+DTO / type changes:
+
+- `MonthlyHoursAnalytics` — hours-only repository shape.
+- `MonthlyAnalytics` — `MonthlyHoursAnalytics` + `accrued` + `expected`.
+- `ContractReport` — added `accrued` and `expected`.
+- `HoursByClientReport` — unchanged.
+
+Exposure limitations (not blockers for this phase):
+
+- Dashboard UI and existing report tables do not render money. Application DTOs
+  publish the figures; UI display is a later UX decision.
+- Hours-by-client has no Accrued / Expected. Client-level revenue is not an
+  approved aggregation.
+- Annual overview does not publish a single year monetary total.
+
+Test evidence:
+
+- Unit: `tests/unit/application/analytics/analytics-service.test.ts`
+- Unit: `tests/unit/application/reporting/reporting-service.test.ts`
+- Integration: `tests/integration/reporting/revenue-reporting.test.ts`
+- Regression: analytics unit / analytics integration / reporting integration.
 
 ### P-E01-05 — E01 Engineering Review
 

@@ -1,7 +1,7 @@
 // src/infrastructure/persistence/analytics-repository.ts
 import type {
   AnalyticsPeriod,
-  MonthlyAnalytics,
+  MonthlyHoursAnalytics,
   DailyAnalytics,
   ClientAllocation,
   ContractUtilization,
@@ -16,7 +16,7 @@ import { AnalyticsService } from "@/application/analytics/analytics-service";
 
 export function createAnalyticsRepository(db: PrismaExecutor): AnalyticsRepository {
   return {
-    async getMonthlyAnalytics(workspaceId: string, period: AnalyticsPeriod): Promise<MonthlyAnalytics> {
+    async getMonthlyAnalytics(workspaceId: string, period: AnalyticsPeriod): Promise<MonthlyHoursAnalytics> {
       return withPersistenceErrors(async () => {
         // Get total aggregations
         const totalResult = await db.timeEntry.aggregate({

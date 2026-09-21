@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from "vitest";
 import { AnalyticsService, AnalyticsError } from "@/application/analytics/analytics-service";
 import type { 
   AnalyticsPeriod,
-  MonthlyAnalytics,
+  MonthlyHoursAnalytics,
   DailyAnalytics,
   ClientAllocation,
   ContractUtilization,
@@ -33,7 +33,7 @@ const mockPeriod: AnalyticsPeriod = {
   endDate: new Date("2026-09-30"),
 };
 
-const mockMonthlyAnalytics: MonthlyAnalytics = {
+const mockMonthlyAnalytics: MonthlyHoursAnalytics = {
   period: mockPeriod,
   totalMinutes: 7200, // 120 hours
   billableMinutes: 5400, // 90 hours
@@ -90,8 +90,8 @@ describe("AnalyticsService", () => {
         getDailyAnalytics: vi.fn(),
         getClientAllocations: vi.fn(),
         getContractUtilizations: vi.fn(),
-        listTimeEntriesForPeriod: vi.fn(),
-        listExpectedContracts: vi.fn(),
+        listTimeEntriesForPeriod: vi.fn().mockResolvedValue([]),
+        listExpectedContracts: vi.fn().mockResolvedValue([]),
       };
 
       const mockMembersRepository: WorkspaceMemberRepository = {
@@ -104,7 +104,10 @@ describe("AnalyticsService", () => {
       const service = new AnalyticsService(mockAnalyticsRepository, mockMembersRepository);
       const result = await service.getCurrentMonthAnalytics(mockContext);
 
-      expect(result).toEqual(mockMonthlyAnalytics);
+      expect(result).toMatchObject(mockMonthlyAnalytics);
+      expect(result.accrued.byCurrency).toEqual([]);
+      expect(result.expected.byCurrency).toEqual([]);
+      expect(result).not.toHaveProperty("forecast");
       expect(mockMembersRepository.getMember).toHaveBeenCalledWith(
         mockContext.workspaceId,
         mockContext.userId
@@ -148,8 +151,8 @@ describe("AnalyticsService", () => {
         getDailyAnalytics: vi.fn(),
         getClientAllocations: vi.fn(),
         getContractUtilizations: vi.fn(),
-        listTimeEntriesForPeriod: vi.fn(),
-        listExpectedContracts: vi.fn(),
+        listTimeEntriesForPeriod: vi.fn().mockResolvedValue([]),
+        listExpectedContracts: vi.fn().mockResolvedValue([]),
       };
 
       const mockMembersRepository: WorkspaceMemberRepository = {
@@ -162,11 +165,117 @@ describe("AnalyticsService", () => {
       const service = new AnalyticsService(mockAnalyticsRepository, mockMembersRepository);
       const result = await service.getMonthlyAnalytics(mockContext, mockPeriod);
 
-      expect(result).toEqual(mockMonthlyAnalytics);
+      expect(result).toMatchObject(mockMonthlyAnalytics);
+      expect(result.totalMinutes).toBe(mockMonthlyAnalytics.totalMinutes);
+      expect(result.billableMinutes).toBe(mockMonthlyAnalytics.billableMinutes);
+      expect(result.billablePercentage).toBe(mockMonthlyAnalytics.billablePercentage);
+      expect(result.accrued).toEqual({
+        period: mockPeriod,
+        timezone: "UTC",
+        byCurrency: [],
+        byContract: [],
+      });
+      expect(result.expected).toEqual({
+        period: mockPeriod,
+        timezone: "UTC",
+        byCurrency: [],
+        byContract: [],
+      });
+      expect(result).not.toHaveProperty("forecast");
       expect(mockAnalyticsRepository.getMonthlyAnalytics).toHaveBeenCalledWith(
         mockContext.workspaceId,
         mockPeriod
       );
+    });
+
+    it("composes Accrued and Expected without mixing currencies", async () => {
+      const mockAnalyticsRepository: AnalyticsRepository = {
+        getMonthlyAnalytics: vi.fn().mockResolvedValue(mockMonthlyAnalytics),
+        getDailyAnalytics: vi.fn(),
+        getClientAllocations: vi.fn(),
+        getContractUtilizations: vi.fn(),
+        listTimeEntriesForPeriod: vi.fn().mockResolvedValue([
+          {
+            contractId: "contract-eur",
+            workDate: new Date("2026-09-02T00:00:00.000Z"),
+            durationMinutes: 60,
+            billable: true,
+            snapshotBillingModel: "HOURLY",
+            snapshotRate: "80.0000",
+            snapshotCurrency: "EUR",
+          },
+          {
+            contractId: "contract-usd",
+            workDate: new Date("2026-09-03T00:00:00.000Z"),
+            durationMinutes: 60,
+            billable: true,
+            snapshotBillingModel: "HOURLY",
+            snapshotRate: "90.0000",
+            snapshotCurrency: "USD",
+          },
+        ]),
+        listExpectedContracts: vi.fn().mockResolvedValue([
+          {
+            contractId: "contract-eur",
+            billingModel: "HOURLY",
+            rate: "80.0000",
+            currency: "EUR",
+            monthlyContractedMinutes: 4800,
+            validFrom: new Date("2026-01-01T00:00:00.000Z"),
+            validTo: new Date("2027-01-01T00:00:00.000Z"),
+          },
+          {
+            contractId: "contract-daily",
+            billingModel: "DAILY",
+            rate: "400.0000",
+            currency: "USD",
+            monthlyContractedMinutes: 4800,
+            validFrom: new Date("2026-01-01T00:00:00.000Z"),
+            validTo: new Date("2027-01-01T00:00:00.000Z"),
+          },
+          {
+            contractId: "contract-unlimited",
+            billingModel: "HOURLY",
+            rate: "100.0000",
+            currency: "GBP",
+            monthlyContractedMinutes: null,
+            validFrom: new Date("2026-01-01T00:00:00.000Z"),
+            validTo: new Date("2027-01-01T00:00:00.000Z"),
+          },
+        ]),
+      };
+
+      const mockMembersRepository: WorkspaceMemberRepository = {
+        getMember: vi.fn().mockResolvedValue(mockMembership),
+        addMember: vi.fn(),
+        listMembers: vi.fn(),
+        listMembershipsByUserId: vi.fn(),
+      };
+
+      const service = new AnalyticsService(mockAnalyticsRepository, mockMembersRepository);
+      const result = await service.getMonthlyAnalytics(mockContext, mockPeriod);
+
+      expect(result.totalMinutes).toBe(7200);
+      expect(result.accrued.byCurrency.map((row) => row.currency)).toEqual(["EUR", "USD"]);
+      expect(result.accrued.byCurrency.find((row) => row.currency === "EUR")?.unrounded).toBe(80);
+      expect(result.accrued.byCurrency.find((row) => row.currency === "USD")?.unrounded).toBe(90);
+      expect(result.expected.byCurrency).toEqual([
+        { currency: "EUR", unrounded: 6400, published: 6400 },
+      ]);
+      expect(result.expected.byContract.find((row) => row.contractId === "contract-daily")).toEqual({
+        contractId: "contract-daily",
+        currency: "USD",
+        unrounded: null,
+        published: null,
+      });
+      expect(result.expected.byContract.find((row) => row.contractId === "contract-unlimited")).toEqual({
+        contractId: "contract-unlimited",
+        currency: "GBP",
+        unrounded: null,
+        published: null,
+      });
+      expect(result.accrued).not.toHaveProperty("total");
+      expect(result.expected).not.toHaveProperty("total");
     });
 
     it("should throw error for invalid period", async () => {

@@ -879,5 +879,14 @@ describe("ReportingService integration", () => {
     expect(reportUtil!.consumedMinutes).toBe(480);
     expect(reportUtil!.contractedMinutes).toBe(4800); // full 16/16 overlap
     expect(reportUtil!.utilizationPercentage).toBeCloseTo(10, 4); // 480/4800 × 100
+
+    expect(contractReport.accrued).toEqual(dashboardAnalytics.accrued);
+    expect(contractReport.expected).toEqual(dashboardAnalytics.expected);
+    expect(dashboardAnalytics.accrued.byCurrency).toEqual([
+      { currency: "EUR", unrounded: 800, published: 800 },
+    ]);
+    expect(dashboardAnalytics.expected.byCurrency).toEqual([
+      { currency: "EUR", unrounded: 8000, published: 8000 },
+    ]);
   });
 });

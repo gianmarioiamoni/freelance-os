@@ -25,7 +25,7 @@ import type {
 } from "@/domain/persistence-types";
 import type {
   AnalyticsPeriod,
-  MonthlyAnalytics,
+  MonthlyHoursAnalytics,
   DailyAnalytics,
   ClientAllocation,
   ContractUtilization,
@@ -193,7 +193,7 @@ export type AnalyticsRepository = {
   getMonthlyAnalytics(
     workspaceId: string,
     period: AnalyticsPeriod,
-  ): Promise<MonthlyAnalytics>;
+  ): Promise<MonthlyHoursAnalytics>;
   getDailyAnalytics(
     workspaceId: string,
     period: AnalyticsPeriod,

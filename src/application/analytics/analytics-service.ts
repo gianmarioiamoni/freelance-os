@@ -23,7 +23,7 @@ import { UnauthorizedWorkspaceAccessError } from "@/domain/workspace-errors";
 
 /**
  * Shared analytics calculation service providing deterministic analytics for dashboard,
- * future reporting, alerts, and AI queries per EPIC-104 requirements.
+ * reporting, alerts, and AI queries per EPIC-104 / R2-E01.
  * 
  * All calculations:
  * - Are workspace-scoped (BR-104-001)
@@ -76,7 +76,25 @@ export class AnalyticsService {
       throw new AnalyticsError("Invalid period: start date must be <= end date");
     }
 
-    return await this.analytics.getMonthlyAnalytics(context.workspaceId, period);
+    const [hours, entries, contracts] = await Promise.all([
+      this.analytics.getMonthlyAnalytics(context.workspaceId, period),
+      this.analytics.listTimeEntriesForPeriod(context.workspaceId, period),
+      this.analytics.listExpectedContracts(context.workspaceId, period),
+    ]);
+
+    return {
+      ...hours,
+      accrued: AnalyticsService.calculateAccruedRevenue(
+        period,
+        entries,
+        context.timezone,
+      ),
+      expected: AnalyticsService.calculateExpectedRevenue(
+        period,
+        contracts,
+        context.timezone,
+      ),
+    };
   }
 
   /**

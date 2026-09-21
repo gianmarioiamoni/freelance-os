@@ -9,9 +9,10 @@ export type AnalyticsPeriod = {
 };
 
 /**
- * Monthly analytics summary for a workspace
+ * Hours-only monthly analytics produced by the analytics repository.
+ * Monetary figures are composed by AnalyticsService (P-E01-04).
  */
-export type MonthlyAnalytics = {
+export type MonthlyHoursAnalytics = {
   period: AnalyticsPeriod;
   totalMinutes: number;
   billableMinutes: number;
@@ -19,6 +20,15 @@ export type MonthlyAnalytics = {
   billablePercentage: number | null; // null when totalMinutes is 0
   clientAllocations: ClientAllocation[];
   contractUtilizations: ContractUtilization[];
+};
+
+/**
+ * Monthly analytics summary for a workspace.
+ * Accrued / Expected are per-currency. There is no mixed-currency total.
+ */
+export type MonthlyAnalytics = MonthlyHoursAnalytics & {
+  accrued: AccruedRevenue;
+  expected: ExpectedRevenue;
 };
 
 /**

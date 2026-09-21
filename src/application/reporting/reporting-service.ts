@@ -1,8 +1,10 @@
 // src/application/reporting/reporting-service.ts
 import type {
+  AccruedRevenue,
   AnalyticsPeriod,
   ClientAllocation,
   ContractUtilization,
+  ExpectedRevenue,
   MonthlyAnalytics,
   ReportingPeriodKind,
 } from "@/domain/analytics-types";
@@ -42,6 +44,8 @@ export type ContractReport = {
   period: AnalyticsPeriod;
   periodKind: ReportingPeriodKind;
   contractUtilizations: ContractUtilization[];
+  accrued: AccruedRevenue;
+  expected: ExpectedRevenue;
 };
 
 /**
@@ -78,8 +82,9 @@ export type AnnualOverviewReport = {
  * Non-goals:
  * - No percentage, average, capacity, or utilization arithmetic here.
  * - No pro-rata formula here — it lives in AnalyticsService.
+ * - No Accrued / Expected formula here — AnalyticsService is the owner.
  * - No rollover or expiry semantics (OBD-012 open).
- * - No revenue figures (PD-105-001).
+ * - No Forecast, FX, or mixed-currency total.
  */
 export class ReportingService {
   constructor(private readonly analytics: AnalyticsService) {}
@@ -130,11 +135,12 @@ export class ReportingService {
     now: Date = new Date(),
   ): Promise<ContractReport> {
     const period = this.resolvePeriod(request, context.timezone, now);
-    const contractUtilizations = await this.analytics.getContractUtilizations(
-      context,
-      period,
-    );
-    return { period, periodKind: request, contractUtilizations };
+    const [contractUtilizations, accrued, expected] = await Promise.all([
+      this.analytics.getContractUtilizations(context, period),
+      this.analytics.getAccruedRevenue(context, period),
+      this.analytics.getExpectedRevenue(context, period),
+    ]);
+    return { period, periodKind: request, contractUtilizations, accrued, expected };
   }
 
   /**

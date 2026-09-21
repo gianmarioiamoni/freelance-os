@@ -834,8 +834,9 @@ describe("Accrued Revenue integration", () => {
     expect(monthly.billablePercentage).toBe((120 / 180) * 100);
     expect(monthly.clientAllocations[0]?.isArchived).toBe(true);
     expect(monthly.contractUtilizations[0]?.consumedMinutes).toBe(180);
-    expect(monthly).not.toHaveProperty("accrued");
-    expect(monthly).not.toHaveProperty("expected");
+    expect(monthly.accrued.byCurrency[0]?.unrounded).toBe(160);
+    expect(monthly.accrued).toEqual(accrued);
+    expect(monthly.expected.byCurrency).toEqual([]);
     expect(monthly).not.toHaveProperty("forecast");
   });
 });
