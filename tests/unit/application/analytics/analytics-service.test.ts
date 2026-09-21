@@ -90,6 +90,7 @@ describe("AnalyticsService", () => {
         getDailyAnalytics: vi.fn(),
         getClientAllocations: vi.fn(),
         getContractUtilizations: vi.fn(),
+        listTimeEntriesForPeriod: vi.fn(),
       };
 
       const mockMembersRepository: WorkspaceMemberRepository = {
@@ -119,6 +120,7 @@ describe("AnalyticsService", () => {
         getDailyAnalytics: vi.fn(),
         getClientAllocations: vi.fn(),
         getContractUtilizations: vi.fn(),
+        listTimeEntriesForPeriod: vi.fn(),
       };
 
       const mockMembersRepository: WorkspaceMemberRepository = {
@@ -144,6 +146,7 @@ describe("AnalyticsService", () => {
         getDailyAnalytics: vi.fn(),
         getClientAllocations: vi.fn(),
         getContractUtilizations: vi.fn(),
+        listTimeEntriesForPeriod: vi.fn(),
       };
 
       const mockMembersRepository: WorkspaceMemberRepository = {
@@ -169,6 +172,7 @@ describe("AnalyticsService", () => {
         getDailyAnalytics: vi.fn(),
         getClientAllocations: vi.fn(),
         getContractUtilizations: vi.fn(),
+        listTimeEntriesForPeriod: vi.fn(),
       };
 
       const invalidPeriod: AnalyticsPeriod = {
@@ -199,6 +203,7 @@ describe("AnalyticsService", () => {
         getDailyAnalytics: vi.fn().mockResolvedValue(mockDailyAnalytics),
         getClientAllocations: vi.fn(),
         getContractUtilizations: vi.fn(),
+        listTimeEntriesForPeriod: vi.fn(),
       };
 
       const mockMembersRepository: WorkspaceMemberRepository = {
@@ -224,6 +229,7 @@ describe("AnalyticsService", () => {
         getDailyAnalytics: vi.fn(),
         getClientAllocations: vi.fn(),
         getContractUtilizations: vi.fn(),
+        listTimeEntriesForPeriod: vi.fn(),
       };
 
       const invalidPeriod: AnalyticsPeriod = {
@@ -271,6 +277,7 @@ describe("AnalyticsService", () => {
         getDailyAnalytics: vi.fn(),
         getClientAllocations: vi.fn().mockResolvedValue(clientAllocations),
         getContractUtilizations: vi.fn(),
+        listTimeEntriesForPeriod: vi.fn(),
       };
 
       const mockMembersRepository: WorkspaceMemberRepository = {
@@ -310,6 +317,7 @@ describe("AnalyticsService", () => {
         getDailyAnalytics: vi.fn(),
         getClientAllocations: vi.fn(),
         getContractUtilizations: vi.fn().mockResolvedValue(utilizations),
+        listTimeEntriesForPeriod: vi.fn(),
       };
 
       const mockMembersRepository: WorkspaceMemberRepository = {
@@ -346,6 +354,7 @@ describe("AnalyticsService", () => {
         getDailyAnalytics: vi.fn(),
         getClientAllocations: vi.fn(),
         getContractUtilizations: vi.fn().mockResolvedValue(utilizations),
+        listTimeEntriesForPeriod: vi.fn(),
       };
 
       const mockMembersRepository: WorkspaceMemberRepository = {

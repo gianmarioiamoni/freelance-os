@@ -1,5 +1,7 @@
 // src/application/analytics/analytics-service.ts
 import type { 
+  AccruedRevenue,
+  AccruedTimeEntryFact,
   AnalyticsPeriod, 
   MonthlyAnalytics, 
   DailyAnalytics,
@@ -9,6 +11,10 @@ import type {
 } from "@/domain/analytics-types";
 import type { AnalyticsRepository, WorkspaceMemberRepository } from "@/domain/repositories";
 import type { WorkspaceContext } from "@/application/workspace/workspace-context";
+import {
+  calculateAccruedRevenue,
+  publishMonetaryAmount,
+} from "@/application/analytics/accrued-revenue";
 import { getCurrentMonthPeriod, getPeriodDays, isValidPeriod } from "@/lib/analytics-periods";
 import { UnauthorizedWorkspaceAccessError } from "@/domain/workspace-errors";
 
@@ -150,6 +156,46 @@ export class AnalyticsService {
     }
 
     return await this.analytics.getContractUtilizations(context.workspaceId, period);
+  }
+
+  /**
+   * Authoritative Accrued Revenue for a resolved AnalyticsPeriod.
+   * Uses TimeEntry quantity + historical commercial snapshot only.
+   * Independent of Expected, Forecast, Invoice, and Payment.
+   */
+  async getAccruedRevenue(
+    context: WorkspaceContext,
+    period: AnalyticsPeriod,
+  ): Promise<AccruedRevenue> {
+    await this.requireMembership(context);
+
+    if (!isValidPeriod(period)) {
+      throw new AnalyticsError("Invalid period: start date must be <= end date");
+    }
+
+    const entries = await this.analytics.listTimeEntriesForPeriod(
+      context.workspaceId,
+      period,
+    );
+
+    return AnalyticsService.calculateAccruedRevenue(period, entries);
+  }
+
+  /**
+   * Pure Accrued calculation. Exposed for unit tests and later consumers.
+   */
+  static calculateAccruedRevenue(
+    period: AnalyticsPeriod,
+    entries: readonly AccruedTimeEntryFact[],
+  ): AccruedRevenue {
+    return calculateAccruedRevenue(period, entries);
+  }
+
+  /**
+   * R2-OD-002: round a published monetary figure once from the unrounded total.
+   */
+  static publishMonetaryAmount(unrounded: number): number {
+    return publishMonetaryAmount(unrounded);
   }
 
   /**

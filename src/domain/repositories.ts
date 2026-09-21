@@ -205,6 +205,10 @@ export type AnalyticsRepository = {
     workspaceId: string,
     period: AnalyticsPeriod,
   ): Promise<ContractUtilization[]>;
+  listTimeEntriesForPeriod(
+    workspaceId: string,
+    period: AnalyticsPeriod,
+  ): Promise<TimeEntryRecord[]>;
 };
 
 export type PersistenceRepositories = {

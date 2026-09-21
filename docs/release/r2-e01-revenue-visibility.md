@@ -3,7 +3,7 @@
 **Epic:** R2-E01 — Revenue Visibility  
 **Release:** Release 2 — Revenue Operations  
 **MASTER_PLAN identifier:** R2-E01 (`MASTER_PLAN.md` §19)  
-**Status:** P-E01-00 COMPLETE / P-E01-01 COMPLETE / ACCRUED NOT STARTED  
+**Status:** P-E01-00 COMPLETE / P-E01-01 COMPLETE / P-E01-02 COMPLETE / EXPECTED NOT STARTED  
 **Authority:** `docs/release/r2-decision-pack.md`  
 **Companions:** `docs/release/r2-epic-map.md`, `docs/release/r2-architecture-delta.md`, `docs/release/r2-open-decisions.md`  
 **Does not assign:** an EPIC-2xx number
@@ -11,14 +11,14 @@
 ```text
 P-E01-00  PLANNING / ARCHITECTURE FREEZE   COMPLETE
 P-E01-01  PERSISTENCE / DOMAIN FOUNDATION  COMPLETE
-P-E01-02  ACCRUED REVENUE                  NOT STARTED
+P-E01-02  ACCRUED REVENUE                  COMPLETE
 P-E01-03  EXPECTED REVENUE                 NOT STARTED
 P-E01-04  ANALYTICS / REPORTING INTEGRATION NOT STARTED
 P-E01-05  ENGINEERING REVIEW               NOT STARTED
 P-E01-06  QA                               NOT STARTED
 P-E01-07  DOCUMENTATION / EPIC CLOSURE     NOT STARTED
 
-IMPLEMENTATION: P-E01-01 ONLY
+IMPLEMENTATION: P-E01-01 + P-E01-02
 R1: FROZEN / GRANTED
 ```
 
@@ -252,28 +252,43 @@ published      = round_to_nearest_integer(periodAccrued)
 
 ### 5.2 DAILY
 
+Implemented in `AnalyticsService.calculateAccruedRevenue` (P-E01-02).
+
 ```text
-billableDay(contract, date) =
-  1 if ≥ 1 billable TimeEntry exists for that Contract on that calendar date
+billableDay(contract, date, currency) =
+  1 if ≥ 1 billable TimeEntry exists for that Contract on that calendar
+    date in that snapshotCurrency
   0 otherwise
 
-dayAccrued     = billableDay × snapshotDailyRate
-periodAccrued  = Σ dayAccrued
+totalBillableMinutes(contract, date, currency) =
+  Σ billable durationMinutes for that Contract / date / snapshotCurrency
+
+dayAccrued =
+  Σ (snapshotMinutes / totalBillableMinutes × snapshotDailyRate)
+
+periodAccrued  = Σ dayAccrued   (unrounded, per snapshotCurrency)
 published      = round_to_nearest_integer(periodAccrued)
 ```
 
-Binding composition of R2-OD-001 and BR-007:
+Binding composition of R2-OD-001, R2-OD-016, BR-007, and D7:
 
 - A date contributes one accrued billable day only if at least one
   **billable** TimeEntry exists for that Contract on that date.
 - Multiple entries on the same Contract / date count once.
 - Non-billable-only dates do not accrue.
+- Non-billable minutes are excluded from the weighted-average denominator.
+- Different Contracts on the same date are calculated independently.
 - No work-calendar model.
+- Same-day conflicting snapshot rates use the approved minute-weighted
+  daily rate (R2-OD-016). First/last-wins is not used.
 
-When two billable TimeEntries on the same Contract / date were recorded
-under **different** snapshotted commercial values, which rate applies to
-the single billable day is **OPEN** (`R2-OD-016`, §18). Implementation
-must not invent a default.
+Same Contract / date with different `snapshotCurrency` values:
+
+- The write path allows this. R2-OD-011 immutability starts at the first
+  Invoice / Payment, not at the first TimeEntry. No domain invariant
+  rejects mixed snapshot currencies on one Contract / date.
+- Accrued does not convert or merge them. The DAILY weighted formula is
+  applied independently per `snapshotCurrency` (D7). No FX.
 
 ### 5.3 Contract validity
 
@@ -454,8 +469,9 @@ existing rows from the live associated Contract (R2-OD-017).
 | R2-OD-016 | **APPROVED** — weighted-average daily rate by billable minutes. Calculation is P-E01-02 |
 | R2-OD-017 | **APPROVED** — migrate/backfill existing TimeEntries from the current associated Contract |
 
-Accrued calculation remains P-E01-02. Do not reread live Contract commercial
-fields for historical Accrued.
+Accrued calculation is implemented in P-E01-02. Historical Accrued reads
+only TimeEntry snapshot columns. Live Contract commercial fields are not
+reread.
 
 ---
 
@@ -527,7 +543,7 @@ existing method is the reuse point.
 | --- | --- | --- |
 | Resolve reporting period | `ReportingService.resolvePeriod` | Existing. |
 | Pro-rata capacity | `AnalyticsService.calculateProRataCapacity` | Existing. Expected must call this. |
-| Accrued by reporting period | `AnalyticsService` | Unrounded + published integer; per currency. |
+| Accrued by reporting period | `AnalyticsService.getAccruedRevenue` | Unrounded + published integer; per currency and per Contract. |
 | Expected by reporting period | `AnalyticsService` | HOURLY capacity × live rate; null if no capacity or DAILY. |
 | Revenue by currency | `AnalyticsService` | Separate figures. No mixed total. |
 | Revenue by Contract | `AnalyticsService` | Compatible with existing contract-utilization rows. |
@@ -607,7 +623,7 @@ Reuse existing suites as regression baselines:
 - Non-billable-only day → no day
 - Historical rate change after a closed day does not rewrite that day
 - Contract validity retained / flagged
-- R2-OD-016 case: two same-day entries with different snapshots — **pending product decision**; test must encode the decided rule, not an invented one
+- R2-OD-016 case: two same-day entries with different snapshots use the minute-weighted daily rate (implemented in P-E01-02)
 
 ### Expected
 
@@ -724,6 +740,30 @@ No implementation commit is created by this plan.
 | Migration | No. |
 | Depends on | P-E01-01. |
 | Exit criteria | AC-01, AC-02, AC-03, AC-08, AC-09, AC-11, AC-12 hold in service tests. |
+| Status | **COMPLETE** |
+
+Implemented:
+
+- Calculation owner: `AnalyticsService.getAccruedRevenue` /
+  `AnalyticsService.calculateAccruedRevenue`
+  (`src/application/analytics/accrued-revenue.ts`).
+- Quantity: `TimeEntry.durationMinutes` (live quantity fact).
+- Commercial value: `snapshotBillingModel`, `snapshotRate`, `snapshotCurrency`.
+- HOURLY: `billableMinutes / 60 × snapshotRate`, additive per TimeEntry.
+- DAILY: one billable day per Contract / UTC calendar `workDate` /
+  `snapshotCurrency`, minute-weighted when snapshots differ (R2-OD-016).
+- Published money: `Math.round(unrounded_total)` once per published figure.
+- Period: existing `AnalyticsPeriod` / `Workspace.timezone`.
+- Isolation: `requireMembership` + workspace-scoped
+  `AnalyticsRepository.listTimeEntriesForPeriod`.
+- Not introduced: Expected, Forecast, Invoice, Payment, mixed-currency total,
+  dashboard/report money publication (P-E01-04).
+
+Test evidence:
+
+- Unit: `tests/unit/application/analytics/accrued-revenue.test.ts`
+- Integration: `tests/integration/analytics/accrued-revenue.test.ts`
+- R1 analytics regression suites remain green.
 
 ### P-E01-03 — Expected Revenue
 
@@ -832,7 +872,7 @@ Do not resolve these in implementation.
 ### Closed in E01
 
 6. **R2-OD-003 residual** — `snapshotBillingModel` / `snapshotRate` / `snapshotCurrency` on TimeEntry.
-7. **R2-OD-016** — weighted-average daily rate by billable minutes. Accrued arithmetic is P-E01-02.
+7. **R2-OD-016** — weighted-average daily rate by billable minutes. Implemented in P-E01-02.
 8. **R2-OD-017** — existing TimeEntries backfilled from the current associated Contract.
 
 Expected remains live-Contract for rate and capacity. That is reused R1

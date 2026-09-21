@@ -123,3 +123,47 @@ export type ReportingPeriodKind =
   | { kind: "month" }
   | { kind: "year" }
   | { kind: "custom"; startDate: Date; endDate: Date };
+
+/**
+ * Quantity + historical commercial snapshot facts consumed by Accrued Revenue.
+ * Duration is the live TimeEntry quantity fact, not a commercial snapshot column.
+ */
+export type AccruedTimeEntryFact = {
+  contractId: string;
+  workDate: Date;
+  durationMinutes: number;
+  billable: boolean;
+  snapshotBillingModel: "HOURLY" | "DAILY";
+  snapshotRate: string;
+  snapshotCurrency: string;
+};
+
+/**
+ * One published Accrued figure in a single snapshot currency.
+ * There is no mixed-currency total (D7 / R2-OD-002).
+ */
+export type AccruedAmount = {
+  currency: string;
+  unrounded: number;
+  published: number;
+};
+
+/**
+ * Accrued for one Contract in one snapshot currency.
+ */
+export type AccruedByContract = {
+  contractId: string;
+  currency: string;
+  unrounded: number;
+  published: number;
+};
+
+/**
+ * Authoritative Accrued Revenue for a reporting period.
+ * Grouped by snapshot currency. No FX and no mixed-currency grand total.
+ */
+export type AccruedRevenue = {
+  period: AnalyticsPeriod;
+  byCurrency: AccruedAmount[];
+  byContract: AccruedByContract[];
+};

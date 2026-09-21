@@ -76,6 +76,7 @@ function makeRepositories(overrides: Partial<{
     getMonthlyAnalytics: vi.fn().mockResolvedValue({ totalMinutes: 0 }),
     getContractUtilizations: vi.fn().mockResolvedValue([]),
     getClientAllocations: vi.fn().mockResolvedValue([]),
+    listTimeEntriesForPeriod: vi.fn().mockResolvedValue([]),
     ...overrides.analytics,
   };
 

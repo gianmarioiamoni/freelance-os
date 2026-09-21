@@ -6,8 +6,10 @@ import type {
   ClientAllocation,
   ContractUtilization,
 } from "@/domain/analytics-types";
+import type { TimeEntryRecord } from "@/domain/persistence-types";
 import type { AnalyticsRepository } from "@/domain/repositories";
 import { withPersistenceErrors } from "@/infrastructure/persistence/map-prisma-error";
+import { mapTimeEntry } from "@/infrastructure/persistence/mappers";
 import type { PrismaExecutor } from "@/infrastructure/persistence/prisma-executor";
 import { AnalyticsService } from "@/application/analytics/analytics-service";
 
@@ -200,6 +202,25 @@ export function createAnalyticsRepository(db: PrismaExecutor): AnalyticsReposito
     async getContractUtilizations(workspaceId: string, period: AnalyticsPeriod): Promise<ContractUtilization[]> {
       return withPersistenceErrors(async () => {
         return getContractUtilizations(db, workspaceId, period);
+      });
+    },
+
+    async listTimeEntriesForPeriod(
+      workspaceId: string,
+      period: AnalyticsPeriod,
+    ): Promise<TimeEntryRecord[]> {
+      return withPersistenceErrors(async () => {
+        const rows = await db.timeEntry.findMany({
+          where: {
+            workspaceId,
+            workDate: {
+              gte: period.startDate,
+              lte: period.endDate,
+            },
+          },
+          orderBy: [{ workDate: "asc" }, { createdAt: "asc" }],
+        });
+        return rows.map(mapTimeEntry);
       });
     },
   };
