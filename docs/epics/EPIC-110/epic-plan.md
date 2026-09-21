@@ -2,16 +2,22 @@
 
 **Epic:** EPIC-110
 **Release:** R1 consolidation (post EPIC-108 / EPIC-109)
-**Status:** P110-04 DOCUMENTATION CONSISTENCY COMPLETE — P110-05 not started
-**HEAD:** `15bc91128fc2fdec3369ba9933c3bdf673af7c2d`
+**Status:** CLOSED — R1 FROZEN (`docs/release/r1-freeze.md`)
+**HEAD:** `c6712224e8d093b6f64cb46a17823a20de356a31`
 
 ```text
-PLANNING:              P110-00 COMPLETE
-VERIFY:                P110-01 COMPLETE
-IMPLEMENTATION:        P110-02 COMPLETE
+PLANNING:              P110-00 PASS
+VERIFY:                P110-01 PASS
+IMPLEMENTATION:        P110-02 PASS
 P110-03:               SKIPPED BY DESIGN
-DOCUMENTATION:         P110-04 COMPLETE
-R1 FREEZE:             NOT DECLARED
+DOCUMENTATION:         P110-04 PASS
+REGRESSION:            P110-05 PASS
+P110-06 / P110-06C:    intermediate findings resolved or superseded
+P110-06D:              PASS
+P110-06C FINAL:        PASS
+P110-07:               PASS
+P110-08:               FREEZE
+R1 FREEZE:             FROZEN
 NEW PRODUCT SCOPE:     FORBIDDEN
 ACTIONABLE R1:         0
 ```
@@ -146,7 +152,7 @@ EPIC-108 streams A/E/B/D/C; EPIC-109 calendar-date; F-004; list in Current Certi
 
 ## R1 Actionable Items
 
-**None.** P110-02 corrected F-105-013 and F-103-002. P110-04 reconciled current registers. Accepted and deferred items remain explicit. Freeze is not declared (P110-05 … P110-08 remain).
+**None.** P110-02 corrected F-105-013 and F-103-002. P110-04 reconciled current registers. P110-06 / P110-06C intermediate findings resolved or superseded. FINDING-110-P06-001 CLOSED TECHNICAL. F-110-P06-002 CLOSED TECHNICAL / production-verified. Accepted and deferred items remain explicit. Freeze is declared in P110-08 (`docs/release/r1-freeze.md`).
 
 ---
 
@@ -217,7 +223,7 @@ One phase = one objective = one commit. Do not start P110-01 in this commit.
 
 ## Freeze Criteria
 
-Not declared met in P110-00.
+Not declared met in P110-00. Declared met in P110-08.
 
 - No unresolved R1 **application** defects (F-105-013, F-103-002 done or explicitly ACCEPTed by PO)
 - No unresolved R1 authorization/isolation defects (none open as defects)
@@ -324,3 +330,48 @@ Correction: `TimeEntryForm` owns live `workDate` state and passes it to `ClientC
 Tests: `eligible-contracts.test.ts` (today / validFrom / before / validTo / client change / empty client). E2E `time-entry-contract-eligibility.spec.ts` (select client → change date → options update).
 
 Disposition: **CLOSED** in current EPIC-110 register after this phase. Not F-103-003. Not introduced by P110-02.
+
+## P110-05 record
+
+Engineering regression against P110-04 HEAD `e51309b`. No `src/` or test change in this phase.
+
+Typecheck PASS. Lint PASS. Unit 442/442 PASS. Integration host 224/224 PASS. Integration `TZ=America/Los_Angeles` 224/224 PASS. E2E 76/76 PASS. Release-gate PASS. Build PASS.
+
+Actionable R1 findings = 0. Freeze not declared in this phase.
+
+## P110-06 / P110-06C intermediate record
+
+P110-06 PASS WITH FINDINGS: live production was still `7c4e837` while the consolidated candidate was `e51309b`. FINDING-110-P06-001 recorded (candidate identity drift).
+
+P110-06C (first re-validation) confirmed production SHA `e51309b` / deploy `6558132241`. FINDING-110-P06-001 CLOSED TECHNICAL. FINDING-110-P06-002 / F-110-P06-002 opened (Add Time Entry contract eligibility used the initial `workDate` prop). Authenticated production flows remained incompletely evidenced. Intermediate outcome superseded by P110-06D + P110-06C FINAL.
+
+## P110-06C FINAL record
+
+Production re-validation of `c6712224e8d093b6f64cb46a17823a20de356a31`. GitHub Production `6558481150`. URL `https://freelance-os-timeplan.vercel.app`. HEAD = `origin/main` = candidate.
+
+Outcome: **PASS**. Production-verified critical workflow: PASS. F-110-P06-002 CLOSED TECHNICAL — production-verified. New findings: NONE.
+
+Known non-blocking evidence gaps (not PASS): archived-client production data not available; alerts mark-read not exercised (no unread notification); Google OAuth completion not manually completed; password-reset completion not manually completed.
+
+## P110-07 record
+
+Final Engineering Review. Review-only. No `src/`, tests, or documentation change.
+
+Outcome: **PASS**. Eligible for P110-08. Actionable R1 findings = 0. No new findings. Historical §33 / §34 / §35 snapshots not rewritten.
+
+## P110-08 record
+
+R1 freeze record. Documentation only. Evidence: `docs/release/r1-freeze.md`.
+
+```text
+R1 STATUS:              FROZEN
+CANDIDATE:              c6712224e8d093b6f64cb46a17823a20de356a31
+PRODUCTION:             https://freelance-os-timeplan.vercel.app
+DEPLOYMENT:             6558481150
+P110-07:                PASS
+P110-06C FINAL:         PASS
+ACTIONABLE R1 FINDINGS: 0
+R1 FREEZE:              GRANTED
+```
+
+EPIC-110 CLOSED. No next epic approved. No new product scope.

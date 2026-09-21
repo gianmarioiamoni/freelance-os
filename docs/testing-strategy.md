@@ -1001,7 +1001,7 @@ Evidence: `docs/epics/EPIC-108/findings.md`. C05 verification PASS. Stream C CLO
 
 ### Closed by EPIC-110
 
-Evidence: `docs/epics/EPIC-110/epic-plan.md` P110-02 / P110-04. Does not rewrite the QA Gate or EPIC-108 tables above. Historical §34 / §35 snapshots are not rewritten.
+Evidence: `docs/epics/EPIC-110/epic-plan.md`, `docs/release/r1-freeze.md`. Does not rewrite the QA Gate or EPIC-108 tables above. Historical §34 / §35 snapshots are not rewritten.
 
 | ID | Status | Classification | Notes |
 |---|---|---|---|
@@ -1009,6 +1009,8 @@ Evidence: `docs/epics/EPIC-110/epic-plan.md` P110-02 / P110-04. Does not rewrite
 | F-103-002 | CLOSED | APPLICATION | Historical TimeEntry rows for archived clients remain listed. Create selection stays ACTIVE-only. P110-02 `15bc911` |
 | F-103-003 | ACCEPTED R1 LIMITATION | UX | Uncontrolled contract `defaultValue`; server `validateContractForTimeEntry`. P110-01 |
 | P109-05 LA `updatedAt` | CLOSED / NOT REPRODUCED | TEST | Targeted host + `America/Los_Angeles` PASS. P110-01 |
+| FINDING-110-P06-001 | CLOSED TECHNICAL | OPERATIONS | Production candidate identity drift. Closed when production matched the consolidated SHA. P110-06C |
+| F-110-P06-002 | CLOSED TECHNICAL / production-verified | APPLICATION | Time Entry contract eligibility follows live `workDate`. P110-06D `c6712224`; production-verified P110-06C FINAL |
 
 ### Implemented by EPIC-107
 

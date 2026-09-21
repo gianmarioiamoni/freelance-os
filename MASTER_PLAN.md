@@ -4,7 +4,7 @@
 **Document:** `MASTER_PLAN.md`\
 **Product:** FreelanceOS\
 **Canonical format:** Markdown\
-**Current phase:** MASTER_PLAN §35 GRANTED (`docs/release/production-certification.md`). D-005 PROVIDED — Product Owner approved production release. §34 READY FOR RELEASE on `2b58af4`. Production readiness: RELEASE GRANTED. EPIC-108 CLOSED (ER PASS WITH FINDINGS). EPIC-109 CLOSED (ER PASS). FINDING-108-ER-001 CLOSED. F-104-006 CLOSED. EPIC-110 P110-04: current finding registers reconciled. Actionable R1 findings = 0. R1 freeze not declared.
+**Current phase:** EPIC-110 CLOSED. R1 FROZEN (`docs/release/r1-freeze.md`). Candidate `c6712224e8d093b6f64cb46a17823a20de356a31`. Production deployment `6558481150` at `https://freelance-os-timeplan.vercel.app`. Actionable R1 findings = 0. Historical §34 / §35 snapshots unchanged. No next epic approved.
 
 ------------------------------------------------------------------------
 
@@ -135,10 +135,11 @@ context is recovered from repository documentation.
 ## Overall
 
 ``` text
-STATUS: UX Polish COMPLETE; EPIC-107 Public Landing COMPLETE through P107-06 and epic certification; MASTER_PLAN §34 READY FOR RELEASE; §35 GRANTED; EPIC-108 COMPLETE (ER PASS WITH FINDINGS); EPIC-109 COMPLETE (ER PASS); EPIC-110 P110-04 COMPLETE (registers reconciled). Actionable R1 findings = 0. R1 freeze NOT DECLARED.
-NEXT: EPIC-110 P110-05 engineering regression — docs/epics/EPIC-110/epic-plan.md
+STATUS: UX Polish COMPLETE; EPIC-107 Public Landing COMPLETE through P107-06 and epic certification; MASTER_PLAN §34 READY FOR RELEASE; §35 GRANTED; EPIC-108 COMPLETE (ER PASS WITH FINDINGS); EPIC-109 COMPLETE (ER PASS); EPIC-110 CLOSED (P110-00 PASS; P110-01 PASS; P110-02 PASS; P110-03 SKIPPED BY DESIGN; P110-04 PASS; P110-05 PASS; P110-06 / P110-06C intermediate findings resolved or superseded; P110-06D PASS; P110-06C FINAL PASS; P110-07 PASS; P110-08 FREEZE). Actionable R1 findings = 0. R1 FROZEN.
+NEXT: No next epic approved
 Production Validation (§34): EXECUTED — READY FOR RELEASE — docs/release/production-validation.md
 Production Certification (§35): GRANTED — docs/release/production-certification.md
+R1 Freeze: FROZEN — docs/release/r1-freeze.md
 Release gate resolution: docs/release/release-gate-resolution.md
 Production readiness: RELEASE GRANTED
 ```
@@ -163,7 +164,7 @@ MVP implementation: EPIC-101 COMPLETE; EPIC-102 COMPLETE; EPIC-103 COMPLETE; EPI
 MVP integration: COMPLETE / CLOSED — see docs/epics/MVP-INTEGRATION/engineering-review.md
 MVP QA Gate: PASS WITH FINDINGS — see docs/qa/qa-report.md
 Documentation Gate: COMPLETE — MASTER_PLAN.md §32
-Production deployment: HOSTED — Vercel + Neon + Google OAuth + Gmail SMTP (`2b58af4`; docs/release/production-certification.md). Historical §34 rows are not rewritten.
+Production deployment: HOSTED — Vercel + Neon + Google OAuth + Gmail SMTP (current freeze candidate `c6712224`; deployment `6558481150`; docs/release/r1-freeze.md). Historical §35 grant remains `2b58af4`. Historical §34 rows are not rewritten.
 Authentication: IMPLEMENTED — see docs/epics/EPIC-003/engineering-review.md
 Workspace / authorization: IMPLEMENTED — see docs/epics/EPIC-004/engineering-review.md
 Testing / CI foundation: IMPLEMENTED — see docs/epics/EPIC-005/engineering-review.md
@@ -318,6 +319,8 @@ F-104-017 CLOSED — EPIC-105 / P105-04
 F-104-P-002 CLOSED — subsumed by F-104-005 / P105-03
 F-103-003 ACCEPTED R1 LIMITATION — EPIC-110 / P110-01
 P109-05 LA updatedAt CLOSED / NOT REPRODUCED — EPIC-110 / P110-01
+FINDING-110-P06-001 CLOSED TECHNICAL — EPIC-110 / P110-06C
+F-110-P06-002 CLOSED TECHNICAL / production-verified — EPIC-110 / P110-06C FINAL
 ```
 
 Present after EPIC-104:
@@ -1757,11 +1760,12 @@ Current expected technical-debt candidates:
 
 This list must be updated as implementation reveals real debt.
 
-Current R1 freeze disposition (EPIC-110 / P110-04). Historical §34 / §35
+Current R1 freeze disposition (EPIC-110 / P110-08). Historical §34 / §35
 and historical epic reviews are not rewritten.
 
 - Actionable R1 findings: none
-- Corrected by EPIC-110: F-105-013, F-103-002
+- Corrected by EPIC-110: F-105-013, F-103-002, FINDING-110-P06-001,
+  F-110-P06-002
 - Accepted for R1: F-103-003, F-103-005, F-103-006, F-103-P-002,
   F-104-008, F-104-009 (measured; no gate), F-104-016, F-104-P-001
   (measured; PD-105-008), F-105-008, F-P2-004, F-P3-002, F-004-001,
@@ -1771,8 +1775,8 @@ and historical epic reviews are not rewritten.
   F-062, F-072, OBD-001, OBD-002, OBD-004, OBD-005, OBD-007, OBD-009,
   OBD-010, OBD-011, OBD-012, CSV/PDF, invoice lifecycle, calendar,
   copy-previous, EPIC-003 F-001, TD-001 … TD-007
-- Remaining before freeze: P110-05 regression, P110-06 production
-  evidence, P110-07 ER, P110-08 freeze record. Freeze is not declared.
+- R1 FROZEN on `c6712224` / deployment `6558481150`. No next epic
+  approved. Accepted and deferred items are not closed by freeze.
 
 Real debt recorded by EPIC-103 (see
 `docs/epics/EPIC-103/engineering-review.md` §16):
@@ -1830,6 +1834,14 @@ Real debt recorded by EPIC-105 (see `docs/epics/EPIC-105/epic-plan.md`
   F-105-008     Test comment arithmetic description imprecise                 Non-blocking Accepted
   F-105-013     Annual overview `year` / `now` latent inconsistency          Low          CLOSED (EPIC-110 / P110-02)
   F-104-006     Clock-sensitive E2E / integration tests                       High         CLOSED (EPIC-109 / ER-109)
+
+Real debt recorded by EPIC-110 (see `docs/epics/EPIC-110/epic-plan.md`
+and `docs/release/r1-freeze.md`):
+
+  ID                    Area                                                          Status
+  --------------------- ------------------------------------------------------------- ------------------------------------------
+  FINDING-110-P06-001   Production candidate identity drift                           CLOSED TECHNICAL (P110-06C)
+  F-110-P06-002         Time Entry contract eligibility used initial workDate          CLOSED TECHNICAL / production-verified (P110-06C FINAL)
 
 EPIC-105 findings F-105-001 through F-105-007 are closed; F-105-P-007
 (performance N+1 concern) is evidenced and measured at MVP scale; no
@@ -2139,10 +2151,11 @@ Next actions:
 1. Release 1 MVP is certified
 2. EPIC-108 is CLOSED (ER PASS WITH FINDINGS)
 3. EPIC-109 is CLOSED (ER PASS)
-4. EPIC-110 P110-04 reconciled current registers (actionable R1 findings = 0)
-5. Next: P110-05 engineering regression
-6. Do not rewrite historical §34 / §35 rows
-7. Do not declare R1 frozen yet
+4. EPIC-110 is CLOSED (P110-08 FREEZE)
+5. R1 is FROZEN on c6712224 / deployment 6558481150
+6. Actionable R1 findings = 0
+7. No next epic approved
+8. Do not rewrite historical §34 / §35 rows
 ```
 
 FINDING-UX-004, FINDING-QA-002, FINDING-INT-001, FINDING-108-001, F-104-007,
@@ -2150,7 +2163,8 @@ FINDING-QA-001, FINDING-INT-002, FINDING-INT-003, F-104-011, F-104-012, and
 F-104-010 are CLOSED (`docs/epics/EPIC-108/findings.md`). F-004 is CLOSED.
 F-105-013 and F-103-002 are CLOSED (EPIC-110 / P110-02). F-103-003 is
 ACCEPTED R1 LIMITATION (EPIC-110 / P110-01). P109-05 LA `updatedAt` is
-CLOSED / NOT REPRODUCED (EPIC-110 / P110-01).
+CLOSED / NOT REPRODUCED (EPIC-110 / P110-01). FINDING-110-P06-001 is
+CLOSED TECHNICAL. F-110-P06-002 is CLOSED TECHNICAL / production-verified.
 
 This follows the methodology's rule that each Phase gets a focused
 Cursor chat, a defined commit expectation, review, approval, and then
@@ -2186,7 +2200,7 @@ releases:
     status: in-progress
   R1:
     name: MVP
-    status: in-progress
+    status: frozen
   R2:
     name: Billing & Intelligence
     status: future
@@ -2198,10 +2212,14 @@ releases:
     status: future
 
 last_completed:
-  epic: EPIC-110 P110-04
+  epic: EPIC-110
+  phase: P110-08
+  status: CLOSED
   gate: Production Certification
   reference: MASTER_PLAN.md §35
   evidence: docs/release/production-certification.md
+  r1_freeze: frozen
+  r1_freeze_evidence: docs/release/r1-freeze.md
   epic_110: docs/epics/EPIC-110/epic-plan.md
   production_validation: READY FOR RELEASE
   production_certification: GRANTED
@@ -2214,7 +2232,9 @@ last_completed:
   documentation_gate: COMPLETE
   blocking_findings: none
   production_readiness: release-granted
-  candidate: 2b58af4
+  candidate: c6712224e8d093b6f64cb46a17823a20de356a31
+  deployment: "6558481150"
+  production_url: https://freelance-os-timeplan.vercel.app
   tests:
     unit: 398
     integration: 224
@@ -2262,18 +2282,21 @@ last_completed:
     - F-104-P-002 CLOSED (subsumed by F-104-005 / P105-03)
     - F-103-003 ACCEPTED R1 LIMITATION (EPIC-110 / P110-01)
     - P109-05 LA updatedAt CLOSED / NOT REPRODUCED (EPIC-110 / P110-01)
+    - FINDING-110-P06-001 CLOSED TECHNICAL (EPIC-110 / P110-06C)
+    - F-110-P06-002 CLOSED TECHNICAL / production-verified (EPIC-110 / P110-06C FINAL)
 
 next:
-  phase: P110-05
-  epic: EPIC-110
+  phase: none
+  epic: none
   gate: none
-  reference: docs/epics/EPIC-110/epic-plan.md
+  reference: docs/release/r1-freeze.md
   production_validation: READY FOR RELEASE
   production_validation_reference: MASTER_PLAN.md §34
   production_certification: GRANTED
   production_readiness: release-granted
   product_owner_approval: D-005 PROVIDED
-  objective: R1 registers reconciled. Actionable R1 findings = 0. Freeze not declared.
+  r1_freeze: frozen
+  objective: No next epic approved. R1 FROZEN. Actionable R1 findings = 0.
   open_non_blocking_findings: []
   accepted_r1_limitations:
     - F-103-003
@@ -2281,7 +2304,9 @@ next:
     - F-103-006
     - F-103-P-002
     - F-104-008
+    - F-104-009
     - F-104-016
+    - F-104-P-001
     - F-105-008
     - F-P2-004
     - F-P3-002
@@ -2291,6 +2316,17 @@ next:
     - OBD-006-as-shipped
     - PD-105-008
     - FINDING-P04-002
+  deferred_future:
+    - P102-F-001 / OBD-016
+    - F-103-P-001 / OBD-008
+    - F-060 / F-061 / F-062 / F-072
+    - OBD-001 / OBD-002 / OBD-004 / OBD-005 / OBD-007 / OBD-009 / OBD-010 / OBD-011 / OBD-012
+    - CSV/PDF
+    - invoice lifecycle
+    - calendar
+    - copy-previous
+    - EPIC-003 F-001
+    - TD-001 … TD-007
 ```
 
 ------------------------------------------------------------------------
