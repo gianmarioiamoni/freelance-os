@@ -162,6 +162,19 @@ export function isValidPeriod(period: AnalyticsPeriod): boolean {
 }
 
 /**
+ * Calendar-date key for a Date stored as UTC midnight (`workDate`,
+ * `AnalyticsPeriod` bounds). This is the workspace calendar date already
+ * persisted at write time — not an instant to convert through a timezone.
+ * Local getters would shift the day west of UTC (FINDING-108-001).
+ */
+export function getCalendarDateKey(date: Date): string {
+  const year = date.getUTCFullYear();
+  const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+  const day = String(date.getUTCDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+/**
  * Checks if a date falls within the given period (inclusive).
  * Inputs are calendar dates at UTC midnight; local getters would shift the day
  * when the process timezone is west of UTC (FINDING-108-001).

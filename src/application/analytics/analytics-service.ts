@@ -178,17 +178,23 @@ export class AnalyticsService {
       period,
     );
 
-    return AnalyticsService.calculateAccruedRevenue(period, entries);
+    return AnalyticsService.calculateAccruedRevenue(
+      period,
+      entries,
+      context.timezone,
+    );
   }
 
   /**
    * Pure Accrued calculation. Exposed for unit tests and later consumers.
+   * `timezone` is the workspace IANA zone that resolved `period`.
    */
   static calculateAccruedRevenue(
     period: AnalyticsPeriod,
     entries: readonly AccruedTimeEntryFact[],
+    timezone: string,
   ): AccruedRevenue {
-    return calculateAccruedRevenue(period, entries);
+    return calculateAccruedRevenue(period, entries, timezone);
   }
 
   /**

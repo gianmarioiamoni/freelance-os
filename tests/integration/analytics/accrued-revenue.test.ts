@@ -70,6 +70,62 @@ function june(): ReturnType<typeof getDateRangePeriod> {
   return getDateRangePeriod(date("2026-06-01"), date("2026-06-30"));
 }
 
+async function dailyWorkspace(suffix: string, timezone: string) {
+  const created = await repositories.workspaces.createWorkspace({
+    name: `Accrued Daily TZ ${suffix}`,
+    timezone,
+    currency: "EUR",
+  });
+  const userId = `accrued-daily-tz-${suffix}`;
+  await repositories.members.addMember({
+    workspaceId: created.id,
+    userId,
+    role: "OWNER",
+  });
+  const context: WorkspaceContext = {
+    workspaceId: created.id,
+    userId,
+    role: "OWNER",
+    timezone,
+  };
+  const { client, contract } = await hourlyContract(context, { rate: "100" });
+  await updateContract(
+    context,
+    contract.id,
+    {
+      validFrom: "2026-01-01",
+      validTo: "2026-12-31",
+      billingModel: "DAILY",
+      rate: "100",
+      currency: "EUR",
+    },
+    repositories.clients,
+    repositories.contracts,
+  );
+  return { context, client, contract };
+}
+
+async function addDailyEntry(
+  context: WorkspaceContext,
+  clientId: string,
+  contractId: string,
+  workDate: Date,
+) {
+  return createTimeEntry(
+    context,
+    {
+      clientId,
+      contractId,
+      workDate,
+      durationMinutes: 180,
+      billable: true,
+    },
+    repositories.clients,
+    repositories.contracts,
+    repositories.timeEntries,
+  );
+}
+
 describe("Accrued Revenue integration", () => {
   it("uses the historical snapshot after a live Contract rate change", async () => {
     const context = await workspace("rate-change");
@@ -346,8 +402,8 @@ describe("Accrued Revenue integration", () => {
 
     const result = await service().getAccruedRevenue(context, june());
     expect(result.byCurrency).toEqual([
-      { currency: "EUR", unrounded: 78, published: 78 },
-      { currency: "USD", unrounded: 90, published: 90 },
+      { currency: "EUR", unrounded: 29.25, published: 29 },
+      { currency: "USD", unrounded: 56.25, published: 56 },
     ]);
     expect(result).not.toHaveProperty("total");
   });
@@ -579,6 +635,66 @@ describe("Accrued Revenue integration", () => {
         context,
         getCurrentMonthPeriod(context.timezone, nyClock),
       );
+      expect(result.period.endDate).toEqual(date("2026-09-15"));
+      expect(result.byCurrency[0]?.unrounded).toBe(100);
+    });
+
+    it("DAILY UTC workspace uses workspace today, not a later UTC-shifted day", async () => {
+      const utcClock = new Date("2026-09-16T01:00:00.000Z");
+      vi.setSystemTime(utcClock);
+
+      const { context, client, contract } = await dailyWorkspace("utc", "UTC");
+      await addDailyEntry(context, client.id, contract.id, date("2026-09-15"));
+      await addDailyEntry(context, client.id, contract.id, date("2026-09-16"));
+
+      const result = await service().getAccruedRevenue(
+        context,
+        getCurrentWeekPeriod(context.timezone, utcClock),
+      );
+
+      expect(result.timezone).toBe("UTC");
+      expect(result.period.endDate).toEqual(date("2026-09-16"));
+      expect(result.byCurrency[0]?.unrounded).toBe(200);
+    });
+
+    it("DAILY positive-offset workspace includes the workspace calendar day after UTC midnight", async () => {
+      const tokyoClock = new Date("2026-09-15T22:00:00.000Z");
+      vi.setSystemTime(tokyoClock);
+
+      const { context, client, contract } = await dailyWorkspace(
+        "tokyo",
+        "Asia/Tokyo",
+      );
+      await addDailyEntry(context, client.id, contract.id, date("2026-09-15"));
+      await addDailyEntry(context, client.id, contract.id, date("2026-09-16"));
+
+      const result = await service().getAccruedRevenue(
+        context,
+        getCurrentWeekPeriod(context.timezone, tokyoClock),
+      );
+
+      expect(result.timezone).toBe("Asia/Tokyo");
+      expect(result.period.endDate).toEqual(date("2026-09-16"));
+      expect(result.byCurrency[0]?.unrounded).toBe(200);
+    });
+
+    it("DAILY negative-offset workspace keeps revenue on the workspace calendar day", async () => {
+      const nyClock = new Date("2026-09-16T01:00:00.000Z");
+      vi.setSystemTime(nyClock);
+
+      const { context, client, contract } = await dailyWorkspace(
+        "ny-daily",
+        "America/New_York",
+      );
+      await addDailyEntry(context, client.id, contract.id, date("2026-09-15"));
+      await addDailyEntry(context, client.id, contract.id, date("2026-09-16"));
+
+      const result = await service().getAccruedRevenue(
+        context,
+        getCurrentWeekPeriod(context.timezone, nyClock),
+      );
+
+      expect(result.timezone).toBe("America/New_York");
       expect(result.period.endDate).toEqual(date("2026-09-15"));
       expect(result.byCurrency[0]?.unrounded).toBe(100);
     });

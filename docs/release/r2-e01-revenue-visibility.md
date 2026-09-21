@@ -255,19 +255,21 @@ published      = round_to_nearest_integer(periodAccrued)
 Implemented in `AnalyticsService.calculateAccruedRevenue` (P-E01-02).
 
 ```text
-billableDay(contract, date, currency) =
-  1 if ≥ 1 billable TimeEntry exists for that Contract on that calendar
-    date in that snapshotCurrency
+billableDay(contract, date) =
+  1 if ≥ 1 billable TimeEntry exists for that Contract on that
+    workspace calendar date
   0 otherwise
 
-totalBillableMinutes(contract, date, currency) =
-  Σ billable durationMinutes for that Contract / date / snapshotCurrency
+totalBillableMinutes(contract, date) =
+  Σ billable durationMinutes for that Contract / date
+  (all snapshotCurrency values; non-billable excluded)
 
-dayAccrued =
+dayTerms =
   Σ (snapshotMinutes / totalBillableMinutes × snapshotDailyRate)
 
-periodAccrued  = Σ dayAccrued   (unrounded, per snapshotCurrency)
-published      = round_to_nearest_integer(periodAccrued)
+Each term is published in its own snapshotCurrency.
+No FX. No mixed-currency total.
+published = round_to_nearest_integer(unrounded per currency)
 ```
 
 Binding composition of R2-OD-001, R2-OD-016, BR-007, and D7:
@@ -282,13 +284,25 @@ Binding composition of R2-OD-001, R2-OD-016, BR-007, and D7:
 - Same-day conflicting snapshot rates use the approved minute-weighted
   daily rate (R2-OD-016). First/last-wins is not used.
 
+Timezone for the DAILY calendar date:
+
+- `TimeEntry.workDate` is a workspace calendar date stored at UTC midnight.
+- DAILY grouping uses that stored calendar date (`getCalendarDateKey`,
+  same convention as `isDateInPeriod`).
+- `Workspace.timezone` is the authority for resolving the reporting
+  period / “today”. Stored `workDate` values are not reinterpreted as
+  instants through the timezone (FINDING-108-001).
+
 Same Contract / date with different `snapshotCurrency` values:
 
 - The write path allows this. R2-OD-011 immutability starts at the first
-  Invoice / Payment, not at the first TimeEntry. No domain invariant
-  rejects mixed snapshot currencies on one Contract / date.
-- Accrued does not convert or merge them. The DAILY weighted formula is
-  applied independently per `snapshotCurrency` (D7). No FX.
+  Invoice / Payment, not at the first TimeEntry.
+- The approved denominator remains **all billable minutes for that
+  Contract/date**, not a per-currency denominator.
+- Each weighted term is attributed to its `snapshotCurrency`.
+- Example: 3h @ €78 + 5h @ $90 → EUR 29.25 and USD 56.25. No €+$ total.
+- This is D7 + R2-OD-016 applied together. It is not a new product
+  decision and not FX.
 
 ### 5.3 Contract validity
 
@@ -750,10 +764,12 @@ Implemented:
 - Quantity: `TimeEntry.durationMinutes` (live quantity fact).
 - Commercial value: `snapshotBillingModel`, `snapshotRate`, `snapshotCurrency`.
 - HOURLY: `billableMinutes / 60 × snapshotRate`, additive per TimeEntry.
-- DAILY: one billable day per Contract / UTC calendar `workDate` /
-  `snapshotCurrency`, minute-weighted when snapshots differ (R2-OD-016).
+- DAILY: one billable day per Contract / stored workspace calendar
+  `workDate`, minute-weighted with denominator = all billable minutes for
+  that Contract/date (R2-OD-016). Each term keeps its `snapshotCurrency`.
+- Timezone: `Workspace.timezone` resolves the `AnalyticsPeriod`. DAILY
+  grouping uses `getCalendarDateKey` on the persisted calendar `workDate`.
 - Published money: `Math.round(unrounded_total)` once per published figure.
-- Period: existing `AnalyticsPeriod` / `Workspace.timezone`.
 - Isolation: `requireMembership` + workspace-scoped
   `AnalyticsRepository.listTimeEntriesForPeriod`.
 - Not introduced: Expected, Forecast, Invoice, Payment, mixed-currency total,

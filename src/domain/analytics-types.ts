@@ -164,6 +164,7 @@ export type AccruedByContract = {
  */
 export type AccruedRevenue = {
   period: AnalyticsPeriod;
+  timezone: string;
   byCurrency: AccruedAmount[];
   byContract: AccruedByContract[];
 };

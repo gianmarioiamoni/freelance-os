@@ -5,6 +5,7 @@ import type {
   AccruedTimeEntryFact,
   AnalyticsPeriod,
 } from "@/domain/analytics-types";
+import { getCalendarDateKey } from "@/lib/analytics-periods";
 
 /**
  * R2-OD-002 publication rounding: nearest integer, ordinary half-up for
@@ -18,18 +19,16 @@ function parseSnapshotRate(rate: string): number {
   return Number(rate);
 }
 
-function utcDateKey(workDate: Date): string {
-  const year = workDate.getUTCFullYear();
-  const month = String(workDate.getUTCMonth() + 1).padStart(2, "0");
-  const day = String(workDate.getUTCDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
-}
+type DailySlice = {
+  minutes: number;
+  rate: number;
+  currency: string;
+};
 
 type DailyBucket = {
   contractId: string;
-  currency: string;
+  slices: DailySlice[];
   totalMinutes: number;
-  weightedRateMinutes: number;
 };
 
 type ContractBucket = {
@@ -61,16 +60,24 @@ function addAmount(
  * Authoritative Accrued Revenue (R2-E01 / P-E01-02).
  *
  * HOURLY: billable minutes / 60 × that entry's snapshotRate.
- * DAILY: at most one billable day per Contract + calendar date + snapshotCurrency,
- * using the R2-OD-016 minute-weighted daily rate. Non-billable entries are
- * excluded from both the numerator and the denominator.
+ * DAILY: at most one billable day per Contract + workspace calendar date,
+ * using the R2-OD-016 minute-weighted daily rate:
  *
- * Mixed snapshot currencies on the same Contract/date are not merged (D7).
- * The DAILY formula is applied independently per currency.
+ *   Σ (snapshotMinutes / totalBillableMinutesForContractAndDate × snapshotDailyRate)
+ *
+ * The denominator is all billable minutes for that Contract/date, regardless
+ * of snapshotCurrency. Each weighted term is published in its own
+ * snapshotCurrency. No FX and no mixed-currency total.
+ *
+ * `workDate` is a workspace calendar date stored at UTC midnight. Grouping
+ * uses that stored calendar date (`getCalendarDateKey`). Workspace.timezone
+ * is the authority for resolving the caller's AnalyticsPeriod / "today".
+ * Stored workDate values are not reinterpreted as instants.
  */
 export function calculateAccruedRevenue(
   period: AnalyticsPeriod,
   entries: readonly AccruedTimeEntryFact[],
+  timezone: string,
 ): AccruedRevenue {
   const currencyUnrounded = new Map<string, number>();
   const contractUnrounded = new Map<string, ContractBucket>();
@@ -93,22 +100,31 @@ export function calculateAccruedRevenue(
       continue;
     }
 
-    const dateKey = utcDateKey(entry.workDate);
-    const bucketKey = `${entry.contractId}\0${dateKey}\0${entry.snapshotCurrency}`;
+    const dateKey = getCalendarDateKey(entry.workDate);
+    const bucketKey = `${entry.contractId}\0${dateKey}`;
     const rate = parseSnapshotRate(entry.snapshotRate);
     const bucket = dailyBuckets.get(bucketKey);
 
     if (bucket) {
       bucket.totalMinutes += entry.durationMinutes;
-      bucket.weightedRateMinutes += entry.durationMinutes * rate;
+      bucket.slices.push({
+        minutes: entry.durationMinutes,
+        rate,
+        currency: entry.snapshotCurrency,
+      });
       continue;
     }
 
     dailyBuckets.set(bucketKey, {
       contractId: entry.contractId,
-      currency: entry.snapshotCurrency,
       totalMinutes: entry.durationMinutes,
-      weightedRateMinutes: entry.durationMinutes * rate,
+      slices: [
+        {
+          minutes: entry.durationMinutes,
+          rate,
+          currency: entry.snapshotCurrency,
+        },
+      ],
     });
   }
 
@@ -117,13 +133,15 @@ export function calculateAccruedRevenue(
       continue;
     }
 
-    addAmount(
-      currencyUnrounded,
-      contractUnrounded,
-      bucket.contractId,
-      bucket.currency,
-      bucket.weightedRateMinutes / bucket.totalMinutes,
-    );
+    for (const slice of bucket.slices) {
+      addAmount(
+        currencyUnrounded,
+        contractUnrounded,
+        bucket.contractId,
+        slice.currency,
+        (slice.minutes / bucket.totalMinutes) * slice.rate,
+      );
+    }
   }
 
   const byCurrency = [...currencyUnrounded.entries()]
@@ -147,5 +165,5 @@ export function calculateAccruedRevenue(
       published: publishMonetaryAmount(row.unrounded),
     }));
 
-  return { period, byCurrency, byContract };
+  return { period, timezone, byCurrency, byContract };
 }

@@ -26,8 +26,8 @@ function fact(overrides: Partial<AccruedTimeEntryFact>): AccruedTimeEntryFact {
   };
 }
 
-function accrued(entries: AccruedTimeEntryFact[]) {
-  return AnalyticsService.calculateAccruedRevenue(period, entries);
+function accrued(entries: AccruedTimeEntryFact[], timezone = "UTC") {
+  return AnalyticsService.calculateAccruedRevenue(period, entries, timezone);
 }
 
 describe("AnalyticsService Accrued Revenue", () => {
@@ -288,7 +288,7 @@ describe("AnalyticsService Accrued Revenue", () => {
       expect(result.byCurrency[0]?.unrounded).toBe(90);
     });
 
-    it("19. different snapshot currencies on the same Contract/date stay separate", () => {
+    it("19. mixed-currency DAILY uses the Contract/date denominator and keeps currencies separate", () => {
       const result = accrued([
         fact({
           snapshotBillingModel: "DAILY",
@@ -305,8 +305,8 @@ describe("AnalyticsService Accrued Revenue", () => {
       ]);
 
       expect(result.byCurrency).toEqual([
-        { currency: "EUR", unrounded: 78, published: 78 },
-        { currency: "USD", unrounded: 90, published: 90 },
+        { currency: "EUR", unrounded: 29.25, published: 29 },
+        { currency: "USD", unrounded: 56.25, published: 56 },
       ]);
       expect(result).not.toHaveProperty("total");
       expect(result).not.toHaveProperty("grandTotal");
@@ -330,7 +330,61 @@ describe("AnalyticsService Accrued Revenue", () => {
         fact({ durationMinutes: 60, snapshotRate: "500.0000", snapshotCurrency: "EUR" }),
         fact({ durationMinutes: 60, snapshotRate: "300.0000", snapshotCurrency: "USD" }),
       ]);
-      expect(Object.keys(result).sort()).toEqual(["byContract", "byCurrency", "period"]);
+      expect(Object.keys(result).sort()).toEqual([
+        "byContract",
+        "byCurrency",
+        "period",
+        "timezone",
+      ]);
+    });
+  });
+
+  describe("workspace timezone calendar dates", () => {
+    const dailySep15 = fact({
+      snapshotBillingModel: "DAILY",
+      workDate: new Date("2026-06-15T00:00:00.000Z"),
+      durationMinutes: 180,
+      snapshotRate: "78.0000",
+    });
+    const dailySep14 = fact({
+      snapshotBillingModel: "DAILY",
+      workDate: new Date("2026-06-14T00:00:00.000Z"),
+      durationMinutes: 300,
+      snapshotRate: "78.0000",
+    });
+
+    it("groups the same stored calendar date as one DAILY day in UTC", () => {
+      const result = accrued([dailySep15, { ...dailySep15, durationMinutes: 300 }], "UTC");
+      expect(result.timezone).toBe("UTC");
+      expect(result.byCurrency[0]?.unrounded).toBe(78);
+    });
+
+    it("groups the same stored calendar date as one DAILY day in a positive-offset zone", () => {
+      const result = accrued(
+        [dailySep15, { ...dailySep15, durationMinutes: 300 }],
+        "Europe/Rome",
+      );
+      expect(result.timezone).toBe("Europe/Rome");
+      expect(result.byCurrency[0]?.unrounded).toBe(78);
+    });
+
+    it("groups the same stored calendar date as one DAILY day in a negative-offset zone", () => {
+      const result = accrued(
+        [dailySep15, { ...dailySep15, durationMinutes: 300 }],
+        "America/New_York",
+      );
+      expect(result.timezone).toBe("America/New_York");
+      expect(result.byCurrency[0]?.unrounded).toBe(78);
+    });
+
+    it("does not shift a UTC-midnight workDate through Workspace.timezone", () => {
+      const utc = accrued([dailySep14, dailySep15], "UTC");
+      const rome = accrued([dailySep14, dailySep15], "Europe/Rome");
+      const newYork = accrued([dailySep14, dailySep15], "America/New_York");
+
+      expect(utc.byCurrency[0]?.unrounded).toBe(156);
+      expect(rome.byCurrency[0]?.unrounded).toBe(156);
+      expect(newYork.byCurrency[0]?.unrounded).toBe(156);
     });
   });
 
