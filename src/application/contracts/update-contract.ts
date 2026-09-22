@@ -16,61 +16,68 @@ import {
   RecordNotFoundError,
 } from "@/domain/persistence-errors";
 import type { ContractRecord } from "@/domain/persistence-types";
-import type {
-  ClientRepository,
-  ContractRepository,
-  InvoiceRepository,
-} from "@/domain/repositories";
+import type { RunInTransaction } from "@/domain/repositories";
 
 export async function updateContract(
   context: WorkspaceContext,
   contractId: string,
   input: ContractUpdateInput,
-  clients: ClientRepository,
-  contracts: ContractRepository,
-  invoices: InvoiceRepository,
+  runInTransaction: RunInTransaction,
 ): Promise<ContractRecord> {
   const validated = parseContractUpdateInput(input);
-  const existing = await contracts.getContract(context.workspaceId, contractId);
 
-  if (!existing) {
-    throw new ContractNotFoundError();
-  }
-
-  const client = await clients.getClient(context.workspaceId, existing.clientId);
-
-  if (!client) {
-    throw new ClientNotFoundError();
-  }
-
-  if (validated.currency !== existing.currency) {
-    await assertContractCurrencyMutable(context, existing.id, invoices);
-  }
-
-  await assertNoOverlappingContract(
-    context.workspaceId,
-    existing.clientId,
-    validated.validFrom,
-    validated.validTo,
-    contracts,
-    existing.id,
-  );
-
-  try {
-    return await contracts.updateContract(
+  return runInTransaction(async (repositories) => {
+    const existing = await repositories.contracts.lockContract(
       context.workspaceId,
       contractId,
-      validated,
     );
-  } catch (error) {
-    if (error instanceof RecordNotFoundError) {
+
+    if (!existing) {
       throw new ContractNotFoundError();
     }
 
-    if (error instanceof ConstraintViolationError) {
-      throw new OverlappingContractError();
+    const client = await repositories.clients.getClient(
+      context.workspaceId,
+      existing.clientId,
+    );
+
+    if (!client) {
+      throw new ClientNotFoundError();
     }
 
-    throw error;
-  }
+    if (validated.currency !== existing.currency) {
+      await assertContractCurrencyMutable(
+        context,
+        existing.id,
+        repositories.invoices,
+      );
+    }
+
+    await assertNoOverlappingContract(
+      context.workspaceId,
+      existing.clientId,
+      validated.validFrom,
+      validated.validTo,
+      repositories.contracts,
+      existing.id,
+    );
+
+    try {
+      return await repositories.contracts.updateContract(
+        context.workspaceId,
+        contractId,
+        validated,
+      );
+    } catch (error) {
+      if (error instanceof RecordNotFoundError) {
+        throw new ContractNotFoundError();
+      }
+
+      if (error instanceof ConstraintViolationError) {
+        throw new OverlappingContractError();
+      }
+
+      throw error;
+    }
+  });
 }

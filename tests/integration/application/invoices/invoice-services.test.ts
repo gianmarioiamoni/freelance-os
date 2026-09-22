@@ -80,17 +80,13 @@ describe("invoice application services", () => {
       paymentTermsDays: "30",
     });
 
-    const created = await createInvoice(
-      context,
+    const created = await createInvoice(context,
       {
         contractId: contract.id,
         invoiceDate: "2026-09-01",
         amount: "1500.2500",
         reference: "INV-100",
-      },
-      repositories.contracts,
-      repositories.invoices,
-    );
+      }, runInTransaction);
 
     expect(created).toMatchObject({
       workspaceId: context.workspaceId,
@@ -125,9 +121,7 @@ describe("invoice application services", () => {
         currency: "EUR",
         paymentTermsDays: "7",
       },
-      repositories.clients,
-      repositories.contracts,
-      repositories.invoices,
+      runInTransaction,
     );
 
     const updated = await updateInvoice(
@@ -188,33 +182,25 @@ describe("invoice application services", () => {
       paymentTermsDays: null,
     });
 
-    const onExpired = await createInvoice(
-      context,
+    const onExpired = await createInvoice(context,
       {
         contractId: contract.id,
         invoiceDate: "2026-09-01",
         amount: "100",
-      },
-      repositories.contracts,
-      repositories.invoices,
-    );
+      }, runInTransaction);
 
     expect(onExpired.dueDate).toBeNull();
     expect(onExpired.paymentTermsDays).toBeNull();
 
     await archiveClient(context, client.id, repositories.clients);
 
-    const afterArchive = await createInvoice(
-      context,
+    const afterArchive = await createInvoice(context,
       {
         contractId: contract.id,
         invoiceDate: "2026-09-15",
         amount: "200",
         currency: "EUR",
-      },
-      repositories.contracts,
-      repositories.invoices,
-    );
+      }, runInTransaction);
 
     expect(afterArchive.contractId).toBe(contract.id);
     expect(afterArchive.currency).toBe("EUR");
@@ -225,17 +211,13 @@ describe("invoice application services", () => {
     const { contract } = await seedContract(context, "ccy");
 
     await expect(
-      createInvoice(
-        context,
+      createInvoice(context,
         {
           contractId: contract.id,
           invoiceDate: "2026-09-01",
           amount: "100",
           currency: "USD",
-        },
-        repositories.contracts,
-        repositories.invoices,
-      ),
+        }, runInTransaction),
     ).rejects.toBeInstanceOf(InvalidInvoiceInputError);
   });
 
@@ -255,21 +237,15 @@ describe("invoice application services", () => {
         rate: "80",
         currency: "USD",
       },
-      repositories.clients,
-      repositories.contracts,
-      repositories.invoices,
+      runInTransaction,
     );
 
-    const invoiceA = await createInvoice(
-      contextA,
+    const invoiceA = await createInvoice(contextA,
       {
         contractId: seededA.contract.id,
         invoiceDate: "2026-09-01",
         amount: "100",
-      },
-      repositories.contracts,
-      repositories.invoices,
-    );
+      }, runInTransaction);
 
     await expect(
       updateContract(
@@ -282,9 +258,7 @@ describe("invoice application services", () => {
           rate: "80",
           currency: "USD",
         },
-        repositories.clients,
-        repositories.contracts,
-        repositories.invoices,
+        runInTransaction,
       ),
     ).rejects.toBeInstanceOf(ContractCurrencyImmutableError);
 
@@ -301,9 +275,7 @@ describe("invoice application services", () => {
           rate: "80",
           currency: "USD",
         },
-        repositories.clients,
-        repositories.contracts,
-        repositories.invoices,
+        runInTransaction,
       ),
     ).rejects.toBeInstanceOf(ContractCurrencyImmutableError);
 
@@ -319,16 +291,12 @@ describe("invoice application services", () => {
     const contextB = await createWorkspaceContext("iso-b");
     const seededA = await seedContract(contextA, "iso-a");
     const seededB = await seedContract(contextB, "iso-b");
-    const invoiceA = await createInvoice(
-      contextA,
+    const invoiceA = await createInvoice(contextA,
       {
         contractId: seededA.contract.id,
         invoiceDate: "2026-09-01",
         amount: "100",
-      },
-      repositories.contracts,
-      repositories.invoices,
-    );
+      }, runInTransaction);
 
     await expect(getInvoice(contextB, invoiceA.id, repositories.invoices)).rejects.toBeInstanceOf(
       InvoiceNotFoundError,
@@ -340,16 +308,12 @@ describe("invoice application services", () => {
       InvoiceNotFoundError,
     );
     await expect(
-      createInvoice(
-        contextB,
+      createInvoice(contextB,
         {
           contractId: seededA.contract.id,
           invoiceDate: "2026-09-02",
           amount: "50",
-        },
-        repositories.contracts,
-        repositories.invoices,
-      ),
+        }, runInTransaction),
     ).rejects.toBeInstanceOf(ContractNotFoundError);
     await expect(
       listInvoicesForContract(
@@ -376,16 +340,12 @@ describe("invoice application services", () => {
     });
     const now = new Date("2026-09-22T00:30:00.000Z");
 
-    const created = await createInvoice(
-      context,
+    const created = await createInvoice(context,
       {
         contractId: contract.id,
         invoiceDate: "2026-09-21",
         amount: "250.5000",
-      },
-      repositories.contracts,
-      repositories.invoices,
-    );
+      }, runInTransaction);
 
     expect(created.paymentTermsDays).toBe(0);
     expect(created.dueDate).toEqual(date("2026-09-21"));
@@ -401,9 +361,7 @@ describe("invoice application services", () => {
         currency: "EUR",
         paymentTermsDays: "30",
       },
-      repositories.clients,
-      repositories.contracts,
-      repositories.invoices,
+      runInTransaction,
     );
 
     const found = await getInvoice(context, created.id, repositories.invoices, now);

@@ -84,12 +84,20 @@ export type ClientRepository = {
   archiveClient(workspaceId: string, clientId: string): Promise<ClientRecord>;
 };
 
+export type RunInTransaction = <T>(
+  work: (repositories: PersistenceRepositories) => Promise<T>,
+) => Promise<T>;
+
 export type ContractRepository = {
   createContract(
     workspaceId: string,
     input: CreateContractInput,
   ): Promise<ContractRecord>;
   getContract(
+    workspaceId: string,
+    contractId: string,
+  ): Promise<ContractRecord | null>;
+  lockContract(
     workspaceId: string,
     contractId: string,
   ): Promise<ContractRecord | null>;

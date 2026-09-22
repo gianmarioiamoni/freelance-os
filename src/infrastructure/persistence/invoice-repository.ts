@@ -1,4 +1,5 @@
 // src/infrastructure/persistence/invoice-repository.ts
+import { InvoiceNotEditableError } from "@/domain/invoice-errors";
 import { RecordNotFoundError } from "@/domain/persistence-errors";
 import type {
   CreateInvoiceInput,
@@ -70,14 +71,14 @@ export function createInvoiceRepository(db: PrismaExecutor): InvoiceRepository {
       });
     },
 
-    updateInvoice(
+    async updateInvoice(
       workspaceId: string,
       invoiceId: string,
       input: UpdateInvoiceInput,
     ) {
-      return withPersistenceErrors(async () => {
+      const outcome = await withPersistenceErrors(async () => {
         const result = await db.invoice.updateMany({
-          where: { id: invoiceId, workspaceId },
+          where: { id: invoiceId, workspaceId, voidedAt: null },
           data: {
             ...(input.invoiceDate !== undefined && { invoiceDate: input.invoiceDate }),
             ...(input.amount !== undefined && { amount: input.amount }),
@@ -86,20 +87,22 @@ export function createInvoiceRepository(db: PrismaExecutor): InvoiceRepository {
           },
         });
 
-        if (result.count === 0) {
-          throw new RecordNotFoundError("Invoice", invoiceId);
-        }
-
         const row = await db.invoice.findFirst({
           where: { id: invoiceId, workspaceId },
         });
 
-        if (!row) {
-          throw new RecordNotFoundError("Invoice", invoiceId);
-        }
-
-        return mapInvoice(row);
+        return { count: result.count, row };
       });
+
+      if (!outcome.row) {
+        throw new RecordNotFoundError("Invoice", invoiceId);
+      }
+
+      if (outcome.count === 0) {
+        throw new InvoiceNotEditableError();
+      }
+
+      return mapInvoice(outcome.row);
     },
 
     voidInvoice(workspaceId: string, invoiceId: string) {

@@ -93,9 +93,7 @@ describe("contract application services", () => {
         paymentTermsDays: "15",
         paymentTermsNote: "Net 15",
       },
-      repositories.clients,
-      repositories.contracts,
-      repositories.invoices,
+      runInTransaction,
     );
 
     expect(updated).toMatchObject({
@@ -149,9 +147,7 @@ describe("contract application services", () => {
           rate: "1",
           currency: "EUR",
         },
-        repositories.clients,
-        repositories.contracts,
-        repositories.invoices,
+        runInTransaction,
       ),
     ).rejects.toBeInstanceOf(ContractNotFoundError);
     await expect(
@@ -232,9 +228,7 @@ describe("contract application services", () => {
         rate: "95",
         currency: "EUR",
       },
-      repositories.clients,
-      repositories.contracts,
-      repositories.invoices,
+      runInTransaction,
     );
     const listed = await listContractsForClient(
       context,
@@ -315,9 +309,7 @@ describe("contract application services", () => {
           rate: "90",
           currency: "EUR",
         },
-        repositories.clients,
-        repositories.contracts,
-        repositories.invoices,
+        runInTransaction,
       ),
     ).rejects.toBeInstanceOf(OverlappingContractError);
 

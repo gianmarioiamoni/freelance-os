@@ -180,8 +180,7 @@ describe("Expected Revenue integration", () => {
       repositories.timeEntries,
     );
 
-    await updateContract(
-      context,
+    await updateContract(context,
       contract.id,
       {
         validFrom: "2026-01-01",
@@ -190,11 +189,7 @@ describe("Expected Revenue integration", () => {
         rate: "120",
         currency: "EUR",
         monthlyContractedHours: "80",
-      },
-      repositories.clients,
-      repositories.contracts,
-      repositories.invoices,
-    );
+      }, runInTransaction);
 
     const analytics = service();
     const expectedRevenue = await analytics.getExpectedRevenue(context, june());

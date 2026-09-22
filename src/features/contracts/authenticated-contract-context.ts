@@ -5,9 +5,13 @@ import type {
   ClientRepository,
   ContractRepository,
   InvoiceRepository,
+  RunInTransaction,
 } from "@/domain/repositories";
 import { getServerAuthSession } from "@/infrastructure/auth/session";
-import { createRepositories } from "@/infrastructure/persistence/create-repositories";
+import {
+  createRepositories,
+  runInTransaction,
+} from "@/infrastructure/persistence/create-repositories";
 import { getCurrentWorkspaceContext } from "@/infrastructure/workspace/current-workspace";
 import { redirect } from "next/navigation";
 
@@ -16,6 +20,7 @@ export type AuthenticatedContractContext = {
   clients: ClientRepository;
   contracts: ContractRepository;
   invoices: InvoiceRepository;
+  runInTransaction: RunInTransaction;
 };
 
 export async function getAuthenticatedContractContext(): Promise<AuthenticatedContractContext> {
@@ -33,5 +38,6 @@ export async function getAuthenticatedContractContext(): Promise<AuthenticatedCo
     clients: repositories.clients,
     contracts: repositories.contracts,
     invoices: repositories.invoices,
+    runInTransaction,
   };
 }

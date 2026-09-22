@@ -1,6 +1,7 @@
 // tests/integration/persistence/invoices.test.ts
 import { describe, expect, it } from "vitest";
 
+import { InvoiceNotEditableError } from "@/domain/invoice-errors";
 import {
   ConstraintViolationError,
   ForeignKeyViolationError,
@@ -188,6 +189,22 @@ describe("invoice persistence", () => {
     expect(updated.dueDate).toEqual(date("2026-09-25"));
   });
 
+  it("rejects a repository update of a VOID invoice", async () => {
+    const graph = await createWorkspaceGraph(repositories, "inv-void-upd");
+    const invoice = await createInvoiceOnGraph(graph.workspaceId, graph.contractId);
+    await repositories.invoices.voidInvoice(graph.workspaceId, invoice.id);
+
+    await expect(
+      repositories.invoices.updateInvoice(graph.workspaceId, invoice.id, {
+        amount: "9.0000",
+      }),
+    ).rejects.toBeInstanceOf(InvoiceNotEditableError);
+
+    const persisted = await prisma.invoice.findUnique({ where: { id: invoice.id } });
+    expect(persisted?.voidedAt).not.toBeNull();
+    expect(persisted?.amount.toFixed(4)).toBe(invoice.amount);
+  });
+
   it("does not expose workspace A invoices through workspace B operations", async () => {
     const workspaceA = await createWorkspaceGraph(repositories, "inv-iso-a");
     const workspaceB = await createWorkspaceGraph(repositories, "inv-iso-b");
@@ -217,6 +234,9 @@ describe("invoice persistence", () => {
     expect(await repositories.invoices.getInvoice(workspaceA.workspaceId, invoice.id)).toMatchObject(
       { id: invoice.id, workspaceId: workspaceA.workspaceId },
     );
+    expect(
+      await repositories.contracts.lockContract(workspaceB.workspaceId, workspaceA.contractId),
+    ).toBeNull();
   });
 
   it("rejects a cross-workspace contract association", async () => {

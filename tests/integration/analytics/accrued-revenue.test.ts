@@ -89,8 +89,7 @@ async function dailyWorkspace(suffix: string, timezone: string) {
     timezone,
   };
   const { client, contract } = await hourlyContract(context, { rate: "100" });
-  await updateContract(
-    context,
+  await updateContract(context,
     contract.id,
     {
       validFrom: "2026-01-01",
@@ -98,11 +97,7 @@ async function dailyWorkspace(suffix: string, timezone: string) {
       billingModel: "DAILY",
       rate: "100",
       currency: "EUR",
-    },
-    repositories.clients,
-    repositories.contracts,
-    repositories.invoices,
-  );
+    }, runInTransaction);
   return { context, client, contract };
 }
 
@@ -146,8 +141,7 @@ describe("Accrued Revenue integration", () => {
       repositories.timeEntries,
     );
 
-    await updateContract(
-      context,
+    await updateContract(context,
       contract.id,
       {
         validFrom: "2026-01-01",
@@ -155,11 +149,7 @@ describe("Accrued Revenue integration", () => {
         billingModel: "HOURLY",
         rate: "120",
         currency: "EUR",
-      },
-      repositories.clients,
-      repositories.contracts,
-      repositories.invoices,
-    );
+      }, runInTransaction);
 
     const first = await service().getAccruedRevenue(context, june());
     expect(first.byCurrency[0]?.unrounded).toBe(160);
@@ -203,8 +193,7 @@ describe("Accrued Revenue integration", () => {
       repositories.timeEntries,
     );
 
-    await updateContract(
-      context,
+    await updateContract(context,
       contract.id,
       {
         validFrom: "2026-01-01",
@@ -212,11 +201,7 @@ describe("Accrued Revenue integration", () => {
         billingModel: "HOURLY",
         rate: "100",
         currency: "USD",
-      },
-      repositories.clients,
-      repositories.contracts,
-      repositories.invoices,
-    );
+      }, runInTransaction);
 
     const result = await service().getAccruedRevenue(context, june());
     expect(result.byCurrency).toEqual([
@@ -228,8 +213,7 @@ describe("Accrued Revenue integration", () => {
     const context = await workspace("daily-weighted");
     const { client, contract } = await hourlyContract(context, { rate: "78" });
 
-    await updateContract(
-      context,
+    await updateContract(context,
       contract.id,
       {
         validFrom: "2026-01-01",
@@ -237,11 +221,7 @@ describe("Accrued Revenue integration", () => {
         billingModel: "DAILY",
         rate: "78",
         currency: "EUR",
-      },
-      repositories.clients,
-      repositories.contracts,
-      repositories.invoices,
-    );
+      }, runInTransaction);
 
     await createTimeEntry(
       context,
@@ -257,8 +237,7 @@ describe("Accrued Revenue integration", () => {
       repositories.timeEntries,
     );
 
-    await updateContract(
-      context,
+    await updateContract(context,
       contract.id,
       {
         validFrom: "2026-01-01",
@@ -266,11 +245,7 @@ describe("Accrued Revenue integration", () => {
         billingModel: "DAILY",
         rate: "90",
         currency: "EUR",
-      },
-      repositories.clients,
-      repositories.contracts,
-      repositories.invoices,
-    );
+      }, runInTransaction);
 
     await createTimeEntry(
       context,
@@ -349,8 +324,7 @@ describe("Accrued Revenue integration", () => {
     const context = await workspace("mixed-currency-daily");
     const { client, contract } = await hourlyContract(context, { rate: "78" });
 
-    await updateContract(
-      context,
+    await updateContract(context,
       contract.id,
       {
         validFrom: "2026-01-01",
@@ -358,11 +332,7 @@ describe("Accrued Revenue integration", () => {
         billingModel: "DAILY",
         rate: "78",
         currency: "EUR",
-      },
-      repositories.clients,
-      repositories.contracts,
-      repositories.invoices,
-    );
+      }, runInTransaction);
 
     await createTimeEntry(
       context,
@@ -378,8 +348,7 @@ describe("Accrued Revenue integration", () => {
       repositories.timeEntries,
     );
 
-    await updateContract(
-      context,
+    await updateContract(context,
       contract.id,
       {
         validFrom: "2026-01-01",
@@ -387,11 +356,7 @@ describe("Accrued Revenue integration", () => {
         billingModel: "DAILY",
         rate: "90",
         currency: "USD",
-      },
-      repositories.clients,
-      repositories.contracts,
-      repositories.invoices,
-    );
+      }, runInTransaction);
 
     await createTimeEntry(
       context,
@@ -433,8 +398,7 @@ describe("Accrued Revenue integration", () => {
       repositories.timeEntries,
     );
 
-    await updateContract(
-      context,
+    await updateContract(context,
       contract.id,
       {
         validFrom: "2026-01-01",
@@ -442,11 +406,7 @@ describe("Accrued Revenue integration", () => {
         billingModel: "HOURLY",
         rate: "80",
         currency: "EUR",
-      },
-      repositories.clients,
-      repositories.contracts,
-      repositories.invoices,
-    );
+      }, runInTransaction);
 
     const result = await service().getAccruedRevenue(context, june());
     expect(result.byCurrency[0]?.unrounded).toBe(160);
@@ -456,8 +416,7 @@ describe("Accrued Revenue integration", () => {
     const context = await workspace("reject-invalid");
     const { client, contract } = await hourlyContract(context, { rate: "80" });
 
-    await updateContract(
-      context,
+    await updateContract(context,
       contract.id,
       {
         validFrom: "2026-01-01",
@@ -465,11 +424,7 @@ describe("Accrued Revenue integration", () => {
         billingModel: "HOURLY",
         rate: "80",
         currency: "EUR",
-      },
-      repositories.clients,
-      repositories.contracts,
-      repositories.invoices,
-    );
+      }, runInTransaction);
 
     await expect(
       createTimeEntry(

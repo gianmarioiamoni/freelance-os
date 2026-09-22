@@ -144,8 +144,7 @@ describe("TimeEntry commercial snapshot", () => {
       repositories.timeEntries,
     );
 
-    await updateContract(
-      context,
+    await updateContract(context,
       contract.id,
       {
         validFrom: "2026-01-01",
@@ -153,11 +152,7 @@ describe("TimeEntry commercial snapshot", () => {
         billingModel: "DAILY",
         rate: "100",
         currency: "USD",
-      },
-      repositories.clients,
-      repositories.contracts,
-      repositories.invoices,
-    );
+      }, runInTransaction);
 
     const persistedFirst = await getTimeEntry(context, first.id, repositories.timeEntries);
     expect(persistedFirst.snapshotBillingModel).toBe("HOURLY");
@@ -187,8 +182,7 @@ describe("TimeEntry commercial snapshot", () => {
     const context = await createWorkspaceContext("daily");
     const { client, contract } = await setupHourlyContract(context, "78");
 
-    await updateContract(
-      context,
+    await updateContract(context,
       contract.id,
       {
         validFrom: "2026-01-01",
@@ -196,11 +190,7 @@ describe("TimeEntry commercial snapshot", () => {
         billingModel: "DAILY",
         rate: "78",
         currency: "EUR",
-      },
-      repositories.clients,
-      repositories.contracts,
-      repositories.invoices,
-    );
+      }, runInTransaction);
 
     const morning = await createTimeEntry(
       context,
@@ -216,8 +206,7 @@ describe("TimeEntry commercial snapshot", () => {
       repositories.timeEntries,
     );
 
-    await updateContract(
-      context,
+    await updateContract(context,
       contract.id,
       {
         validFrom: "2026-01-01",
@@ -225,11 +214,7 @@ describe("TimeEntry commercial snapshot", () => {
         billingModel: "DAILY",
         rate: "90",
         currency: "EUR",
-      },
-      repositories.clients,
-      repositories.contracts,
-      repositories.invoices,
-    );
+      }, runInTransaction);
 
     const afternoon = await createTimeEntry(
       context,

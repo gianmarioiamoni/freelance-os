@@ -77,6 +77,7 @@ function createMemoryDependencies(
     contracts: {
       createContract: unused,
       getContract: unused,
+      lockContract: unused,
       listContracts: unused,
       listContractsForClient: unused,
       updateContract: unused,

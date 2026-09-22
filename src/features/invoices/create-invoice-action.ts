@@ -17,7 +17,7 @@ export async function createInvoiceAction(
   _previousState: InvoiceFormActionState,
   formData: FormData,
 ): Promise<InvoiceFormActionState> {
-  const { context, contracts, invoices } = await getAuthenticatedContractContext();
+  const { context, runInTransaction } = await getAuthenticatedContractContext();
   const values = readInvoiceFormValues(formData);
 
   let invoiceId: string;
@@ -26,8 +26,7 @@ export async function createInvoiceAction(
     const invoice = await createInvoice(
       context,
       toInvoiceCreateInput(contractId, values),
-      contracts,
-      invoices,
+      runInTransaction,
     );
     invoiceId = invoice.id;
   } catch (error) {

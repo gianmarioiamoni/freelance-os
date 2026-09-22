@@ -79,9 +79,7 @@ describe("contract application integrity", () => {
           rate: "80",
           currency: "EUR",
         },
-        repositories.clients,
-        repositories.contracts,
-        repositories.invoices,
+        runInTransaction,
       ),
     ).rejects.toBeInstanceOf(ContractNotFoundError);
   });
@@ -126,9 +124,7 @@ describe("contract application integrity", () => {
         clientId: clientB.id,
         workspaceId: contextB.workspaceId,
       } as ContractUpdateInput & { clientId: string; workspaceId: string },
-      repositories.clients,
-      repositories.contracts,
-      repositories.invoices,
+      runInTransaction,
     );
 
     expect(created.workspaceId).toBe(contextA.workspaceId);
@@ -199,9 +195,7 @@ describe("contract application integrity", () => {
         rate: "95",
         currency: "EUR",
       },
-      repositories.clients,
-      repositories.contracts,
-      repositories.invoices,
+      runInTransaction,
     );
     const persistedEntry = await repositories.timeEntries.getTimeEntry(
       context.workspaceId,

@@ -31,6 +31,8 @@ import type {
   ClientRepository,
   ContractRepository,
   InvoiceRepository,
+  PersistenceRepositories,
+  RunInTransaction,
 } from "@/domain/repositories";
 
 const context: WorkspaceContext = {
@@ -241,6 +243,9 @@ function createFakeRepositories(
         ) ?? null
       );
     },
+    async lockContract(workspaceId, contractId) {
+      return contractRepository.getContract(workspaceId, contractId);
+    },
   };
 
   const invoiceRepository: InvoiceRepository = {
@@ -275,6 +280,12 @@ function createFakeRepositories(
     clientRepository,
     contractRepository,
     invoiceRepository,
+    runInTransaction: (async (work) =>
+      work({
+        clients: clientRepository,
+        contracts: contractRepository,
+        invoices: invoiceRepository,
+      } as PersistenceRepositories)) as RunInTransaction,
   };
 }
 
@@ -446,9 +457,7 @@ describe("contract application services", () => {
         ...validUpdateInput,
         clientId: "client-other",
       } as typeof validUpdateInput & { clientId: string },
-      fake.clientRepository,
-      fake.contractRepository,
-      fake.invoiceRepository,
+      fake.runInTransaction,
     );
 
     expect(updated).toMatchObject({
@@ -476,9 +485,7 @@ describe("contract application services", () => {
       context,
       "contract-1",
       validUpdateInput,
-      fake.clientRepository,
-      fake.contractRepository,
-      fake.invoiceRepository,
+      fake.runInTransaction,
     );
 
     expect(updated.rate).toBe("500");
@@ -501,9 +508,7 @@ describe("contract application services", () => {
         context,
         "missing",
         validUpdateInput,
-        fake.clientRepository,
-        fake.contractRepository,
-        fake.invoiceRepository,
+        fake.runInTransaction,
       ),
     ).rejects.toBeInstanceOf(ContractNotFoundError);
     await expect(
@@ -511,9 +516,7 @@ describe("contract application services", () => {
         context,
         "contract-foreign",
         validUpdateInput,
-        fake.clientRepository,
-        fake.contractRepository,
-        fake.invoiceRepository,
+        fake.runInTransaction,
       ),
     ).rejects.toBeInstanceOf(ContractNotFoundError);
   });
@@ -529,9 +532,7 @@ describe("contract application services", () => {
         context,
         "contract-1",
         validUpdateInput,
-        fake.clientRepository,
-        fake.contractRepository,
-        fake.invoiceRepository,
+        fake.runInTransaction,
       ),
     ).rejects.toBeInstanceOf(OverlappingContractError);
   });
@@ -572,9 +573,7 @@ describe("contract application services", () => {
       context,
       "contract-1",
       validUpdateInput,
-      fake.clientRepository,
-      fake.contractRepository,
-      fake.invoiceRepository,
+      fake.runInTransaction,
     );
 
     expect(updated.currency).toBe("USD");
@@ -601,9 +600,7 @@ describe("contract application services", () => {
         context,
         "contract-1",
         validUpdateInput,
-        active.clientRepository,
-        active.contractRepository,
-        active.invoiceRepository,
+        active.runInTransaction,
       ),
     ).rejects.toBeInstanceOf(ContractCurrencyImmutableError);
     await expect(
@@ -611,9 +608,7 @@ describe("contract application services", () => {
         context,
         "contract-1",
         validUpdateInput,
-        voided.clientRepository,
-        voided.contractRepository,
-        voided.invoiceRepository,
+        voided.runInTransaction,
       ),
     ).rejects.toBeInstanceOf(ContractCurrencyImmutableError);
     expect(active.calls.update).toBeUndefined();
@@ -636,9 +631,7 @@ describe("contract application services", () => {
       context,
       "contract-1",
       validUpdateInput,
-      fake.clientRepository,
-      fake.contractRepository,
-      fake.invoiceRepository,
+      fake.runInTransaction,
     );
 
     expect(updated.currency).toBe("USD");
@@ -659,9 +652,7 @@ describe("contract application services", () => {
       context,
       "contract-1",
       { ...validUpdateInput, currency: "EUR" },
-      fake.clientRepository,
-      fake.contractRepository,
-      fake.invoiceRepository,
+      fake.runInTransaction,
     );
 
     expect(updated.currency).toBe("EUR");

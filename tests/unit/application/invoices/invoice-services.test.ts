@@ -22,7 +22,12 @@ import type {
   InvoiceTrackingFilter,
   UpdateInvoiceInput,
 } from "@/domain/persistence-types";
-import type { ContractRepository, InvoiceRepository } from "@/domain/repositories";
+import type {
+  ContractRepository,
+  InvoiceRepository,
+  PersistenceRepositories,
+  RunInTransaction,
+} from "@/domain/repositories";
 
 const context: WorkspaceContext = {
   workspaceId: "workspace-trusted",
@@ -122,6 +127,10 @@ function createFakeRepositories(
     async findContractCoveringDate() {
       return null;
     },
+    async lockContract(workspaceId, contractId) {
+      calls.getContract = { workspaceId, contractId };
+      return contractRepository.getContract(workspaceId, contractId);
+    },
   };
 
   const invoiceRepository: InvoiceRepository = {
@@ -165,10 +174,19 @@ function createFakeRepositories(
     async updateInvoice(workspaceId, invoiceId, input) {
       calls.update = { workspaceId, invoiceId, input };
       const index = invoices.findIndex(
-        (row) => row.id === invoiceId && row.workspaceId === workspaceId,
+        (row) =>
+          row.id === invoiceId &&
+          row.workspaceId === workspaceId &&
+          row.voidedAt === null,
       );
 
       if (index === -1) {
+        const existing = invoices.find(
+          (row) => row.id === invoiceId && row.workspaceId === workspaceId,
+        );
+        if (existing) {
+          throw new InvoiceNotEditableError();
+        }
         throw new RecordNotFoundError("Invoice", invoiceId);
       }
 
@@ -214,6 +232,11 @@ function createFakeRepositories(
     calls,
     contractRepository,
     invoiceRepository,
+    runInTransaction: (async (work) =>
+      work({
+        contracts: contractRepository,
+        invoices: invoiceRepository,
+      } as PersistenceRepositories)) as RunInTransaction,
   };
 }
 
@@ -227,8 +250,7 @@ describe("invoice application services", () => {
         ...validCreateInput,
         workspaceId: "workspace-from-form",
       } as typeof validCreateInput & { workspaceId: string },
-      fake.contractRepository,
-      fake.invoiceRepository,
+      fake.runInTransaction,
     );
 
     expect(created.workspaceId).toBe("workspace-trusted");
@@ -258,8 +280,7 @@ describe("invoice application services", () => {
       createInvoice(
         context,
         { ...validCreateInput, amount: "0" },
-        fake.contractRepository,
-        fake.invoiceRepository,
+        fake.runInTransaction,
       ),
     ).rejects.toMatchObject({ name: "InvalidInvoiceInputError", field: "amount" });
     expect(fake.calls.create).toBeUndefined();
@@ -271,8 +292,7 @@ describe("invoice application services", () => {
     const created = await createInvoice(
       context,
       { ...validCreateInput, currency: "eur" },
-      fake.contractRepository,
-      fake.invoiceRepository,
+      fake.runInTransaction,
     );
 
     expect(created.currency).toBe("EUR");
@@ -280,8 +300,7 @@ describe("invoice application services", () => {
       createInvoice(
         context,
         { ...validCreateInput, currency: "USD" },
-        fake.contractRepository,
-        fake.invoiceRepository,
+        fake.runInTransaction,
       ),
     ).rejects.toMatchObject({ name: "InvalidInvoiceInputError", field: "currency" });
   });
@@ -292,8 +311,7 @@ describe("invoice application services", () => {
     await createInvoice(
       context,
       validCreateInput,
-      fake.contractRepository,
-      fake.invoiceRepository,
+      fake.runInTransaction,
     );
 
     expect(fake.calls.create?.input).toMatchObject({
@@ -308,8 +326,7 @@ describe("invoice application services", () => {
     await createInvoice(
       context,
       validCreateInput,
-      fake.contractRepository,
-      fake.invoiceRepository,
+      fake.runInTransaction,
     );
 
     expect(fake.calls.create?.input.paymentTermsDays).toBe(0);
@@ -322,8 +339,7 @@ describe("invoice application services", () => {
     await createInvoice(
       context,
       validCreateInput,
-      fake.contractRepository,
-      fake.invoiceRepository,
+      fake.runInTransaction,
     );
 
     expect(fake.calls.create?.input.paymentTermsDays).toBeNull();
@@ -340,16 +356,14 @@ describe("invoice application services", () => {
       createInvoice(
         context,
         validCreateInput,
-        expired.contractRepository,
-        expired.invoiceRepository,
+        expired.runInTransaction,
       ),
     ).resolves.toMatchObject({ contractId: "contract-1" });
     await expect(
       createInvoice(
         context,
         validCreateInput,
-        archived.contractRepository,
-        archived.invoiceRepository,
+        archived.runInTransaction,
       ),
     ).resolves.toMatchObject({ contractId: "contract-1" });
   });
@@ -363,16 +377,14 @@ describe("invoice application services", () => {
       createInvoice(
         context,
         validCreateInput,
-        fake.contractRepository,
-        fake.invoiceRepository,
+        fake.runInTransaction,
       ),
     ).rejects.toBeInstanceOf(ContractNotFoundError);
     await expect(
       createInvoice(
         context,
         { ...validCreateInput, contractId: "contract-foreign" },
-        fake.contractRepository,
-        fake.invoiceRepository,
+        fake.runInTransaction,
       ),
     ).rejects.toBeInstanceOf(ContractNotFoundError);
     expect(fake.calls.create).toBeUndefined();
@@ -565,6 +577,17 @@ describe("invoice application services", () => {
     expect(fake.calls.update).toBeUndefined();
   });
 
+  it("does not map a concurrent VOID update to not found", async () => {
+    const fake = createFakeRepositories([contractRecord()], [invoiceRecord()]);
+    fake.invoiceRepository.updateInvoice = async () => {
+      throw new InvoiceNotEditableError();
+    };
+
+    await expect(
+      updateInvoice(context, "invoice-1", { amount: "10" }, fake.invoiceRepository),
+    ).rejects.toBeInstanceOf(InvoiceNotEditableError);
+  });
+
   it("voids an ACTIVE invoice and rejects restore or re-void", async () => {
     const fake = createFakeRepositories([contractRecord()], [invoiceRecord()]);
 
@@ -615,8 +638,7 @@ describe("invoice input parsing", () => {
       createInvoice(
         context,
         { ...validCreateInput, invoiceDate: "2026-02-29" },
-        fake.contractRepository,
-        fake.invoiceRepository,
+        fake.runInTransaction,
       ),
     ).rejects.toBeInstanceOf(InvalidInvoiceInputError);
   });

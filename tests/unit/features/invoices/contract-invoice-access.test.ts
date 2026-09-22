@@ -93,6 +93,9 @@ function repositories(seed: {
     async findContractCoveringDate() {
       return null;
     },
+    async lockContract(workspaceId, contractId) {
+      return contractRepository.getContract(workspaceId, contractId);
+    },
   };
 
   const invoiceRepository: InvoiceRepository = {

@@ -41,6 +41,26 @@ export function createContractRepository(db: PrismaExecutor): ContractRepository
       });
     },
 
+    async lockContract(workspaceId: string, contractId: string) {
+      return withPersistenceErrors(async () => {
+        const locked = await db.$queryRaw<Array<{ id: string }>>`
+          SELECT id FROM "Contract"
+          WHERE id = ${contractId}::uuid
+            AND "workspaceId" = ${workspaceId}::uuid
+          FOR UPDATE
+        `;
+
+        if (locked.length === 0) {
+          return null;
+        }
+
+        const row = await db.contract.findFirst({
+          where: { id: contractId, workspaceId },
+        });
+        return row ? mapContract(row) : null;
+      });
+    },
+
     listContracts(workspaceId: string) {
       return withPersistenceErrors(async () => {
         const rows = await db.contract.findMany({

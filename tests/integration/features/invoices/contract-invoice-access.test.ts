@@ -72,17 +72,13 @@ describe("contract-scoped invoice UI access", () => {
     const { contract } = await seedContract(context, "crud", "30");
     const now = new Date("2026-09-22T10:00:00.000Z");
 
-    const created = await createInvoice(
-      context,
+    const created = await createInvoice(context,
       {
         contractId: contract.id,
         invoiceDate: "2026-08-01",
         amount: "1500.25",
         reference: "INV-UI-1",
-      },
-      repositories.contracts,
-      repositories.invoices,
-    );
+      }, runInTransaction);
 
     const listed = await listInvoicesOnContract(
       context,
@@ -159,16 +155,12 @@ describe("contract-scoped invoice UI access", () => {
     const seededA = await seedContract(contextA, "iso-a", "0");
     const otherContract = await seedContract(contextA, "iso-a-other", null);
     const seededB = await seedContract(contextB, "iso-b");
-    const invoiceA = await createInvoice(
-      contextA,
+    const invoiceA = await createInvoice(contextA,
       {
         contractId: seededA.contract.id,
         invoiceDate: "2026-09-01",
         amount: "100",
-      },
-      repositories.contracts,
-      repositories.invoices,
-    );
+      }, runInTransaction);
 
     await expect(
       getInvoiceOnContract(
@@ -206,16 +198,12 @@ describe("contract-scoped invoice UI access", () => {
       ),
     ).rejects.toBeInstanceOf(ContractNotFoundError);
 
-    const noTerms = await createInvoice(
-      contextA,
+    const noTerms = await createInvoice(contextA,
       {
         contractId: otherContract.contract.id,
         invoiceDate: "2026-09-01",
         amount: "50",
-      },
-      repositories.contracts,
-      repositories.invoices,
-    );
+      }, runInTransaction);
     const viewed = await getInvoiceOnContract(
       contextA,
       otherContract.contract.id,
