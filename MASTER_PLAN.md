@@ -135,8 +135,8 @@ context is recovered from repository documentation.
 ## Overall
 
 ``` text
-STATUS: UX Polish COMPLETE; EPIC-107 Public Landing COMPLETE through P107-06 and epic certification; MASTER_PLAN §34 READY FOR RELEASE; §35 GRANTED; EPIC-108 COMPLETE (ER PASS WITH FINDINGS); EPIC-109 COMPLETE (ER PASS); EPIC-110 CLOSED (P110-00 PASS; P110-01 PASS; P110-02 PASS; P110-03 SKIPPED BY DESIGN; P110-04 PASS; P110-05 PASS; P110-06 / P110-06C intermediate findings resolved or superseded; P110-06D PASS; P110-06C FINAL PASS; P110-07 PASS; P110-08 FREEZE). Actionable R1 findings = 0. R1 FROZEN. R2 Decision Workshop complete for in-scope decisions. R2 planning baseline recorded. R2-E01 Revenue Visibility COMPLETE / RELEASE-READY (P-E01-00…P-E01-07). R2 is not production-ready.
-NEXT: R2-E02 Invoice Tracking. E02–E05 detailed epic plans still required. R2 is not production-ready.
+STATUS: UX Polish COMPLETE; EPIC-107 Public Landing COMPLETE through P107-06 and epic certification; MASTER_PLAN §34 READY FOR RELEASE; §35 GRANTED; EPIC-108 COMPLETE (ER PASS WITH FINDINGS); EPIC-109 COMPLETE (ER PASS); EPIC-110 CLOSED (P110-00 PASS; P110-01 PASS; P110-02 PASS; P110-03 SKIPPED BY DESIGN; P110-04 PASS; P110-05 PASS; P110-06 / P110-06C intermediate findings resolved or superseded; P110-06D PASS; P110-06C FINAL PASS; P110-07 PASS; P110-08 FREEZE). Actionable R1 findings = 0. R1 FROZEN. R2 Decision Workshop complete for in-scope decisions. R2 planning baseline recorded. R2-E01 Revenue Visibility COMPLETE / RELEASE-READY (P-E01-00…P-E01-07). R2-E02 Invoice Tracking plan COMPLETE / READY FOR IMPLEMENTATION (P-E02-00). R2 is not production-ready.
+NEXT: R2-E02 Invoice Tracking implementation. E02 plan: `docs/release/r2-e02-invoice-tracking.md` (P-E02-00 COMPLETE / READY FOR IMPLEMENTATION). E03–E05 detailed epic plans still required. R2 is not production-ready.
 Production Validation (§34): EXECUTED — READY FOR RELEASE — docs/release/production-validation.md
 Production Certification (§35): GRANTED — docs/release/production-certification.md
 R1 Freeze: FROZEN — docs/release/r1-freeze.md
@@ -145,6 +145,7 @@ R2 Architecture Delta: docs/release/r2-architecture-delta.md
 R2 Epic Map: docs/release/r2-epic-map.md
 R2 Open Decisions: docs/release/r2-open-decisions.md
 R2-E01 plan: docs/release/r2-e01-revenue-visibility.md
+R2-E02 plan: docs/release/r2-e02-invoice-tracking.md
 Release gate resolution: docs/release/release-gate-resolution.md
 Production readiness: RELEASE GRANTED
 ```
@@ -1161,7 +1162,8 @@ These may become later-release work.
 
 R1 remains certified / released / FROZEN. R2 is the active next product
 evolution. R2-E01 Revenue Visibility is COMPLETE / RELEASE-READY.
-E02–E05 detailed plans and implementation have not started. R2 is
+R2-E02 Invoice Tracking plan is COMPLETE / READY FOR IMPLEMENTATION.
+E02 implementation and E03–E05 detailed plans have not started. R2 is
 not production-ready.
 
 Canonical decisions: `docs/release/r2-decision-pack.md`.
@@ -1169,6 +1171,7 @@ Architecture delta: `docs/release/r2-architecture-delta.md`.
 Executable epic map: `docs/release/r2-epic-map.md`.
 Residual questions: `docs/release/r2-open-decisions.md`.
 E01 plan: `docs/release/r2-e01-revenue-visibility.md`.
+E02 plan: `docs/release/r2-e02-invoice-tracking.md`.
 
 This section does not open E02–E05.
 
@@ -1230,7 +1233,10 @@ production-ready.
 ### R2-E02 --- Invoice Tracking
 
 Replaces withdrawn Invoice Lifecycle. Operational invoice records only.
-VOID / soft-delete. No fiscal invoice engine.
+VOID / soft-delete. No fiscal invoice engine. Detailed plan:
+`docs/release/r2-e02-invoice-tracking.md`. P-E02-00 COMPLETE / READY
+FOR IMPLEMENTATION. Currency snapshot and VOID semantics closed.
+Implementation not started.
 
 ### R2-E03 --- Payment Tracking & Reconciliation
 
@@ -2249,7 +2255,7 @@ Next actions:
 8. R2 planning baseline recorded (`docs/release/r2-epic-map.md`)
 9. R2-E01 detailed plan complete (`docs/release/r2-e01-revenue-visibility.md`; P-E01-00)
 10. R2-E01 COMPLETE / RELEASE-READY (P-E01-00…P-E01-07)
-11. Next: R2-E02 Invoice Tracking; E02–E05 detailed plans still required
+11. Next: R2-E02 Invoice Tracking implementation; E02 plan complete (`docs/release/r2-e02-invoice-tracking.md`); E03–E05 detailed plans still required
 12. Do not mark R2 production-ready
 13. Do not rewrite historical §34 / §35 rows
 ```

@@ -250,6 +250,8 @@ Accrued uses Commercial Snapshot semantics (R2-OD-003). P-E01-01 persists
 R2-OD-016 / R2-OD-017 are implemented. Accrued and Expected are published
 by AnalyticsService (P-E01-02 / P-E01-03). E01 is COMPLETE / RELEASE-READY.
 Canonical text: `docs/release/r2-e01-revenue-visibility.md`.
+R2-E02 Invoice Tracking plan: `docs/release/r2-e02-invoice-tracking.md`
+(P-E02-00 COMPLETE / READY FOR IMPLEMENTATION).
 
 ## 13. Capacity Model
 
@@ -285,7 +287,7 @@ Example:
 - **OBD-008** — Audit requirements. OUT OF R2 (R2-OD-015). Historically open for a later release.
 - **OBD-009** — Workspace roles and permissions.
 - **OBD-010** — Payment-term catalog and semantics. Catalog deferred. R2 expected payment date uses `paymentTermsDays` (D5). Null days: no dueDate and no automatic overdue (R2-OD-008).
-- **OBD-011** — Multi-currency behavior. CLOSED (D7 + R2-OD-011): Contract currency, TimeEntry currency-agnostic, no FX, per-currency aggregates, immutable after first monetary record. Residual: Invoice currency snapshot representation.
+- **OBD-011** — Multi-currency behavior. CLOSED (D7 + R2-OD-011 + E02-D01): Contract currency, TimeEntry currency-agnostic, no FX, per-currency aggregates, immutable after first monetary record. Invoice persists a currency snapshot that must match Contract at write.
 - **OBD-012** — Whether contracted hours roll over or expire monthly.
 
 ## 17. Domain Design Acceptance Criteria

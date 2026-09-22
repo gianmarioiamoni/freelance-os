@@ -1,14 +1,16 @@
 # R2 Epic Map — Planning Baseline
 
-**Status:** Executable planning baseline. R2-E01 COMPLETE / RELEASE-READY. E02–E05 detailed plans still required. No EPIC-2xx opened. R2 is not production-ready.  
+**Status:** Executable planning baseline. R2-E01 COMPLETE / RELEASE-READY. R2-E02 detailed plan COMPLETE / READY FOR IMPLEMENTATION. E03–E05 detailed plans still required. No EPIC-2xx opened. R2 is not production-ready.  
 **Date:** 2026-09-22  
 **Authority:** `docs/release/r2-decision-pack.md`  
 **E01 plan:** `docs/release/r2-e01-revenue-visibility.md`  
+**E02 plan:** `docs/release/r2-e02-invoice-tracking.md`  
 **Does not:** authorize E02–E05 schema, migrations, APIs, UI, or implementation branches.
 
 ```text
-PLANNING BASELINE (E02–E05)
+PLANNING BASELINE (E03–E05)
 R2-E01: COMPLETE / RELEASE-READY
+R2-E02: READY FOR IMPLEMENTATION (P-E02-00 COMPLETE)
 IMPLEMENTATION: E01 DONE; E02–E05 NOT STARTED
 R1: FROZEN / GRANTED
 R2: NOT PRODUCTION-READY
@@ -214,9 +216,10 @@ Record that an invoice exists for a Contract, with date, amount, and optional re
 ### 5. Dependencies
 
 - R1 Contract (`currency`, `paymentTermsDays`).
-- Residual VOID UI and Invoice currency snapshot questions.
+- VOID domain / list semantics closed (E02-D02).
+- Invoice currency snapshot closed (E02-D01).
 
-Independent of R2-E01.
+Independent of R2-E01. Detailed plan: `docs/release/r2-e02-invoice-tracking.md`.
 
 ### 6. Domain objects affected
 
@@ -231,7 +234,7 @@ Independent of R2-E01.
 ### 8. Persistence impact
 
 - Confirmed: new Invoice Tracking record; VOID / soft-delete.
-- Open: table/field names; Invoice currency snapshot vs live Contract currency.
+- Closed: Invoice currency snapshot (E02-D01). Prisma names remain P-E02-01.
 - No invoice-line table.
 
 ### 9. Analytics / reporting impact
@@ -266,8 +269,7 @@ Independent of R2-E01.
 
 ### 14. Product decisions still required
 
-- Exact Invoice VOID UI / list / restore semantics (residual #4).
-- Invoice currency snapshot representation (residual #3).
+- None for E02. Residual #3 (currency snapshot) and #4 (VOID) are closed in `docs/release/r2-e02-invoice-tracking.md`. E03 still owns payment-row interaction with VOID.
 
 ### 15. Risks / architectural constraints
 
@@ -571,8 +573,8 @@ Do not implement these as assumptions.
 
 1. Contract Time Allocation WARNING threshold.
 2. Exact Forecast calculation semantics (elapsed time, full-period projection, elapsed = 0, Accrued = 0, historical periods).
-3. Invoice currency snapshot representation.
-4. Exact Invoice VOID behaviour and UI semantics.
+3. Invoice currency snapshot representation — CLOSED (E02-D01).
+4. Exact Invoice VOID behaviour and UI semantics — CLOSED (E02-D02).
 5. Whether simple CSV export belongs in R2-E05.
 6. Commercial snapshot persistence: CLOSED — TimeEntry `snapshotBillingModel` / `snapshotRate` / `snapshotCurrency`.
 7. R2-OD-016 — APPROVED / implemented — weighted-average daily rate (P-E01-02).
@@ -602,8 +604,8 @@ This document is the release-level planning baseline. R2-E01 is COMPLETE / RELEA
 | --- | --- |
 | Vision | Complete — decision pack |
 | Architecture | Complete as domain delta — `r2-architecture-delta.md` |
-| Planning | This baseline. E01 detailed plan complete. E02–E05 EPIC-2xx plans still required |
-| Implementation | R2-E01 COMPLETE / RELEASE-READY. E02–E05 not started |
+| Planning | This baseline. E01 detailed plan complete. E02 detailed plan complete. E03–E05 EPIC-2xx plans still required |
+| Implementation | R2-E01 COMPLETE / RELEASE-READY. E02 READY FOR IMPLEMENTATION (P-E02-00). E02–E05 implementation not started |
 | Engineering Review → Release | E01 ER + QA complete. R2 release gates not started. Do not mark R2 production-ready |
 
 ### Proposed small phases (planning labels only)
@@ -621,15 +623,18 @@ This document is the release-level planning baseline. R2-E01 is COMPLETE / RELEA
 | P-E01-06 | QA | COMPLETE — PASS WITH FINDINGS |
 | P-E01-07 | Documentation / Epic closure | COMPLETE |
 
-**R2-E02**
+**R2-E02** — detailed plan: `docs/release/r2-e02-invoice-tracking.md`
 
-| Phase | Intent |
-| --- | --- |
-| E02-P00 | Detailed epic plan, including VOID UI and currency snapshot choice |
-| E02-P01 | Invoice Tracking persistence + domain |
-| E02-P02 | Application service, authorization, Contract currency guard |
-| E02-P03 | Invoice Tracking UI |
-| E02-P04 | Tests, documentation, Engineering Review |
+| Phase | Intent | Status |
+| --- | --- | --- |
+| P-E02-00 | Planning / decision closure | COMPLETE |
+| P-E02-01 | Persistence / domain foundation | NOT STARTED |
+| P-E02-02 | Invoice application service + Contract currency guard | NOT STARTED |
+| P-E02-03 | Derived status / due-date behaviour | NOT STARTED |
+| P-E02-04 | Contract-scoped invoice UI | NOT STARTED |
+| P-E02-05 | Engineering Review | NOT STARTED |
+| P-E02-06 | QA | NOT STARTED |
+| P-E02-07 | Documentation / Epic closure | NOT STARTED |
 
 **R2-E03**
 

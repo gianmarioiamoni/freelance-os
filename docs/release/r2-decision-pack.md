@@ -277,7 +277,7 @@ MVP:
 - use VOID / soft-delete semantics when removed from active tracking
 - no fiscal immutability model
 
-Exact VOID UI / list / restore behaviour remains a planning residual (`docs/release/r2-open-decisions.md`).
+VOID list / restore closed by R2-E02 P-E02-00 (`docs/release/r2-e02-invoice-tracking.md` E02-D02): one-way soft-delete; default lists exclude VOID; get-by-id remains; no restore in R2.
 
 ### R2-OD-008 — Missing payment terms — APPROVED
 
@@ -316,7 +316,7 @@ Once the first monetary record exists, Contract currency is immutable.
 
 No FX or retroactive currency conversion.
 
-**Reconciliation with Invoice currency:** D7 requires Invoice / Payment consistency with Contract currency. After the first Invoice or Payment event exists, Contract currency cannot change, so live Contract currency and historical Invoice currency cannot diverge under this rule. Whether Invoice persists its own currency snapshot for defensive historical stability is a remaining planning question — not a conflicting product rule.
+**Reconciliation with Invoice currency:** D7 requires Invoice / Payment consistency with Contract currency. After the first Invoice or Payment event exists, Contract currency cannot change, so live Contract currency and historical Invoice currency cannot diverge under this rule. R2-E02 P-E02-00 closes the representation: Invoice persists a currency snapshot that must match Contract at write and is immutable after create (`docs/release/r2-e02-invoice-tracking.md` E02-D01). Not FX.
 
 ### R2-OD-013 — Contract Time Allocation — APPROVED (product)
 
@@ -366,8 +366,8 @@ These are **not** approved implementation assumptions.
 | R2-OD-005 | Exact Forecast arithmetic (elapsed time, zero cases, historical periods) | R2-E04 |
 | R2-OD-012 | Whether simple tabular / CSV export belongs in R2-E05. PDF / document generation is out of core R2 | R2-E05 |
 | R2-OD-013 residual | Contract Time Allocation WARNING threshold | R2-E04 |
-| R2-OD-007 residual | Exact Invoice VOID UI / list / restore semantics | R2-E02 |
-| R2-OD-011 residual | Invoice currency snapshot representation | R2-E02 |
+| R2-OD-007 residual | CLOSED — VOID one-way soft-delete; default lists exclude; no restore (`docs/release/r2-e02-invoice-tracking.md` E02-D02) | R2-E02 P-E02-00 |
+| R2-OD-011 residual | CLOSED — Invoice currency snapshot; must match Contract at write (`docs/release/r2-e02-invoice-tracking.md` E02-D01) | R2-E02 P-E02-00 |
 | R2-OD-003 residual | CLOSED — TimeEntry `snapshotBillingModel` / `snapshotRate` / `snapshotCurrency` | R2-E01 P-E01-01 |
 | R2-OD-016 | APPROVED — weighted-average daily rate; Accrued arithmetic in P-E01-02 | R2-E01 P-E01-02 |
 | R2-OD-017 | CLOSED — existing TimeEntries backfilled from current Contract | R2-E01 P-E01-01 |
@@ -462,7 +462,7 @@ Current executable map: `docs/release/r2-epic-map.md`.
 | --- | --- | --- |
 | OBD-007 | Period closure / post-closure edit-delete | **OUT OF R2** (R2-OD-014). Remains historically open for a later release. |
 | OBD-008 | Audit / TimeEntry audit | **OUT OF R2** (R2-OD-015). Remains historically open for a later release. |
-| OBD-011 | Multi-currency | **Direction CLOSED by D7.** Mutation after monetary records: CLOSED by R2-OD-011. Residual: Invoice currency snapshot representation. |
+| OBD-011 | Multi-currency | **Direction CLOSED by D7.** Mutation after monetary records: CLOSED by R2-OD-011. Invoice currency snapshot: CLOSED by R2-E02 E02-D01. |
 
 R1 freeze deferred these items. Freeze deferral is historical. It does not force them into R2.
 
@@ -508,8 +508,8 @@ See `docs/release/r2-architecture-delta.md`.
 | Kind | Items |
 | --- | --- |
 | APPROVED | D1, D2, D3, D4, D5, D6, D7 |
-| APPROVED OD resolutions | R2-OD-001, R2-OD-002, R2-OD-003 (semantics), R2-OD-004, R2-OD-006, R2-OD-007 (product), R2-OD-008, R2-OD-009, R2-OD-010, R2-OD-011 (product), R2-OD-013 (product), R2-OD-014, R2-OD-015 |
-| RESIDUAL PLANNING / PRODUCT | R2-OD-005 arithmetic, R2-OD-012 CSV-in-E05, allocation WARNING threshold, VOID UI, Invoice currency snapshot, commercial snapshot Prisma names (class B planned), R2-OD-016, R2-OD-017 |
+| APPROVED OD resolutions | R2-OD-001, R2-OD-002, R2-OD-003 (semantics), R2-OD-004, R2-OD-006, R2-OD-007 (product + VOID semantics), R2-OD-008, R2-OD-009, R2-OD-010, R2-OD-011 (product + Invoice currency snapshot), R2-OD-013 (product), R2-OD-014, R2-OD-015 |
+| RESIDUAL PLANNING / PRODUCT | R2-OD-005 arithmetic, R2-OD-012 CSV-in-E05, allocation WARNING threshold |
 | DEFERRED / FUTURE | FX, installment engine, PIVA Balance integration, e-invoicing, calendar integration, AI, Excel, profitability, advanced grace / risk, workspace capacity alerts, period-close, audit ledger |
 
 ---

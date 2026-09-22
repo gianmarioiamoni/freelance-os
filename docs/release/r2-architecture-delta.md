@@ -146,9 +146,10 @@ Approved meaning (R2-OD-006 / R2-OD-007):
 - optional free-text reference
 - no competence period
 - editable
-- VOID / soft-delete instead of physical delete
+- VOID / soft-delete instead of physical delete (E02-D02: one-way; default lists exclude)
 - `dueDate` only when `paymentTermsDays` is present
 - status derived from payment events
+- Invoice currency snapshot (E02-D01)
 
 Historical architecture text that assumed “future invoice generation should snapshot billable lines” is **superseded** for R2 (`docs/architecture.md` §18, `docs/domain-model.md` §12).
 
@@ -158,9 +159,9 @@ Historical architecture text that assumed “future invoice generation should sn
 | --- | --- | --- |
 | Invoice Tracking record | CONFIRMED REQUIREMENT | New operational aggregate. No current table |
 | Cardinality 1 Contract : N Invoice | DOMAIN DECISION | |
-| VOID / soft-delete | CONFIRMED REQUIREMENT | Not physical delete. Exact UI residual |
-| Invoice currency field vs live Contract currency | IMPLEMENTATION DETAIL STILL OPEN | Must not conflict with D7 or R2-OD-011 |
-| Persistence name, repository, indexes | IMPLEMENTATION DETAIL STILL OPEN | Do not invent Prisma names here |
+| VOID / soft-delete | DOMAIN DECISION | One-way. Default lists exclude VOID. Get-by-id remains. No restore in R2. Closed by E02-D02 |
+| Invoice currency snapshot | DOMAIN DECISION | Persist snapshot; must match Contract at write; immutable after create. Closed by E02-D01 |
+| Persistence name, repository, indexes | IMPLEMENTATION DETAIL STILL OPEN | Prisma names in P-E02-01 |
 | Invoice lines / numbering / PDF / credit notes | Out of R2 | Do not model |
 
 ---
@@ -239,7 +240,7 @@ No risk score, prediction, AI, or percentage-threshold engine for payments.
 | Concept | Classification | Notes |
 | --- | --- | --- |
 | Contract currency write rule | CONFIRMED REQUIREMENT | Mutation guard after first monetary record |
-| Invoice currency snapshot | IMPLEMENTATION DETAIL STILL OPEN | See residual #3 |
+| Invoice currency snapshot | DOMAIN DECISION | E02-D01. Persist; match Contract at write |
 | Per-currency report presentation | DOMAIN DECISION | No cross-currency totals |
 
 `Workspace.currency` stays an R1 default. It must not become a hidden reporting base.
@@ -257,9 +258,9 @@ No E02–E05 migrations. No invented Prisma names. E01 TimeEntry snapshot column
 | Contract `allocatedMinutes` | CONFIRMED REQUIREMENT | No | Optional total project budget. Distinct from `monthlyContractedMinutes` |
 | Historical commercial snapshot | EXISTING MODEL REUSED | Yes (P-E01-01) | TimeEntry `snapshotBillingModel`, `snapshotRate`, `snapshotCurrency` |
 | Derived payment status | CONFIRMED REQUIREMENT | n/a | Function of payment events, not a source of truth |
-| Invoice VOID state | CONFIRMED REQUIREMENT | No | Soft-delete semantics. UI residual |
-| Contract currency immutability | CONFIRMED REQUIREMENT | Write rule only | After first monetary record |
-| Invoice currency snapshot | IMPLEMENTATION DETAIL STILL OPEN | n/a | Reconcile with D7 / R2-OD-011 |
+| Invoice VOID state | DOMAIN DECISION | No | One-way soft-delete. Closed by E02-D02 |
+| Contract currency immutability | CONFIRMED REQUIREMENT | Write rule only | After first monetary record, including VOID |
+| Invoice currency snapshot | DOMAIN DECISION | No | Closed by E02-D01 |
 | Accrued / Expected / Forecast tables | IMPLEMENTATION DETAIL STILL OPEN | Derived preferred | Persist only if a later plan proves need |
 | `monthlyContractedMinutes`, `rate`, `currency`, `paymentTermsDays` | EXISTING MODEL REUSED | Yes | Do not conflate with `allocatedMinutes` |
 
@@ -320,6 +321,4 @@ R1 baseline documents keep their historical text. Canonical R2 meaning is this d
 - Whether revenue totals are persisted
 - Forecast arithmetic
 - Allocation WARNING threshold
-- Invoice VOID UI
-- Invoice currency snapshot representation
 - Prisma names for Invoice / Payment / `allocatedMinutes`

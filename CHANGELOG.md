@@ -6,6 +6,7 @@ All notable changes to FreelanceOS are documented in this file.
 
 ### Added
 
+- R2-E02 Invoice Tracking epic plan (`docs/release/r2-e02-invoice-tracking.md`). P-E02-00 COMPLETE / READY FOR IMPLEMENTATION. Currency snapshot (E02-D01) and VOID semantics (E02-D02) closed. No implementation, schema, or migration. Next: P-E02-01. R2 is not production-ready.
 - R2-E01 Revenue Visibility COMPLETE / RELEASE-READY (`docs/release/r2-e01-revenue-visibility.md`). Accrued (snapshot HOURLY / DAILY weighted) and Expected (live HOURLY pro-rata; DAILY null) published through AnalyticsService / ReportingService. ER PASS WITH FINDINGS. QA PASS WITH FINDINGS. F-E01-001 CLOSED. F-E01-002 CLOSED. Next: R2-E02. R2 is not production-ready.
 - R2-E01 P-E01-01 TimeEntry commercial snapshot. Columns `snapshotBillingModel`, `snapshotRate` (`Decimal(19,4)`), `snapshotCurrency`. Create captures live Contract; updates and Contract edits do not rewrite. Migration backfills existing rows from the associated Contract (R2-OD-017). Accrued / Expected not implemented.
 - R2-E01 Revenue Visibility epic plan (`docs/release/r2-e01-revenue-visibility.md`). P-E01-00 COMPLETE. Accrued / Expected semantics, class-B commercial snapshot (new field(s) on the TimeEntry quantity fact; names not invented), AnalyticsService extension, 8 phases, 17 ACs. New residuals R2-OD-016 (DAILY same-day conflicting snapshots) and R2-OD-017 (pre-snapshot TimeEntry treatment). No implementation, schema, or migration. R2 is not production-ready.
