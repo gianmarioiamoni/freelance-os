@@ -3,6 +3,8 @@
 export type WorkspaceMemberRole = "OWNER" | "MEMBER";
 export type ClientStatus = "ACTIVE" | "ARCHIVED";
 export type BillingModel = "HOURLY" | "DAILY";
+export type InvoiceTrackingState = "ACTIVE" | "VOID";
+export type InvoiceTrackingFilter = InvoiceTrackingState | "ALL";
 export type AlertType =
   | "CONTRACT_WARNING"
   | "CONTRACT_EXCEEDED"
@@ -64,6 +66,21 @@ export type ContractRecord = {
   monthlyContractedMinutes: number | null;
   paymentTermsDays: number | null;
   paymentTermsNote: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type InvoiceRecord = {
+  id: string;
+  workspaceId: string;
+  contractId: string;
+  invoiceDate: Date;
+  amount: string;
+  currency: string;
+  reference: string | null;
+  paymentTermsDays: number | null;
+  dueDate: Date | null;
+  voidedAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -180,6 +197,23 @@ export type UpdateContractInput = {
   monthlyContractedMinutes?: number | null;
   paymentTermsDays?: number | null;
   paymentTermsNote?: string | null;
+};
+
+export type CreateInvoiceInput = {
+  contractId: string;
+  invoiceDate: Date;
+  amount: string;
+  currency: string;
+  reference?: string | null;
+  paymentTermsDays?: number | null;
+  dueDate?: Date | null;
+};
+
+export type UpdateInvoiceInput = {
+  invoiceDate?: Date;
+  amount?: string;
+  reference?: string | null;
+  dueDate?: Date | null;
 };
 
 export type RecordTimeEntryInput = {

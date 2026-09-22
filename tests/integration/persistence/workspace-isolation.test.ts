@@ -34,9 +34,17 @@ describe("workspace isolation", () => {
       body: "Isolation fixture",
     });
 
+    const invoice = await repositories.invoices.createInvoice(workspaceA.workspaceId, {
+      contractId: workspaceA.contractId,
+      invoiceDate: date("2026-09-01"),
+      amount: "250.0000",
+      currency: "EUR",
+    });
+
     expect(await repositories.clients.getClient(workspaceB.workspaceId, workspaceA.clientId)).toBeNull();
     expect(await repositories.contracts.getContract(workspaceB.workspaceId, workspaceA.contractId)).toBeNull();
     expect(await repositories.timeEntries.getTimeEntry(workspaceB.workspaceId, timeEntry.id)).toBeNull();
+    expect(await repositories.invoices.getInvoice(workspaceB.workspaceId, invoice.id)).toBeNull();
     expect(await repositories.alerts.getAlert(workspaceB.workspaceId, alert.id)).toBeNull();
     expect(
       await repositories.notifications.getNotification(workspaceB.workspaceId, notification.id),
@@ -49,6 +57,9 @@ describe("workspace isolation", () => {
     expect(await repositories.timeEntries.listTimeEntriesForDate(workspaceB.workspaceId, date("2026-02-01"))).toEqual(
       [],
     );
+    expect(
+      await repositories.invoices.listInvoicesForContract(workspaceB.workspaceId, workspaceA.contractId),
+    ).toEqual([]);
     expect(
       await repositories.notifications.listNotificationsForUser(workspaceB.workspaceId, workspaceA.userId),
     ).toEqual([]);

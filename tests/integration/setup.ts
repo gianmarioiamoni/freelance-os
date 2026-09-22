@@ -20,6 +20,7 @@ beforeEach(async () => {
     TRUNCATE TABLE
       "Notification",
       "Alert",
+      "Invoice",
       "TimeEntry",
       "Contract",
       "Client",

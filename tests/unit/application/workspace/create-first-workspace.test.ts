@@ -82,6 +82,14 @@ function createMemoryDependencies(
       updateContract: unused,
       findContractCoveringDate: unused,
     },
+    invoices: {
+      createInvoice: unused,
+      getInvoice: unused,
+      listInvoicesForContract: unused,
+      updateInvoice: unused,
+      voidInvoice: unused,
+      existsForContract: unused,
+    },
     timeEntries: {
       recordTimeEntry: unused,
       getTimeEntry: unused,

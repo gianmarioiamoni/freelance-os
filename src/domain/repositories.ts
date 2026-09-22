@@ -9,7 +9,10 @@ import type {
   CreateAlertInput,
   CreateClientInput,
   CreateContractInput,
+  CreateInvoiceInput,
   CreateNotificationInput,
+  InvoiceRecord,
+  InvoiceTrackingFilter,
   CreateWorkspaceInput,
   NotificationRecord,
   PutWorkspaceSettingsInput,
@@ -17,6 +20,7 @@ import type {
   TimeEntryRecord,
   UpdateClientInput,
   UpdateContractInput,
+  UpdateInvoiceInput,
   UpdateTimeEntryInput,
   UpdateWorkspaceInput,
   WorkspaceMemberRecord,
@@ -104,6 +108,29 @@ export type ContractRepository = {
     clientId: string,
     date: Date,
   ): Promise<ContractRecord | null>;
+};
+
+export type InvoiceRepository = {
+  createInvoice(
+    workspaceId: string,
+    input: CreateInvoiceInput,
+  ): Promise<InvoiceRecord>;
+  getInvoice(
+    workspaceId: string,
+    invoiceId: string,
+  ): Promise<InvoiceRecord | null>;
+  listInvoicesForContract(
+    workspaceId: string,
+    contractId: string,
+    tracking?: InvoiceTrackingFilter,
+  ): Promise<InvoiceRecord[]>;
+  updateInvoice(
+    workspaceId: string,
+    invoiceId: string,
+    input: UpdateInvoiceInput,
+  ): Promise<InvoiceRecord>;
+  voidInvoice(workspaceId: string, invoiceId: string): Promise<InvoiceRecord>;
+  existsForContract(workspaceId: string, contractId: string): Promise<boolean>;
 };
 
 export type TimeEntryRepository = {
@@ -222,6 +249,7 @@ export type PersistenceRepositories = {
   settings: WorkspaceSettingsRepository;
   clients: ClientRepository;
   contracts: ContractRepository;
+  invoices: InvoiceRepository;
   timeEntries: TimeEntryRepository;
   alerts: AlertRepository;
   notifications: NotificationRepository;

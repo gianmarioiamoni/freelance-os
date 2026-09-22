@@ -15,7 +15,7 @@ describe("foreign key and workspace constraints", () => {
     ).rejects.toBeInstanceOf(ForeignKeyViolationError);
   });
 
-  it("rejects contract, time-entry, alert, and notification cross-workspace references", async () => {
+  it("rejects contract, time-entry, invoice, alert, and notification cross-workspace references", async () => {
     const workspaceA = await createWorkspaceGraph(repositories, "fk-a");
     const workspaceB = await createWorkspaceGraph(repositories, "fk-b");
 
@@ -74,6 +74,15 @@ describe("foreign key and workspace constraints", () => {
         type: "ALERT",
         title: "Cross-workspace alert",
         body: "Must be rejected",
+      }),
+    ).rejects.toBeInstanceOf(ForeignKeyViolationError);
+
+    await expect(
+      repositories.invoices.createInvoice(workspaceB.workspaceId, {
+        contractId: workspaceA.contractId,
+        invoiceDate: date("2026-09-01"),
+        amount: "100.0000",
+        currency: "EUR",
       }),
     ).rejects.toBeInstanceOf(ForeignKeyViolationError);
   });

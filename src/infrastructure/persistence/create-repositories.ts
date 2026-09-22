@@ -6,6 +6,7 @@ import { createAlertRepository } from "@/infrastructure/persistence/alert-reposi
 import { createAnalyticsRepository } from "@/infrastructure/persistence/analytics-repository";
 import { createClientRepository } from "@/infrastructure/persistence/client-repository";
 import { createContractRepository } from "@/infrastructure/persistence/contract-repository";
+import { createInvoiceRepository } from "@/infrastructure/persistence/invoice-repository";
 import { createNotificationRepository } from "@/infrastructure/persistence/notification-repository";
 import type { PrismaExecutor } from "@/infrastructure/persistence/prisma-executor";
 import { createTimeEntryRepository } from "@/infrastructure/persistence/time-entry-repository";
@@ -25,6 +26,7 @@ export function createRepositories(
     settings: createWorkspaceSettingsRepository(db),
     clients: createClientRepository(db),
     contracts: createContractRepository(db),
+    invoices: createInvoiceRepository(db),
     timeEntries: createTimeEntryRepository(db),
     alerts: createAlertRepository(db),
     notifications: createNotificationRepository(db),

@@ -3,7 +3,7 @@
 **Epic:** R2-E02 — Invoice Tracking  
 **Release:** Release 2 — Revenue Operations  
 **MASTER_PLAN identifier:** R2-E02 (`MASTER_PLAN.md` §19)  
-**Status:** P-E02-00 COMPLETE — READY FOR IMPLEMENTATION  
+**Status:** P-E02-01 COMPLETE — READY FOR P-E02-02  
 **Authority:** `docs/release/r2-decision-pack.md`  
 **Companions:** `docs/release/r2-epic-map.md`, `docs/release/r2-architecture-delta.md`, `docs/release/r2-open-decisions.md`  
 **Predecessor:** R2-E01 COMPLETE / RELEASE-READY (`docs/release/r2-e01-revenue-visibility.md`, closure `278101a347b6063450c34a91200878e548836edb`)  
@@ -11,7 +11,7 @@
 
 ```text
 P-E02-00  PLANNING / DECISION CLOSURE      COMPLETE
-P-E02-01  PERSISTENCE / DOMAIN FOUNDATION  NOT STARTED
+P-E02-01  PERSISTENCE / DOMAIN FOUNDATION  COMPLETE
 P-E02-02  INVOICE APPLICATION SERVICE      NOT STARTED
 P-E02-03  DERIVED STATUS / DUE DATE        NOT STARTED
 P-E02-04  CONTRACT-SCOPED INVOICE UI       NOT STARTED
@@ -19,8 +19,8 @@ P-E02-05  ENGINEERING REVIEW               NOT STARTED
 P-E02-06  QA                               NOT STARTED
 P-E02-07  DOCUMENTATION / EPIC CLOSURE     NOT STARTED
 
-R2-E02: READY FOR IMPLEMENTATION
-IMPLEMENTATION: NOT STARTED
+R2-E02: P-E02-01 COMPLETE
+IMPLEMENTATION: IN PROGRESS
 R1: FROZEN / GRANTED
 R2-E01: COMPLETE / RELEASE-READY
 R2: NOT PRODUCTION-READY
@@ -549,8 +549,8 @@ from the Invoice snapshot, not from live Contract terms.
 
 ## Data Model Delta
 
-Planning only. No schema change in this phase. Prisma identifiers are
-chosen in P-E02-01. Types below are existing R1 representations.
+P-E02-01 implemented the Prisma identifiers below. Types are existing
+R1 representations. No Payment table.
 
 ### New aggregate — Invoice
 
@@ -845,6 +845,28 @@ Contract-scoped UI only — not E01 reporting integration.
 | Tests | Persistence create / get / list / update / void; workspace isolation; amount CHECK; dueDate null iff terms null |
 | Migration | **Yes. Only E02 migration.** |
 | Exit criteria | Invoice rows persist; VOID is not a physical delete; Contract / TimeEntry / E01 tables unchanged |
+| Status | **COMPLETE** |
+
+Implemented identifiers:
+
+| Conceptual field | Prisma / domain |
+| --- | --- |
+| Invoice aggregate | `Invoice` / `InvoiceRecord` |
+| currency snapshot | `Invoice.currency` `CHAR(3)` |
+| payment-terms snapshot | `Invoice.paymentTermsDays` |
+| due date | `Invoice.dueDate` `DATE` |
+| VOID marker | `Invoice.voidedAt` (`null` = ACTIVE) |
+| amount | `Decimal(19,4)` + SQL `Invoice_amount_positive` |
+| dueDate ↔ terms | SQL `Invoice_dueDate_terms_consistency` |
+| workspace isolation | `workspaceId` + composite FK `Invoice_workspaceId_contractId_fkey` Restrict |
+
+Migration: `prisma/migrations/20260922210000_add_invoice_tracking`.
+
+Repository: `InvoiceRepository` — `createInvoice`, `getInvoice`, `listInvoicesForContract`, `updateInvoice` (no `contractId` / currency / terms rewrite), `voidInvoice`, `existsForContract` (includes VOID). All methods take `workspaceId`.
+
+Domain: `src/domain/invoice.ts` amount / currency / reference / terms / VOID predicates. Amount status and overdue remain unpersisted.
+
+Tests: `tests/unit/domain/invoice.test.ts`, `tests/integration/persistence/invoices.test.ts`, plus migration / isolation / FK regression.
 
 ### P-E02-02 — Invoice application service
 

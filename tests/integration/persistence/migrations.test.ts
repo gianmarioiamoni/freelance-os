@@ -19,6 +19,7 @@ describe("migration-based test schema", () => {
       "20260911224009_establish_better_auth_persistence",
       "20260912180000_index_workspace_member_user_id",
       "20260922010000_add_time_entry_commercial_snapshot",
+      "20260922210000_add_invoice_tracking",
     ]);
   });
 
@@ -72,6 +73,58 @@ describe("migration-based test schema", () => {
       "Alert_workspaceId_clientId_fkey",
       "Alert_workspaceId_contractId_fkey",
       "Notification_workspaceId_alertId_fkey",
+    ]);
+  });
+
+  it("creates Invoice tracking table with snapshot and VOID columns", async () => {
+    const columns = await prisma.$queryRaw<Array<{ column_name: string; is_nullable: string }>>`
+      SELECT column_name, is_nullable
+      FROM information_schema.columns
+      WHERE table_schema = 'public'
+        AND table_name = 'Invoice'
+        AND column_name IN (
+          'workspaceId',
+          'contractId',
+          'invoiceDate',
+          'amount',
+          'currency',
+          'reference',
+          'paymentTermsDays',
+          'dueDate',
+          'voidedAt'
+        )
+      ORDER BY column_name
+    `;
+
+    expect(columns).toEqual([
+      { column_name: "amount", is_nullable: "NO" },
+      { column_name: "contractId", is_nullable: "NO" },
+      { column_name: "currency", is_nullable: "NO" },
+      { column_name: "dueDate", is_nullable: "YES" },
+      { column_name: "invoiceDate", is_nullable: "NO" },
+      { column_name: "paymentTermsDays", is_nullable: "YES" },
+      { column_name: "reference", is_nullable: "YES" },
+      { column_name: "voidedAt", is_nullable: "YES" },
+      { column_name: "workspaceId", is_nullable: "NO" },
+    ]);
+  });
+
+  it("keeps Invoice workspace-scoped Contract restrict and amount/dueDate checks", async () => {
+    const constraints = await prisma.$queryRaw<Array<{ conname: string }>>`
+      SELECT conname
+      FROM pg_constraint
+      WHERE conname IN (
+        'Invoice_workspaceId_contractId_fkey',
+        'Invoice_amount_positive',
+        'Invoice_dueDate_terms_consistency'
+      )
+      ORDER BY conname
+    `;
+
+    expect(constraints.map((row) => row.conname)).toEqual([
+      "Invoice_amount_positive",
+      "Invoice_dueDate_terms_consistency",
+      "Invoice_workspaceId_contractId_fkey",
     ]);
   });
 
