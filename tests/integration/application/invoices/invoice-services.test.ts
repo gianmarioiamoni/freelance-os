@@ -368,4 +368,72 @@ describe("invoice application services", () => {
       ),
     ).resolves.toEqual([]);
   });
+
+  it("derives UNPAID/overdue on reads and keeps dueDate on the invoice snapshot", async () => {
+    const context = await createWorkspaceContext("derived");
+    const { contract } = await seedContract(context, "derived", {
+      paymentTermsDays: "0",
+    });
+    const now = new Date("2026-09-22T00:30:00.000Z");
+
+    const created = await createInvoice(
+      context,
+      {
+        contractId: contract.id,
+        invoiceDate: "2026-09-21",
+        amount: "250.5000",
+      },
+      repositories.contracts,
+      repositories.invoices,
+    );
+
+    expect(created.paymentTermsDays).toBe(0);
+    expect(created.dueDate).toEqual(date("2026-09-21"));
+
+    await updateContract(
+      context,
+      contract.id,
+      {
+        validFrom: "2026-01-01",
+        validTo: "2026-07-01",
+        billingModel: "HOURLY",
+        rate: "80",
+        currency: "EUR",
+        paymentTermsDays: "30",
+      },
+      repositories.clients,
+      repositories.contracts,
+      repositories.invoices,
+    );
+
+    const found = await getInvoice(context, created.id, repositories.invoices, now);
+    const listed = await listInvoicesForContract(
+      context,
+      contract.id,
+      repositories.contracts,
+      repositories.invoices,
+      undefined,
+      now,
+    );
+
+    expect(found).toMatchObject({
+      paymentTermsDays: 0,
+      trackingState: "ACTIVE",
+      paidAmount: "0",
+      amountStatus: "UNPAID",
+      overdue: true,
+    });
+    expect(found.dueDate).toEqual(date("2026-09-21"));
+    expect(listed).toHaveLength(1);
+    expect(listed[0]).toMatchObject({
+      id: created.id,
+      amountStatus: "UNPAID",
+      overdue: true,
+    });
+
+    const persisted = await prisma.invoice.findUnique({ where: { id: created.id } });
+    expect(persisted).not.toHaveProperty("amountStatus");
+    expect(persisted?.paymentTermsDays).toBe(0);
+    expect(persisted?.dueDate).toEqual(date("2026-09-21"));
+  });
 });

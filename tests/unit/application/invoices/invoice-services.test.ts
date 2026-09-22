@@ -391,12 +391,22 @@ describe("invoice application services", () => {
       ],
     );
 
-    await expect(getInvoice(context, "invoice-1", fake.invoiceRepository)).resolves.toMatchObject({
+    const now = new Date("2026-09-22T00:30:00.000Z");
+    await expect(getInvoice(context, "invoice-1", fake.invoiceRepository, now)).resolves.toMatchObject({
       id: "invoice-1",
+      trackingState: "ACTIVE",
+      paidAmount: "0",
+      amountStatus: "UNPAID",
+      overdue: false,
     });
     await expect(
-      getInvoice(context, "invoice-void", fake.invoiceRepository),
-    ).resolves.toMatchObject({ id: "invoice-void" });
+      getInvoice(context, "invoice-void", fake.invoiceRepository, now),
+    ).resolves.toMatchObject({
+      id: "invoice-void",
+      trackingState: "VOID",
+      paidAmount: "0",
+      amountStatus: "UNPAID",
+    });
     await expect(getInvoice(context, "missing", fake.invoiceRepository)).rejects.toBeInstanceOf(
       InvoiceNotFoundError,
     );
@@ -421,11 +431,14 @@ describe("invoice application services", () => {
       ],
     );
 
+    const now = new Date("2026-09-22T00:30:00.000Z");
     const listed = await listInvoicesForContract(
       context,
       "contract-1",
       fake.contractRepository,
       fake.invoiceRepository,
+      undefined,
+      now,
     );
     const voided = await listInvoicesForContract(
       context,
@@ -433,10 +446,18 @@ describe("invoice application services", () => {
       fake.contractRepository,
       fake.invoiceRepository,
       "VOID",
+      now,
     );
 
     expect(listed.map((row) => row.id)).toEqual(["invoice-1"]);
+    expect(listed[0]).toMatchObject({
+      trackingState: "ACTIVE",
+      paidAmount: "0",
+      amountStatus: "UNPAID",
+      overdue: false,
+    });
     expect(voided.map((row) => row.id)).toEqual(["invoice-void"]);
+    expect(voided[0]).toMatchObject({ trackingState: "VOID" });
     expect(fake.calls.list).toEqual({
       workspaceId: "workspace-trusted",
       contractId: "contract-1",
@@ -598,5 +619,83 @@ describe("invoice input parsing", () => {
         fake.invoiceRepository,
       ),
     ).rejects.toBeInstanceOf(InvalidInvoiceInputError);
+  });
+});
+
+describe("invoice derived read view", () => {
+  it("marks an unpaid past-due invoice overdue using workspace timezone", async () => {
+    const now = new Date("2026-09-22T00:30:00.000Z");
+    const fake = createFakeRepositories(
+      [contractRecord()],
+      [invoiceRecord({ dueDate: calendarDate("2026-09-21") })],
+    );
+
+    const rome = await getInvoice(context, "invoice-1", fake.invoiceRepository, now);
+    const losAngeles = await getInvoice(
+      { ...context, timezone: "America/Los_Angeles" },
+      "invoice-1",
+      fake.invoiceRepository,
+      now,
+    );
+
+    expect(rome).toMatchObject({
+      amountStatus: "UNPAID",
+      paidAmount: "0",
+      overdue: true,
+    });
+    expect(losAngeles.overdue).toBe(false);
+    expect(fake.invoices[0]).not.toHaveProperty("amountStatus");
+    expect(fake.invoices[0]).not.toHaveProperty("overdue");
+    expect(fake.invoices[0]).not.toHaveProperty("paidAmount");
+  });
+
+  it("does not treat dueDate = today or null terms as overdue", async () => {
+    const now = new Date("2026-09-22T10:00:00.000Z");
+    const fake = createFakeRepositories(
+      [contractRecord()],
+      [
+        invoiceRecord({ dueDate: calendarDate("2026-09-22") }),
+        invoiceRecord({
+          id: "invoice-no-terms",
+          paymentTermsDays: null,
+          dueDate: null,
+        }),
+      ],
+    );
+
+    await expect(
+      getInvoice(context, "invoice-1", fake.invoiceRepository, now),
+    ).resolves.toMatchObject({ overdue: false, amountStatus: "UNPAID" });
+    await expect(
+      getInvoice(context, "invoice-no-terms", fake.invoiceRepository, now),
+    ).resolves.toMatchObject({ overdue: false, dueDate: null });
+  });
+
+  it("does not persist derived fields and keeps VOID invoices non-editable", async () => {
+    const fake = createFakeRepositories(
+      [contractRecord()],
+      [
+        invoiceRecord({
+          id: "invoice-void",
+          dueDate: calendarDate("2026-09-01"),
+          voidedAt: new Date("2026-09-22T10:00:00.000Z"),
+        }),
+      ],
+    );
+
+    const view = await getInvoice(
+      context,
+      "invoice-void",
+      fake.invoiceRepository,
+      new Date("2026-09-22T10:00:00.000Z"),
+    );
+
+    expect(view.trackingState).toBe("VOID");
+    expect(view.amountStatus).toBe("UNPAID");
+    expect(fake.invoices[0]?.voidedAt).not.toBeNull();
+    expect(fake.invoices[0]).not.toHaveProperty("amountStatus");
+    await expect(
+      updateInvoice(context, "invoice-void", { amount: "10" }, fake.invoiceRepository),
+    ).rejects.toBeInstanceOf(InvoiceNotEditableError);
   });
 });

@@ -3,7 +3,7 @@
 **Epic:** R2-E02 — Invoice Tracking  
 **Release:** Release 2 — Revenue Operations  
 **MASTER_PLAN identifier:** R2-E02 (`MASTER_PLAN.md` §19)  
-**Status:** P-E02-02 COMPLETE — READY FOR P-E02-03  
+**Status:** P-E02-03 COMPLETE — READY FOR P-E02-04  
 **Authority:** `docs/release/r2-decision-pack.md`  
 **Companions:** `docs/release/r2-epic-map.md`, `docs/release/r2-architecture-delta.md`, `docs/release/r2-open-decisions.md`  
 **Predecessor:** R2-E01 COMPLETE / RELEASE-READY (`docs/release/r2-e01-revenue-visibility.md`, closure `278101a347b6063450c34a91200878e548836edb`)  
@@ -13,13 +13,13 @@
 P-E02-00  PLANNING / DECISION CLOSURE      COMPLETE
 P-E02-01  PERSISTENCE / DOMAIN FOUNDATION  COMPLETE
 P-E02-02  INVOICE APPLICATION SERVICE      COMPLETE
-P-E02-03  DERIVED STATUS / DUE DATE        NOT STARTED
+P-E02-03  DERIVED STATUS / DUE DATE        COMPLETE
 P-E02-04  CONTRACT-SCOPED INVOICE UI       NOT STARTED
 P-E02-05  ENGINEERING REVIEW               NOT STARTED
 P-E02-06  QA                               NOT STARTED
 P-E02-07  DOCUMENTATION / EPIC CLOSURE     NOT STARTED
 
-R2-E02: P-E02-02 COMPLETE
+R2-E02: P-E02-03 COMPLETE
 IMPLEMENTATION: IN PROGRESS
 R1: FROZEN / GRANTED
 R2-E01: COMPLETE / RELEASE-READY
@@ -912,7 +912,9 @@ Integration: `tests/integration/application/invoices/invoice-services.test.ts` �
 
 Regression: Invoice persistence; Contract application / integrity; Accrued / Expected / reporting suites via the existing `updateContract` signature (now receives `InvoiceRepository`).
 
-P-E02-03 / P-E02-04 remain NOT STARTED. Amount status, overdue, Payment, and UI are out of this phase.
+P-E02-03 is COMPLETE. P-E02-04 remains NOT STARTED. Payment and UI are out of this phase.
+
+The P-E02-02 concurrent Invoice-create / Contract-currency-update race is not resolved here. Carry it to P-E02-05 Engineering Review.
 
 ### P-E02-03 — Derived status / due-date behaviour
 
@@ -925,6 +927,32 @@ P-E02-03 / P-E02-04 remain NOT STARTED. Amount status, overdue, Payment, and UI 
 | Tests | AC-05, AC-06, AC-07, AC-11; timezone boundary; `paymentTermsDays = 0`; dueDate = today not overdue |
 | Migration | No |
 | Exit criteria | Predicates match State Model. Process TZ cannot shift overdue |
+| Status | **COMPLETE** |
+
+Implemented predicates (`src/domain/invoice-derived.ts`):
+
+| Function | Behaviour |
+| --- | --- |
+| `deriveAmountStatus(amount, paidAmount)` | Exact decimal compare. `0` → UNPAID; `0 < paid < amount` → PARTIAL; `paid = amount` → PAID; `paid > amount` → MISMATCH. No float, no rounding, no FX. |
+| `isOverdue(dueDate, today, paidAmount, amount)` | `dueDate ≠ null AND dueDate < today AND paidAmount < amount`. `today` is an explicit `{ year, month, day }`. No system clock inside the predicate. |
+| `deriveInvoiceFields` | Pure derived bundle: `trackingState`, `paidAmount`, `amountStatus`, `overdue`. Does not persist. |
+
+`today` / timezone: application reads `getTodayInTimezone(Workspace.timezone, now)`. `now` is injectable. Process timezone cannot shift the calendar day. UTC is not used as a workspace default.
+
+dueDate (unchanged write semantics):
+
+- `paymentTermsDays = null` → `dueDate` null → never overdue
+- terms `0` → `dueDate = invoiceDate`
+- terms `N` → `dueDate = invoiceDate + N` calendar days (`computeDueDate`)
+- Invoice snapshot: later Contract terms edits do not rewrite existing invoices
+- ACTIVE `invoiceDate` edit recomputes `dueDate` from the Invoice terms snapshot
+- VOID remains non-editable
+
+E02 paidAmount: there is no Payment aggregate. Reads pass `paidAmount = 0`. Effective E02 `amountStatus` is always UNPAID. PARTIAL / PAID / MISMATCH are implemented so E03 can supply a sum without rewriting the predicates.
+
+Read wiring: `getInvoice` / `listInvoicesForContract` return `InvoiceDerivedView` (`InvoiceRecord` plus derived fields). No `amountStatus` column. No Payment schema. VOID still computes the same predicates and is marked `trackingState = VOID`; it is not an active payable item. No new payment-filtering semantics.
+
+P-E02-02 race finding is unchanged and is carried to P-E02-05 Engineering Review.
 
 ### P-E02-04 — Contract-scoped invoice UI
 
@@ -947,6 +975,7 @@ P-E02-03 / P-E02-04 remain NOT STARTED. Amount status, overdue, Payment, and UI 
 | Dependencies | P-E02-04 |
 | Non-scope | New features; E03 payments; reopening D2 |
 | Exit criteria | ER recorded; E01 intact; no silent fiscal / FX / revenue rewrite |
+| Carried finding | P-E02-02 concurrent Invoice create + Contract currency update can bypass the currency guard under Read Committed without row lock / serializable protection. Not resolved in P-E02-03. |
 
 ### P-E02-06 — QA
 
