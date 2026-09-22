@@ -5,6 +5,7 @@ import type {
   Contract,
   Invoice,
   Notification,
+  Payment,
   TimeEntry,
   Workspace,
   WorkspaceMember,
@@ -17,6 +18,7 @@ import type {
   ContractRecord,
   InvoiceRecord,
   NotificationRecord,
+  PaymentRecord,
   TimeEntryRecord,
   WorkspaceMemberRecord,
   WorkspaceRecord,
@@ -103,6 +105,20 @@ export function mapInvoice(row: Invoice): InvoiceRecord {
     paymentTermsDays: row.paymentTermsDays,
     dueDate: row.dueDate,
     voidedAt: row.voidedAt,
+    createdAt: row.createdAt,
+    updatedAt: row.updatedAt,
+  };
+}
+
+export function mapPayment(row: Payment): PaymentRecord {
+  return {
+    id: row.id,
+    workspaceId: row.workspaceId,
+    invoiceId: row.invoiceId,
+    paymentDate: row.paymentDate,
+    amount: row.amount.toFixed(4),
+    currency: row.currency,
+    notes: row.notes,
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
   };

@@ -255,6 +255,9 @@ function createFakeRepositories(
     async getInvoice() {
       return null;
     },
+    async lockInvoice() {
+      return null;
+    },
     async listInvoicesForContract() {
       return [];
     },

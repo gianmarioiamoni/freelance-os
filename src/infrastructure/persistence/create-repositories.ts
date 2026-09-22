@@ -8,6 +8,7 @@ import { createClientRepository } from "@/infrastructure/persistence/client-repo
 import { createContractRepository } from "@/infrastructure/persistence/contract-repository";
 import { createInvoiceRepository } from "@/infrastructure/persistence/invoice-repository";
 import { createNotificationRepository } from "@/infrastructure/persistence/notification-repository";
+import { createPaymentRepository } from "@/infrastructure/persistence/payment-repository";
 import type { PrismaExecutor } from "@/infrastructure/persistence/prisma-executor";
 import { createTimeEntryRepository } from "@/infrastructure/persistence/time-entry-repository";
 import {
@@ -27,6 +28,7 @@ export function createRepositories(
     clients: createClientRepository(db),
     contracts: createContractRepository(db),
     invoices: createInvoiceRepository(db),
+    payments: createPaymentRepository(db),
     timeEntries: createTimeEntryRepository(db),
     alerts: createAlertRepository(db),
     notifications: createNotificationRepository(db),

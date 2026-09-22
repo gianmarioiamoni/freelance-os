@@ -86,10 +86,18 @@ function createMemoryDependencies(
     invoices: {
       createInvoice: unused,
       getInvoice: unused,
+      lockInvoice: unused,
       listInvoicesForContract: unused,
       updateInvoice: unused,
       voidInvoice: unused,
       existsForContract: unused,
+    },
+    payments: {
+      createPayment: unused,
+      getPayment: unused,
+      listPaymentsForInvoice: unused,
+      updatePayment: unused,
+      deletePayment: unused,
     },
     timeEntries: {
       recordTimeEntry: unused,

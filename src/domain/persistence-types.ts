@@ -85,6 +85,18 @@ export type InvoiceRecord = {
   updatedAt: Date;
 };
 
+export type PaymentRecord = {
+  id: string;
+  workspaceId: string;
+  invoiceId: string;
+  paymentDate: Date;
+  amount: string;
+  currency: string;
+  notes: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
 export type TimeEntryRecord = {
   id: string;
   workspaceId: string;
@@ -214,6 +226,20 @@ export type UpdateInvoiceInput = {
   amount?: string;
   reference?: string | null;
   dueDate?: Date | null;
+};
+
+export type CreatePaymentInput = {
+  invoiceId: string;
+  paymentDate: Date;
+  amount: string;
+  currency: string;
+  notes?: string | null;
+};
+
+export type UpdatePaymentInput = {
+  paymentDate?: Date;
+  amount?: string;
+  notes?: string | null;
 };
 
 export type RecordTimeEntryInput = {

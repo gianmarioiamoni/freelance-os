@@ -108,6 +108,9 @@ function repositories(seed: {
         null
       );
     },
+    async lockInvoice(workspaceId, invoiceId) {
+      return invoiceRepository.getInvoice(workspaceId, invoiceId);
+    },
     async listInvoicesForContract(workspaceId, contractId, tracking: InvoiceTrackingFilter = "ACTIVE") {
       return invoices.filter((row) => {
         if (row.workspaceId !== workspaceId || row.contractId !== contractId) {

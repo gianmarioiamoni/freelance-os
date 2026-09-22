@@ -157,6 +157,9 @@ function createFakeRepositories(
         null
       );
     },
+    async lockInvoice(workspaceId, invoiceId) {
+      return invoiceRepository.getInvoice(workspaceId, invoiceId);
+    },
     async listInvoicesForContract(workspaceId, contractId, tracking = "ACTIVE") {
       calls.list = { workspaceId, contractId, tracking };
       return invoices.filter((row) => {

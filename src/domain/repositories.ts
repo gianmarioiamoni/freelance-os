@@ -11,16 +11,19 @@ import type {
   CreateContractInput,
   CreateInvoiceInput,
   CreateNotificationInput,
+  CreatePaymentInput,
   InvoiceRecord,
   InvoiceTrackingFilter,
   CreateWorkspaceInput,
   NotificationRecord,
+  PaymentRecord,
   PutWorkspaceSettingsInput,
   RecordTimeEntryInput,
   TimeEntryRecord,
   UpdateClientInput,
   UpdateContractInput,
   UpdateInvoiceInput,
+  UpdatePaymentInput,
   UpdateTimeEntryInput,
   UpdateWorkspaceInput,
   WorkspaceMemberRecord,
@@ -127,6 +130,10 @@ export type InvoiceRepository = {
     workspaceId: string,
     invoiceId: string,
   ): Promise<InvoiceRecord | null>;
+  lockInvoice(
+    workspaceId: string,
+    invoiceId: string,
+  ): Promise<InvoiceRecord | null>;
   listInvoicesForContract(
     workspaceId: string,
     contractId: string,
@@ -139,6 +146,27 @@ export type InvoiceRepository = {
   ): Promise<InvoiceRecord>;
   voidInvoice(workspaceId: string, invoiceId: string): Promise<InvoiceRecord>;
   existsForContract(workspaceId: string, contractId: string): Promise<boolean>;
+};
+
+export type PaymentRepository = {
+  createPayment(
+    workspaceId: string,
+    input: CreatePaymentInput,
+  ): Promise<PaymentRecord>;
+  getPayment(
+    workspaceId: string,
+    paymentId: string,
+  ): Promise<PaymentRecord | null>;
+  listPaymentsForInvoice(
+    workspaceId: string,
+    invoiceId: string,
+  ): Promise<PaymentRecord[]>;
+  updatePayment(
+    workspaceId: string,
+    paymentId: string,
+    input: UpdatePaymentInput,
+  ): Promise<PaymentRecord>;
+  deletePayment(workspaceId: string, paymentId: string): Promise<void>;
 };
 
 export type TimeEntryRepository = {
@@ -258,6 +286,7 @@ export type PersistenceRepositories = {
   clients: ClientRepository;
   contracts: ContractRepository;
   invoices: InvoiceRepository;
+  payments: PaymentRepository;
   timeEntries: TimeEntryRepository;
   alerts: AlertRepository;
   notifications: NotificationRepository;

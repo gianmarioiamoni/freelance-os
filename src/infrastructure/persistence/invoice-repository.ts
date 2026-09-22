@@ -53,6 +53,26 @@ export function createInvoiceRepository(db: PrismaExecutor): InvoiceRepository {
       });
     },
 
+    async lockInvoice(workspaceId: string, invoiceId: string) {
+      return withPersistenceErrors(async () => {
+        const locked = await db.$queryRaw<Array<{ id: string }>>`
+          SELECT id FROM "Invoice"
+          WHERE id = ${invoiceId}::uuid
+            AND "workspaceId" = ${workspaceId}::uuid
+          FOR UPDATE
+        `;
+
+        if (locked.length === 0) {
+          return null;
+        }
+
+        const row = await db.invoice.findFirst({
+          where: { id: invoiceId, workspaceId },
+        });
+        return row ? mapInvoice(row) : null;
+      });
+    },
+
     listInvoicesForContract(
       workspaceId: string,
       contractId: string,
