@@ -65,6 +65,8 @@ export const CONTRACT_ARCHIVED_CLIENT_ERROR =
 export const CONTRACT_CLIENT_NOT_FOUND_ERROR =
   "This client could not be found.";
 export const CONTRACT_NOT_FOUND_ERROR = "This contract could not be found.";
+export const CONTRACT_CURRENCY_IMMUTABLE_ERROR =
+  "Contract currency cannot change after an invoice exists.";
 
 export function readContractFormValues(formData: FormData): ContractFormValues {
   return {

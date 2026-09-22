@@ -6,6 +6,9 @@ import { Button } from "@/components/ui/button";
 import { ContractDetail } from "@/features/contracts/ContractDetail";
 import { getWorkspaceCalendarDate } from "@/features/contracts/contract-display";
 import { loadContractDetailPageData } from "@/features/contracts/load-contracts";
+import { ContractInvoiceSection } from "@/features/invoices/ContractInvoiceSection";
+import { readInvoiceTrackingParam } from "@/features/invoices/invoice-display";
+import { loadContractInvoices } from "@/features/invoices/load-invoices";
 import Link from "next/link";
 import type { JSX } from "react";
 
@@ -13,14 +16,22 @@ type ContractDetailPageProps = {
   params: Promise<{
     contractId: string;
   }>;
+  searchParams: Promise<{
+    tracking?: string;
+  }>;
 };
 
 export default async function ContractDetailPage({
   params,
+  searchParams,
 }: ContractDetailPageProps): Promise<JSX.Element> {
   const { contractId } = await params;
-  const { contract, client, workspace } =
-    await loadContractDetailPageData(contractId);
+  const { tracking: trackingParam } = await searchParams;
+  const tracking = readInvoiceTrackingParam(trackingParam);
+  const [{ contract, client, workspace }, invoices] = await Promise.all([
+    loadContractDetailPageData(contractId),
+    loadContractInvoices(contractId, trackingParam),
+  ]);
   const applicability = deriveContractApplicability(
     contract.validFrom,
     contract.validTo,
@@ -39,12 +50,19 @@ export default async function ContractDetailPage({
             <Link href="/contracts">Back to contracts</Link>
           </Button>
         </div>
-        <ContractDetail
-          contract={contract}
-          client={client}
-          applicability={applicability}
-          timezone={workspace.timezone}
-        />
+        <div className="grid gap-8">
+          <ContractDetail
+            contract={contract}
+            client={client}
+            applicability={applicability}
+            timezone={workspace.timezone}
+          />
+          <ContractInvoiceSection
+            contractId={contract.id}
+            invoices={invoices}
+            tracking={tracking}
+          />
+        </div>
       </PageContent>
     </section>
   );

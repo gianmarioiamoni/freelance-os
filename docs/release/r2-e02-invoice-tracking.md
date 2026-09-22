@@ -3,7 +3,7 @@
 **Epic:** R2-E02 — Invoice Tracking  
 **Release:** Release 2 — Revenue Operations  
 **MASTER_PLAN identifier:** R2-E02 (`MASTER_PLAN.md` §19)  
-**Status:** P-E02-03 COMPLETE — READY FOR P-E02-04  
+**Status:** P-E02-04 COMPLETE — READY FOR P-E02-05  
 **Authority:** `docs/release/r2-decision-pack.md`  
 **Companions:** `docs/release/r2-epic-map.md`, `docs/release/r2-architecture-delta.md`, `docs/release/r2-open-decisions.md`  
 **Predecessor:** R2-E01 COMPLETE / RELEASE-READY (`docs/release/r2-e01-revenue-visibility.md`, closure `278101a347b6063450c34a91200878e548836edb`)  
@@ -14,12 +14,12 @@ P-E02-00  PLANNING / DECISION CLOSURE      COMPLETE
 P-E02-01  PERSISTENCE / DOMAIN FOUNDATION  COMPLETE
 P-E02-02  INVOICE APPLICATION SERVICE      COMPLETE
 P-E02-03  DERIVED STATUS / DUE DATE        COMPLETE
-P-E02-04  CONTRACT-SCOPED INVOICE UI       NOT STARTED
+P-E02-04  CONTRACT-SCOPED INVOICE UI       COMPLETE
 P-E02-05  ENGINEERING REVIEW               NOT STARTED
 P-E02-06  QA                               NOT STARTED
 P-E02-07  DOCUMENTATION / EPIC CLOSURE     NOT STARTED
 
-R2-E02: P-E02-03 COMPLETE
+R2-E02: P-E02-04 COMPLETE
 IMPLEMENTATION: IN PROGRESS
 R1: FROZEN / GRANTED
 R2-E01: COMPLETE / RELEASE-READY
@@ -965,6 +965,36 @@ P-E02-02 race finding is unchanged and is carried to P-E02-05 Engineering Review
 | Tests | E2E AC paths on Contract detail; reports / dashboard unchanged |
 | Migration | No |
 | Exit criteria | AC-12, AC-13, AC-15, AC-16 hold on existing surfaces. E01 UI still does not render Accrued as Invoice |
+| Status | **COMPLETE** |
+
+Invoice visibility is Contract detail only. No workspace invoice index, dashboard cards, E01 columns, analytics changes, global search, Payment UI, fiscal/PDF/numbering/SDI, or alerts.
+
+UI surface:
+
+| Route | Behaviour |
+| --- | --- |
+| `/contracts/[contractId]` | Commercial terms unchanged. New Invoices section. Default list `ACTIVE`. Filter links `Active` / `Void` / `All` via `?tracking=`. |
+| `/contracts/[contractId]/invoices/new` | Create form. Currency and payment terms from the Contract, read-only. `dueDate` preview only. |
+| `/contracts/[contractId]/invoices/[invoiceId]` | Detail for ACTIVE and VOID. VOID remains readable. Confirm void via `?confirm=void`. |
+| `/contracts/[contractId]/invoices/[invoiceId]/edit` | ACTIVE only. VOID redirects back to detail. |
+
+Create / update / void:
+
+- Create fields: `invoiceDate`, `amount`, optional `reference`. Currency is the Contract currency, not an input. Payment terms shown from the Contract. `dueDate` is derived by `computeDueDate` and is not submitted.
+- Update fields: `invoiceDate`, `amount`, `reference`. Currency, contract, payment-terms snapshot, and `dueDate` are not editable. Changing `invoiceDate` previews the recomputed due date; the server recomputes from the Invoice terms snapshot.
+- VOID is a separate confirm action (same pattern as client archive). After VOID: no edit, no restore. Direct detail URL still shows the VOID invoice.
+
+Default list excludes VOID. Filter `VOID` / `ALL` uses `listInvoicesForContract`. VOID cards are visually marked.
+
+Derived status: E02 has no Payment, so `amountStatus` displays Unpaid. `dueDate` null → "No due date" and no overdue label. Past due + unpaid → Overdue. Today is not overdue.
+
+Security / isolation: Server Actions bind `contractId` from the route. `getInvoiceOnContract` requires WorkspaceContext, Contract in workspace, and Invoice.contractId match. Foreign workspace and same-workspace other-contract IDs 404. Application services remain the write authority.
+
+E2E evidence: `tests/e2e/contract-invoices.spec.ts` — 1 passed. Covers create, invalid amount, due-date preview, edit ACTIVE, void, VOID filter + direct detail, null payment terms → no due date, Contract currency rejected after an invoice exists, other-contract ID 404, other-workspace 404. Contract regression: `tests/e2e/contracts.spec.ts`.
+
+UX: Invoices section added under existing commercial terms. No Contract detail redesign. Currency is a labeled read-only value. Due date preview is `aria-live`. VOID confirm uses the archive-style alert + confirm control.
+
+P-E02-02 race finding is unchanged and is carried to P-E02-05 Engineering Review. P-E02-05 is not closed.
 
 ### P-E02-05 — Engineering Review
 

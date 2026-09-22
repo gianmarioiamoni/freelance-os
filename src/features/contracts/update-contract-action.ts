@@ -4,6 +4,7 @@
 import { updateContract } from "@/application/contracts/update-contract";
 import { ClientNotFoundError } from "@/domain/client-errors";
 import {
+  ContractCurrencyImmutableError,
   ContractNotFoundError,
   InvalidContractInputError,
   InvalidContractPeriodError,
@@ -12,6 +13,7 @@ import {
 import { getAuthenticatedContractContext } from "@/features/contracts/authenticated-contract-context";
 import {
   CONTRACT_CLIENT_NOT_FOUND_ERROR,
+  CONTRACT_CURRENCY_IMMUTABLE_ERROR,
   CONTRACT_FIELD_ERROR_MESSAGES,
   CONTRACT_NOT_FOUND_ERROR,
   CONTRACT_OVERLAP_ERROR,
@@ -60,6 +62,14 @@ export async function updateContractAction(
     if (error instanceof OverlappingContractError) {
       return {
         error: CONTRACT_OVERLAP_ERROR,
+        values,
+      };
+    }
+
+    if (error instanceof ContractCurrencyImmutableError) {
+      return {
+        error: CONTRACT_CURRENCY_IMMUTABLE_ERROR,
+        field: "currency",
         values,
       };
     }
