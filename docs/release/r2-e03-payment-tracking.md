@@ -3,7 +3,10 @@
 **Epic:** R2-E03 — Payment Tracking & Reconciliation  
 **Release:** Release 2 — Revenue Operations  
 **MASTER_PLAN identifier:** R2-E03 (`MASTER_PLAN.md` §19)  
-**Status:** P-E03-00…P-E03-05 COMPLETE. P-E03-06…P-E03-07 NOT STARTED / NOT AUTHORIZED. E03 is not certified.  
+**Status:** CERTIFIED — P-E03-00…P-E03-07 COMPLETE. QA PASS WITH FINDINGS. Release Validation PASS WITH FINDINGS (Gate B). F-E03-001…005 ACCEPTED.  
+**Certification date:** 2026-09-23  
+**Certification commit:** this P-E03-07 commit  
+**Release migration:** `prisma migrate deploy`  
 **Authority:** `docs/release/r2-decision-pack.md`  
 **Companions:** `docs/release/r2-epic-map.md`, `docs/release/r2-architecture-delta.md`, `docs/release/r2-open-decisions.md`  
 **Predecessor:** R2-E02 COMPLETE WITH NON-BLOCKING FINDING (`docs/release/r2-e02-invoice-tracking.md`)  
@@ -16,10 +19,10 @@ P-E03-02  PAYMENT APPLICATION SERVICE              COMPLETE
 P-E03-03  PAYMENT ALERTS                           COMPLETE — ER APPROVED WITH FINDINGS
 P-E03-04  CONTRACT-SCOPED PAYMENT UI               COMPLETE — ER APPROVED WITH FINDINGS
 P-E03-05  QA + DOCUMENTATION SYNCHRONIZATION       COMPLETE — PASS WITH FINDINGS
-P-E03-06  ENGINEERING REVIEW                       NOT STARTED / NOT AUTHORIZED
-P-E03-07  DOCUMENTATION / EPIC CLOSURE             NOT STARTED / NOT AUTHORIZED
+P-E03-06  RELEASE VALIDATION                       COMPLETE — PASS WITH FINDINGS / GATE B
+P-E03-07  CERTIFICATION                            COMPLETE — CERTIFIED
 
-R2-E03: P-E03-05 COMPLETE — E03 NOT CERTIFIED
+R2-E03: CERTIFIED
 R2-E02: COMPLETE WITH NON-BLOCKING FINDING
 R2-E01: COMPLETE / RELEASE-READY
 R1: FROZEN / GRANTED
@@ -464,7 +467,24 @@ commit is created by this close.
 | Status | **COMPLETE** — PASS WITH FINDINGS |
 | Non-scope | New product behavior; epic certification; P-E03-06 / P-E03-07 |
 
-Later phases (P-E03-06…07) remain NOT STARTED / NOT AUTHORIZED.
+### P-E03-06 — Release validation
+
+| | |
+| --- | --- |
+| Objective | Production-path release validation before certification |
+| Dependencies | P-E03-05 |
+| Status | **COMPLETE** — PASS WITH FINDINGS / Release Gate B |
+| Commit | None. Validation-only phase. |
+| Non-scope | Application change; certification |
+
+### P-E03-07 — Certification
+
+| | |
+| --- | --- |
+| Objective | Certify R2-E03 Payment Tracking |
+| Dependencies | P-E03-06 |
+| Status | **COMPLETE** — CERTIFIED |
+| Non-scope | Application change; Prisma change; R2-E04 |
 
 ---
 
@@ -476,12 +496,12 @@ E02 COMPLETE
         → P-E03-00 COMPLETE
             → P-E03-01…P-E03-04 COMPLETE
                 → P-E03-05 COMPLETE
-                    → P-E03-06 NOT STARTED / NOT AUTHORIZED
+                    → P-E03-06 COMPLETE
+                        → P-E03-07 CERTIFIED
 ```
 
 E04 remains parallel (depends on E01, not E03). E05 reads payment
-facts only after they exist. R2 is not production-ready. E03 is not
-certified.
+facts only after they exist. R2 is not production-ready.
 
 ---
 
@@ -588,7 +608,68 @@ Cheap coverage added for P-E03-04 review gaps:
 
 - Blocker for this close: no
 - P-E03-05: COMPLETE
-- P-E03-06 / P-E03-07: NOT STARTED / NOT AUTHORIZED
 - Open PO decisions for E03: none
-- E03 certified: no
 - R2 production-ready: no
+
+---
+
+## 21. P-E03-06 Release Validation
+
+**Date:** 2026-09-23  
+**Phase:** P-E03-06  
+**Reviewed HEAD at validation:** `c0de4e4` plus committed P-E03-05 artifacts `5ca88f45`  
+**Commit:** none (validation-only)
+
+### Verdict
+
+**PASS WITH FINDINGS**
+
+Release classification: **B — READY WITH EXPLICIT FINDINGS**
+
+No blocker. Migration path deterministic. `prisma migrate deploy` is
+sufficient. Local `freelance_os` pending `20260923010000_add_payment_alerts`
+is environment drift, not a repository defect. Isolated `freelanceos_test`
+was current. F-E03-001…005 remain accepted non-blocking findings.
+
+---
+
+## 22. P-E03-07 Certification
+
+**Date:** 2026-09-23  
+**Phase:** P-E03-07  
+**Certification HEAD:** this commit  
+**Scope:** Certification metadata only. No application, schema, or test change.
+
+### Verdict
+
+**CERTIFIED**
+
+R2-E03 Payment Tracking is CERTIFIED.
+
+Accepted findings F-E03-001…005 remain non-blocking. F-E03-005 is
+UX-only: VOID may leave `/alerts` visually stale until refresh or a
+later mutation. Release migration command: `prisma migrate deploy`.
+R2-E04 is not authorized. R2 is not production-ready.
+
+### Phase commits
+
+| Phase | Commit |
+| --- | --- |
+| P-E03-00 | `7e7ad0254c21f0073fdb9400896bdba48d2f5cef` |
+| P-E03-01 | `0e3698aa13beff533a43cccc9a17fd4433a160a0` |
+| P-E03-02 | `fb8b67ccf53c190ddd8806993d3ac7ad16d4838d` |
+| P-E03-03 | `27ddc0d690a96062926b28dacd46abd7f3de41ff` |
+| P-E03-04 | `c0de4e4df7815090e3b5d1504bfa4b695dfa2343` |
+| P-E03-05 | `5ca88f45ae0220a2ef5947b88f1ab8d2de221893` |
+| P-E03-06 | none (validation result in project history) |
+| P-E03-07 | this commit |
+
+### Final status
+
+```text
+R2-E03 Payment Tracking = CERTIFIED
+
+NEXT:                      R2-E04 is NOT AUTHORIZED in this chat
+E04 / E05:                 NOT COMPLETE
+R2 PRODUCTION-READY:       NO
+```

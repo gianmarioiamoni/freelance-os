@@ -6,6 +6,7 @@ All notable changes to FreelanceOS are documented in this file.
 
 ### Added
 
+- R2-E03 Payment Tracking CERTIFIED (`docs/release/r2-e03-payment-tracking.md`). P-E03-00…P-E03-07 COMPLETE. QA PASS WITH FINDINGS. Release Validation PASS WITH FINDINGS (Gate B). F-E03-001…005 ACCEPTED. Release migration: `prisma migrate deploy`. R2-E04 is not authorized. R2 is not production-ready.
 - R2-E03 Payment Tracking P-E03-05 COMPLETE (`docs/release/r2-e03-payment-tracking.md`). QA PASS WITH FINDINGS. Documentation synchronized to implemented Payment / derived Invoice state / T3 alerts. F-E03-001…005 remain non-blocking. P-E03-06…P-E03-07 NOT STARTED / NOT AUTHORIZED. E03 is not certified. R2 is not production-ready.
 - R2-E03 Payment Tracking P-E03-00 COMPLETE (`docs/release/r2-e03-payment-tracking.md`). E03-D-VOID-PAYMENTS CLOSED: Option A freeze writes on VOID. Existing Payments remain readable. No create / update / delete on VOID. No cascade-delete. No restore. P-E03-01 NOT STARTED / NOT AUTHORIZED. No implementation, schema, or migration. R2 is not production-ready.
 - R2-E02 Invoice Tracking COMPLETE WITH NON-BLOCKING FINDING (`docs/release/r2-e02-invoice-tracking.md`). P-E02-00…P-E02-07 COMPLETE. ER PASS WITH FINDINGS. QA PASS WITH FINDINGS. F-E02-001 CLOSED. F-E02-002 CLOSED. F-E02-003 CLOSED. F-E02-004 OPEN (non-blocking / test hygiene). Next: R2-E03 detailed plan. R2 is not production-ready.

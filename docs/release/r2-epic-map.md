@@ -1,6 +1,6 @@
 # R2 Epic Map — Planning Baseline
 
-**Status:** Executable planning baseline. R2-E01 COMPLETE / RELEASE-READY. R2-E02 COMPLETE WITH NON-BLOCKING FINDING. R2-E03 P-E03-00…P-E03-05 COMPLETE. P-E03-06…P-E03-07 NOT STARTED / NOT AUTHORIZED. E03 is not certified. E04–E05 detailed plans still required. No EPIC-2xx opened. R2 is not production-ready.  
+**Status:** Executable planning baseline. R2-E01 COMPLETE / RELEASE-READY. R2-E02 COMPLETE WITH NON-BLOCKING FINDING. R2-E03 CERTIFIED (P-E03-00…P-E03-07). E04–E05 detailed plans still required. No EPIC-2xx opened. R2 is not production-ready.  
 **Date:** 2026-09-23  
 **Authority:** `docs/release/r2-decision-pack.md`  
 **E01 plan:** `docs/release/r2-e01-revenue-visibility.md`  
@@ -9,11 +9,11 @@
 **Does not:** authorize E04–E05 schema, migrations, APIs, UI, or implementation branches.
 
 ```text
-PLANNING BASELINE (E04–E05; E03 NOT CERTIFIED)
+PLANNING BASELINE (E04–E05; E03 CERTIFIED)
 R2-E01: COMPLETE / RELEASE-READY
 R2-E02: COMPLETE WITH NON-BLOCKING FINDING
-R2-E03: P-E03-05 COMPLETE; P-E03-06…P-E03-07 NOT STARTED / NOT AUTHORIZED
-IMPLEMENTATION: E01 DONE; E02 DONE; E03 IMPLEMENTED THROUGH P-E03-05; E04–E05 NOT STARTED
+R2-E03: CERTIFIED
+IMPLEMENTATION: E01 DONE; E02 DONE; E03 CERTIFIED; E04–E05 NOT STARTED
 R1: FROZEN / GRANTED
 R2: NOT PRODUCTION-READY
 ```
@@ -604,7 +604,7 @@ Vision → Architecture → Planning → Implementation → Engineering Review
 Release → Epic → Phase → Commit
 ```
 
-This document is the release-level planning baseline. R2-E01 is COMPLETE / RELEASE-READY (`docs/release/r2-e01-revenue-visibility.md`). R2-E02 is COMPLETE WITH NON-BLOCKING FINDING (`docs/release/r2-e02-invoice-tracking.md`). It does not open E03–E05 implementation or invent commit hashes.
+This document is the release-level planning baseline. R2-E01 is COMPLETE / RELEASE-READY (`docs/release/r2-e01-revenue-visibility.md`). R2-E02 is COMPLETE WITH NON-BLOCKING FINDING (`docs/release/r2-e02-invoice-tracking.md`). R2-E03 is CERTIFIED (`docs/release/r2-e03-payment-tracking.md`). It does not open E04–E05 implementation or invent commit hashes.
 
 ### Release-level
 
@@ -612,9 +612,9 @@ This document is the release-level planning baseline. R2-E01 is COMPLETE / RELEA
 | --- | --- |
 | Vision | Complete — decision pack |
 | Architecture | Complete as domain delta — `r2-architecture-delta.md` |
-| Planning | This baseline. E01 detailed plan complete. E02 detailed plan complete. E03–E05 EPIC-2xx plans still required |
-| Implementation | R2-E01 COMPLETE / RELEASE-READY. R2-E02 COMPLETE WITH NON-BLOCKING FINDING. E03–E05 implementation not started |
-| Engineering Review → Release | E01 and E02 ER + QA complete. R2 release gates not started. Do not mark R2 production-ready |
+| Planning | This baseline. E01–E03 detailed plans complete. E04–E05 EPIC-2xx plans still required |
+| Implementation | R2-E01 COMPLETE / RELEASE-READY. R2-E02 COMPLETE WITH NON-BLOCKING FINDING. R2-E03 CERTIFIED. E04–E05 implementation not started |
+| Engineering Review → Release | E01–E03 ER + QA complete. E03 CERTIFIED. R2 release gates not started. Do not mark R2 production-ready |
 
 ### Proposed small phases (planning labels only)
 
@@ -654,8 +654,8 @@ This document is the release-level planning baseline. R2-E01 is COMPLETE / RELEA
 | P-E03-03 | Payment alerts via AlertService | COMPLETE — ER APPROVED WITH FINDINGS |
 | P-E03-04 | Payment UI | COMPLETE — ER APPROVED WITH FINDINGS |
 | P-E03-05 | QA + Documentation Synchronization | COMPLETE — PASS WITH FINDINGS |
-| P-E03-06 | Engineering Review | NOT STARTED / NOT AUTHORIZED |
-| P-E03-07 | Documentation / Epic closure | NOT STARTED / NOT AUTHORIZED |
+| P-E03-06 | Release Validation | COMPLETE — PASS WITH FINDINGS / GATE B |
+| P-E03-07 | Certification | COMPLETE — CERTIFIED |
 
 **R2-E04**
 

@@ -1,6 +1,6 @@
 # R2 Architecture Delta — Revenue Operations
 
-**Status:** Domain and persistence-planning delta. R2-E01 snapshot / Accrued / Expected are implemented. R2-E02 Invoice Tracking is implemented. R2-E03 Payment Tracking is implemented through P-E03-05. E04–E05 remain unauthorized.  
+**Status:** Domain and persistence-planning delta. R2-E01 snapshot / Accrued / Expected are implemented. R2-E02 Invoice Tracking is implemented. R2-E03 Payment Tracking is CERTIFIED. E04–E05 remain unauthorized.  
 **Date:** 2026-09-23  
 **Authority:** `docs/release/r2-decision-pack.md`  
 **Baseline:** R1 architecture (`docs/architecture.md`, `docs/domain-model.md`, `docs/storage.md`) remains the frozen R1 baseline.
