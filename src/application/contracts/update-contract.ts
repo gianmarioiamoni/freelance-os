@@ -1,4 +1,5 @@
 // src/application/contracts/update-contract.ts
+import { assertContractCurrencyMutable } from "@/application/contracts/assert-contract-currency-mutable";
 import { assertNoOverlappingContract } from "@/application/contracts/assert-no-overlap";
 import {
   parseContractUpdateInput,
@@ -15,7 +16,11 @@ import {
   RecordNotFoundError,
 } from "@/domain/persistence-errors";
 import type { ContractRecord } from "@/domain/persistence-types";
-import type { ClientRepository, ContractRepository } from "@/domain/repositories";
+import type {
+  ClientRepository,
+  ContractRepository,
+  InvoiceRepository,
+} from "@/domain/repositories";
 
 export async function updateContract(
   context: WorkspaceContext,
@@ -23,6 +28,7 @@ export async function updateContract(
   input: ContractUpdateInput,
   clients: ClientRepository,
   contracts: ContractRepository,
+  invoices: InvoiceRepository,
 ): Promise<ContractRecord> {
   const validated = parseContractUpdateInput(input);
   const existing = await contracts.getContract(context.workspaceId, contractId);
@@ -35,6 +41,10 @@ export async function updateContract(
 
   if (!client) {
     throw new ClientNotFoundError();
+  }
+
+  if (validated.currency !== existing.currency) {
+    await assertContractCurrencyMutable(context, existing.id, invoices);
   }
 
   await assertNoOverlappingContract(

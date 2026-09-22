@@ -1,7 +1,11 @@
 // src/features/contracts/authenticated-contract-context.ts
 import { SIGN_IN_PATH } from "@/application/auth/route-access";
 import type { WorkspaceContext } from "@/application/workspace/workspace-context";
-import type { ClientRepository, ContractRepository } from "@/domain/repositories";
+import type {
+  ClientRepository,
+  ContractRepository,
+  InvoiceRepository,
+} from "@/domain/repositories";
 import { getServerAuthSession } from "@/infrastructure/auth/session";
 import { createRepositories } from "@/infrastructure/persistence/create-repositories";
 import { getCurrentWorkspaceContext } from "@/infrastructure/workspace/current-workspace";
@@ -11,6 +15,7 @@ export type AuthenticatedContractContext = {
   context: WorkspaceContext;
   clients: ClientRepository;
   contracts: ContractRepository;
+  invoices: InvoiceRepository;
 };
 
 export async function getAuthenticatedContractContext(): Promise<AuthenticatedContractContext> {
@@ -27,5 +32,6 @@ export async function getAuthenticatedContractContext(): Promise<AuthenticatedCo
     context,
     clients: repositories.clients,
     contracts: repositories.contracts,
+    invoices: repositories.invoices,
   };
 }

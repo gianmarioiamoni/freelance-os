@@ -95,6 +95,7 @@ describe("contract application services", () => {
       },
       repositories.clients,
       repositories.contracts,
+      repositories.invoices,
     );
 
     expect(updated).toMatchObject({
@@ -150,6 +151,7 @@ describe("contract application services", () => {
         },
         repositories.clients,
         repositories.contracts,
+        repositories.invoices,
       ),
     ).rejects.toBeInstanceOf(ContractNotFoundError);
     await expect(
@@ -232,6 +234,7 @@ describe("contract application services", () => {
       },
       repositories.clients,
       repositories.contracts,
+      repositories.invoices,
     );
     const listed = await listContractsForClient(
       context,
@@ -314,6 +317,7 @@ describe("contract application services", () => {
         },
         repositories.clients,
         repositories.contracts,
+        repositories.invoices,
       ),
     ).rejects.toBeInstanceOf(OverlappingContractError);
 

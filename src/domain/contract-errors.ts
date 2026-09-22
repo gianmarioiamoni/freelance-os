@@ -47,3 +47,10 @@ export class ClientArchivedError extends Error {
     this.name = "ClientArchivedError";
   }
 }
+
+export class ContractCurrencyImmutableError extends Error {
+  constructor() {
+    super("Contract currency cannot change after an invoice exists");
+    this.name = "ContractCurrencyImmutableError";
+  }
+}

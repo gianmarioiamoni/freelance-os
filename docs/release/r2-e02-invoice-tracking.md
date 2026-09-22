@@ -3,7 +3,7 @@
 **Epic:** R2-E02 — Invoice Tracking  
 **Release:** Release 2 — Revenue Operations  
 **MASTER_PLAN identifier:** R2-E02 (`MASTER_PLAN.md` §19)  
-**Status:** P-E02-01 COMPLETE — READY FOR P-E02-02  
+**Status:** P-E02-02 COMPLETE — READY FOR P-E02-03  
 **Authority:** `docs/release/r2-decision-pack.md`  
 **Companions:** `docs/release/r2-epic-map.md`, `docs/release/r2-architecture-delta.md`, `docs/release/r2-open-decisions.md`  
 **Predecessor:** R2-E01 COMPLETE / RELEASE-READY (`docs/release/r2-e01-revenue-visibility.md`, closure `278101a347b6063450c34a91200878e548836edb`)  
@@ -12,14 +12,14 @@
 ```text
 P-E02-00  PLANNING / DECISION CLOSURE      COMPLETE
 P-E02-01  PERSISTENCE / DOMAIN FOUNDATION  COMPLETE
-P-E02-02  INVOICE APPLICATION SERVICE      NOT STARTED
+P-E02-02  INVOICE APPLICATION SERVICE      COMPLETE
 P-E02-03  DERIVED STATUS / DUE DATE        NOT STARTED
 P-E02-04  CONTRACT-SCOPED INVOICE UI       NOT STARTED
 P-E02-05  ENGINEERING REVIEW               NOT STARTED
 P-E02-06  QA                               NOT STARTED
 P-E02-07  DOCUMENTATION / EPIC CLOSURE     NOT STARTED
 
-R2-E02: P-E02-01 COMPLETE
+R2-E02: P-E02-02 COMPLETE
 IMPLEMENTATION: IN PROGRESS
 R1: FROZEN / GRANTED
 R2-E01: COMPLETE / RELEASE-READY
@@ -879,6 +879,40 @@ Tests: `tests/unit/domain/invoice.test.ts`, `tests/integration/persistence/invoi
 | Tests | AC-01…04, AC-08…10, AC-14, AC-17 write paths; currency mismatch; VOID edit rejected |
 | Migration | No |
 | Exit criteria | All Invoice writes go through application functions. Contract currency guard holds including VOID |
+| Status | **COMPLETE** |
+
+Implemented application use cases:
+
+| Function | Behaviour |
+| --- | --- |
+| `createInvoice` | WorkspaceContext → Contract in workspace → snapshot `currency` + `paymentTermsDays` → `dueDate = computeDueDate(invoiceDate, snapshot)`. Expired Contract and archived Client allowed. Client-supplied currency, if present, must equal Contract currency or the write is rejected (`InvalidInvoiceInputError.currency`). User-supplied terms / dueDate are ignored. |
+| `getInvoice` | Workspace-scoped. Returns ACTIVE and VOID. Foreign / unknown id → `InvoiceNotFoundError`. |
+| `listInvoicesForContract` | Contract must belong to the workspace. Default `ACTIVE`. Optional `VOID` / `ALL`. No workspace invoice index. |
+| `updateInvoice` | ACTIVE only. Editable: `invoiceDate`, `amount`, `reference`. `invoiceDate` change recomputes `dueDate` from the Invoice terms snapshot, not live Contract terms. Rejects `contractId` / `currency` / `paymentTermsDays` / `dueDate` / `voidedAt`. VOID → `InvoiceNotEditableError`. |
+| `voidInvoice` | ACTIVE → VOID. Re-void → `InvoiceAlreadyVoidedError`. No restore. Row remains. |
+| `assertContractCurrencyMutable` | `InvoiceRepository.existsForContract` (includes VOID), workspace-scoped. Used by `updateContract` only when `currency` actually changes. |
+
+`dueDate` construction uses `computeDueDate` in `src/domain/invoice.ts`: calendar-day add on UTC date components (`Date.UTC(year, month, day + terms)`). `null` terms → `null`. `0` → `invoiceDate`. Not a timezone instant.
+
+Contract currency guard: `existsForContract(workspaceId, contractId)` is true for ACTIVE and VOID. A cross-workspace Invoice does not block. Same-currency Contract updates remain allowed after invoices exist.
+
+### P-E02-02 race / consistency finding
+
+`runInTransaction` exists and rebuilds repositories on the Prisma transaction client. Invoice create and Contract currency update remain separate application calls with check-then-act (`existsForContract` then `updateContract`; `getContract` then `createInvoice`).
+
+Repositories have no `SELECT FOR UPDATE` / serializable isolation API. Concurrent `createInvoice` and `updateContract(currency)` at the default Read Committed isolation can still interleave so a currency change commits after an Invoice exists, or an Invoice snapshots a currency that then changes in the other transaction.
+
+This is the same class of documented race as first-workspace creation. Full protection needs row locking or a higher isolation level that is not present. Not invented here.
+
+### P-E02-02 test evidence
+
+Unit: `tests/unit/domain/invoice.test.ts` (`computeDueDate`), `tests/unit/application/invoices/invoice-services.test.ts`, currency-guard cases in `tests/unit/application/contracts/contract-services.test.ts`.
+
+Integration: `tests/integration/application/invoices/invoice-services.test.ts` — create/read/update/void, snapshots, expired Contract, archived Client, currency mismatch, currency guard ACTIVE/VOID, workspace isolation.
+
+Regression: Invoice persistence; Contract application / integrity; Accrued / Expected / reporting suites via the existing `updateContract` signature (now receives `InvoiceRepository`).
+
+P-E02-03 / P-E02-04 remain NOT STARTED. Amount status, overdue, Payment, and UI are out of this phase.
 
 ### P-E02-03 — Derived status / due-date behaviour
 

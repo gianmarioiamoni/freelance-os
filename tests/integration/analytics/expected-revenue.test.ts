@@ -193,6 +193,7 @@ describe("Expected Revenue integration", () => {
       },
       repositories.clients,
       repositories.contracts,
+      repositories.invoices,
     );
 
     const analytics = service();

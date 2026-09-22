@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import {
   INVOICE_REFERENCE_MAX_LENGTH,
   assertDueDateTermsConsistency,
+  computeDueDate,
   invoiceTrackingState,
   isActiveInvoice,
   normalizeInvoiceReference,
@@ -97,6 +98,43 @@ describe("invoice payment terms snapshot", () => {
   it("rejects negative or non-integer terms", () => {
     expectInvalidField(() => parseInvoicePaymentTermsDays("-1"), "paymentTermsDays");
     expectInvalidField(() => parseInvoicePaymentTermsDays("1.5"), "paymentTermsDays");
+  });
+});
+
+describe("computeDueDate", () => {
+  it("returns null when terms are null", () => {
+    expect(computeDueDate(new Date(Date.UTC(2026, 8, 1)), null)).toBeNull();
+  });
+
+  it("returns the invoiceDate when terms are zero", () => {
+    const invoiceDate = new Date(Date.UTC(2026, 8, 1));
+    const dueDate = computeDueDate(invoiceDate, 0);
+
+    expect(dueDate?.getTime()).toBe(invoiceDate.getTime());
+    expect(dueDate?.getUTCFullYear()).toBe(2026);
+    expect(dueDate?.getUTCMonth()).toBe(8);
+    expect(dueDate?.getUTCDate()).toBe(1);
+  });
+
+  it("adds calendar days from the UTC date components", () => {
+    const dueDate = computeDueDate(new Date(Date.UTC(2026, 8, 1)), 30);
+
+    expect(dueDate?.getUTCFullYear()).toBe(2026);
+    expect(dueDate?.getUTCMonth()).toBe(9);
+    expect(dueDate?.getUTCDate()).toBe(1);
+    expect(dueDate?.getUTCHours()).toBe(0);
+  });
+
+  it("rolls month and year boundaries without using process-local getters", () => {
+    const januaryEnd = computeDueDate(new Date(Date.UTC(2026, 0, 31)), 1);
+    const yearEnd = computeDueDate(new Date(Date.UTC(2026, 11, 31)), 1);
+
+    expect(januaryEnd?.getUTCFullYear()).toBe(2026);
+    expect(januaryEnd?.getUTCMonth()).toBe(1);
+    expect(januaryEnd?.getUTCDate()).toBe(1);
+    expect(yearEnd?.getUTCFullYear()).toBe(2027);
+    expect(yearEnd?.getUTCMonth()).toBe(0);
+    expect(yearEnd?.getUTCDate()).toBe(1);
   });
 });
 

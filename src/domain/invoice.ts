@@ -81,6 +81,23 @@ export function parseInvoicePaymentTermsDays(
   return days;
 }
 
+export function computeDueDate(
+  invoiceDate: Date,
+  paymentTermsDays: number | null,
+): Date | null {
+  if (paymentTermsDays === null) {
+    return null;
+  }
+
+  return new Date(
+    Date.UTC(
+      invoiceDate.getUTCFullYear(),
+      invoiceDate.getUTCMonth(),
+      invoiceDate.getUTCDate() + paymentTermsDays,
+    ),
+  );
+}
+
 export function assertDueDateTermsConsistency(
   paymentTermsDays: number | null,
   dueDate: Date | null,

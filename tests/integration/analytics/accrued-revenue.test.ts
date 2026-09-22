@@ -101,6 +101,7 @@ async function dailyWorkspace(suffix: string, timezone: string) {
     },
     repositories.clients,
     repositories.contracts,
+    repositories.invoices,
   );
   return { context, client, contract };
 }
@@ -157,6 +158,7 @@ describe("Accrued Revenue integration", () => {
       },
       repositories.clients,
       repositories.contracts,
+      repositories.invoices,
     );
 
     const first = await service().getAccruedRevenue(context, june());
@@ -213,6 +215,7 @@ describe("Accrued Revenue integration", () => {
       },
       repositories.clients,
       repositories.contracts,
+      repositories.invoices,
     );
 
     const result = await service().getAccruedRevenue(context, june());
@@ -237,6 +240,7 @@ describe("Accrued Revenue integration", () => {
       },
       repositories.clients,
       repositories.contracts,
+      repositories.invoices,
     );
 
     await createTimeEntry(
@@ -265,6 +269,7 @@ describe("Accrued Revenue integration", () => {
       },
       repositories.clients,
       repositories.contracts,
+      repositories.invoices,
     );
 
     await createTimeEntry(
@@ -356,6 +361,7 @@ describe("Accrued Revenue integration", () => {
       },
       repositories.clients,
       repositories.contracts,
+      repositories.invoices,
     );
 
     await createTimeEntry(
@@ -384,6 +390,7 @@ describe("Accrued Revenue integration", () => {
       },
       repositories.clients,
       repositories.contracts,
+      repositories.invoices,
     );
 
     await createTimeEntry(
@@ -438,6 +445,7 @@ describe("Accrued Revenue integration", () => {
       },
       repositories.clients,
       repositories.contracts,
+      repositories.invoices,
     );
 
     const result = await service().getAccruedRevenue(context, june());
@@ -460,6 +468,7 @@ describe("Accrued Revenue integration", () => {
       },
       repositories.clients,
       repositories.contracts,
+      repositories.invoices,
     );
 
     await expect(

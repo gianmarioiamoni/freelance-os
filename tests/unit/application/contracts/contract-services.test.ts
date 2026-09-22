@@ -11,6 +11,7 @@ import type { WorkspaceContext } from "@/application/workspace/workspace-context
 import { ClientNotFoundError } from "@/domain/client-errors";
 import {
   ClientArchivedError,
+  ContractCurrencyImmutableError,
   ContractNotFoundError,
   OverlappingContractError,
 } from "@/domain/contract-errors";
@@ -23,9 +24,14 @@ import type {
   ContractRecord,
   CreateClientInput,
   CreateContractInput,
+  InvoiceRecord,
   UpdateContractInput,
 } from "@/domain/persistence-types";
-import type { ClientRepository, ContractRepository } from "@/domain/repositories";
+import type {
+  ClientRepository,
+  ContractRepository,
+  InvoiceRepository,
+} from "@/domain/repositories";
 
 const context: WorkspaceContext = {
   workspaceId: "workspace-trusted",
@@ -93,12 +99,32 @@ const validUpdateInput = {
   currency: "USD",
 };
 
+function invoiceRecord(overrides: Partial<InvoiceRecord> = {}): InvoiceRecord {
+  return {
+    id: "invoice-1",
+    workspaceId: context.workspaceId,
+    contractId: "contract-1",
+    invoiceDate: calendarDate("2026-09-01"),
+    amount: "1500.0000",
+    currency: "EUR",
+    reference: null,
+    paymentTermsDays: 30,
+    dueDate: calendarDate("2026-10-01"),
+    voidedAt: null,
+    createdAt: calendarDate("2026-09-01"),
+    updatedAt: calendarDate("2026-09-01"),
+    ...overrides,
+  };
+}
+
 function createFakeRepositories(
   seedClients: ClientRecord[] = [],
   seedContracts: ContractRecord[] = [],
+  seedInvoices: InvoiceRecord[] = [],
 ) {
   const clients = [...seedClients];
   const contracts = [...seedContracts];
+  const invoices = [...seedInvoices];
   const calls: {
     getClient?: { workspaceId: string; clientId: string };
     create?: { workspaceId: string; input: CreateContractInput };
@@ -107,6 +133,7 @@ function createFakeRepositories(
     listForClient?: { workspaceId: string; clientId: string };
     update?: { workspaceId: string; contractId: string; input: UpdateContractInput };
     covering?: { workspaceId: string; clientId: string; date: Date };
+    existsForContract?: { workspaceId: string; contractId: string };
   } = {};
 
   const clientRepository: ClientRepository = {
@@ -216,7 +243,39 @@ function createFakeRepositories(
     },
   };
 
-  return { clients, contracts, calls, clientRepository, contractRepository };
+  const invoiceRepository: InvoiceRepository = {
+    async createInvoice() {
+      throw new Error("not used");
+    },
+    async getInvoice() {
+      return null;
+    },
+    async listInvoicesForContract() {
+      return [];
+    },
+    async updateInvoice() {
+      throw new Error("not used");
+    },
+    async voidInvoice() {
+      throw new Error("not used");
+    },
+    async existsForContract(workspaceId, contractId) {
+      calls.existsForContract = { workspaceId, contractId };
+      return invoices.some(
+        (row) => row.workspaceId === workspaceId && row.contractId === contractId,
+      );
+    },
+  };
+
+  return {
+    clients,
+    contracts,
+    invoices,
+    calls,
+    clientRepository,
+    contractRepository,
+    invoiceRepository,
+  };
 }
 
 describe("contract application services", () => {
@@ -389,6 +448,7 @@ describe("contract application services", () => {
       } as typeof validUpdateInput & { clientId: string },
       fake.clientRepository,
       fake.contractRepository,
+      fake.invoiceRepository,
     );
 
     expect(updated).toMatchObject({
@@ -418,6 +478,7 @@ describe("contract application services", () => {
       validUpdateInput,
       fake.clientRepository,
       fake.contractRepository,
+      fake.invoiceRepository,
     );
 
     expect(updated.rate).toBe("500");
@@ -442,6 +503,7 @@ describe("contract application services", () => {
         validUpdateInput,
         fake.clientRepository,
         fake.contractRepository,
+        fake.invoiceRepository,
       ),
     ).rejects.toBeInstanceOf(ContractNotFoundError);
     await expect(
@@ -451,6 +513,7 @@ describe("contract application services", () => {
         validUpdateInput,
         fake.clientRepository,
         fake.contractRepository,
+        fake.invoiceRepository,
       ),
     ).rejects.toBeInstanceOf(ContractNotFoundError);
   });
@@ -468,6 +531,7 @@ describe("contract application services", () => {
         validUpdateInput,
         fake.clientRepository,
         fake.contractRepository,
+        fake.invoiceRepository,
       ),
     ).rejects.toBeInstanceOf(OverlappingContractError);
   });
@@ -499,5 +563,109 @@ describe("contract application services", () => {
         fake.contractRepository,
       ),
     ).rejects.toBeInstanceOf(ClientNotFoundError);
+  });
+
+  it("allows a currency change when the contract has no invoices", async () => {
+    const fake = createFakeRepositories([clientRecord()], [contractRecord()]);
+
+    const updated = await updateContract(
+      context,
+      "contract-1",
+      validUpdateInput,
+      fake.clientRepository,
+      fake.contractRepository,
+      fake.invoiceRepository,
+    );
+
+    expect(updated.currency).toBe("USD");
+    expect(fake.calls.existsForContract).toEqual({
+      workspaceId: "workspace-trusted",
+      contractId: "contract-1",
+    });
+  });
+
+  it("rejects a currency change when an ACTIVE or VOID invoice exists", async () => {
+    const active = createFakeRepositories(
+      [clientRecord()],
+      [contractRecord()],
+      [invoiceRecord()],
+    );
+    const voided = createFakeRepositories(
+      [clientRecord()],
+      [contractRecord()],
+      [invoiceRecord({ voidedAt: new Date("2026-09-22T10:00:00.000Z") })],
+    );
+
+    await expect(
+      updateContract(
+        context,
+        "contract-1",
+        validUpdateInput,
+        active.clientRepository,
+        active.contractRepository,
+        active.invoiceRepository,
+      ),
+    ).rejects.toBeInstanceOf(ContractCurrencyImmutableError);
+    await expect(
+      updateContract(
+        context,
+        "contract-1",
+        validUpdateInput,
+        voided.clientRepository,
+        voided.contractRepository,
+        voided.invoiceRepository,
+      ),
+    ).rejects.toBeInstanceOf(ContractCurrencyImmutableError);
+    expect(active.calls.update).toBeUndefined();
+    expect(voided.calls.update).toBeUndefined();
+  });
+
+  it("does not let a cross-workspace invoice block an unrelated contract", async () => {
+    const fake = createFakeRepositories(
+      [clientRecord()],
+      [contractRecord()],
+      [
+        invoiceRecord({
+          workspaceId: "workspace-other",
+          contractId: "contract-1",
+        }),
+      ],
+    );
+
+    const updated = await updateContract(
+      context,
+      "contract-1",
+      validUpdateInput,
+      fake.clientRepository,
+      fake.contractRepository,
+      fake.invoiceRepository,
+    );
+
+    expect(updated.currency).toBe("USD");
+    expect(fake.calls.existsForContract).toEqual({
+      workspaceId: "workspace-trusted",
+      contractId: "contract-1",
+    });
+  });
+
+  it("allows a same-currency update when invoices exist", async () => {
+    const fake = createFakeRepositories(
+      [clientRecord()],
+      [contractRecord()],
+      [invoiceRecord()],
+    );
+
+    const updated = await updateContract(
+      context,
+      "contract-1",
+      { ...validUpdateInput, currency: "EUR" },
+      fake.clientRepository,
+      fake.contractRepository,
+      fake.invoiceRepository,
+    );
+
+    expect(updated.currency).toBe("EUR");
+    expect(updated.rate).toBe("500");
+    expect(fake.calls.existsForContract).toBeUndefined();
   });
 });

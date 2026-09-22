@@ -27,7 +27,7 @@ export async function updateContractAction(
   _previousState: ContractFormActionState,
   formData: FormData,
 ): Promise<ContractFormActionState> {
-  const { context, clients, contracts } =
+  const { context, clients, contracts, invoices } =
     await getAuthenticatedContractContext();
   const values = readContractFormValues(formData);
 
@@ -38,6 +38,7 @@ export async function updateContractAction(
       toContractUpdateInput(values),
       clients,
       contracts,
+      invoices,
     );
   } catch (error) {
     if (error instanceof InvalidContractInputError) {

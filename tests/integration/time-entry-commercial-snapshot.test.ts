@@ -156,6 +156,7 @@ describe("TimeEntry commercial snapshot", () => {
       },
       repositories.clients,
       repositories.contracts,
+      repositories.invoices,
     );
 
     const persistedFirst = await getTimeEntry(context, first.id, repositories.timeEntries);
@@ -198,6 +199,7 @@ describe("TimeEntry commercial snapshot", () => {
       },
       repositories.clients,
       repositories.contracts,
+      repositories.invoices,
     );
 
     const morning = await createTimeEntry(
@@ -226,6 +228,7 @@ describe("TimeEntry commercial snapshot", () => {
       },
       repositories.clients,
       repositories.contracts,
+      repositories.invoices,
     );
 
     const afternoon = await createTimeEntry(
