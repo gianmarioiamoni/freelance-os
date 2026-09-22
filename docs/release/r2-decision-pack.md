@@ -171,14 +171,15 @@ No risk scores, percentages, AI, or probabilistic thresholds.
 
 Reuse existing `AlertService` when technically appropriate.
 
-P-E03-03 implementation contract (closed):
+P-E03-03 implementation contract (closed; confirmed by P-E03-05 QA):
 
+- Future `paymentDate` allowed. Calendar date only. Not an alert input.
 - T3 on-write evaluation. No scheduler. Calendar `PAYMENT_OVERDUE` gap accepted.
-- Predicates are Invoice-level R2-OD-009. No per-Payment-row alerts.
+- Predicates are Invoice-level R2-OD-009. No per-Payment-row alerts. PAID/UNPAID are not alerts. PARTIAL + OVERDUE may coexist. MISMATCH does not imply OVERDUE.
 - Severity: PARTIAL=INFO, OVERDUE=WARNING, MISMATCH=ERROR.
-- Shape: extend `AlertType`; nullable `Alert.invoiceId`; unique dedup key; semantic resolve by invoiceId + type.
-- Future `paymentDate` allowed and is not an alert input.
-- VOID resolve of active PAYMENT_* alerts is transactional.
+- Shape: extend `AlertType`; nullable `Alert.invoiceId`; unique dedup key; S2 semantic identity / resolve by invoiceId + type.
+- Existing E02 Alert / Notification lifecycle is reused. CONTRACT_* unchanged.
+- VOID resolve of active PAYMENT_* alerts is transactional. No new PAYMENT_* on VOID.
 
 **Not in this version:**
 

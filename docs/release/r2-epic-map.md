@@ -1,19 +1,19 @@
 # R2 Epic Map — Planning Baseline
 
-**Status:** Executable planning baseline. R2-E01 COMPLETE / RELEASE-READY. R2-E02 COMPLETE WITH NON-BLOCKING FINDING. R2-E03 P-E03-00 COMPLETE. P-E03-01 NOT STARTED / NOT AUTHORIZED. E04–E05 detailed plans still required. No EPIC-2xx opened. R2 is not production-ready.  
-**Date:** 2026-09-22  
+**Status:** Executable planning baseline. R2-E01 COMPLETE / RELEASE-READY. R2-E02 COMPLETE WITH NON-BLOCKING FINDING. R2-E03 P-E03-00…P-E03-05 COMPLETE. P-E03-06…P-E03-07 NOT STARTED / NOT AUTHORIZED. E03 is not certified. E04–E05 detailed plans still required. No EPIC-2xx opened. R2 is not production-ready.  
+**Date:** 2026-09-23  
 **Authority:** `docs/release/r2-decision-pack.md`  
 **E01 plan:** `docs/release/r2-e01-revenue-visibility.md`  
 **E02 plan:** `docs/release/r2-e02-invoice-tracking.md`  
 **E03 plan:** `docs/release/r2-e03-payment-tracking.md`  
-**Does not:** authorize E03–E05 schema, migrations, APIs, UI, or implementation branches.
+**Does not:** authorize E04–E05 schema, migrations, APIs, UI, or implementation branches.
 
 ```text
-PLANNING BASELINE (E04–E05; E03 IMPLEMENTATION NOT OPENED)
+PLANNING BASELINE (E04–E05; E03 NOT CERTIFIED)
 R2-E01: COMPLETE / RELEASE-READY
 R2-E02: COMPLETE WITH NON-BLOCKING FINDING
-R2-E03: P-E03-00 COMPLETE; P-E03-01 NOT STARTED / NOT AUTHORIZED
-IMPLEMENTATION: E01 DONE; E02 DONE; E03–E05 IMPLEMENTATION NOT STARTED
+R2-E03: P-E03-05 COMPLETE; P-E03-06…P-E03-07 NOT STARTED / NOT AUTHORIZED
+IMPLEMENTATION: E01 DONE; E02 DONE; E03 IMPLEMENTED THROUGH P-E03-05; E04–E05 NOT STARTED
 R1: FROZEN / GRANTED
 R2: NOT PRODUCTION-READY
 ```
@@ -334,9 +334,9 @@ Know whether an invoice is unpaid, partial, paid, mismatched, and/or overdue —
 
 ### 8. Persistence impact
 
-- Confirmed: Payment event records.
-- Confirmed: status is derived, not independent persisted truth.
-- Open: repository shape; overdue “today” timezone authority (reuse likely).
+- Implemented: `Payment` table. `Decimal(19,4)`. `CHAR(3)` currency snapshot. Calendar `DATE`. Composite Invoice relation. `CHECK (amount > 0)`.
+- Implemented: status is derived, not independent persisted truth.
+- Implemented: `Workspace.timezone` is the overdue “today” authority.
 
 ### 9. Analytics / reporting impact
 
@@ -345,8 +345,8 @@ Know whether an invoice is unpaid, partial, paid, mismatched, and/or overdue —
 
 ### 10. Alerts / notifications impact
 
-- New deterministic payment alert types.
-- Dedup / resolve rules to be designed.
+- Implemented: `PAYMENT_PARTIAL` / `PAYMENT_OVERDUE` / `PAYMENT_MISMATCH`.
+- Implemented: T3 on-write. `Alert.invoiceId` semantic identity. E02 lifecycle reused.
 - Existing CONTRACT_WARNING / CONTRACT_EXCEEDED unchanged.
 
 ### 11. Authorization / workspace isolation
@@ -651,10 +651,10 @@ This document is the release-level planning baseline. R2-E01 is COMPLETE / RELEA
 | P-E03-00 | Planning / VOID policy closure | COMPLETE |
 | P-E03-01 | Payment events + derived status | COMPLETE |
 | P-E03-02 | Payment application service | COMPLETE |
-| P-E03-03 | Payment alerts via AlertService | COMPLETE |
-| P-E03-04 | Payment UI | COMPLETE |
-| P-E03-05 | Engineering Review | NOT STARTED / NOT AUTHORIZED |
-| P-E03-06 | QA | NOT STARTED / NOT AUTHORIZED |
+| P-E03-03 | Payment alerts via AlertService | COMPLETE — ER APPROVED WITH FINDINGS |
+| P-E03-04 | Payment UI | COMPLETE — ER APPROVED WITH FINDINGS |
+| P-E03-05 | QA + Documentation Synchronization | COMPLETE — PASS WITH FINDINGS |
+| P-E03-06 | Engineering Review | NOT STARTED / NOT AUTHORIZED |
 | P-E03-07 | Documentation / Epic closure | NOT STARTED / NOT AUTHORIZED |
 
 **R2-E04**

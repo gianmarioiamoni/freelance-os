@@ -79,6 +79,20 @@ test("should record, edit, delete, and freeze payments on an invoice", async ({
     page.getByText("Enter an amount greater than 0 with at most 4 decimal places."),
   ).toBeVisible();
 
+  await page.locator("form").evaluate((form) => {
+    const dateInput = form.querySelector<HTMLInputElement>('[name="paymentDate"]');
+    const amountInput = form.querySelector<HTMLInputElement>('[name="amount"]');
+    if (!dateInput || !amountInput) {
+      throw new Error("payment form fields missing");
+    }
+    dateInput.type = "text";
+    dateInput.value = "2026-02-30";
+    amountInput.value = "400";
+    form.noValidate = true;
+    form.requestSubmit();
+  });
+  await expect(page.getByText("Enter a valid payment date.")).toBeVisible();
+
   await page.getByLabel("Payment date").fill("2027-01-15");
   await page.getByLabel("Amount").fill("400");
   await page.getByLabel("Notes").fill("First installment");
@@ -115,6 +129,22 @@ test("should record, edit, delete, and freeze payments on an invoice", async ({
   await expect(page.getByLabel("Currency")).toHaveText("EUR");
   await expect(page.locator('input[name="currency"], select[name="currency"]')).toHaveCount(0);
   await page.getByLabel("Payment date").fill("2026-09-10");
+  await page.getByLabel("Amount").fill("1500");
+  await page.getByLabel("Notes").fill("Exact settlement");
+  await submitAndFollowActionRedirect(
+    page,
+    page.getByRole("button", { name: "Save changes" }),
+    /\/contracts\/[^/]+\/invoices\/[0-9a-f-]{36}$/,
+  );
+
+  await expect(page.locator("dt", { hasText: /^Payment status$/ }).locator("+ dd")).toHaveText(
+    "Paid",
+  );
+  await expect(page.locator("dt", { hasText: /^Paid$/ }).locator("+ dd")).toHaveText("1500 EUR");
+  await expect(page.locator("dt", { hasText: /^Outstanding$/ }).locator("+ dd")).toHaveText("0 EUR");
+  await expect(page.getByText("Overdue")).toHaveCount(0);
+
+  await page.getByRole("link", { name: "Edit payment" }).click();
   await page.getByLabel("Amount").fill("1600");
   await page.getByLabel("Notes").fill("Adjusted");
   await submitAndFollowActionRedirect(
@@ -153,6 +183,9 @@ test("should record, edit, delete, and freeze payments on an invoice", async ({
     /\/contracts\/[^/]+\/invoices\/[0-9a-f-]{36}$/,
   );
 
+  const paymentEditHref = await page.getByRole("link", { name: "Edit payment" }).getAttribute("href");
+  expect(paymentEditHref).toBeTruthy();
+
   await page.getByRole("link", { name: "Void" }).click();
   await submitAndFollowActionRedirect(
     page,
@@ -168,6 +201,10 @@ test("should record, edit, delete, and freeze payments on an invoice", async ({
   await expect(page.getByRole("link", { name: "Delete payment" })).toHaveCount(0);
 
   await page.goto(`${invoiceUrl}/payments/new`);
+  await expect(page).toHaveURL(new RegExp(`${new URL(invoiceUrl).pathname}$`));
+  await expect(page.getByText("Invoice is void")).toBeVisible();
+
+  await page.goto(paymentEditHref ?? `${invoiceUrl}/payments/missing/edit`);
   await expect(page).toHaveURL(new RegExp(`${new URL(invoiceUrl).pathname}$`));
   await expect(page.getByText("Invoice is void")).toBeVisible();
 

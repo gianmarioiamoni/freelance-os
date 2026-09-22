@@ -135,8 +135,8 @@ context is recovered from repository documentation.
 ## Overall
 
 ``` text
-STATUS: UX Polish COMPLETE; EPIC-107 Public Landing COMPLETE through P107-06 and epic certification; MASTER_PLAN §34 READY FOR RELEASE; §35 GRANTED; EPIC-108 COMPLETE (ER PASS WITH FINDINGS); EPIC-109 COMPLETE (ER PASS); EPIC-110 CLOSED (P110-00 PASS; P110-01 PASS; P110-02 PASS; P110-03 SKIPPED BY DESIGN; P110-04 PASS; P110-05 PASS; P110-06 / P110-06C intermediate findings resolved or superseded; P110-06D PASS; P110-06C FINAL PASS; P110-07 PASS; P110-08 FREEZE). Actionable R1 findings = 0. R1 FROZEN. R2 Decision Workshop complete for in-scope decisions. R2 planning baseline recorded. R2-E01 Revenue Visibility COMPLETE / RELEASE-READY (P-E01-00…P-E01-07). R2-E02 Invoice Tracking COMPLETE WITH NON-BLOCKING FINDING (P-E02-00…P-E02-07). R2-E03 P-E03-00 COMPLETE. R2 is not production-ready.
-NEXT: P-E03-01 NOT STARTED / NOT AUTHORIZED. E03 plan: `docs/release/r2-e03-payment-tracking.md`. E04–E05 detailed epic plans still required. R2 is not production-ready.
+STATUS: UX Polish COMPLETE; EPIC-107 Public Landing COMPLETE through P107-06 and epic certification; MASTER_PLAN §34 READY FOR RELEASE; §35 GRANTED; EPIC-108 COMPLETE (ER PASS WITH FINDINGS); EPIC-109 COMPLETE (ER PASS); EPIC-110 CLOSED (P110-00 PASS; P110-01 PASS; P110-02 PASS; P110-03 SKIPPED BY DESIGN; P110-04 PASS; P110-05 PASS; P110-06 / P110-06C intermediate findings resolved or superseded; P110-06D PASS; P110-06C FINAL PASS; P110-07 PASS; P110-08 FREEZE). Actionable R1 findings = 0. R1 FROZEN. R2 Decision Workshop complete for in-scope decisions. R2 planning baseline recorded. R2-E01 Revenue Visibility COMPLETE / RELEASE-READY (P-E01-00…P-E01-07). R2-E02 Invoice Tracking COMPLETE WITH NON-BLOCKING FINDING (P-E02-00…P-E02-07). R2-E03 P-E03-00…P-E03-05 COMPLETE. E03 is not certified. R2 is not production-ready.
+NEXT: P-E03-06 NOT STARTED / NOT AUTHORIZED. E03 plan: `docs/release/r2-e03-payment-tracking.md`. E04–E05 detailed epic plans still required. R2 is not production-ready.
 Production Validation (§34): EXECUTED — READY FOR RELEASE — docs/release/production-validation.md
 Production Certification (§35): GRANTED — docs/release/production-certification.md
 R1 Freeze: FROZEN — docs/release/r1-freeze.md
@@ -1164,10 +1164,10 @@ These may become later-release work.
 R1 remains certified / released / FROZEN. R2 is the active next product
 evolution. R2-E01 Revenue Visibility is COMPLETE / RELEASE-READY.
 R2-E02 Invoice Tracking is COMPLETE WITH NON-BLOCKING FINDING
-(P-E02-00…P-E02-07). R2-E03 P-E03-00 is COMPLETE
-(`docs/release/r2-e03-payment-tracking.md`). P-E03-01 is NOT STARTED /
-NOT AUTHORIZED. E04–E05 detailed plans have not started. R2 is
-not production-ready.
+(P-E02-00…P-E02-07). R2-E03 P-E03-00…P-E03-05 is COMPLETE
+(`docs/release/r2-e03-payment-tracking.md`). P-E03-06…P-E03-07 are
+NOT STARTED / NOT AUTHORIZED. E03 is not certified. E04–E05 detailed
+plans have not started. R2 is not production-ready.
 
 Canonical decisions: `docs/release/r2-decision-pack.md`.
 Architecture delta: `docs/release/r2-architecture-delta.md`.
@@ -1177,7 +1177,7 @@ E01 plan: `docs/release/r2-e01-revenue-visibility.md`.
 E02 plan: `docs/release/r2-e02-invoice-tracking.md`.
 E03 plan: `docs/release/r2-e03-payment-tracking.md`.
 
-This section does not open P-E03-01 or E04–E05.
+This section does not open P-E03-06 or E04–E05.
 
 ## Objective
 
@@ -1232,8 +1232,9 @@ payment. Detailed plan: `docs/release/r2-e01-revenue-visibility.md`.
 COMPLETE / RELEASE-READY (P-E01-00…P-E01-07). Commercial snapshot
 `snapshotBillingModel` / `snapshotRate` / `snapshotCurrency` on TimeEntry.
 R2-OD-016 and R2-OD-017 closed. E02 Invoice Tracking is COMPLETE WITH
-NON-BLOCKING FINDING. E03 P-E03-00 is COMPLETE. P-E03-01 is
-NOT STARTED / NOT AUTHORIZED. R2 is not production-ready.
+NON-BLOCKING FINDING. E03 P-E03-00…P-E03-05 is COMPLETE. P-E03-06 is
+NOT STARTED / NOT AUTHORIZED. E03 is not certified. R2 is not
+production-ready.
 
 ### R2-E02 --- Invoice Tracking
 
@@ -1242,7 +1243,7 @@ VOID / soft-delete. No fiscal invoice engine. Detailed plan:
 `docs/release/r2-e02-invoice-tracking.md`. COMPLETE WITH NON-BLOCKING
 FINDING (P-E02-00…P-E02-07). Currency snapshot and VOID semantics
 closed and implemented. `dueDate` uses the Invoice terms snapshot, not
-live Contract terms. Payment is not implemented.
+live Contract terms. Payment is implemented in R2-E03.
 
 ### R2-E03 --- Payment Tracking & Reconciliation
 
@@ -1251,8 +1252,8 @@ Expected payment date is Invoice `dueDate` (invoiceDate + snapshotted
 Multiple payment events. Derived UNPAID / PARTIAL / PAID / MISMATCH.
 Independent PAYMENT_OVERDUE. E03-D-VOID-PAYMENTS CLOSED: Option A
 freeze writes on VOID. Detailed plan:
-`docs/release/r2-e03-payment-tracking.md`. P-E03-00 COMPLETE.
-P-E03-01 NOT STARTED / NOT AUTHORIZED.
+`docs/release/r2-e03-payment-tracking.md`. P-E03-00…P-E03-05 COMPLETE.
+P-E03-06…P-E03-07 NOT STARTED / NOT AUTHORIZED. E03 is not certified.
 
 ### R2-E04 --- Forecasting & Contract Time Allocation
 
@@ -2266,8 +2267,8 @@ Next actions:
 9. R2-E01 detailed plan complete (`docs/release/r2-e01-revenue-visibility.md`; P-E01-00)
 10. R2-E01 COMPLETE / RELEASE-READY (P-E01-00…P-E01-07)
 11. R2-E02 COMPLETE WITH NON-BLOCKING FINDING (P-E02-00…P-E02-07)
-12. R2-E03 P-E03-00 COMPLETE (`docs/release/r2-e03-payment-tracking.md`); E03-D-VOID-PAYMENTS CLOSED (Option A)
-13. P-E03-01 NOT STARTED / NOT AUTHORIZED; E04–E05 detailed plans still required
+12. R2-E03 P-E03-00…P-E03-05 COMPLETE (`docs/release/r2-e03-payment-tracking.md`); E03-D-VOID-PAYMENTS CLOSED (Option A)
+13. P-E03-06…P-E03-07 NOT STARTED / NOT AUTHORIZED; E03 is not certified; E04–E05 detailed plans still required
 14. Do not mark R2 production-ready
 15. Do not rewrite historical §34 / §35 rows
 ```

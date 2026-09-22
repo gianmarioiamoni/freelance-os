@@ -1431,9 +1431,9 @@ R1 freeze / certification / production-validation snapshots were not rewritten.
 - Create snapshots Contract `currency` and `paymentTermsDays`. `dueDate` is computed and stored. Later Contract term edits do not rewrite Invoice rows. `invoiceDate` edit recomputes `dueDate` from the Invoice snapshot, not live Contract terms.
 - Invoice currency is immutable after create. Contract currency is immutable after the first Invoice, including VOID.
 - VOID is one-way soft-delete via `voidedAt`. Default lists exclude VOID. Get-by-id remains. No restore. No physical delete.
-- Derived `amountStatus` / overdue are read-time. E02 has no Payment; reads pass `paidAmount = 0`. Effective amount status is UNPAID.
+- Derived `amountStatus` / overdue are read-time. E02 had no Payment; reads passed `paidAmount = 0`. Effective amount status was UNPAID.
 - Invoice does not write Accrued or Expected. Analytics / reporting do not read Invoice.
-- Payment is not implemented.
+- Payment was not implemented in E02. R2-E03 later implemented Payment (`docs/release/r2-e03-payment-tracking.md`).
 
 ### QA evidence (from P-E02-06; not re-run)
 

@@ -258,6 +258,25 @@ describe("payment application services", () => {
     expect(fake.payments).toHaveLength(1);
   });
 
+  it("rejects an invalid calendar paymentDate", async () => {
+    const fake = createFakeRepositories([invoiceRecord()]);
+
+    await expect(
+      createPayment(
+        context,
+        { ...validCreateInput, paymentDate: "2026-02-29" },
+        fake.runInTransaction,
+      ),
+    ).rejects.toMatchObject({ name: "InvalidPaymentInputError", field: "paymentDate" });
+    await expect(
+      createPayment(
+        context,
+        { ...validCreateInput, paymentDate: "not-a-date" },
+        fake.runInTransaction,
+      ),
+    ).rejects.toMatchObject({ name: "InvalidPaymentInputError", field: "paymentDate" });
+  });
+
   it("updates and deletes only ACTIVE invoice payments", async () => {
     const fake = createFakeRepositories(
       [invoiceRecord()],

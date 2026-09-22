@@ -471,7 +471,9 @@ R2 adds Invoice Tracking, Payment Tracking, derived revenue
 (Accrued / Expected / Forecast), and optional Contract Time Allocation.
 See `docs/release/r2-decision-pack.md` and
 `docs/release/r2-architecture-delta.md`. Profitability remains
-outside FreelanceOS (PIVA Balance). R2 remains in planning.
+outside FreelanceOS (PIVA Balance). E01 and E02 are complete. E03 is
+implemented through P-E03-05 and is not certified. E04–E05 remain
+unplanned. R2 is not production-ready.
 
 ---
 
@@ -485,7 +487,7 @@ Evaluate deterministic rules such as:
 - contract exceeded;
 - capacity warning (DEFERRED — PD-106-001; not pulled into R2);
 - capacity exceeded (DEFERRED — PD-106-001; not pulled into R2);
-- payment overdue / partial / mismatch (R2 planned — D6);
+- payment overdue / partial / mismatch (R2-E03 implemented — D6);
 - contract time-allocation alerts (R2 planned — R2-OD-013; WARNING threshold not decided).
 
 The alert engine should consume analytics/application services rather than duplicate calculations.
@@ -1137,7 +1139,13 @@ R2-E02 Invoice Tracking: `docs/release/r2-e02-invoice-tracking.md`
 (COMPLETE WITH NON-BLOCKING FINDING). Persistence is the `Invoice`
 table. Currency and payment-terms snapshots are immutable after create.
 `dueDate` is stored from the Invoice snapshot, not live Contract terms.
-Invoice does not modify Accrued / Expected. Payment is not implemented.
+Invoice does not modify Accrued / Expected. Payment is an Invoice-owned
+event (`Payment`). `paidAmount` is a read-time SUM. `amountStatus` and
+overdue are derived. Outstanding is presentation-only. VOID freezes
+Payment writes. `PAYMENT_*` alerts reuse `AlertService` with
+`Alert.invoiceId` identity and T3 on-write evaluation. No scheduler. No
+persisted aggregates. No FX. Canonical text:
+`docs/release/r2-e03-payment-tracking.md`.
 
 ---
 
@@ -1178,6 +1186,8 @@ The engine does not duplicate hour calculations.
 ### Implemented by EPIC-106
 
 `AlertService.evaluateAlerts(context)` is the sole write path for alert creation and resolution. No browser can create alerts directly. AR-001 and AR-002 implemented. AR-003/AR-004 deferred (PD-106-001). Workspace isolation: every alert carries `workspaceId`; all repository queries include `workspaceId`. Evaluation is on-write (TimeEntry mutations), not scheduled (PD-106-003). Null `contractedMinutes` suppresses alert (unlimited contract — follows BR-104-011).
+
+R2-E03 extends the same engine with `evaluateInvoicePaymentAlerts`. Types: `PAYMENT_PARTIAL` (INFO), `PAYMENT_OVERDUE` (WARNING), `PAYMENT_MISMATCH` (ERROR). Semantic identity is `Alert.invoiceId` + type. T3 triggers: Payment create/update/delete, Invoice amount/`invoiceDate` update, Invoice VOID. Invoice reference-only update does not evaluate. No scheduler. CONTRACT_* behavior is unchanged.
 
 ---
 

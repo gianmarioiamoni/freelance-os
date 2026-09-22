@@ -170,4 +170,4 @@ R2-E01 (`docs/release/r2-e01-revenue-visibility.md`) implemented class-B snapsho
 
 R2-E02 (`docs/release/r2-e02-invoice-tracking.md`) implemented Invoice Tracking (P-E02-00…P-E02-07). Residuals #3 and #4 remain APPROVED / CLOSED and are implemented. E02 is COMPLETE WITH NON-BLOCKING FINDING (F-E02-004 test hygiene).
 
-R2-E03 (`docs/release/r2-e03-payment-tracking.md`) P-E03-03 COMPLETE. Payment alert decisions are CLOSED. P-E03-04…P-E03-07 remain NOT STARTED / NOT AUTHORIZED. This register does not open E04–E05 implementation. R2 is not production-ready.
+R2-E03 (`docs/release/r2-e03-payment-tracking.md`) P-E03-05 COMPLETE. Payment decisions are CLOSED. P-E03-06…P-E03-07 remain NOT STARTED / NOT AUTHORIZED. E03 is not certified. This register does not open E04–E05 implementation. R2 is not production-ready.

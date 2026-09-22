@@ -1,11 +1,11 @@
 # R2 Architecture Delta — Revenue Operations
 
-**Status:** Domain and persistence-planning delta. R2-E01 snapshot / Accrued / Expected are implemented. R2-E02 Invoice Tracking is implemented. Remaining R2 technical implementation (E03–E05) is not authorized by this document.  
-**Date:** 2026-09-22  
+**Status:** Domain and persistence-planning delta. R2-E01 snapshot / Accrued / Expected are implemented. R2-E02 Invoice Tracking is implemented. R2-E03 Payment Tracking is implemented through P-E03-05. E04–E05 remain unauthorized.  
+**Date:** 2026-09-23  
 **Authority:** `docs/release/r2-decision-pack.md`  
 **Baseline:** R1 architecture (`docs/architecture.md`, `docs/domain-model.md`, `docs/storage.md`) remains the frozen R1 baseline.
 
-This document records what must change conceptually for R2. It does not authorize E03–E05 Prisma schema, migrations, APIs, UI, or services. Invoice Prisma names exist (`Invoice`). E03-D-VOID-PAYMENTS is closed (Option A). It does not invent Payment or `allocatedMinutes` Prisma names. It does not open P-E03-01.
+This document records what must change conceptually for R2. Invoice Prisma names exist (`Invoice`). Payment Prisma names exist (`Payment`). E03-D-VOID-PAYMENTS is closed (Option A). It does not invent `allocatedMinutes` Prisma names. It does not open E04–E05.
 
 Legend:
 
@@ -189,15 +189,15 @@ Payment events may be edited and deleted on an ACTIVE Invoice. Status is recalcu
 
 VOID write policy (E03-D-VOID-PAYMENTS, Option A, CLOSED): existing Payments may remain and stay readable as history. CREATE / UPDATE / DELETE on a VOID Invoice are rejected. VOID is not a payment status. VOID is excluded from active paidAmount / outstanding / overdue lists / payment alerts. No cascade-delete. No restore.
 
-Currency must match Contract. Payment write currency must equal Invoice.currency (E02 reserved contract). No installment engine. Persist-versus-inherit of Payment currency remains an implementation detail.
+Payment write currency is a persisted `CHAR(3)` snapshot of `Invoice.currency` at create. It is immutable. No FX. No installment engine. No persisted `paidAmount` / `amountStatus` / overdue. Outstanding is presentation-only.
 
 ### Persistence planning
 
 | Concept | Classification | Notes |
 | --- | --- | --- |
-| Payment event | CONFIRMED REQUIREMENT | New operational event. No current table. P-E03-01 not authorized |
-| Derived payment status | DOMAIN DECISION | Do not persist as independent truth |
-| Edit / delete of events | DOMAIN DECISION | ACTIVE Invoice only. Triggers recalculation |
+| Payment event | IMPLEMENTED | `Payment` table. Composite `(workspaceId, invoiceId)` → Invoice. `Decimal(19,4)`. `CHECK (amount > 0)` |
+| Derived payment status | DOMAIN DECISION | Read-time SUM. Do not persist as independent truth |
+| Edit / delete of events | DOMAIN DECISION | ACTIVE Invoice only. Event removal, not reversal |
 | VOID ↔ Payment writes | DOMAIN DECISION | Freeze writes on VOID. Closed by E03-D-VOID-PAYMENTS A |
 | “Today” timezone | IMPLEMENTED | `Workspace.timezone` via `getTodayInTimezone` |
 | Repository / write services | IMPLEMENTED | Payment application services + Invoice `lockInvoice` |
@@ -220,10 +220,10 @@ No risk score, prediction, AI, or percentage-threshold engine for payments.
 
 | Concept | Classification | Notes |
 | --- | --- | --- |
-| Existing Alert / Notification model | EXISTING MODEL REUSED | `PAYMENT_*` types + `Alert.invoiceId` + unique dedup keys |
+| Existing Alert / Notification model | EXISTING MODEL REUSED | `PAYMENT_*` types + nullable `Alert.invoiceId` + unique dedup keys. S2 semantic identity |
 | Payment alert predicates | DOMAIN DECISION | R2-OD-009. Implemented by P-E03-03 |
 | Allocation WARNING threshold | IMPLEMENTATION DETAIL STILL OPEN | Do not invent |
-| On-write vs other trigger | CLOSED by E03-D-ALERT-TRIGGER T3 | Payment C/U/D + Invoice VOID + Invoice amount/`invoiceDate`. No scheduler |
+| On-write vs other trigger | CLOSED by E03-D-ALERT-TRIGGER T3 | Payment C/U/D + Invoice VOID + Invoice amount/`invoiceDate`. Reference-only Invoice update does not evaluate. No scheduler |
 
 ---
 
@@ -253,12 +253,12 @@ No risk score, prediction, AI, or percentage-threshold engine for payments.
 
 ## 10. Data-model delta (planning only)
 
-No E03–E05 migrations. Invoice Prisma names exist. No invented Payment / `allocatedMinutes` names. E01 TimeEntry snapshot columns already exist.
+Invoice and Payment Prisma names exist. No invented `allocatedMinutes` names. E01 TimeEntry snapshot columns already exist. No E04–E05 migrations.
 
 | Concept | Classification | Existing? | Planning note |
 | --- | --- | --- | --- |
 | Invoice | EXISTING MODEL REUSED | Yes (P-E02-01) | 1 Contract : N Invoice; VOID / soft-delete; editable; no fiscal fields |
-| Payment event | CONFIRMED REQUIREMENT | No | Many per Invoice; editable / deletable on ACTIVE only; status derived |
+| Payment event | EXISTING MODEL REUSED | Yes (P-E03-01) | Many per Invoice; editable / deletable on ACTIVE only; status derived |
 | Contract `allocatedMinutes` | CONFIRMED REQUIREMENT | No | Optional total project budget. Distinct from `monthlyContractedMinutes` |
 | Historical commercial snapshot | EXISTING MODEL REUSED | Yes (P-E01-01) | TimeEntry `snapshotBillingModel`, `snapshotRate`, `snapshotCurrency` |
 | Derived payment status | CONFIRMED REQUIREMENT | n/a | Function of payment events, not a source of truth |
@@ -292,7 +292,7 @@ PIVA Balance remains outside the monolith boundary.
 
 ### TECHNICAL IMPLEMENTATION TO BE PLANNED
 
-- Repository split for Invoice Tracking (implemented) and Payment (E03).
+- Repository split for Invoice Tracking and Payment (implemented). Contract-scoped Payment UI is implemented. No scheduler.
 - Revenue lives under AnalyticsService (R2-E01 implemented). Do not add a parallel RevenueService.
 - Reporting/export module if simple CSV is approved in R2-E05.
 
@@ -316,12 +316,9 @@ R1 baseline documents keep their historical text. Canonical R2 meaning is this d
 
 ## 13. What this document does not decide
 
-- Prisma models or migrations for E03–E05
-- Final Prisma field names for Payment / `allocatedMinutes`
-- API routes or Server Actions for E03–E05
-- UI routes or components for E03–E05
-- Exact Payment service class names
+- Prisma models or migrations for E04–E05
+- Final Prisma field names for `allocatedMinutes`
+- API routes, Server Actions, or UI for E04–E05
 - Whether revenue totals are persisted
 - Forecast arithmetic
 - Allocation WARNING threshold
-- Prisma names for Payment / `allocatedMinutes`

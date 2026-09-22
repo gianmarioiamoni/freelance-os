@@ -1251,10 +1251,28 @@ committed business operation.
 MVP does not create a complete invoice lifecycle.
 
 R2 also does not create an invoice lifecycle. Invoice Tracking
-persistence exists (`Invoice` table; P-E02-01). Payment persistence is
-**not designed here**. See `docs/release/r2-architecture-delta.md` and
-`docs/release/r2-e02-invoice-tracking.md`. Do not add Payment tables
-from this section.
+persistence exists (`Invoice` table; P-E02-01). Payment persistence
+exists (`Payment` table; P-E03-01). See
+`docs/release/r2-architecture-delta.md` and
+`docs/release/r2-e03-payment-tracking.md`.
+
+`Payment` is an operational event against one Invoice:
+
+``` text
+id            UUID
+workspaceId   UUID            workspace isolation
+invoiceId     UUID            immutable; composite FK (workspaceId, invoiceId)
+paymentDate   DATE            calendar date; future allowed
+amount        DECIMAL(19,4)   CHECK (amount > 0)
+currency      CHAR(3)         write-time Invoice.currency snapshot; immutable
+notes         TEXT            optional
+createdAt     TIMESTAMPTZ
+updatedAt     TIMESTAMPTZ
+```
+
+Delete removes the event. It is not a reversal. Invoice VOID does not
+cascade-delete Payments. `paidAmount`, `amountStatus`, overdue, and
+outstanding are not persisted.
 
 Instead, billing calculations derive from:
 
@@ -1366,6 +1384,17 @@ produces:
 ``` text
 Alert(type = CONTRACT_EXCEEDED)
 ```
+
+R2-E03 adds Invoice-scoped payment alerts:
+
+``` text
+Alert(type = PAYMENT_PARTIAL | PAYMENT_OVERDUE | PAYMENT_MISMATCH)
+Alert.invoiceId IS NOT NULL
+```
+
+`PAYMENT_*` rows require `invoiceId` (SQL CHECK). Existing CONTRACT_* /
+CAPACITY_* rows keep `invoiceId` NULL. Composite
+`(workspaceId, invoiceId)` references Invoice.
 
 The database stores the resulting state.
 
