@@ -53,6 +53,7 @@ export function InvoiceList({
               </CardHeader>
               <CardContent className="grid gap-1 text-muted-foreground">
                 <p>{formatInvoiceAmount(invoice.amount, invoice.currency)}</p>
+                <p>Paid {formatInvoiceAmount(invoice.paidAmount, invoice.currency)}</p>
                 <p>Invoice date {formatCalendarDate(invoice.invoiceDate)}</p>
                 <p>Due {formatInvoiceDueDate(invoice.dueDate)}</p>
                 <p>{formatInvoiceAmountStatus(invoice.amountStatus)}</p>

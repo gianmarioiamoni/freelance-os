@@ -9,7 +9,8 @@ import {
   formatInvoiceTrackingState,
   invoiceListTitle,
 } from "@/features/invoices/invoice-display";
-import { loadContractInvoice } from "@/features/invoices/load-invoices";
+import { InvoicePaymentSection } from "@/features/payments/InvoicePaymentSection";
+import { loadContractInvoicePayments } from "@/features/payments/load-payments";
 import Link from "next/link";
 import type { JSX } from "react";
 
@@ -20,6 +21,7 @@ type InvoiceDetailPageProps = {
   }>;
   searchParams: Promise<{
     confirm?: string;
+    paymentId?: string;
   }>;
 };
 
@@ -28,10 +30,10 @@ export default async function InvoiceDetailPage({
   searchParams,
 }: InvoiceDetailPageProps): Promise<JSX.Element> {
   const { contractId, invoiceId } = await params;
-  const { confirm } = await searchParams;
-  const [{ contract, client }, invoice] = await Promise.all([
+  const { confirm, paymentId } = await searchParams;
+  const [{ contract, client }, { invoice, payments }] = await Promise.all([
     loadContractDetailPageData(contractId),
-    loadContractInvoice(contractId, invoiceId),
+    loadContractInvoicePayments(contractId, invoiceId),
   ]);
   const title = invoiceListTitle(invoice);
   const description = isActiveInvoice(invoice.voidedAt)
@@ -47,11 +49,21 @@ export default async function InvoiceDetailPage({
             <Link href={`/contracts/${contract.id}`}>Back to contract</Link>
           </Button>
         </div>
-        <InvoiceDetail
-          contractId={contract.id}
-          invoice={invoice}
-          isConfirmingVoid={confirm === "void"}
-        />
+        <div className="grid gap-8">
+          <InvoiceDetail
+            contractId={contract.id}
+            invoice={invoice}
+            isConfirmingVoid={confirm === "void"}
+          />
+          <InvoicePaymentSection
+            contractId={contract.id}
+            invoice={invoice}
+            payments={payments}
+            deletingPaymentId={
+              confirm === "delete-payment" ? (paymentId ?? null) : null
+            }
+          />
+        </div>
       </PageContent>
     </section>
   );

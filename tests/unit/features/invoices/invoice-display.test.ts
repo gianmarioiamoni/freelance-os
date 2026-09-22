@@ -6,7 +6,9 @@ import {
   formatInvoiceAmount,
   formatInvoiceAmountStatus,
   formatInvoiceDueDate,
+  formatInvoiceOutstanding,
   formatInvoiceOverdue,
+  remainingInvoiceAmount,
   formatInvoiceTrackingState,
   invoiceEmptyStateCopy,
   invoiceListTitle,
@@ -54,9 +56,18 @@ describe("invoice display", () => {
 
   it("formats amount, currency, VOID, UNPAID, and overdue without mixing currencies", () => {
     expect(formatInvoiceAmount("1500.2500", "EUR")).toBe("1500.25 EUR");
+    expect(formatInvoiceOutstanding("1500.2500", "0", "EUR")).toBe("1500.25 EUR");
+    expect(formatInvoiceOutstanding("1500.2500", "500.0000", "EUR")).toBe("1000.25 EUR");
+    expect(formatInvoiceOutstanding("1500", "1500", "EUR")).toBe("0 EUR");
+    expect(formatInvoiceOutstanding("1500", "1600", "EUR")).toBe("0 EUR");
+    expect(remainingInvoiceAmount("1500.0000", "0")).toBe("1500.0000");
+    expect(remainingInvoiceAmount("1500", "400.5")).toBe("1099.5000");
     expect(formatInvoiceTrackingState("VOID")).toBe("Void");
     expect(formatInvoiceTrackingState("ACTIVE")).toBe("Active");
     expect(formatInvoiceAmountStatus("UNPAID")).toBe("Unpaid");
+    expect(formatInvoiceAmountStatus("PARTIAL")).toBe("Partial");
+    expect(formatInvoiceAmountStatus("PAID")).toBe("Paid");
+    expect(formatInvoiceAmountStatus("MISMATCH")).toBe("Mismatch");
     expect(formatInvoiceOverdue(true)).toBe("Overdue");
     expect(formatInvoiceOverdue(false)).toBeNull();
     expect(formatInvoiceDueDate(null)).toBe("No due date");

@@ -3,7 +3,7 @@
 **Epic:** R2-E03 — Payment Tracking & Reconciliation  
 **Release:** Release 2 — Revenue Operations  
 **MASTER_PLAN identifier:** R2-E03 (`MASTER_PLAN.md` §19)  
-**Status:** P-E03-00…P-E03-03 COMPLETE. P-E03-04…P-E03-07 NOT STARTED / NOT AUTHORIZED.  
+**Status:** P-E03-00…P-E03-04 COMPLETE. P-E03-05…P-E03-07 NOT STARTED / NOT AUTHORIZED.  
 **Authority:** `docs/release/r2-decision-pack.md`  
 **Companions:** `docs/release/r2-epic-map.md`, `docs/release/r2-architecture-delta.md`, `docs/release/r2-open-decisions.md`  
 **Predecessor:** R2-E02 COMPLETE WITH NON-BLOCKING FINDING (`docs/release/r2-e02-invoice-tracking.md`)  
@@ -14,12 +14,12 @@ P-E03-00  PLANNING / VOID POLICY CLOSURE   COMPLETE
 P-E03-01  PERSISTENCE / DOMAIN FOUNDATION  COMPLETE
 P-E03-02  PAYMENT APPLICATION SERVICE      COMPLETE
 P-E03-03  PAYMENT ALERTS                   COMPLETE
-P-E03-04  CONTRACT-SCOPED PAYMENT UI       NOT STARTED / NOT AUTHORIZED
+P-E03-04  CONTRACT-SCOPED PAYMENT UI       COMPLETE
 P-E03-05  ENGINEERING REVIEW               NOT STARTED / NOT AUTHORIZED
 P-E03-06  QA                               NOT STARTED / NOT AUTHORIZED
 P-E03-07  DOCUMENTATION / EPIC CLOSURE     NOT STARTED / NOT AUTHORIZED
 
-R2-E03: P-E03-03 COMPLETE — P-E03-04 NOT AUTHORIZED
+R2-E03: P-E03-04 COMPLETE — P-E03-05 NOT AUTHORIZED
 R2-E02: COMPLETE WITH NON-BLOCKING FINDING
 R2-E01: COMPLETE / RELEASE-READY
 R1: FROZEN / GRANTED
@@ -446,7 +446,16 @@ commit is created by this close.
 | Dedup key | `{pp\|po\|pm}:{workspaceId}:{invoiceId}` plus timestamp suffix on re-trigger |
 | Non-scope | UI; scheduler; P-E03-04 |
 
-Later phases (P-E03-04…07) remain NOT STARTED / NOT AUTHORIZED.
+### P-E03-04 — Contract-scoped payment UI
+
+| | |
+| --- | --- |
+| Objective | Invoice-centric Payment list + create / update / delete |
+| Dependencies | P-E03-03 |
+| Status | **COMPLETE** |
+| Non-scope | Engineering review; QA; epic closure; P-E03-05 |
+
+Later phases (P-E03-05…07) remain NOT STARTED / NOT AUTHORIZED.
 
 ---
 
@@ -457,7 +466,8 @@ E02 COMPLETE
     → E03-D-VOID-PAYMENTS CLOSED (Option A)
         → P-E03-00 COMPLETE
             → P-E03-01…P-E03-03 COMPLETE
-                → P-E03-04 NOT STARTED / NOT AUTHORIZED
+                → P-E03-04 COMPLETE
+                    → P-E03-05 NOT STARTED / NOT AUTHORIZED
 ```
 
 E04 remains parallel (depends on E01, not E03). E05 reads payment
@@ -469,7 +479,8 @@ facts only after they exist. R2 is not production-ready.
 
 - Blocker for this close: no
 - P-E03-03: COMPLETE
-- P-E03-04: NOT STARTED / NOT AUTHORIZED
+- P-E03-04: COMPLETE
+- P-E03-05: NOT STARTED / NOT AUTHORIZED
 - Open PO decisions for E03: none
 - Payment alert decisions: CLOSED
 - R2 production-ready: no

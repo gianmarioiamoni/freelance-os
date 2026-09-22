@@ -5,7 +5,7 @@ import { InvalidPaymentInputError } from "@/domain/payment-errors";
 
 const CALENDAR_DATE_PATTERN = /^(\d{4})-(\d{2})-(\d{2})$/;
 const AMOUNT_PATTERN = /^(?:0|[1-9]\d{0,14})(?:\.\d{1,4})?$/;
-const PAYMENT_NOTES_MAX_LENGTH = 4000;
+export const PAYMENT_NOTES_MAX_LENGTH = 4000;
 const FORBIDDEN_UPDATE_FIELDS = ["id", "workspaceId", "invoiceId", "currency"] as const;
 
 export type PaymentCreateInput = {

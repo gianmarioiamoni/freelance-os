@@ -43,6 +43,25 @@ export function formatInvoiceAmount(amount: string, currency: string): string {
   return formatRateWithCurrency(amount, currency);
 }
 
+export function formatInvoiceOutstanding(
+  amount: string,
+  paidAmount: string,
+  currency: string,
+): string {
+  return formatInvoiceAmount(remainingInvoiceAmount(amount, paidAmount), currency);
+}
+
+export function remainingInvoiceAmount(amount: string, paidAmount: string): string {
+  const amountScaled = toScaledAmount(amount);
+  const paidScaled = toScaledAmount(paidAmount);
+
+  if (paidScaled >= amountScaled) {
+    return "0";
+  }
+
+  return fromScaledAmount(amountScaled - paidScaled);
+}
+
 export function formatInvoiceTrackingState(state: InvoiceTrackingState): string {
   return state === "VOID" ? "Void" : "Active";
 }
@@ -125,6 +144,26 @@ export function formatTrackingFilterLabel(tracking: InvoiceTrackingFilter): stri
   }
 
   return "Active";
+}
+
+function toScaledAmount(value: string): bigint {
+  const trimmed = value.trim();
+  const unsigned = trimmed.startsWith("+") ? trimmed.slice(1) : trimmed;
+  const [wholeRaw = "0", fractionRaw = ""] = unsigned.split(".");
+  const whole = wholeRaw.replace(/^0+(?=\d)/, "") || "0";
+  const fraction = fractionRaw.padEnd(4, "0").slice(0, 4);
+  return BigInt(`${whole}${fraction}`);
+}
+
+function fromScaledAmount(value: bigint): string {
+  if (value === BigInt(0)) {
+    return "0";
+  }
+
+  const factor = BigInt(10_000);
+  const whole = value / factor;
+  const fraction = (value % factor).toString().padStart(4, "0");
+  return `${whole}.${fraction}`;
 }
 
 export function invoiceEmptyStateCopy(tracking: InvoiceTrackingFilter): {

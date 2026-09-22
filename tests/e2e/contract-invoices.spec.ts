@@ -80,7 +80,9 @@ test("should create, edit, void, and isolate contract invoices", async ({
   );
 
   await expect(page.getByRole("heading", { level: 1, name: "INV-100" })).toBeVisible();
-  await expect(page.getByText("1500.25 EUR")).toBeVisible();
+  await expect(page.locator("dt", { hasText: /^Amount$/ }).locator("+ dd")).toHaveText(
+    "1500.25 EUR",
+  );
   await expect(page.getByText("EUR", { exact: true }).first()).toBeVisible();
   await expect(page.getByText("2026-09-01")).toBeVisible();
   await expect(page.getByText("2026-10-01")).toBeVisible();
@@ -112,7 +114,7 @@ test("should create, edit, void, and isolate contract invoices", async ({
     /\/contracts\/[^/]+\/invoices\/[0-9a-f-]{36}$/,
   );
   await expect(page.getByRole("heading", { level: 1, name: "INV-100B" })).toBeVisible();
-  await expect(page.getByText("1750 EUR")).toBeVisible();
+  await expect(page.locator("dt", { hasText: /^Amount$/ }).locator("+ dd")).toHaveText("1750 EUR");
   await expect(page.getByText("2026-10-10")).toBeVisible();
 
   await page.getByRole("link", { name: "Void" }).click();
@@ -147,7 +149,7 @@ test("should create, edit, void, and isolate contract invoices", async ({
 
   await page.getByRole("link", { name: "INV-100B" }).click();
   await expect(page.getByText("Void").first()).toBeVisible();
-  await expect(page.getByText("1750 EUR")).toBeVisible();
+  await expect(page.locator("dt", { hasText: /^Amount$/ }).locator("+ dd")).toHaveText("1750 EUR");
 
   await page.goto(`/contracts/${contractId}/edit`);
   await page.getByLabel("Currency").selectOption("USD");

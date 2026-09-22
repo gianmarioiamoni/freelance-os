@@ -652,7 +652,7 @@ This document is the release-level planning baseline. R2-E01 is COMPLETE / RELEA
 | P-E03-01 | Payment events + derived status | COMPLETE |
 | P-E03-02 | Payment application service | COMPLETE |
 | P-E03-03 | Payment alerts via AlertService | COMPLETE |
-| P-E03-04 | Payment UI | NOT STARTED / NOT AUTHORIZED |
+| P-E03-04 | Payment UI | COMPLETE |
 | P-E03-05 | Engineering Review | NOT STARTED / NOT AUTHORIZED |
 | P-E03-06 | QA | NOT STARTED / NOT AUTHORIZED |
 | P-E03-07 | Documentation / Epic closure | NOT STARTED / NOT AUTHORIZED |

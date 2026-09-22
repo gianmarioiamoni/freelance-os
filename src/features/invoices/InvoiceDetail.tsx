@@ -8,6 +8,7 @@ import {
   formatInvoiceAmount,
   formatInvoiceAmountStatus,
   formatInvoiceDueDate,
+  formatInvoiceOutstanding,
   formatInvoiceOverdue,
   formatInvoicePaymentTerms,
   formatInvoiceTrackingState,
@@ -34,6 +35,11 @@ export function InvoiceDetail({
   const fields = [
     { label: "Status", value: formatInvoiceTrackingState(invoice.trackingState) },
     { label: "Amount", value: formatInvoiceAmount(invoice.amount, invoice.currency) },
+    { label: "Paid", value: formatInvoiceAmount(invoice.paidAmount, invoice.currency) },
+    {
+      label: "Outstanding",
+      value: formatInvoiceOutstanding(invoice.amount, invoice.paidAmount, invoice.currency),
+    },
     { label: "Currency", value: invoice.currency },
     { label: "Invoice date", value: formatCalendarDate(invoice.invoiceDate) },
     { label: "Reference", value: displayOptionalText(invoice.reference) },
