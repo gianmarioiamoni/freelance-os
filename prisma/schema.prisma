@@ -34,6 +34,9 @@ enum AlertType {
   CONTRACT_EXCEEDED
   CAPACITY_WARNING
   CAPACITY_EXCEEDED
+  PAYMENT_PARTIAL
+  PAYMENT_OVERDUE
+  PAYMENT_MISMATCH
 }
 
 enum AlertSeverity {
@@ -150,6 +153,7 @@ model Invoice {
   workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
   contract  Contract  @relation(fields: [workspaceId, contractId], references: [workspaceId, id], onDelete: Restrict)
   payments  Payment[]
+  alerts    Alert[]
 
   @@unique([workspaceId, id])
   @@index([workspaceId, contractId, invoiceDate])
@@ -227,6 +231,8 @@ model Alert {
   severity         AlertSeverity
   clientId         String?       @db.Uuid
   contractId       String?       @db.Uuid
+  /// Set for PAYMENT_* alerts. Null for existing CONTRACT_* / CAPACITY_* rows.
+  invoiceId        String?       @db.Uuid
   periodStart      DateTime?     @db.Date
   periodEnd        DateTime?     @db.Date
   deduplicationKey String
@@ -236,6 +242,7 @@ model Alert {
   workspace     Workspace      @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
   client        Client?        @relation(fields: [clientId], references: [id], onDelete: Restrict)
   contract      Contract?      @relation(fields: [contractId], references: [id], onDelete: Restrict)
+  invoice       Invoice?       @relation(fields: [invoiceId], references: [id], onDelete: Restrict)
   notifications Notification[]
 
   @@unique([workspaceId, id])
@@ -243,6 +250,7 @@ model Alert {
   @@index([workspaceId, createdAt])
   @@index([workspaceId, resolvedAt])
   @@index([workspaceId, type])
+  @@index([workspaceId, invoiceId, type])
 }
 
 model Notification {

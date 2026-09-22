@@ -125,6 +125,11 @@ These are the product / planning decisions still required before the correspondi
 | R2-OD-006 | 1 Contract → many Invoice; 1 Invoice → 1 Contract; tracking fields only | APPROVED / implemented |
 | R2-OD-007 | Optional reference; required invoiceDate; no competence period; editable; VOID / soft-delete | APPROVED — VOID list / restore closed by E02-D02 / implemented. E03-D-VOID-PAYMENTS CLOSED (Option A freeze writes) |
 | E03-D-VOID-PAYMENTS | Freeze writes on VOID; existing Payments remain readable; excluded from active aggregates / alerts; no cascade-delete; no restore | APPROVED / CLOSED by P-E03-00 |
+| E03-D-PAYMENT-DATE-FUTURE | Future `paymentDate` allowed; calendar date only; not an alert input | APPROVED / CLOSED by P-E03-03 |
+| E03-D-ALERT-TRIGGER | T3 on-write (Payment C/U/D + Invoice VOID + Invoice amount/`invoiceDate`). No scheduler. Calendar `PAYMENT_OVERDUE` gap accepted. VOID resolve is transactional | APPROVED / CLOSED by P-E03-03 |
+| E03-D-ALERT-PREDICATES | Invoice-level R2-OD-009 predicates. No per-Payment-row alerts. PAID/UNPAID are not alerts | APPROVED / CLOSED by P-E03-03 |
+| E03-D-ALERT-SEVERITY | `PAYMENT_PARTIAL=INFO`, `PAYMENT_OVERDUE=WARNING`, `PAYMENT_MISMATCH=ERROR` | APPROVED / CLOSED by P-E03-03 |
+| E03-D-ALERT-SHAPE | Extend `AlertType`; nullable `Alert.invoiceId`; unique `(workspaceId, deduplicationKey)`; semantic resolve by invoiceId + type | APPROVED / CLOSED by P-E03-03 |
 | R2-OD-008 | `paymentTermsDays = null` → no dueDate, no automatic overdue; no default days | APPROVED / implemented |
 | R2-OD-009 | paidAmount sum; UNPAID / PARTIAL / PAID / MISMATCH; PAYMENT_OVERDUE independent | APPROVED |
 | R2-OD-010 | Payment events editable / deletable; status derived; no ledger | APPROVED |
@@ -165,4 +170,4 @@ R2-E01 (`docs/release/r2-e01-revenue-visibility.md`) implemented class-B snapsho
 
 R2-E02 (`docs/release/r2-e02-invoice-tracking.md`) implemented Invoice Tracking (P-E02-00…P-E02-07). Residuals #3 and #4 remain APPROVED / CLOSED and are implemented. E02 is COMPLETE WITH NON-BLOCKING FINDING (F-E02-004 test hygiene).
 
-R2-E03 (`docs/release/r2-e03-payment-tracking.md`) P-E03-00 COMPLETE. E03-D-VOID-PAYMENTS is CLOSED (Option A). Deferred E03 technical items stay in that plan and are not PO residuals here. This register does not open P-E03-01 or E04–E05 implementation. R2 is not production-ready.
+R2-E03 (`docs/release/r2-e03-payment-tracking.md`) P-E03-03 COMPLETE. Payment alert decisions are CLOSED. P-E03-04…P-E03-07 remain NOT STARTED / NOT AUTHORIZED. This register does not open E04–E05 implementation. R2 is not production-ready.

@@ -7,6 +7,7 @@ import {
 } from "@/domain/invoice-errors";
 import { PaymentNotFoundError } from "@/domain/payment-errors";
 import { RecordNotFoundError } from "@/domain/persistence-errors";
+import { triggerPaymentAlertEvaluation } from "@/application/alerts/trigger-payment-alert-evaluation";
 import type { RunInTransaction } from "@/domain/repositories";
 
 export async function deletePayment(
@@ -15,7 +16,7 @@ export async function deletePayment(
   paymentId: string,
   runInTransaction: RunInTransaction,
 ): Promise<void> {
-  return runInTransaction(async (repositories) => {
+  await runInTransaction(async (repositories) => {
     const invoice = await repositories.invoices.lockInvoice(
       context.workspaceId,
       invoiceId,
@@ -48,4 +49,6 @@ export async function deletePayment(
       throw error;
     }
   });
+
+  await triggerPaymentAlertEvaluation(context, invoiceId, runInTransaction);
 }

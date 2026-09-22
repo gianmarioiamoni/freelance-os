@@ -21,6 +21,11 @@ import type {
   AlertEvaluationResult,
   ContractAlertEvaluationResult,
 } from "@/application/alerts/alert-evaluation-types";
+import {
+  evaluateInvoicePaymentAlerts,
+  type PaymentAlertEvaluationResult,
+} from "@/application/alerts/evaluate-payment-alerts";
+import type { InvoiceRepository, PaymentRepository } from "@/domain/repositories";
 
 const DEFAULT_CONTRACT_WARNING_PERCENT = 80;
 
@@ -131,6 +136,30 @@ export class AlertService {
     );
 
     return { alertsCreated, alertsResolved, notificationsCreated, contractResults };
+  }
+
+  /**
+   * Evaluates PAYMENT_PARTIAL / PAYMENT_OVERDUE / PAYMENT_MISMATCH for one Invoice.
+   * Reuses existing derived helpers. Does not scan other invoices.
+   */
+  async evaluatePaymentAlerts(
+    context: WorkspaceContext,
+    invoiceId: string,
+    invoiceRepos: { invoices: InvoiceRepository; payments: PaymentRepository },
+    now?: Date,
+  ): Promise<PaymentAlertEvaluationResult> {
+    return evaluateInvoicePaymentAlerts(
+      context,
+      invoiceId,
+      {
+        alerts: this.alerts,
+        notifications: this.notifications,
+        members: this.members,
+        invoices: invoiceRepos.invoices,
+        payments: invoiceRepos.payments,
+      },
+      now,
+    );
   }
 
   /**

@@ -19,7 +19,8 @@ export async function updateInvoiceAction(
   _previousState: InvoiceFormActionState,
   formData: FormData,
 ): Promise<InvoiceFormActionState> {
-  const { context, contracts, invoices, payments } = await getAuthenticatedContractContext();
+  const { context, contracts, invoices, payments, runInTransaction } =
+    await getAuthenticatedContractContext();
   const values = readInvoiceFormValues(formData);
 
   try {
@@ -36,6 +37,7 @@ export async function updateInvoiceAction(
       invoiceId,
       toInvoiceUpdateInput(values),
       invoices,
+      runInTransaction,
     );
   } catch (error) {
     return mapInvoiceWriteError(error, values, "update");

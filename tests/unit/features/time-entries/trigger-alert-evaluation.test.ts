@@ -43,6 +43,7 @@ function makeRepositories(overrides: Partial<{
     createAlert: vi.fn().mockResolvedValue({ id: "alert-1" }),
     findAlertByDeduplicationKey: vi.fn().mockResolvedValue(null),
     findActiveAlertByContractAndType: vi.fn().mockResolvedValue(null),
+    findActiveAlertByInvoiceAndType: vi.fn().mockResolvedValue(null),
     resolveAlert: vi.fn().mockResolvedValue({ id: "alert-1" }),
     getAlert: vi.fn().mockResolvedValue(null),
     ...overrides.alerts,

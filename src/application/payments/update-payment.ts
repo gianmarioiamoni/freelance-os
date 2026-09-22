@@ -18,6 +18,7 @@ import {
   RecordNotFoundError,
 } from "@/domain/persistence-errors";
 import type { PaymentRecord } from "@/domain/persistence-types";
+import { triggerPaymentAlertEvaluation } from "@/application/alerts/trigger-payment-alert-evaluation";
 import type { RunInTransaction } from "@/domain/repositories";
 
 export async function updatePayment(
@@ -29,7 +30,7 @@ export async function updatePayment(
 ): Promise<PaymentRecord> {
   const validated = parsePaymentUpdateInput(input);
 
-  return runInTransaction(async (repositories) => {
+  const payment = await runInTransaction(async (repositories) => {
     const invoice = await repositories.invoices.lockInvoice(
       context.workspaceId,
       invoiceId,
@@ -70,4 +71,7 @@ export async function updatePayment(
       throw error;
     }
   });
+
+  await triggerPaymentAlertEvaluation(context, payment.invoiceId, runInTransaction);
+  return payment;
 }

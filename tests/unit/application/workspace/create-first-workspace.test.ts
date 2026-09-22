@@ -112,6 +112,7 @@ function createMemoryDependencies(
       getAlert: unused,
       findAlertByDeduplicationKey: unused,
       findActiveAlertByContractAndType: unused,
+      findActiveAlertByInvoiceAndType: unused,
       resolveAlert: unused,
     },
     notifications: {

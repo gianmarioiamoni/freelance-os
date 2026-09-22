@@ -9,7 +9,10 @@ export type AlertType =
   | "CONTRACT_WARNING"
   | "CONTRACT_EXCEEDED"
   | "CAPACITY_WARNING"
-  | "CAPACITY_EXCEEDED";
+  | "CAPACITY_EXCEEDED"
+  | "PAYMENT_PARTIAL"
+  | "PAYMENT_OVERDUE"
+  | "PAYMENT_MISMATCH";
 export type AlertSeverity = "INFO" | "WARNING" | "ERROR";
 
 export type WorkspaceRecord = {
@@ -121,6 +124,7 @@ export type AlertRecord = {
   severity: AlertSeverity;
   clientId: string | null;
   contractId: string | null;
+  invoiceId: string | null;
   periodStart: Date | null;
   periodEnd: Date | null;
   deduplicationKey: string;
@@ -266,6 +270,7 @@ export type CreateAlertInput = {
   severity: AlertSeverity;
   clientId?: string | null;
   contractId?: string | null;
+  invoiceId?: string | null;
   periodStart?: Date | null;
   periodEnd?: Date | null;
   deduplicationKey: string;

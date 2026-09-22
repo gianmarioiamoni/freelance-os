@@ -20,6 +20,8 @@ describe("migration-based test schema", () => {
       "20260912180000_index_workspace_member_user_id",
       "20260922010000_add_time_entry_commercial_snapshot",
       "20260922210000_add_invoice_tracking",
+      "20260922220000_add_payment_tracking",
+      "20260923010000_add_payment_alerts",
     ]);
   });
 

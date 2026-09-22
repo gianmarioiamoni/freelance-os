@@ -3,7 +3,7 @@
 **Epic:** R2-E03 — Payment Tracking & Reconciliation  
 **Release:** Release 2 — Revenue Operations  
 **MASTER_PLAN identifier:** R2-E03 (`MASTER_PLAN.md` §19)  
-**Status:** P-E03-00 COMPLETE. P-E03-01…P-E03-07 NOT STARTED / NOT AUTHORIZED.  
+**Status:** P-E03-00…P-E03-03 COMPLETE. P-E03-04…P-E03-07 NOT STARTED / NOT AUTHORIZED.  
 **Authority:** `docs/release/r2-decision-pack.md`  
 **Companions:** `docs/release/r2-epic-map.md`, `docs/release/r2-architecture-delta.md`, `docs/release/r2-open-decisions.md`  
 **Predecessor:** R2-E02 COMPLETE WITH NON-BLOCKING FINDING (`docs/release/r2-e02-invoice-tracking.md`)  
@@ -11,15 +11,15 @@
 
 ```text
 P-E03-00  PLANNING / VOID POLICY CLOSURE   COMPLETE
-P-E03-01  PERSISTENCE / DOMAIN FOUNDATION  NOT STARTED / NOT AUTHORIZED
-P-E03-02  PAYMENT APPLICATION SERVICE      NOT STARTED / NOT AUTHORIZED
-P-E03-03  PAYMENT ALERTS                   NOT STARTED / NOT AUTHORIZED
+P-E03-01  PERSISTENCE / DOMAIN FOUNDATION  COMPLETE
+P-E03-02  PAYMENT APPLICATION SERVICE      COMPLETE
+P-E03-03  PAYMENT ALERTS                   COMPLETE
 P-E03-04  CONTRACT-SCOPED PAYMENT UI       NOT STARTED / NOT AUTHORIZED
 P-E03-05  ENGINEERING REVIEW               NOT STARTED / NOT AUTHORIZED
 P-E03-06  QA                               NOT STARTED / NOT AUTHORIZED
 P-E03-07  DOCUMENTATION / EPIC CLOSURE     NOT STARTED / NOT AUTHORIZED
 
-R2-E03: P-E03-00 COMPLETE — IMPLEMENTATION NOT OPENED
+R2-E03: P-E03-03 COMPLETE — P-E03-04 NOT AUTHORIZED
 R2-E02: COMPLETE WITH NON-BLOCKING FINDING
 R2-E01: COMPLETE / RELEASE-READY
 R1: FROZEN / GRANTED
@@ -373,17 +373,8 @@ None. `E03-D-VOID-PAYMENTS` is CLOSED.
 
 ### CAN BE DEFERRED — remain OPEN
 
-Do not close these in P-E03-00. Do not assume defaults in
-implementation.
-
-| ID | Question | Blocks | Owner |
-| --- | --- | --- | --- |
-| E03-D-ALERT-TRIGGER | On-write vs other trigger. Scheduler is not documented; do not invent one. On-write leaves a calendar-only overdue gap until the next eval | Alert phase | Architect |
-| E03-D-ALERT-SHAPE | `AlertType` + `deduplicationKey` vs an `invoiceId` column | Alert phase | Architect |
-| E03-D-PAYMENT-AMOUNT | `amount > 0` vs `>= 0`. Negative is not supported (would be a reversal) | Persistence | Architect |
-| Payment currency representation | Persist a currency column vs inherit Invoice currency at read | Persistence | Architect |
-| Prisma / repository names | Field and method identifiers | Persistence | Architect |
-| paymentDate future | Invoice future dates are allowed. No Payment restriction is documented; do not invent one | Persistence / UI | Architect |
+None for P-E03-03. Persistence naming leftovers from P-E03-00 were closed
+by P-E03-01 / P-E03-02.
 
 ### ALREADY DECIDED
 
@@ -396,6 +387,11 @@ implementation.
 | R2-OD-011 / D7 / E02-D01 / E02-D07 | No FX; Invoice snapshot; Payment matches Invoice |
 | E02-D02 | VOID one-way; payments may remain; exclude active aggregates |
 | E03-D-VOID-PAYMENTS | Option A — freeze writes on VOID |
+| E03-D-PAYMENT-DATE-FUTURE | Future `paymentDate` allowed; not an alert input |
+| E03-D-ALERT-TRIGGER | T3 on-write. No scheduler. Calendar overdue gap accepted. VOID resolve is in-transaction |
+| E03-D-ALERT-PREDICATES | R2-OD-009 at Invoice level. No per-Payment-row alerts |
+| E03-D-ALERT-SEVERITY | PARTIAL=INFO, OVERDUE=WARNING, MISMATCH=ERROR |
+| E03-D-ALERT-SHAPE | `AlertType` + unique `deduplicationKey` + `Alert.invoiceId` (S2) |
 | E02-D03 | ACTIVE Invoice amount/date edit recalculates derived status |
 | E02-D05 | Contract-scoped surfaces only |
 | E02-D06 | No Accrued / Expected rewrite |
@@ -429,12 +425,28 @@ commit is created by this close.
 | --- | --- |
 | Objective | Persist the Payment event and domain types |
 | Dependencies | P-E03-00 |
-| Status | **NOT STARTED / NOT AUTHORIZED** |
+| Status | **COMPLETE** |
 | Risks | Starting before authorization; inventing Prisma names / FX / persisted status |
 
-Later phases (P-E03-02…07) remain NOT STARTED / NOT AUTHORIZED.
-Intents: application service + Invoice SUM wiring; alerts; Contract-scoped
-UI; Engineering Review; QA; documentation closure.
+### P-E03-02 — Payment application service
+
+| | |
+| --- | --- |
+| Objective | Payment writes + derived Invoice paidAmount / status / overdue |
+| Status | **COMPLETE** |
+
+### P-E03-03 — Payment alerts
+
+| | |
+| --- | --- |
+| Objective | Persist and evaluate Invoice-level PAYMENT_* alerts |
+| Dependencies | P-E03-02 |
+| Status | **COMPLETE** |
+| Trigger | T3: Payment create/update/delete (best-effort after commit); Invoice amount/`invoiceDate` update (best-effort); Invoice VOID resolve in the same transaction |
+| Dedup key | `{pp\|po\|pm}:{workspaceId}:{invoiceId}` plus timestamp suffix on re-trigger |
+| Non-scope | UI; scheduler; P-E03-04 |
+
+Later phases (P-E03-04…07) remain NOT STARTED / NOT AUTHORIZED.
 
 ---
 
@@ -444,7 +456,8 @@ UI; Engineering Review; QA; documentation closure.
 E02 COMPLETE
     → E03-D-VOID-PAYMENTS CLOSED (Option A)
         → P-E03-00 COMPLETE
-            → P-E03-01 NOT STARTED / NOT AUTHORIZED
+            → P-E03-01…P-E03-03 COMPLETE
+                → P-E03-04 NOT STARTED / NOT AUTHORIZED
 ```
 
 E04 remains parallel (depends on E01, not E03). E05 reads payment
@@ -455,8 +468,8 @@ facts only after they exist. R2 is not production-ready.
 ## 18. Release impact
 
 - Blocker for this close: no
-- E03 implementation: not opened
-- P-E03-01: NOT STARTED / NOT AUTHORIZED
+- P-E03-03: COMPLETE
+- P-E03-04: NOT STARTED / NOT AUTHORIZED
 - Open PO decisions for E03: none
-- Deferred technical decisions: remain open
+- Payment alert decisions: CLOSED
 - R2 production-ready: no

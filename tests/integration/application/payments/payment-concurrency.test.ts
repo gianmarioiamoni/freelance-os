@@ -85,7 +85,7 @@ describe("payment concurrency", () => {
     });
 
     const voidSide = runInTransaction(async (tx) => {
-      const voided = await voidInvoice(context, invoice.id, tx.invoices);
+      const voided = await voidInvoice(context, invoice.id, tx.invoices, tx.alerts);
       resolveLocked();
       await hold.held;
       return voided;
@@ -131,7 +131,9 @@ describe("payment concurrency", () => {
     });
 
     await locked;
-    const voidSide = voidInvoice(context, invoice.id, repositories.invoices);
+    const voidSide = runInTransaction(async (tx) =>
+      voidInvoice(context, invoice.id, tx.invoices, tx.alerts),
+    );
     await waitForLockWaiter();
     hold.release();
 
@@ -158,7 +160,7 @@ describe("payment concurrency", () => {
     });
 
     const voidSide = runInTransaction(async (tx) => {
-      const voided = await voidInvoice(context, invoice.id, tx.invoices);
+      const voided = await voidInvoice(context, invoice.id, tx.invoices, tx.alerts);
       resolveLocked();
       await hold.held;
       return voided;
@@ -197,7 +199,7 @@ describe("payment concurrency", () => {
     });
 
     const voidSide = runInTransaction(async (tx) => {
-      const voided = await voidInvoice(context, invoice.id, tx.invoices);
+      const voided = await voidInvoice(context, invoice.id, tx.invoices, tx.alerts);
       resolveLocked();
       await hold.held;
       return voided;

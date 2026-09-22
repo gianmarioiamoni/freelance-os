@@ -54,6 +54,7 @@ function makeAlert(override: Partial<AlertRecord> = {}): AlertRecord {
     severity: "WARNING",
     clientId: null,
     contractId,
+    invoiceId: null,
     periodStart: period.startDate,
     periodEnd: period.endDate,
     deduplicationKey: buildContractAlertDedupKey("CONTRACT_WARNING", context.workspaceId, contractId, period.startDate),
@@ -110,6 +111,7 @@ function makeMockAlerts(overrides: Partial<AlertRepository> = {}): AlertReposito
     getAlert: vi.fn().mockResolvedValue(null),
     findAlertByDeduplicationKey: vi.fn().mockResolvedValue(null),
     findActiveAlertByContractAndType: vi.fn().mockResolvedValue(null),
+    findActiveAlertByInvoiceAndType: vi.fn().mockResolvedValue(null),
     resolveAlert: vi.fn().mockResolvedValue(makeAlert({ resolvedAt: new Date() })),
     ...overrides,
   };

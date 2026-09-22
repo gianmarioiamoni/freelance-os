@@ -199,8 +199,8 @@ Currency must match Contract. Payment write currency must equal Invoice.currency
 | Derived payment status | DOMAIN DECISION | Do not persist as independent truth |
 | Edit / delete of events | DOMAIN DECISION | ACTIVE Invoice only. Triggers recalculation |
 | VOID ↔ Payment writes | DOMAIN DECISION | Freeze writes on VOID. Closed by E03-D-VOID-PAYMENTS A |
-| “Today” timezone | IMPLEMENTATION DETAIL STILL OPEN | R1 uses `Workspace.timezone` for periods; reuse is likely |
-| Repository / write services | IMPLEMENTATION DETAIL STILL OPEN | |
+| “Today” timezone | IMPLEMENTED | `Workspace.timezone` via `getTodayInTimezone` |
+| Repository / write services | IMPLEMENTED | Payment application services + Invoice `lockInvoice` |
 
 ---
 
@@ -220,10 +220,10 @@ No risk score, prediction, AI, or percentage-threshold engine for payments.
 
 | Concept | Classification | Notes |
 | --- | --- | --- |
-| Existing Alert / Notification model | EXISTING MODEL REUSED | Extend types / dedup keys |
-| Payment alert predicates | DOMAIN DECISION | R2-OD-009 |
+| Existing Alert / Notification model | EXISTING MODEL REUSED | `PAYMENT_*` types + `Alert.invoiceId` + unique dedup keys |
+| Payment alert predicates | DOMAIN DECISION | R2-OD-009. Implemented by P-E03-03 |
 | Allocation WARNING threshold | IMPLEMENTATION DETAIL STILL OPEN | Do not invent |
-| On-write vs other trigger | IMPLEMENTATION DETAIL STILL OPEN | TimeEntry mutations already trigger AlertService |
+| On-write vs other trigger | CLOSED by E03-D-ALERT-TRIGGER T3 | Payment C/U/D + Invoice VOID + Invoice amount/`invoiceDate`. No scheduler |
 
 ---
 

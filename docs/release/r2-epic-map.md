@@ -375,7 +375,7 @@ Know whether an invoice is unpaid, partial, paid, mismatched, and/or overdue —
 
 - None. VOID payment-list / write residual is closed by E03-D-VOID-PAYMENTS Option A (`docs/release/r2-e03-payment-tracking.md`).
 - No new payment-status product decision.
-- Deferred technical items (alert trigger / shape, Payment amount sign, naming / currency representation, paymentDate future) remain in the E03 plan. They are not PO residuals.
+- Alert trigger / shape / paymentDate future / amount sign / currency representation are CLOSED by P-E03-01…P-E03-03. They are not PO residuals.
 
 ### 15. Risks / architectural constraints
 
@@ -649,9 +649,9 @@ This document is the release-level planning baseline. R2-E01 is COMPLETE / RELEA
 | Phase | Intent | Status |
 | --- | --- | --- |
 | P-E03-00 | Planning / VOID policy closure | COMPLETE |
-| P-E03-01 | Payment events + derived status | NOT STARTED / NOT AUTHORIZED |
-| P-E03-02 | Payment application service | NOT STARTED / NOT AUTHORIZED |
-| P-E03-03 | Payment alerts via AlertService | NOT STARTED / NOT AUTHORIZED |
+| P-E03-01 | Payment events + derived status | COMPLETE |
+| P-E03-02 | Payment application service | COMPLETE |
+| P-E03-03 | Payment alerts via AlertService | COMPLETE |
 | P-E03-04 | Payment UI | NOT STARTED / NOT AUTHORIZED |
 | P-E03-05 | Engineering Review | NOT STARTED / NOT AUTHORIZED |
 | P-E03-06 | QA | NOT STARTED / NOT AUTHORIZED |

@@ -171,6 +171,15 @@ No risk scores, percentages, AI, or probabilistic thresholds.
 
 Reuse existing `AlertService` when technically appropriate.
 
+P-E03-03 implementation contract (closed):
+
+- T3 on-write evaluation. No scheduler. Calendar `PAYMENT_OVERDUE` gap accepted.
+- Predicates are Invoice-level R2-OD-009. No per-Payment-row alerts.
+- Severity: PARTIAL=INFO, OVERDUE=WARNING, MISMATCH=ERROR.
+- Shape: extend `AlertType`; nullable `Alert.invoiceId`; unique dedup key; semantic resolve by invoiceId + type.
+- Future `paymentDate` allowed and is not an alert input.
+- VOID resolve of active PAYMENT_* alerts is transactional.
+
 **Not in this version:**
 
 - arbitrary percentage thresholds

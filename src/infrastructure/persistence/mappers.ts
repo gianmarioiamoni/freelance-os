@@ -151,6 +151,7 @@ export function mapAlert(row: Alert): AlertRecord {
     severity: row.severity,
     clientId: row.clientId,
     contractId: row.contractId,
+    invoiceId: row.invoiceId,
     periodStart: row.periodStart,
     periodEnd: row.periodEnd,
     deduplicationKey: row.deduplicationKey,

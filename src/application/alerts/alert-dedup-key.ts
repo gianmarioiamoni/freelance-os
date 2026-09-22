@@ -43,3 +43,34 @@ export function buildRetriggerDedupKey(
   const suffix = createdAt.getTime().toString();
   return `${base}:${suffix}`;
 }
+
+const PAYMENT_PREFIX: Record<
+  Extract<AlertType, "PAYMENT_PARTIAL" | "PAYMENT_OVERDUE" | "PAYMENT_MISMATCH">,
+  string
+> = {
+  PAYMENT_PARTIAL: "pp",
+  PAYMENT_OVERDUE: "po",
+  PAYMENT_MISMATCH: "pm",
+};
+
+/**
+ * Deterministic invoice-scoped key.
+ * Format: "{prefix}:{workspaceId}:{invoiceId}"
+ * Re-trigger appends a timestamp suffix, same convention as contract alerts.
+ */
+export function buildPaymentAlertDedupKey(
+  type: Extract<AlertType, "PAYMENT_PARTIAL" | "PAYMENT_OVERDUE" | "PAYMENT_MISMATCH">,
+  workspaceId: string,
+  invoiceId: string,
+): string {
+  return `${PAYMENT_PREFIX[type]}:${workspaceId}:${invoiceId}`;
+}
+
+export function buildPaymentRetriggerDedupKey(
+  type: Extract<AlertType, "PAYMENT_PARTIAL" | "PAYMENT_OVERDUE" | "PAYMENT_MISMATCH">,
+  workspaceId: string,
+  invoiceId: string,
+  createdAt: Date,
+): string {
+  return `${buildPaymentAlertDedupKey(type, workspaceId, invoiceId)}:${createdAt.getTime()}`;
+}

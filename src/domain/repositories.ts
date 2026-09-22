@@ -221,6 +221,16 @@ export type AlertRepository = {
     type: AlertType,
     periodStart: Date,
   ): Promise<AlertRecord | null>;
+  /**
+   * Returns the currently-active payment alert for
+   * (workspaceId, invoiceId, type, resolvedAt IS NULL).
+   * Independent of the deduplication key after re-trigger.
+   */
+  findActiveAlertByInvoiceAndType(
+    workspaceId: string,
+    invoiceId: string,
+    type: AlertType,
+  ): Promise<AlertRecord | null>;
   resolveAlert(
     workspaceId: string,
     alertId: string,

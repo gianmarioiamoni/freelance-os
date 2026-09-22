@@ -18,6 +18,7 @@ export function createAlertRepository(db: PrismaExecutor): AlertRepository {
               severity: input.severity,
               clientId: input.clientId ?? null,
               contractId: input.contractId ?? null,
+              invoiceId: input.invoiceId ?? null,
               periodStart: input.periodStart ?? null,
               periodEnd: input.periodEnd ?? null,
               deduplicationKey: input.deduplicationKey,
@@ -60,6 +61,24 @@ export function createAlertRepository(db: PrismaExecutor): AlertRepository {
             contractId,
             type,
             periodStart,
+            resolvedAt: null,
+          },
+        });
+        return row ? mapAlert(row) : null;
+      });
+    },
+
+    async findActiveAlertByInvoiceAndType(
+      workspaceId: string,
+      invoiceId: string,
+      type: AlertType,
+    ) {
+      return withPersistenceErrors(async () => {
+        const row = await db.alert.findFirst({
+          where: {
+            workspaceId,
+            invoiceId,
+            type,
             resolvedAt: null,
           },
         });
