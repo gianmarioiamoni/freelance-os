@@ -250,8 +250,12 @@ Accrued uses Commercial Snapshot semantics (R2-OD-003). P-E01-01 persists
 R2-OD-016 / R2-OD-017 are implemented. Accrued and Expected are published
 by AnalyticsService (P-E01-02 / P-E01-03). E01 is COMPLETE / RELEASE-READY.
 Canonical text: `docs/release/r2-e01-revenue-visibility.md`.
-R2-E02 Invoice Tracking plan: `docs/release/r2-e02-invoice-tracking.md`
-(P-E02-00 COMPLETE / READY FOR IMPLEMENTATION).
+R2-E02 Invoice Tracking record exists (`Invoice` table). Operational
+fields only: date, amount, currency snapshot, optional reference,
+snapshotted `paymentTermsDays` / `dueDate`, VOID via `voidedAt`.
+Not a fiscal invoice. Invoice does not modify Accrued / Expected.
+Payment is not implemented. E02 is COMPLETE WITH NON-BLOCKING FINDING
+(`docs/release/r2-e02-invoice-tracking.md`).
 
 ## 13. Capacity Model
 

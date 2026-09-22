@@ -58,7 +58,7 @@ These are the product / planning decisions still required before the correspondi
 | --- | --- |
 | Historical ID | R2-OD-011 residual; D7 |
 | Decision | Invoice persists its own currency snapshot. It must equal `Contract.currency` at write. Invoice currency is immutable after create. Not FX. Not a live reread. |
-| Status | APPROVED / CLOSED by R2-E02 P-E02-00 (`docs/release/r2-e02-invoice-tracking.md` E02-D01) |
+| Status | APPROVED / CLOSED / implemented by R2-E02 (`docs/release/r2-e02-invoice-tracking.md` E02-D01) |
 | Needed by | R2-E02 |
 
 ### 4. Exact Invoice VOID behaviour and UI semantics
@@ -67,7 +67,7 @@ These are the product / planning decisions still required before the correspondi
 | --- | --- |
 | Historical ID | R2-OD-007 residual |
 | Decision | VOID is one-way soft-delete. Default lists exclude VOID. Get-by-id remains. Optional voided filter on the Contract invoice list. No restore in R2. No distinct physical-delete state. VOID is excluded from Accrued / Expected and from active payment aggregates. E03 still owns payment-row interaction. |
-| Status | APPROVED / CLOSED by R2-E02 P-E02-00 (`docs/release/r2-e02-invoice-tracking.md` E02-D02) |
+| Status | APPROVED / CLOSED / implemented by R2-E02 (`docs/release/r2-e02-invoice-tracking.md` E02-D02) |
 | Needed by | R2-E02 (closed). E03 payment-list residual remains E03-owned |
 
 ### 5. Simple CSV export in R2-E05
@@ -122,12 +122,12 @@ These are the product / planning decisions still required before the correspondi
 | R2-OD-016 | DAILY same-day conflicting snapshots use weighted-average daily rate | APPROVED / implemented |
 | R2-OD-017 | Existing TimeEntries backfilled from current associated Contract | APPROVED / implemented |
 | R2-OD-004 | Expected Revenue is HOURLY contractual capacity / pro-rata; null if capacity unavailable; DAILY has no Expected Revenue in R2 | APPROVED |
-| R2-OD-006 | 1 Contract → many Invoice; 1 Invoice → 1 Contract; tracking fields only | APPROVED |
-| R2-OD-007 | Optional reference; required invoiceDate; no competence period; editable; VOID / soft-delete | APPROVED — VOID list / restore closed by E02-D02 |
-| R2-OD-008 | `paymentTermsDays = null` → no dueDate, no automatic overdue; no default days | APPROVED |
+| R2-OD-006 | 1 Contract → many Invoice; 1 Invoice → 1 Contract; tracking fields only | APPROVED / implemented |
+| R2-OD-007 | Optional reference; required invoiceDate; no competence period; editable; VOID / soft-delete | APPROVED — VOID list / restore closed by E02-D02 / implemented |
+| R2-OD-008 | `paymentTermsDays = null` → no dueDate, no automatic overdue; no default days | APPROVED / implemented |
 | R2-OD-009 | paidAmount sum; UNPAID / PARTIAL / PAID / MISMATCH; PAYMENT_OVERDUE independent | APPROVED |
 | R2-OD-010 | Payment events editable / deletable; status derived; no ledger | APPROVED |
-| R2-OD-011 | Contract currency mutable only before monetary records; then immutable; no FX | APPROVED — Invoice currency snapshot closed by E02-D01 |
+| R2-OD-011 | Contract currency mutable only before monetary records; then immutable; no FX | APPROVED — Invoice currency snapshot closed by E02-D01 / implemented |
 | R2-OD-013 | Optional Contract `allocatedMinutes`; no workspace capacity alerts | APPROVED (WARNING threshold residual) |
 | R2-OD-014 | No period-close / accounting-lock in R2 | OUT OF R2 |
 | R2-OD-015 | No dedicated audit ledger in R2 | OUT OF R2 |
@@ -162,6 +162,6 @@ The residual questions above must be resolved during the epic that needs them. T
 
 R2-E01 (`docs/release/r2-e01-revenue-visibility.md`) implemented class-B snapshot, R2-OD-016, and R2-OD-017. E01 is COMPLETE / RELEASE-READY.
 
-R2-E02 (`docs/release/r2-e02-invoice-tracking.md`) closed residuals #3 and #4 in P-E02-00. E02 is READY FOR IMPLEMENTATION. Implementation is not started.
+R2-E02 (`docs/release/r2-e02-invoice-tracking.md`) implemented Invoice Tracking (P-E02-00…P-E02-07). Residuals #3 and #4 remain APPROVED / CLOSED and are implemented. E02 is COMPLETE WITH NON-BLOCKING FINDING (F-E02-004 test hygiene).
 
-This register does not open E02–E05 implementation. R2 is not production-ready.
+This register does not open E03–E05 implementation. R2 is not production-ready.

@@ -3,7 +3,7 @@
 **Epic:** R2-E02 — Invoice Tracking  
 **Release:** Release 2 — Revenue Operations  
 **MASTER_PLAN identifier:** R2-E02 (`MASTER_PLAN.md` §19)  
-**Status:** P-E02-06 COMPLETE — PASS WITH FINDINGS — READY FOR P-E02-07  
+**Status:** COMPLETE WITH NON-BLOCKING FINDING — P-E02-00…P-E02-07 COMPLETE. Engineering Review PASS WITH FINDINGS. QA PASS WITH FINDINGS. F-E02-001 CLOSED. F-E02-002 CLOSED. F-E02-003 CLOSED. F-E02-004 OPEN (non-blocking / test hygiene).  
 **Authority:** `docs/release/r2-decision-pack.md`  
 **Companions:** `docs/release/r2-epic-map.md`, `docs/release/r2-architecture-delta.md`, `docs/release/r2-open-decisions.md`  
 **Predecessor:** R2-E01 COMPLETE / RELEASE-READY (`docs/release/r2-e01-revenue-visibility.md`, closure `278101a347b6063450c34a91200878e548836edb`)  
@@ -17,10 +17,10 @@ P-E02-03  DERIVED STATUS / DUE DATE        COMPLETE
 P-E02-04  CONTRACT-SCOPED INVOICE UI       COMPLETE
 P-E02-05  ENGINEERING REVIEW               COMPLETE — PASS WITH FINDINGS
 P-E02-06  QA                               COMPLETE — PASS WITH FINDINGS
-P-E02-07  DOCUMENTATION / EPIC CLOSURE     NOT STARTED
+P-E02-07  DOCUMENTATION / EPIC CLOSURE     COMPLETE
 
-R2-E02: P-E02-06 COMPLETE — PASS WITH FINDINGS
-IMPLEMENTATION: IN PROGRESS
+R2-E02: COMPLETE WITH NON-BLOCKING FINDING
+IMPLEMENTATION: P-E02-01 + P-E02-02 + P-E02-03 + P-E02-04
 R1: FROZEN / GRANTED
 R2-E01: COMPLETE / RELEASE-READY
 R2: NOT PRODUCTION-READY
@@ -1039,10 +1039,10 @@ VERDICT:                 PASS WITH FINDINGS
 BLOCKING FINDINGS:       NONE
 F-E02-001:               CLOSED — concurrency lock
 F-E02-002:               CLOSED — VOID update WHERE
-F-E02-003:               OPEN — companion docs stale → P-E02-07
-F-E02-004:               OPEN — LOW — parallel E2E timeout (isolated PASS)
-P-E02:                   NOT BLOCKED
-P-E02-07:                AUTHORIZED
+F-E02-003:               CLOSED — companions synchronized in P-E02-07
+F-E02-004:               OPEN — NON-BLOCKING / TEST HYGIENE
+P-E02:                   COMPLETE WITH NON-BLOCKING FINDING
+P-E02-07:                COMPLETE
 PRODUCTION READINESS:    UNCHANGED (R2 not production-ready)
 ```
 
@@ -1055,6 +1055,21 @@ Full QA: § P-E02-06 QA Gate below.
 | Objective | Align companions to implemented E02. Do not mark R2 production-ready |
 | Dependencies | P-E02-06 |
 | Exit criteria | Plan status COMPLETE / RELEASE-READY or equivalent evidenced close. Next = R2-E03. R2 not production-ready |
+| Status | **COMPLETE** — E02 COMPLETE WITH NON-BLOCKING FINDING |
+
+**HEAD closed:** this P-E02-07 commit.
+
+```text
+VERDICT:                 COMPLETE WITH NON-BLOCKING FINDING
+F-E02-001:               CLOSED
+F-E02-002:               CLOSED
+F-E02-003:               CLOSED — companions synchronized
+F-E02-004:               OPEN — NON-BLOCKING / TEST HYGIENE
+BLOCKING FINDINGS:       NONE
+R2-E02:                  COMPLETE WITH NON-BLOCKING FINDING
+NEXT R2 WORK:            R2-E03 Payment Tracking (detailed plan)
+PRODUCTION READINESS:    UNCHANGED (R2 not production-ready)
+```
 
 ---
 
@@ -1318,10 +1333,10 @@ INV-E02-01…16 hold on the same evidence. INV-E02-16: Contract-scoped list neve
 | --- | --- |
 | Severity | low |
 | Area | Documentation |
-| Status | **OPEN** |
-| Evidence | Companions still describe E02 as not started / persistence absent. This plan and the code are the authority. |
-| Impact | Planning companions stale. Implementation and this QA are unaffected. |
-| Remediation | Synchronize in P-E02-07. Do not rewrite R1 freeze snapshots. |
+| Status | **CLOSED** — P-E02-07 |
+| Evidence | QA recorded companions stale. P-E02-07 synchronized `r2-epic-map.md`, `r2-architecture-delta.md`, `r2-open-decisions.md`, `MASTER_PLAN.md`, `CHANGELOG.md`, `README.md`, `docs/architecture.md`, `docs/domain-model.md`, `docs/product-vision.md`, and `docs/storage.md`. |
+| Impact | Companions now match implemented E02. |
+| Remediation | Synchronized in P-E02-07. Do not rewrite R1 freeze snapshots. |
 | Recommended phase | P-E02-07 |
 
 #### F-E02-004
@@ -1330,11 +1345,11 @@ INV-E02-01…16 hold on the same evidence. INV-E02-16: Contract-scoped list neve
 | --- | --- |
 | Severity | low |
 | Area | Environment / E2E |
-| Status | **OPEN** |
+| Status | **OPEN — NON-BLOCKING / TEST HYGIENE** (historical) |
 | Evidence | Parallel Playwright (5 workers) timed out `contracts.spec.ts` at 30s. Isolated rerun: 16.3s PASS. Same file passed in P-E02-05 with 2 workers. Product paths in that file are unchanged by E02 except the currency-guard error after invoices exist, which is covered by `contract-invoices.spec.ts`. |
-| Impact | No application defect. Parallel E2E load + default 30s timeout. |
-| Remediation | Do not change product code. Optional timeout / worker hygiene later. Not required for E02 closure. |
-| Recommended phase | Optional test hygiene. Does not block P-E02-07. |
+| Impact | No application defect. Parallel E2E load + default 30s timeout. Does not block E02 closure. |
+| Remediation | None in product code. Optional later timeout / worker hygiene. Not required for E02 closure. Not remediating here. |
+| Recommended phase | Optional test hygiene. Does not block E02. |
 
 ### Regression
 
@@ -1367,10 +1382,85 @@ PASS. Repository and application queries carry `workspaceId`. `invoiceId` / `con
 | Item | Value |
 | --- | --- |
 | Blocker | No |
-| E02 release-ready | No — P-E02-07 documentation closure remains |
-| Open findings | F-E02-003, F-E02-004 |
+| E02 release-ready | COMPLETE WITH NON-BLOCKING FINDING after P-E02-07 |
+| Open findings | F-E02-004 (non-blocking / test hygiene) |
 | PO decision required | No |
-| P-E02-07 | **AUTHORIZED** |
+| P-E02-07 | COMPLETE |
 | R2 production-ready | No |
 
-P-E02-07 may start. P-E02-07 is **not** started by this QA.
+---
+
+## P-E02-07 Documentation / Epic closure
+
+**Date:** 2026-09-22  
+**Phase:** P-E02-07  
+**Scope:** Documentation only. No application, schema, Payment, or UX change.
+
+### Verdict
+
+**COMPLETE WITH NON-BLOCKING FINDING**
+
+Companions identified by F-E02-003 are aligned to the implemented E02
+scope, Engineering Review, concurrency remediation, and QA Gate.
+F-E02-004 remains as historical test hygiene. No new product decision.
+R2-E02 is closed as an epic. R2 as a release is not production-ready.
+
+### F-E02-003 remediation
+
+| Companion | Alignment |
+| --- | --- |
+| `docs/release/r2-epic-map.md` | E02 / P-E02-01…P-E02-07 status set to implemented / COMPLETE. ER PASS WITH FINDINGS. QA PASS WITH FINDINGS. |
+| `docs/release/r2-architecture-delta.md` | Invoice table exists. Payment `expectedPaymentDate` reads Invoice `dueDate` / snapshotted terms. Payment remains unimplemented. |
+| `docs/release/r2-open-decisions.md` | Residuals #3 / #4 remain APPROVED / CLOSED and marked implemented. Residuals #1 / #2 / #5 unchanged. |
+| `MASTER_PLAN.md` | §4 / §19 / next-actions: E02 COMPLETE WITH NON-BLOCKING FINDING. Next work = R2-E03 detailed plan. |
+| `CHANGELOG.md` | Unreleased entry for E02 closure. Historical rows not rewritten. |
+| `README.md` | Status line: E02 COMPLETE WITH NON-BLOCKING FINDING. Next = E03 plan. R2 not production-ready. |
+| `docs/architecture.md` | Invoice Tracking persistence implemented. §35 invoice-aggregate residual no longer “persistence not implemented”. |
+| `docs/domain-model.md` | §12 Invoice Tracking record exists; E02 COMPLETE WITH NON-BLOCKING FINDING. Accrued / Expected unchanged. |
+| `docs/product-vision.md` | §14 E02 COMPLETE WITH NON-BLOCKING FINDING. E03–E05 remain in planning. |
+| `docs/storage.md` | Invoice table recorded. Payment still not designed here. No invoice lifecycle. |
+
+R1 freeze / certification / production-validation snapshots were not rewritten.
+
+### Documented E02 semantics (unchanged)
+
+- Invoice Tracking is an operational record. Not fiscal invoicing, numbering, PDF, SDI, lines, or Invoice Lifecycle.
+- 1 Contract → N Invoice; Invoice → exactly one Contract.
+- Create snapshots Contract `currency` and `paymentTermsDays`. `dueDate` is computed and stored. Later Contract term edits do not rewrite Invoice rows. `invoiceDate` edit recomputes `dueDate` from the Invoice snapshot, not live Contract terms.
+- Invoice currency is immutable after create. Contract currency is immutable after the first Invoice, including VOID.
+- VOID is one-way soft-delete via `voidedAt`. Default lists exclude VOID. Get-by-id remains. No restore. No physical delete.
+- Derived `amountStatus` / overdue are read-time. E02 has no Payment; reads pass `paidAmount = 0`. Effective amount status is UNPAID.
+- Invoice does not write Accrued or Expected. Analytics / reporting do not read Invoice.
+- Payment is not implemented.
+
+### QA evidence (from P-E02-06; not re-run)
+
+| Item | Value |
+| --- | --- |
+| QA Verdict | PASS WITH FINDINGS |
+| F-E02-001 | CLOSED |
+| F-E02-002 | CLOSED |
+| F-E02-003 | CLOSED (this phase) |
+| F-E02-004 | OPEN — NON-BLOCKING / TEST HYGIENE |
+| Unit | 572 / 572 |
+| Integration | 289 / 289 |
+| E02 targeted integration + concurrency | 28 / 28 |
+| E01 regression | 63 / 63 |
+| E2E contract-invoices | 1 / 1 |
+| E2E contracts isolated | 1 / 1 |
+| E2E reports | 21 / 21 |
+| E2E dashboard | 5 / 5 |
+| Typecheck / lint / build | PASS |
+| AC-01…AC-17 | PASS |
+| INV-E02-01…16 | PASS |
+| Blocker | None |
+
+### Final status
+
+```text
+R2-E02 Invoice Tracking = COMPLETE WITH NON-BLOCKING FINDING
+
+NEXT:                      R2-E03 Payment Tracking (detailed plan)
+E03 / E04 / E05:           NOT COMPLETE
+R2 PRODUCTION-READY:       NO
+```

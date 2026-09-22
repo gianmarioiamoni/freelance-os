@@ -1,11 +1,11 @@
 # R2 Architecture Delta — Revenue Operations
 
-**Status:** Domain and persistence-planning delta. R2-E01 snapshot / Accrued / Expected are implemented. Remaining R2 technical implementation is not authorized by this document.  
+**Status:** Domain and persistence-planning delta. R2-E01 snapshot / Accrued / Expected are implemented. R2-E02 Invoice Tracking is implemented. Remaining R2 technical implementation (E03–E05) is not authorized by this document.  
 **Date:** 2026-09-22  
 **Authority:** `docs/release/r2-decision-pack.md`  
 **Baseline:** R1 architecture (`docs/architecture.md`, `docs/domain-model.md`, `docs/storage.md`) remains the frozen R1 baseline.
 
-This document records what must change conceptually for R2. It does not authorize E02–E05 Prisma schema, migrations, APIs, UI, or services. It does not invent final Prisma field names unless they already exist in the repository.
+This document records what must change conceptually for R2. It does not authorize E03–E05 Prisma schema, migrations, APIs, UI, or services. Invoice Prisma names exist (`Invoice`). It does not invent Payment or `allocatedMinutes` Prisma names.
 
 Legend:
 
@@ -43,7 +43,7 @@ These already exist. R2 must not invent a second source of truth.
 | Fact | R1 location | R2 use | Classification |
 | --- | --- | --- | --- |
 | `Contract.currency` ISO-4217 | EPIC-102 | Economic currency authority (D7, R2-OD-011) | EXISTING MODEL REUSED |
-| `Contract.paymentTermsDays` / `paymentTermsNote` | EPIC-102 | Expected payment date (D5, R2-OD-008) | EXISTING MODEL REUSED |
+| `Contract.paymentTermsDays` / `paymentTermsNote` | EPIC-102 | Write-time source for Invoice `dueDate` snapshot (D5, R2-OD-008, E02-D11) | EXISTING MODEL REUSED |
 | `Contract.billingModel`, `rate` | EPIC-102 | Accrued / Expected Revenue (D4) | EXISTING MODEL REUSED |
 | `Contract.monthlyContractedMinutes` | EPIC-102 | HOURLY Expected Revenue capacity (R2-OD-004) | EXISTING MODEL REUSED |
 | `Workspace.currency` | EPIC-004 | Create-form default only. **Not** a reporting base currency (D7) | EXISTING MODEL REUSED |
@@ -61,8 +61,8 @@ These already exist. R2 must not invent a second source of truth.
 
 - Currency belongs to the Contract.
 - Contract determines the currency of economic conditions, Invoice Tracking, and Payment Tracking.
-- Payment terms used for expected payment date are `paymentTermsDays` (D5).
-- `paymentTermsDays = null` produces no `dueDate` and no automatic overdue (R2-OD-008).
+- Payment terms used for Invoice `dueDate` are snapshotted `paymentTermsDays` at Invoice write (D5, E02-D11). E03 expected payment date reads Invoice `dueDate`, not live Contract terms.
+- `paymentTermsDays = null` at Invoice write produces no `dueDate` and no automatic overdue (R2-OD-008).
 - A payment-term catalog (OBD-010) is not required.
 - Contract currency may change only before monetary records exist. After the first Invoice or Payment event, currency is immutable (R2-OD-011).
 - Optional Contract / Project Time Allocation uses `allocatedMinutes`, distinct from `monthlyContractedMinutes` (R2-OD-013).
@@ -157,11 +157,11 @@ Historical architecture text that assumed “future invoice generation should sn
 
 | Concept | Classification | Notes |
 | --- | --- | --- |
-| Invoice Tracking record | CONFIRMED REQUIREMENT | New operational aggregate. No current table |
+| Invoice Tracking record | EXISTING MODEL REUSED | `Invoice` table (P-E02-01). Operational; not fiscal |
 | Cardinality 1 Contract : N Invoice | DOMAIN DECISION | |
 | VOID / soft-delete | DOMAIN DECISION | One-way. Default lists exclude VOID. Get-by-id remains. No restore in R2. Closed by E02-D02 |
 | Invoice currency snapshot | DOMAIN DECISION | Persist snapshot; must match Contract at write; immutable after create. Closed by E02-D01 |
-| Persistence name, repository, indexes | IMPLEMENTATION DETAIL STILL OPEN | Prisma names in P-E02-01 |
+| Persistence name, repository, indexes | IMPLEMENTED | `Invoice`; `@@unique([workspaceId, id])`; indexes `(workspaceId, contractId, invoiceDate)`, `(workspaceId, voidedAt)` |
 | Invoice lines / numbering / PDF / credit notes | Out of R2 | Do not model |
 
 ---
@@ -178,10 +178,11 @@ Derived:
 
 ```text
 paidAmount            = sum(paymentEvents.amount)
-expectedPaymentDate   = invoiceDate + contract.paymentTermsDays
-                      = absent when paymentTermsDays is null
+expectedPaymentDate   = Invoice.dueDate
+                      = invoiceDate + Invoice.paymentTermsDays (snapshot at Invoice write)
+                      = absent when Invoice.paymentTermsDays is null
 UNPAID / PARTIAL / PAID / MISMATCH  from paidAmount vs invoice amount
-PAYMENT_OVERDUE       = dueDate < today AND paidAmount < invoice.amount
+PAYMENT_OVERDUE       = Invoice.dueDate < today AND paidAmount < invoice.amount
 ```
 
 Payment events may be edited and deleted. Status is recalculated. No ledger / reversal model (R2-OD-010).
@@ -249,18 +250,18 @@ No risk score, prediction, AI, or percentage-threshold engine for payments.
 
 ## 10. Data-model delta (planning only)
 
-No E02–E05 migrations. No invented Prisma names. E01 TimeEntry snapshot columns already exist.
+No E03–E05 migrations. Invoice Prisma names exist. No invented Payment / `allocatedMinutes` names. E01 TimeEntry snapshot columns already exist.
 
 | Concept | Classification | Existing? | Planning note |
 | --- | --- | --- | --- |
-| Invoice | CONFIRMED REQUIREMENT | No | 1 Contract : N Invoice; VOID / soft-delete; editable; no fiscal fields |
+| Invoice | EXISTING MODEL REUSED | Yes (P-E02-01) | 1 Contract : N Invoice; VOID / soft-delete; editable; no fiscal fields |
 | Payment event | CONFIRMED REQUIREMENT | No | Many per Invoice; editable / deletable; status derived |
 | Contract `allocatedMinutes` | CONFIRMED REQUIREMENT | No | Optional total project budget. Distinct from `monthlyContractedMinutes` |
 | Historical commercial snapshot | EXISTING MODEL REUSED | Yes (P-E01-01) | TimeEntry `snapshotBillingModel`, `snapshotRate`, `snapshotCurrency` |
 | Derived payment status | CONFIRMED REQUIREMENT | n/a | Function of payment events, not a source of truth |
-| Invoice VOID state | DOMAIN DECISION | No | One-way soft-delete. Closed by E02-D02 |
-| Contract currency immutability | CONFIRMED REQUIREMENT | Write rule only | After first monetary record, including VOID |
-| Invoice currency snapshot | DOMAIN DECISION | No | Closed by E02-D01 |
+| Invoice VOID state | DOMAIN DECISION | Yes | One-way soft-delete. Closed by E02-D02 |
+| Contract currency immutability | CONFIRMED REQUIREMENT | Write rule only | After first monetary record, including VOID. Implemented for Invoice |
+| Invoice currency snapshot | DOMAIN DECISION | Yes | Closed by E02-D01. Immutable after create |
 | Accrued / Expected / Forecast tables | IMPLEMENTATION DETAIL STILL OPEN | Derived preferred | Persist only if a later plan proves need |
 | `monthlyContractedMinutes`, `rate`, `currency`, `paymentTermsDays` | EXISTING MODEL REUSED | Yes | Do not conflate with `allocatedMinutes` |
 
@@ -288,7 +289,7 @@ PIVA Balance remains outside the monolith boundary.
 
 ### TECHNICAL IMPLEMENTATION TO BE PLANNED
 
-- Repository split for Invoice Tracking and Payment.
+- Repository split for Invoice Tracking (implemented) and Payment (E03).
 - Revenue lives under AnalyticsService (R2-E01 implemented). Do not add a parallel RevenueService.
 - Reporting/export module if simple CSV is approved in R2-E05.
 
@@ -312,13 +313,12 @@ R1 baseline documents keep their historical text. Canonical R2 meaning is this d
 
 ## 13. What this document does not decide
 
-- Prisma models or migrations
-- Final Prisma field names for new concepts
-- API routes or Server Actions
-- UI routes or components
-- Exact service class names
-- Index / constraint design
+- Prisma models or migrations for E03–E05
+- Final Prisma field names for Payment / `allocatedMinutes`
+- API routes or Server Actions for E03–E05
+- UI routes or components for E03–E05
+- Exact Payment service class names
 - Whether revenue totals are persisted
 - Forecast arithmetic
 - Allocation WARNING threshold
-- Prisma names for Invoice / Payment / `allocatedMinutes`
+- Prisma names for Payment / `allocatedMinutes`

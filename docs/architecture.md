@@ -1133,8 +1133,11 @@ document. Accrued Revenue uses Commercial Snapshot semantics (R2-OD-003).
 P-E01-01 persists `snapshotBillingModel`, `snapshotRate`, and
 `snapshotCurrency` on TimeEntry. R2-OD-016 / R2-OD-017 are implemented.
 Canonical text: `docs/release/r2-e01-revenue-visibility.md`.
-R2-E02 Invoice Tracking plan: `docs/release/r2-e02-invoice-tracking.md`
-(P-E02-00 COMPLETE / READY FOR IMPLEMENTATION).
+R2-E02 Invoice Tracking: `docs/release/r2-e02-invoice-tracking.md`
+(COMPLETE WITH NON-BLOCKING FINDING). Persistence is the `Invoice`
+table. Currency and payment-terms snapshots are immutable after create.
+`dueDate` is stored from the Invoice snapshot, not live Contract terms.
+Invoice does not modify Accrued / Expected. Payment is not implemented.
 
 ---
 
@@ -1717,7 +1720,7 @@ The following are intentionally not frozen yet:
 - database schema/index design;
 - audit-log implementation (out of R2 — R2-OD-015);
 - holiday/vacation architecture;
-- invoice aggregate design (superseded for R2: Invoice Tracking, not generation — planned in `docs/release/r2-e02-invoice-tracking.md`; persistence not implemented);
+- invoice aggregate design (superseded for R2: Invoice Tracking, not generation — implemented in `docs/release/r2-e02-invoice-tracking.md`);
 - AI provider and tool-calling architecture;
 - advanced caching strategy.
 

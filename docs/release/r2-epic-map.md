@@ -1,17 +1,17 @@
 # R2 Epic Map — Planning Baseline
 
-**Status:** Executable planning baseline. R2-E01 COMPLETE / RELEASE-READY. R2-E02 detailed plan COMPLETE / READY FOR IMPLEMENTATION. E03–E05 detailed plans still required. No EPIC-2xx opened. R2 is not production-ready.  
+**Status:** Executable planning baseline. R2-E01 COMPLETE / RELEASE-READY. R2-E02 COMPLETE WITH NON-BLOCKING FINDING. E03–E05 detailed plans still required. No EPIC-2xx opened. R2 is not production-ready.  
 **Date:** 2026-09-22  
 **Authority:** `docs/release/r2-decision-pack.md`  
 **E01 plan:** `docs/release/r2-e01-revenue-visibility.md`  
 **E02 plan:** `docs/release/r2-e02-invoice-tracking.md`  
-**Does not:** authorize E02–E05 schema, migrations, APIs, UI, or implementation branches.
+**Does not:** authorize E03–E05 schema, migrations, APIs, UI, or implementation branches.
 
 ```text
 PLANNING BASELINE (E03–E05)
 R2-E01: COMPLETE / RELEASE-READY
-R2-E02: READY FOR IMPLEMENTATION (P-E02-00 COMPLETE)
-IMPLEMENTATION: E01 DONE; E02–E05 NOT STARTED
+R2-E02: COMPLETE WITH NON-BLOCKING FINDING
+IMPLEMENTATION: E01 DONE; E02 DONE; E03–E05 NOT STARTED
 R1: FROZEN / GRANTED
 R2: NOT PRODUCTION-READY
 ```
@@ -188,6 +188,9 @@ See what work is already worth (Accrued) and what the HOURLY contract economical
 
 ## R2-E02 — Invoice Tracking
 
+Detailed plan: `docs/release/r2-e02-invoice-tracking.md`.  
+Status: **COMPLETE WITH NON-BLOCKING FINDING.** P-E02-00…P-E02-07 COMPLETE. Engineering Review PASS WITH FINDINGS. QA PASS WITH FINDINGS. F-E02-001 CLOSED. F-E02-002 CLOSED. F-E02-003 CLOSED. F-E02-004 OPEN (non-blocking / test hygiene).
+
 ### 1. Objective
 
 Register operational invoice tracking records so payments can be expected and reconciled. Not fiscal invoicing.
@@ -233,9 +236,9 @@ Independent of R2-E01. Detailed plan: `docs/release/r2-e02-invoice-tracking.md`.
 
 ### 8. Persistence impact
 
-- Confirmed: new Invoice Tracking record; VOID / soft-delete.
-- Closed: Invoice currency snapshot (E02-D01). Prisma names remain P-E02-01.
-- No invoice-line table.
+- Implemented (P-E02-01): `Invoice` table; VOID / soft-delete via `voidedAt`.
+- Implemented: Invoice currency snapshot (E02-D01); `paymentTermsDays` / `dueDate` snapshots (E02-D11).
+- No invoice-line table. No Payment table.
 
 ### 9. Analytics / reporting impact
 
@@ -562,7 +565,7 @@ Inspect R2 operational facts over existing period selection without building a s
 | Commercial snapshot semantics | APPROVED; TimeEntry snapshot implemented in E01 |
 | Period closure | OUT OF R2 (R2-OD-014) |
 | Audit ledger | OUT OF R2 (R2-OD-015) |
-| Multi-currency | D7 + R2-OD-011; Invoice snapshot residual |
+| Multi-currency | D7 + R2-OD-011; Invoice snapshot implemented (E02-D01) |
 | Workspace isolation | Unchanged R1 rule for every new aggregate |
 
 ---
@@ -596,7 +599,7 @@ Vision → Architecture → Planning → Implementation → Engineering Review
 Release → Epic → Phase → Commit
 ```
 
-This document is the release-level planning baseline. R2-E01 is COMPLETE / RELEASE-READY (`docs/release/r2-e01-revenue-visibility.md`). It does not open E02–E05 implementation or invent commit hashes.
+This document is the release-level planning baseline. R2-E01 is COMPLETE / RELEASE-READY (`docs/release/r2-e01-revenue-visibility.md`). R2-E02 is COMPLETE WITH NON-BLOCKING FINDING (`docs/release/r2-e02-invoice-tracking.md`). It does not open E03–E05 implementation or invent commit hashes.
 
 ### Release-level
 
@@ -605,8 +608,8 @@ This document is the release-level planning baseline. R2-E01 is COMPLETE / RELEA
 | Vision | Complete — decision pack |
 | Architecture | Complete as domain delta — `r2-architecture-delta.md` |
 | Planning | This baseline. E01 detailed plan complete. E02 detailed plan complete. E03–E05 EPIC-2xx plans still required |
-| Implementation | R2-E01 COMPLETE / RELEASE-READY. E02 READY FOR IMPLEMENTATION (P-E02-00). E02–E05 implementation not started |
-| Engineering Review → Release | E01 ER + QA complete. R2 release gates not started. Do not mark R2 production-ready |
+| Implementation | R2-E01 COMPLETE / RELEASE-READY. R2-E02 COMPLETE WITH NON-BLOCKING FINDING. E03–E05 implementation not started |
+| Engineering Review → Release | E01 and E02 ER + QA complete. R2 release gates not started. Do not mark R2 production-ready |
 
 ### Proposed small phases (planning labels only)
 
@@ -628,13 +631,13 @@ This document is the release-level planning baseline. R2-E01 is COMPLETE / RELEA
 | Phase | Intent | Status |
 | --- | --- | --- |
 | P-E02-00 | Planning / decision closure | COMPLETE |
-| P-E02-01 | Persistence / domain foundation | NOT STARTED |
-| P-E02-02 | Invoice application service + Contract currency guard | NOT STARTED |
-| P-E02-03 | Derived status / due-date behaviour | NOT STARTED |
-| P-E02-04 | Contract-scoped invoice UI | NOT STARTED |
-| P-E02-05 | Engineering Review | NOT STARTED |
-| P-E02-06 | QA | NOT STARTED |
-| P-E02-07 | Documentation / Epic closure | NOT STARTED |
+| P-E02-01 | Persistence / domain foundation | COMPLETE |
+| P-E02-02 | Invoice application service + Contract currency guard | COMPLETE |
+| P-E02-03 | Derived status / due-date behaviour | COMPLETE |
+| P-E02-04 | Contract-scoped invoice UI | COMPLETE |
+| P-E02-05 | Engineering Review | COMPLETE — PASS WITH FINDINGS |
+| P-E02-06 | QA | COMPLETE — PASS WITH FINDINGS |
+| P-E02-07 | Documentation / Epic closure | COMPLETE |
 
 **R2-E03**
 
