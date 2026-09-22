@@ -3,7 +3,7 @@
 **Epic:** R2-E02 — Invoice Tracking  
 **Release:** Release 2 — Revenue Operations  
 **MASTER_PLAN identifier:** R2-E02 (`MASTER_PLAN.md` §19)  
-**Status:** P-E02-04 COMPLETE — READY FOR P-E02-05  
+**Status:** P-E02-05 COMPLETE — PASS WITH FINDINGS — READY FOR P-E02-06  
 **Authority:** `docs/release/r2-decision-pack.md`  
 **Companions:** `docs/release/r2-epic-map.md`, `docs/release/r2-architecture-delta.md`, `docs/release/r2-open-decisions.md`  
 **Predecessor:** R2-E01 COMPLETE / RELEASE-READY (`docs/release/r2-e01-revenue-visibility.md`, closure `278101a347b6063450c34a91200878e548836edb`)  
@@ -15,11 +15,11 @@ P-E02-01  PERSISTENCE / DOMAIN FOUNDATION  COMPLETE
 P-E02-02  INVOICE APPLICATION SERVICE      COMPLETE
 P-E02-03  DERIVED STATUS / DUE DATE        COMPLETE
 P-E02-04  CONTRACT-SCOPED INVOICE UI       COMPLETE
-P-E02-05  ENGINEERING REVIEW               NOT STARTED
+P-E02-05  ENGINEERING REVIEW               COMPLETE — PASS WITH FINDINGS
 P-E02-06  QA                               NOT STARTED
 P-E02-07  DOCUMENTATION / EPIC CLOSURE     NOT STARTED
 
-R2-E02: P-E02-04 COMPLETE
+R2-E02: P-E02-05 COMPLETE — PASS WITH FINDINGS
 IMPLEMENTATION: IN PROGRESS
 R1: FROZEN / GRANTED
 R2-E01: COMPLETE / RELEASE-READY
@@ -914,7 +914,7 @@ Regression: Invoice persistence; Contract application / integrity; Accrued / Exp
 
 P-E02-03 is COMPLETE. P-E02-04 remains NOT STARTED. Payment and UI are out of this phase.
 
-The P-E02-02 concurrent Invoice-create / Contract-currency-update race is not resolved here. Carry it to P-E02-05 Engineering Review.
+The P-E02-02 concurrent Invoice-create / Contract-currency-update race is not resolved here. Classified in P-E02-05 as F-E02-001. HIGH. Does not block E02.
 
 ### P-E02-03 — Derived status / due-date behaviour
 
@@ -952,7 +952,7 @@ E02 paidAmount: there is no Payment aggregate. Reads pass `paidAmount = 0`. Effe
 
 Read wiring: `getInvoice` / `listInvoicesForContract` return `InvoiceDerivedView` (`InvoiceRecord` plus derived fields). No `amountStatus` column. No Payment schema. VOID still computes the same predicates and is marked `trackingState = VOID`; it is not an active payable item. No new payment-filtering semantics.
 
-P-E02-02 race finding is unchanged and is carried to P-E02-05 Engineering Review.
+P-E02-02 race finding is unchanged. Classified in P-E02-05 as F-E02-001.
 
 ### P-E02-04 — Contract-scoped invoice UI
 
@@ -994,7 +994,7 @@ E2E evidence: `tests/e2e/contract-invoices.spec.ts` — 1 passed. Covers create,
 
 UX: Invoices section added under existing commercial terms. No Contract detail redesign. Currency is a labeled read-only value. Due date preview is `aria-live`. VOID confirm uses the archive-style alert + confirm control.
 
-P-E02-02 race finding is unchanged and is carried to P-E02-05 Engineering Review. P-E02-05 is not closed.
+P-E02-02 race finding is unchanged. Classified in P-E02-05 as F-E02-001.
 
 ### P-E02-05 — Engineering Review
 
@@ -1005,7 +1005,23 @@ P-E02-02 race finding is unchanged and is carried to P-E02-05 Engineering Review
 | Dependencies | P-E02-04 |
 | Non-scope | New features; E03 payments; reopening D2 |
 | Exit criteria | ER recorded; E01 intact; no silent fiscal / FX / revenue rewrite |
-| Carried finding | P-E02-02 concurrent Invoice create + Contract currency update can bypass the currency guard under Read Committed without row lock / serializable protection. Not resolved in P-E02-03. |
+| Carried finding | P-E02-02 concurrent Invoice create + Contract currency update can bypass the currency guard under Read Committed without row lock / serializable protection. Classified as F-E02-001. |
+| Status | **COMPLETE** — PASS WITH FINDINGS |
+
+**HEAD reviewed:** `454a7936a658a13bb11f84db909cc61bc56c7a84`
+
+```text
+VERDICT:                 PASS WITH FINDINGS
+BLOCKING FINDINGS:       NONE
+F-E02-001:               OPEN — HIGH — currency race
+F-E02-002:               OPEN — MEDIUM — VOID update TOCTOU
+F-E02-003:               OPEN — LOW — companion docs stale
+P-E02:                   NOT BLOCKED
+P-E02-06 QA:             AUTHORIZED
+PRODUCTION READINESS:    UNCHANGED (R2 not production-ready)
+```
+
+Full review: § Engineering Review below.
 
 ### P-E02-06 — QA
 
@@ -1072,3 +1088,109 @@ Planning-only message for P-E02-00:
 ```text
 docs(r2-e02): plan invoice tracking
 ```
+
+---
+
+## P-E02-05 Engineering Review
+
+**Date:** 2026-09-22  
+**Phase:** P-E02-05  
+**Reviewed HEAD:** `454a7936a658a13bb11f84db909cc61bc56c7a84`  
+(`5a9a5b2` P-E02-00 · `1fc3a06` P-E02-01 · `0a05a35` P-E02-02 · `b773402` P-E02-03 · `454a793` P-E02-04)
+
+### Verdict
+
+**PASS WITH FINDINGS**
+
+No blocker. Invoice Tracking matches the approved operational model. Invariants hold on sequential write paths. Currency / VOID concurrency holes are real and classified. E01 Accrued / Expected / reporting are untouched. No Payment table, no fiscal lifecycle, no restore, no physical delete.
+
+### Findings
+
+#### F-E02-001
+
+| Field | Value |
+| --- | --- |
+| Severity | high |
+| Area | Concurrency / INV-E02-04 / INV-E02-05 |
+| Evidence | `createInvoice` is `getContract` then insert. `updateContract` is `existsForContract` then update when currency changes. The two use cases are separate application calls. Repositories expose no `SELECT FOR UPDATE`. Prisma default isolation is Read Committed. `runInTransaction` exists and rebuilds repositories on the transaction client, but neither path uses it. |
+| Impact | Concurrent `existsForContract() → false` on T1 and T2 can commit a Contract currency change after an Invoice exists, or let an Invoice snapshot a currency that the other transaction then changes. Sequential paths reject the change, including after VOID. The invariant is application-enforced only. |
+| Why it is real | Under Read Committed, the existence probe does not lock the Contract row. T1 and T2 can both observe “no invoice” / “current currency”, then write. There is no indirect transactional protection, no composite write, and no database trigger / constraint tying `Contract.currency` mutation to Invoice existence. |
+| Why it does not block E02 | Same class as accepted first-workspace check-then-act (F-004-001). Sequential AC-04 holds. Requires concurrent requests. Architecture does not yet provide a row-lock API; inventing one inside this review is out of scope. |
+| Remediation | Lock the Contract row inside `runInTransaction` on both `createInvoice` and currency-changing `updateContract` (`SELECT FOR UPDATE` of the Contract, then exists/read, then write). Do not switch the whole app to Serializable. A Contract-update trigger that rejects currency change when any Invoice exists is a valid second line; a perpetual `Invoice.currency = Contract.currency` CHECK is the wrong tool (the snapshot is historical). |
+| Recommended phase | Before E03 Payment writes. Not P-E02-06. No PO decision. |
+
+#### F-E02-002
+
+| Field | Value |
+| --- | --- |
+| Severity | medium |
+| Area | Concurrency / INV-E02-15 |
+| Evidence | Application `updateInvoice` rejects VOID via `isActiveInvoice`, then calls the repository. Repository `updateInvoice` uses `WHERE id + workspaceId` only. Repository `voidInvoice` already uses `voidedAt: null`. |
+| Impact | Concurrent VOID + update can edit a VOID invoice. Sequential VOID edit / re-void / no-restore paths are tested and hold. |
+| Remediation | `updateMany` must include `voidedAt: null`. If count is 0 and the row is VOID, raise `InvoiceNotEditableError`. |
+| Recommended phase | Same follow-up as F-E02-001, before E03. Does not block E02. |
+
+#### F-E02-003
+
+| Field | Value |
+| --- | --- |
+| Severity | low |
+| Area | Documentation |
+| Evidence | `docs/release/r2-epic-map.md` still lists P-E02-01…04 as NOT STARTED. `docs/release/r2-open-decisions.md` still says E02 implementation is not started. `docs/architecture.md` still says Invoice persistence is not implemented. `docs/release/r2-architecture-delta.md` still classifies the Invoice table as absent and still derives Payment `expectedPaymentDate` from live `Contract.paymentTermsDays` (superseded by E02-D11 snapshot). |
+| Impact | Companions are stale. This plan and the implemented code are the E02 authority. |
+| Remediation | Synchronize in P-E02-07. Do not rewrite R1 freeze snapshots. Architecture-delta Payment date must point at Invoice `dueDate` / snapshotted terms. |
+| Recommended phase | P-E02-07. Does not block P-E02-06. |
+
+### Verified areas
+
+- Domain: 1 Contract → N Invoice; Invoice → exactly one Contract; `amount > 0` in parse + SQL `Invoice_amount_positive`; `Decimal(19,4)`; currency / paymentTermsDays / dueDate snapshots; `contractId` and Invoice currency immutable after create; ACTIVE / VOID via `voidedAt`; VOID one-way; no `deleteInvoice`; no fiscal fields / numbering / lines / PDF / SDI.
+- Persistence: composite FK `Invoice_workspaceId_contractId_fkey` Restrict; `@@unique([workspaceId, id])`; planned indexes present; `Invoice_dueDate_terms_consistency` CHECK; no Payment model; no `paidAmount` / `amountStatus` columns.
+- Application: create snapshots Contract currency + terms and computes `dueDate`; client-supplied currency must match or is rejected; user terms / dueDate are not write inputs; update recomputes `dueDate` from the Invoice terms snapshot; forbidden update fields rejected; VOID cannot update or restore; re-void rejected; `existsForContract` includes VOID and is workspace-scoped.
+- Snapshots: later Contract currency / terms / rate edits do not rewrite Invoice rows. `invoiceDate` edit uses the Invoice terms snapshot, not live Contract terms.
+- Derived status: exact decimal compare; 0 → UNPAID; partial → PARTIAL; equal → PAID; over → MISMATCH. `isOverdue` uses explicit `today`; no system clock in the predicate; `dueDate = today` not overdue; null `dueDate` not overdue; partial overdue possible; paid / mismatch not overdue. Reads pass `paidAmount = 0`.
+- Timezone: `today = getTodayInTimezone(Workspace.timezone, now)`; calendar dates as UTC midnight; process TZ cannot shift the day.
+- Isolation: every repository method takes `workspaceId`; `invoiceId` / `contractId` are not tenant grants; cross-workspace and cross-contract reads / writes 404 or not-found; currency guard does not see foreign-workspace invoices.
+- UI security: Server Actions resolve `WorkspaceContext`; create binds route `contractId`; update / void require `getInvoiceOnContract`; form payload cannot set currency, contractId, terms, dueDate, or voidedAt; VOID edit route redirects; no restore control.
+- E03 boundary: no Payment table, no Payment UI, no payment lifecycle. Predicates are pure and take `paidAmount`. VOID still computes the same predicates and is marked `trackingState = VOID`. E03-D-VOID-PAYMENTS remains open.
+- E01 boundary: `src/application/analytics/*` and reporting DTOs were not modified by E02 commits. Invoice is not read by Accrued / Expected. No dashboard / report Invoice columns.
+- Performance: Contract-scoped `findMany` with `(workspaceId, contractId, invoiceDate)` index. No serial N+1. Duplicate workspace/contract loads on Contract detail are the existing page-loader pattern, not a new list N+1.
+
+### Test Evidence
+
+Executed for this review (no new tests added):
+
+| Suite | Passed | Failed | Skipped | Result |
+| --- | --- | --- | --- | --- |
+| Unit domain invoice / invoice-derived + invoice application + contract-services + invoice features | 79 | 0 | 0 | PASS |
+| Unit analytics / reporting | 116 | 0 | 0 | PASS |
+| Integration invoice persistence / invoice application / contract-invoice-access / contract application / contract persistence | 34 | 0 | 0 | PASS |
+| Integration Accrued / Expected / revenue-reporting / reporting-service / TimeEntry snapshot | 58 | 0 | 0 | PASS |
+| E2E `contract-invoices.spec.ts` + `contracts.spec.ts` | 2 | 0 | 0 | PASS |
+| `pnpm typecheck` | — | — | — | PASS |
+| `pnpm lint` | — | — | — | PASS |
+
+**Total: 289 passed / 289. Failed: 0. Skipped: 0.**
+
+Coverage notes (not findings): workspace / contract isolation, currency snapshot + guard including VOID, VOID one-way, dueDate snapshot, derived status, overdue / timezone, and Contract-detail E2E are real. Accrued / Expected independence after Invoice writes is design-enforced (analytics does not read Invoice) and is evidenced by the E01 suites staying green, not by a dedicated Invoice-then-Accrued assertion. The currency race has no concurrent test, as expected.
+
+### Concurrency
+
+F-E02-001 is confirmed. The currency invariant is bypassable under concurrent `createInvoice` and `updateContract(currency)` at Read Committed. There is no hidden row lock or serializable wrap. It does **not** block E02. Remediation is Contract-row locking inside the existing transaction helper, optionally plus a Contract-update trigger. Do not implement that remediation in this commit.
+
+F-E02-002 is the same check-then-act class on VOID editability.
+
+### E03 Readiness
+
+- Consume `Invoice.dueDate` and snapshotted `Invoice.paymentTermsDays`. Do not reread live `Contract.paymentTermsDays`.
+- Pass `sum(payment.amount)` into the existing `deriveAmountStatus` / `isOverdue` / `deriveInvoiceFields` predicates. Do not persist `paidAmount` or `amountStatus`.
+- `Payment.currency` must equal `Invoice.currency`.
+- VOID invoices still derive UNPAID / overdue mathematically. E03 must exclude VOID from active paidAmount / outstanding / alert lists. E03-D-VOID-PAYMENTS remains E03-owned. E02 did not invent “delete payments with VOID” or “VOID is a payment status”.
+- Close F-E02-001 before Payment writes if Contract currency immutability after first monetary record must be absolute.
+
+### Release Impact
+
+- Blocker: no
+- E02 release-ready: no (P-E02-06 QA and P-E02-07 closure remain; R2 is not production-ready)
+- Open findings: F-E02-001, F-E02-002, F-E02-003
+- Product Owner decisions: none for E02. E03-D-VOID-PAYMENTS stays with E03.
+- P-E02-06 QA is authorized. P-E02-06 is **not** started by this review.
