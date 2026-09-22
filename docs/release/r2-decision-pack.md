@@ -279,6 +279,8 @@ MVP:
 
 VOID list / restore closed by R2-E02 P-E02-00 (`docs/release/r2-e02-invoice-tracking.md` E02-D02): one-way soft-delete; default lists exclude VOID; get-by-id remains; no restore in R2.
 
+E03-D-VOID-PAYMENTS closed by R2-E03 P-E03-00 (`docs/release/r2-e03-payment-tracking.md`): Option A freeze writes on VOID. Existing Payments may remain and stay readable. No create / update / delete on VOID. No cascade-delete.
+
 ### R2-OD-008 — Missing payment terms — APPROVED
 
 `paymentTermsDays = null` means:

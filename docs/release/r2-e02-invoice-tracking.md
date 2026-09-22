@@ -49,8 +49,9 @@ Closed here (were residual):
 | R2-OD-011 residual — Invoice currency representation | Persist an Invoice currency snapshot. Must equal Contract currency at write. Immutable after create. Not FX. |
 | R2-OD-007 residual — VOID list / restore | VOID is one-way soft-delete. Default lists exclude VOID. Get-by-id remains. Optional voided filter on the Contract invoice list. No restore in R2. No distinct physical-delete state. |
 
-E03 still owns payment-event persistence, alerts, and the exact
-payment-list interaction with VOID invoices. E02 only reserves the
+E03 owns payment-event persistence and alerts. The VOID payment-row
+interaction is closed by E03-D-VOID-PAYMENTS Option A
+(`docs/release/r2-e03-payment-tracking.md`). E02 only reserved the
 linkage contract.
 
 ---
@@ -387,7 +388,7 @@ Options considered:
 - There is no separate `deleted` state. VOID is the only removal
 - VOID invoices still exist for R2-OD-011 currency immutability
 - Edit / VOID-again of a VOID invoice is rejected
-- E03: payment events may remain attached; they are excluded from active tracking. E03 must not physically delete the Invoice to hide payments
+- E03: payment events may remain attached; they are excluded from active tracking. E03 must not physically delete the Invoice to hide payments. Write freeze on VOID is E03-D-VOID-PAYMENTS A (CLOSED)
 
 ### E02-D03 — Invoice editability
 
@@ -543,7 +544,8 @@ from the Invoice snapshot, not from live Contract terms.
 | R2-OD-005 Forecast arithmetic | E04 | Untouched |
 | R2-OD-012 CSV in E05 | E05 | Untouched |
 | R2-OD-013 WARNING threshold | E04 | Untouched |
-| E03-D-VOID-PAYMENTS | E03 | Payment rows attached to VOID invoices; alert exclusion |
+
+E03-D-VOID-PAYMENTS is CLOSED by P-E03-00 — Option A freeze writes on VOID (`docs/release/r2-e03-payment-tracking.md`).
 
 ---
 
@@ -688,7 +690,7 @@ catalogue).
 ```text
 paidAmount(invoice) = sum(payment.amount where payment.invoiceId = invoice.id)
 Payment.currency must equal Invoice.currency
-VOID invoice: payments remain; excluded from active aggregates and alerts
+VOID invoice: payments remain; excluded from active aggregates and alerts; no create/update/delete (E03-D-VOID-PAYMENTS A)
 Invoice amount / VOID / invoiceDate edits in E02 must keep E03 able to
 recompute status from events
 ```
@@ -1183,7 +1185,7 @@ No blocker. Invoice Tracking matches the approved operational model. Invariants 
 - Timezone: `today = getTodayInTimezone(Workspace.timezone, now)`; calendar dates as UTC midnight; process TZ cannot shift the day.
 - Isolation: every repository method takes `workspaceId`; `invoiceId` / `contractId` are not tenant grants; cross-workspace and cross-contract reads / writes 404 or not-found; currency guard does not see foreign-workspace invoices.
 - UI security: Server Actions resolve `WorkspaceContext`; create binds route `contractId`; update / void require `getInvoiceOnContract`; form payload cannot set currency, contractId, terms, dueDate, or voidedAt; VOID edit route redirects; no restore control.
-- E03 boundary: no Payment table, no Payment UI, no payment lifecycle. Predicates are pure and take `paidAmount`. VOID still computes the same predicates and is marked `trackingState = VOID`. E03-D-VOID-PAYMENTS remains open.
+- E03 boundary: no Payment table, no Payment UI, no payment lifecycle. Predicates are pure and take `paidAmount`. VOID still computes the same predicates and is marked `trackingState = VOID`. E03-D-VOID-PAYMENTS was E03-owned at this review; closed by P-E03-00 (Option A).
 - E01 boundary: `src/application/analytics/*` and reporting DTOs were not modified by E02 commits. Invoice is not read by Accrued / Expected. No dashboard / report Invoice columns.
 - Performance: Contract-scoped `findMany` with `(workspaceId, contractId, invoiceDate)` index. No serial N+1. Duplicate workspace/contract loads on Contract detail are the existing page-loader pattern, not a new list N+1.
 
@@ -1216,7 +1218,7 @@ F-E02-002 is the same check-then-act class on VOID editability.
 - Consume `Invoice.dueDate` and snapshotted `Invoice.paymentTermsDays`. Do not reread live `Contract.paymentTermsDays`.
 - Pass `sum(payment.amount)` into the existing `deriveAmountStatus` / `isOverdue` / `deriveInvoiceFields` predicates. Do not persist `paidAmount` or `amountStatus`.
 - `Payment.currency` must equal `Invoice.currency`.
-- VOID invoices still derive UNPAID / overdue mathematically. E03 must exclude VOID from active paidAmount / outstanding / alert lists. E03-D-VOID-PAYMENTS remains E03-owned. E02 did not invent “delete payments with VOID” or “VOID is a payment status”.
+- VOID invoices still derive UNPAID / overdue mathematically. E03 must exclude VOID from active paidAmount / outstanding / alert lists. E03-D-VOID-PAYMENTS was E03-owned at this review; closed by P-E03-00 (Option A). E02 did not invent “delete payments with VOID” or “VOID is a payment status”.
 - Close F-E02-001 before Payment writes if Contract currency immutability after first monetary record must be absolute.
 
 ### Release Impact
@@ -1224,7 +1226,7 @@ F-E02-002 is the same check-then-act class on VOID editability.
 - Blocker: no
 - E02 release-ready: no (P-E02-06 QA and P-E02-07 closure remain; R2 is not production-ready)
 - Open findings: F-E02-001, F-E02-002, F-E02-003
-- Product Owner decisions: none for E02. E03-D-VOID-PAYMENTS stays with E03.
+- Product Owner decisions: none for E02. E03-D-VOID-PAYMENTS was left to E03; closed by P-E03-00 (Option A).
 - P-E02-06 QA is authorized. P-E02-06 is **not** started by this review.
 
 ---

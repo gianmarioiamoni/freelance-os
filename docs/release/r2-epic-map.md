@@ -1,17 +1,19 @@
 # R2 Epic Map — Planning Baseline
 
-**Status:** Executable planning baseline. R2-E01 COMPLETE / RELEASE-READY. R2-E02 COMPLETE WITH NON-BLOCKING FINDING. E03–E05 detailed plans still required. No EPIC-2xx opened. R2 is not production-ready.  
+**Status:** Executable planning baseline. R2-E01 COMPLETE / RELEASE-READY. R2-E02 COMPLETE WITH NON-BLOCKING FINDING. R2-E03 P-E03-00 COMPLETE. P-E03-01 NOT STARTED / NOT AUTHORIZED. E04–E05 detailed plans still required. No EPIC-2xx opened. R2 is not production-ready.  
 **Date:** 2026-09-22  
 **Authority:** `docs/release/r2-decision-pack.md`  
 **E01 plan:** `docs/release/r2-e01-revenue-visibility.md`  
 **E02 plan:** `docs/release/r2-e02-invoice-tracking.md`  
+**E03 plan:** `docs/release/r2-e03-payment-tracking.md`  
 **Does not:** authorize E03–E05 schema, migrations, APIs, UI, or implementation branches.
 
 ```text
-PLANNING BASELINE (E03–E05)
+PLANNING BASELINE (E04–E05; E03 IMPLEMENTATION NOT OPENED)
 R2-E01: COMPLETE / RELEASE-READY
 R2-E02: COMPLETE WITH NON-BLOCKING FINDING
-IMPLEMENTATION: E01 DONE; E02 DONE; E03–E05 NOT STARTED
+R2-E03: P-E03-00 COMPLETE; P-E03-01 NOT STARTED / NOT AUTHORIZED
+IMPLEMENTATION: E01 DONE; E02 DONE; E03–E05 IMPLEMENTATION NOT STARTED
 R1: FROZEN / GRANTED
 R2: NOT PRODUCTION-READY
 ```
@@ -272,7 +274,7 @@ Independent of R2-E01. Detailed plan: `docs/release/r2-e02-invoice-tracking.md`.
 
 ### 14. Product decisions still required
 
-- None for E02. Residual #3 (currency snapshot) and #4 (VOID) are closed in `docs/release/r2-e02-invoice-tracking.md`. E03 still owns payment-row interaction with VOID.
+- None for E02. Residual #3 (currency snapshot) and #4 (VOID list / restore) are closed in `docs/release/r2-e02-invoice-tracking.md`. E03-D-VOID-PAYMENTS is closed in `docs/release/r2-e03-payment-tracking.md` (Option A).
 
 ### 15. Risks / architectural constraints
 
@@ -300,7 +302,8 @@ Know whether an invoice is unpaid, partial, paid, mismatched, and/or overdue —
 - Derived amount status: UNPAID / PARTIAL / PAID / MISMATCH (R2-OD-009).
 - Independent `PAYMENT_OVERDUE` when `dueDate < today AND paidAmount < invoice.amount`.
 - Alerts: `PAYMENT_OVERDUE`, `PAYMENT_PARTIAL`, `PAYMENT_MISMATCH` (D6).
-- Payment events editable and deletable; status recalculated (R2-OD-010).
+- Payment events editable and deletable on ACTIVE invoices; status recalculated (R2-OD-010).
+- VOID freeze: no Payment create / update / delete on VOID (E03-D-VOID-PAYMENTS A). Existing payments remain readable.
 - Reuse `AlertService` when technically appropriate.
 
 ### 4. Explicitly out of scope
@@ -359,6 +362,7 @@ Know whether an invoice is unpaid, partial, paid, mismatched, and/or overdue —
 - PARTIAL + OVERDUE can appear together.
 - Over-payment is MISMATCH, not a hidden PAID.
 - Null payment terms never produce OVERDUE.
+- VOID Invoice rejects Payment create / update / delete; existing events remain readable.
 
 ### 13. Acceptance criteria
 
@@ -369,8 +373,9 @@ Know whether an invoice is unpaid, partial, paid, mismatched, and/or overdue —
 
 ### 14. Product decisions still required
 
-- VOID invoices’ interaction with payment lists (depends on residual #4).
+- None. VOID payment-list / write residual is closed by E03-D-VOID-PAYMENTS Option A (`docs/release/r2-e03-payment-tracking.md`).
 - No new payment-status product decision.
+- Deferred technical items (alert trigger / shape, Payment amount sign, naming / currency representation, paymentDate future) remain in the E03 plan. They are not PO residuals.
 
 ### 15. Risks / architectural constraints
 
@@ -639,15 +644,18 @@ This document is the release-level planning baseline. R2-E01 is COMPLETE / RELEA
 | P-E02-06 | QA | COMPLETE — PASS WITH FINDINGS |
 | P-E02-07 | Documentation / Epic closure | COMPLETE |
 
-**R2-E03**
+**R2-E03** — detailed plan: `docs/release/r2-e03-payment-tracking.md`
 
-| Phase | Intent |
-| --- | --- |
-| E03-P00 | Detailed epic plan |
-| E03-P01 | Payment events + derived status |
-| E03-P02 | Payment alerts via AlertService |
-| E03-P03 | Payment UI |
-| E03-P04 | Tests, documentation, Engineering Review |
+| Phase | Intent | Status |
+| --- | --- | --- |
+| P-E03-00 | Planning / VOID policy closure | COMPLETE |
+| P-E03-01 | Payment events + derived status | NOT STARTED / NOT AUTHORIZED |
+| P-E03-02 | Payment application service | NOT STARTED / NOT AUTHORIZED |
+| P-E03-03 | Payment alerts via AlertService | NOT STARTED / NOT AUTHORIZED |
+| P-E03-04 | Payment UI | NOT STARTED / NOT AUTHORIZED |
+| P-E03-05 | Engineering Review | NOT STARTED / NOT AUTHORIZED |
+| P-E03-06 | QA | NOT STARTED / NOT AUTHORIZED |
+| P-E03-07 | Documentation / Epic closure | NOT STARTED / NOT AUTHORIZED |
 
 **R2-E04**
 

@@ -5,7 +5,7 @@
 **Authority:** `docs/release/r2-decision-pack.md`  
 **Baseline:** R1 architecture (`docs/architecture.md`, `docs/domain-model.md`, `docs/storage.md`) remains the frozen R1 baseline.
 
-This document records what must change conceptually for R2. It does not authorize E03–E05 Prisma schema, migrations, APIs, UI, or services. Invoice Prisma names exist (`Invoice`). It does not invent Payment or `allocatedMinutes` Prisma names.
+This document records what must change conceptually for R2. It does not authorize E03–E05 Prisma schema, migrations, APIs, UI, or services. Invoice Prisma names exist (`Invoice`). E03-D-VOID-PAYMENTS is closed (Option A). It does not invent Payment or `allocatedMinutes` Prisma names. It does not open P-E03-01.
 
 Legend:
 
@@ -185,17 +185,20 @@ UNPAID / PARTIAL / PAID / MISMATCH  from paidAmount vs invoice amount
 PAYMENT_OVERDUE       = Invoice.dueDate < today AND paidAmount < invoice.amount
 ```
 
-Payment events may be edited and deleted. Status is recalculated. No ledger / reversal model (R2-OD-010).
+Payment events may be edited and deleted on an ACTIVE Invoice. Status is recalculated. No ledger / reversal model (R2-OD-010).
 
-Currency must match Contract. No installment engine.
+VOID write policy (E03-D-VOID-PAYMENTS, Option A, CLOSED): existing Payments may remain and stay readable as history. CREATE / UPDATE / DELETE on a VOID Invoice are rejected. VOID is not a payment status. VOID is excluded from active paidAmount / outstanding / overdue lists / payment alerts. No cascade-delete. No restore.
+
+Currency must match Contract. Payment write currency must equal Invoice.currency (E02 reserved contract). No installment engine. Persist-versus-inherit of Payment currency remains an implementation detail.
 
 ### Persistence planning
 
 | Concept | Classification | Notes |
 | --- | --- | --- |
-| Payment event | CONFIRMED REQUIREMENT | New operational event. No current table |
+| Payment event | CONFIRMED REQUIREMENT | New operational event. No current table. P-E03-01 not authorized |
 | Derived payment status | DOMAIN DECISION | Do not persist as independent truth |
-| Edit / delete of events | DOMAIN DECISION | Triggers recalculation |
+| Edit / delete of events | DOMAIN DECISION | ACTIVE Invoice only. Triggers recalculation |
+| VOID ↔ Payment writes | DOMAIN DECISION | Freeze writes on VOID. Closed by E03-D-VOID-PAYMENTS A |
 | “Today” timezone | IMPLEMENTATION DETAIL STILL OPEN | R1 uses `Workspace.timezone` for periods; reuse is likely |
 | Repository / write services | IMPLEMENTATION DETAIL STILL OPEN | |
 
@@ -255,11 +258,11 @@ No E03–E05 migrations. Invoice Prisma names exist. No invented Payment / `allo
 | Concept | Classification | Existing? | Planning note |
 | --- | --- | --- | --- |
 | Invoice | EXISTING MODEL REUSED | Yes (P-E02-01) | 1 Contract : N Invoice; VOID / soft-delete; editable; no fiscal fields |
-| Payment event | CONFIRMED REQUIREMENT | No | Many per Invoice; editable / deletable; status derived |
+| Payment event | CONFIRMED REQUIREMENT | No | Many per Invoice; editable / deletable on ACTIVE only; status derived |
 | Contract `allocatedMinutes` | CONFIRMED REQUIREMENT | No | Optional total project budget. Distinct from `monthlyContractedMinutes` |
 | Historical commercial snapshot | EXISTING MODEL REUSED | Yes (P-E01-01) | TimeEntry `snapshotBillingModel`, `snapshotRate`, `snapshotCurrency` |
 | Derived payment status | CONFIRMED REQUIREMENT | n/a | Function of payment events, not a source of truth |
-| Invoice VOID state | DOMAIN DECISION | Yes | One-way soft-delete. Closed by E02-D02 |
+| Invoice VOID state | DOMAIN DECISION | Yes | One-way soft-delete. Closed by E02-D02. Payment writes frozen by E03-D-VOID-PAYMENTS A |
 | Contract currency immutability | CONFIRMED REQUIREMENT | Write rule only | After first monetary record, including VOID. Implemented for Invoice |
 | Invoice currency snapshot | DOMAIN DECISION | Yes | Closed by E02-D01. Immutable after create |
 | Accrued / Expected / Forecast tables | IMPLEMENTATION DETAIL STILL OPEN | Derived preferred | Persist only if a later plan proves need |

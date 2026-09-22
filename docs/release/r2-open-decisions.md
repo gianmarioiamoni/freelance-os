@@ -8,7 +8,7 @@
 
 Approved D1–D7 and approved OD resolutions are **not** reopened here.
 
-Do not treat remaining items as implementation defaults. Do not invent WARNING thresholds, Forecast arithmetic, or CSV scope. R2-OD-003 representation, R2-OD-016, R2-OD-017, Invoice currency snapshot, and Invoice VOID domain semantics are closed.
+Do not treat remaining items as implementation defaults. Do not invent WARNING thresholds, Forecast arithmetic, or CSV scope. R2-OD-003 representation, R2-OD-016, R2-OD-017, Invoice currency snapshot, Invoice VOID domain semantics, and E03-D-VOID-PAYMENTS are closed.
 
 ---
 
@@ -66,9 +66,9 @@ These are the product / planning decisions still required before the correspondi
 | Field | Value |
 | --- | --- |
 | Historical ID | R2-OD-007 residual |
-| Decision | VOID is one-way soft-delete. Default lists exclude VOID. Get-by-id remains. Optional voided filter on the Contract invoice list. No restore in R2. No distinct physical-delete state. VOID is excluded from Accrued / Expected and from active payment aggregates. E03 still owns payment-row interaction. |
-| Status | APPROVED / CLOSED / implemented by R2-E02 (`docs/release/r2-e02-invoice-tracking.md` E02-D02) |
-| Needed by | R2-E02 (closed). E03 payment-list residual remains E03-owned |
+| Decision | VOID is one-way soft-delete. Default lists exclude VOID. Get-by-id remains. Optional voided filter on the Contract invoice list. No restore in R2. No distinct physical-delete state. VOID is excluded from Accrued / Expected and from active payment aggregates. E03-D-VOID-PAYMENTS is CLOSED: Option A — freeze writes on VOID. Existing Payments may remain and stay readable. No create / update / delete on VOID. No cascade-delete. |
+| Status | APPROVED / CLOSED. VOID list / restore implemented by R2-E02 (`docs/release/r2-e02-invoice-tracking.md` E02-D02). Payment-row interaction closed by R2-E03 P-E03-00 (`docs/release/r2-e03-payment-tracking.md`) |
+| Needed by | R2-E02 (closed). E03 payment-list residual CLOSED |
 
 ### 5. Simple CSV export in R2-E05
 
@@ -123,7 +123,8 @@ These are the product / planning decisions still required before the correspondi
 | R2-OD-017 | Existing TimeEntries backfilled from current associated Contract | APPROVED / implemented |
 | R2-OD-004 | Expected Revenue is HOURLY contractual capacity / pro-rata; null if capacity unavailable; DAILY has no Expected Revenue in R2 | APPROVED |
 | R2-OD-006 | 1 Contract → many Invoice; 1 Invoice → 1 Contract; tracking fields only | APPROVED / implemented |
-| R2-OD-007 | Optional reference; required invoiceDate; no competence period; editable; VOID / soft-delete | APPROVED — VOID list / restore closed by E02-D02 / implemented |
+| R2-OD-007 | Optional reference; required invoiceDate; no competence period; editable; VOID / soft-delete | APPROVED — VOID list / restore closed by E02-D02 / implemented. E03-D-VOID-PAYMENTS CLOSED (Option A freeze writes) |
+| E03-D-VOID-PAYMENTS | Freeze writes on VOID; existing Payments remain readable; excluded from active aggregates / alerts; no cascade-delete; no restore | APPROVED / CLOSED by P-E03-00 |
 | R2-OD-008 | `paymentTermsDays = null` → no dueDate, no automatic overdue; no default days | APPROVED / implemented |
 | R2-OD-009 | paidAmount sum; UNPAID / PARTIAL / PAID / MISMATCH; PAYMENT_OVERDUE independent | APPROVED |
 | R2-OD-010 | Payment events editable / deletable; status derived; no ledger | APPROVED |
@@ -164,4 +165,4 @@ R2-E01 (`docs/release/r2-e01-revenue-visibility.md`) implemented class-B snapsho
 
 R2-E02 (`docs/release/r2-e02-invoice-tracking.md`) implemented Invoice Tracking (P-E02-00…P-E02-07). Residuals #3 and #4 remain APPROVED / CLOSED and are implemented. E02 is COMPLETE WITH NON-BLOCKING FINDING (F-E02-004 test hygiene).
 
-This register does not open E03–E05 implementation. R2 is not production-ready.
+R2-E03 (`docs/release/r2-e03-payment-tracking.md`) P-E03-00 COMPLETE. E03-D-VOID-PAYMENTS is CLOSED (Option A). Deferred E03 technical items stay in that plan and are not PO residuals here. This register does not open P-E03-01 or E04–E05 implementation. R2 is not production-ready.
