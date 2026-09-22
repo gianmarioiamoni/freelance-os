@@ -3,7 +3,7 @@
 **Epic:** R2-E02 — Invoice Tracking  
 **Release:** Release 2 — Revenue Operations  
 **MASTER_PLAN identifier:** R2-E02 (`MASTER_PLAN.md` §19)  
-**Status:** P-E02-05 COMPLETE — PASS WITH FINDINGS — READY FOR P-E02-06  
+**Status:** P-E02-06 COMPLETE — PASS WITH FINDINGS — READY FOR P-E02-07  
 **Authority:** `docs/release/r2-decision-pack.md`  
 **Companions:** `docs/release/r2-epic-map.md`, `docs/release/r2-architecture-delta.md`, `docs/release/r2-open-decisions.md`  
 **Predecessor:** R2-E01 COMPLETE / RELEASE-READY (`docs/release/r2-e01-revenue-visibility.md`, closure `278101a347b6063450c34a91200878e548836edb`)  
@@ -16,10 +16,10 @@ P-E02-02  INVOICE APPLICATION SERVICE      COMPLETE
 P-E02-03  DERIVED STATUS / DUE DATE        COMPLETE
 P-E02-04  CONTRACT-SCOPED INVOICE UI       COMPLETE
 P-E02-05  ENGINEERING REVIEW               COMPLETE — PASS WITH FINDINGS
-P-E02-06  QA                               NOT STARTED
+P-E02-06  QA                               COMPLETE — PASS WITH FINDINGS
 P-E02-07  DOCUMENTATION / EPIC CLOSURE     NOT STARTED
 
-R2-E02: P-E02-05 COMPLETE — PASS WITH FINDINGS
+R2-E02: P-E02-06 COMPLETE — PASS WITH FINDINGS
 IMPLEMENTATION: IN PROGRESS
 R1: FROZEN / GRANTED
 R2-E01: COMPLETE / RELEASE-READY
@@ -1030,6 +1030,23 @@ Full review: § Engineering Review below.
 | Objective | QA Invoice writes, VOID, currency guard, isolation, timezone, E01 regression |
 | Dependencies | P-E02-05 |
 | Exit criteria | AC-01…17 evidenced. Accrued / Expected suites green |
+| Status | **COMPLETE** — PASS WITH FINDINGS |
+
+**HEAD reviewed:** `3ccbb181072a0e83b90ecbe5a3b2a93fbb7c99a3`
+
+```text
+VERDICT:                 PASS WITH FINDINGS
+BLOCKING FINDINGS:       NONE
+F-E02-001:               CLOSED — concurrency lock
+F-E02-002:               CLOSED — VOID update WHERE
+F-E02-003:               OPEN — companion docs stale → P-E02-07
+F-E02-004:               OPEN — LOW — parallel E2E timeout (isolated PASS)
+P-E02:                   NOT BLOCKED
+P-E02-07:                AUTHORIZED
+PRODUCTION READINESS:    UNCHANGED (R2 not production-ready)
+```
+
+Full QA: § P-E02-06 QA Gate below.
 
 ### P-E02-07 — Documentation / closure
 
@@ -1194,3 +1211,166 @@ F-E02-002 is the same check-then-act class on VOID editability.
 - Open findings: F-E02-001, F-E02-002, F-E02-003
 - Product Owner decisions: none for E02. E03-D-VOID-PAYMENTS stays with E03.
 - P-E02-06 QA is authorized. P-E02-06 is **not** started by this review.
+
+---
+
+## P-E02-06 QA Gate
+
+**Date:** 2026-09-22  
+**Phase:** P-E02-06  
+**Reviewed HEAD:** `3ccbb181072a0e83b90ecbe5a3b2a93fbb7c99a3`  
+**Host clock:** Europe/Rome (CEST, UTC+2)
+
+### Verdict
+
+**PASS WITH FINDINGS**
+
+No blocker. AC-01…AC-17 and INV-E02-01…16 hold on existing unit, integration, concurrency, and E2E evidence. F-E02-001 and F-E02-002 are closed by `3ccbb18`. F-E02-003 remains for P-E02-07. F-E02-004 is an environmental parallel-E2E timeout; isolated rerun passed. E01 Accrued / Expected / reporting remain green. No application remediation. No new product decision.
+
+### Commands executed
+
+| Command | Result |
+| --- | --- |
+| `pnpm test:db:migrate` | PASS — no pending migrations |
+| Targeted E02 unit | PASS — 80 / 80 |
+| Targeted E02 integration (incl. concurrency) | PASS — 28 / 28 |
+| Full unit (`pnpm test`) | PASS — 572 / 572 |
+| E01 Accrued / Expected / reporting / snapshot integration | PASS — 63 / 63 |
+| Full integration (`pnpm test:integration`) | PASS — 289 / 289 |
+| E2E contract-invoices | PASS — 1 / 1 |
+| E2E contracts (isolated rerun) | PASS — 1 / 1 |
+| E2E reports | PASS — 21 / 21 |
+| E2E dashboard | PASS — 5 / 5 |
+| `pnpm typecheck` | PASS |
+| `pnpm lint` | PASS |
+| `pnpm build` | PASS |
+
+First parallel E2E batch (5 workers: invoices + contracts + reports + dashboard): 28 passed / 1 failed (`contracts.spec.ts` 30s timeout). Isolated rerun of that file: 16.3s PASS. Classified as environment, not an application defect.
+
+### Test matrix
+
+| Suite | Passed | Failed | Skipped | Result |
+| --- | ---: | ---: | ---: | --- |
+| Unit domain invoice / invoice-derived + invoice application + contract-services + invoice features | 80 | 0 | 0 | PASS |
+| Full unit | 572 | 0 | 0 | PASS |
+| Integration invoice persistence / application / concurrency / UI access / contracts | 28 | 0 | 0 | PASS |
+| Integration Accrued / Expected / revenue-reporting / reporting-service / snapshot | 63 | 0 | 0 | PASS |
+| Full integration | 289 | 0 | 0 | PASS |
+| E2E `contract-invoices.spec.ts` | 1 | 0 | 0 | PASS |
+| E2E `contracts.spec.ts` (isolated) | 1 | 0 | 0 | PASS |
+| E2E `reports.spec.ts` | 21 | 0 | 0 | PASS |
+| E2E `dashboard.spec.ts` | 5 | 0 | 0 | PASS |
+| Lint | — | 0 | 0 | PASS |
+| Typecheck | — | 0 | 0 | PASS |
+| Build | — | 0 | 0 | PASS |
+
+### Acceptance criteria
+
+| ID | Result | Evidence |
+| --- | --- | --- |
+| AC-01 | PASS | Unit/integration create; amount > 0 parse + SQL CHECK; E2E create |
+| AC-02 | PASS | Create snapshots Contract currency; supplied USD mismatch rejected |
+| AC-03 | PASS | Update parser rejects `currency`; repository cannot rewrite it; E2E no currency input |
+| AC-04 | PASS | Application guard ACTIVE + VOID; concurrency create-then-currency rejected |
+| AC-05 | PASS | Null terms → null dueDate; `isOverdue` false; E2E “No due date” |
+| AC-06 | PASS | `computeDueDate` calendar add; terms `0` → invoiceDate; E2E 2026-09-01 + 30 → 2026-10-01 |
+| AC-07 | PASS | Integration: Contract terms edit leaves Invoice snapshot / dueDate |
+| AC-08 | PASS | Update allows date/amount/reference; forbids contractId/currency/terms/dueDate |
+| AC-09 | PASS | VOID row remains; default list excludes; get-by-id and VOID filter return it |
+| AC-10 | PASS | VOID edit / re-void / restore rejected; `updateMany` requires `voidedAt: null`; no delete API |
+| AC-11 | PASS | Reads pass `paidAmount = 0` → UNPAID; overdue independent; today not overdue |
+| AC-12 | PASS | Analytics/reporting do not read Invoice; E01 suites 63/63; full integration 289/289 |
+| AC-13 | PASS | No fiscal fields / Payment model / PDF / SDI routes |
+| AC-14 | PASS | Persistence/application/UI isolation; E2E foreign workspace 404 |
+| AC-15 | PASS | List/detail show stored amount + snapshot currency; no FX; no mixed total |
+| AC-16 | PASS | No Payment table, Payment UI, alerts, or persisted `paidAmount` / `amountStatus` |
+| AC-17 | PASS | Create allowed on expired Contract and archived-client Contract |
+
+INV-E02-01…16 hold on the same evidence. INV-E02-16: Contract-scoped list never sums amounts.
+
+### Findings
+
+#### F-E02-001
+
+| Field | Value |
+| --- | --- |
+| Severity | high |
+| Area | Concurrency / INV-E02-04 / INV-E02-05 |
+| Status | **CLOSED** — `3ccbb18` |
+| Evidence | `lockContract` `SELECT … FOR UPDATE` inside `runInTransaction` on create and Contract update. Integration: create-then-currency → `ContractCurrencyImmutableError`, both stay EUR; currency-then-create snapshots USD. |
+| Impact | Sequential and concurrent currency invariants hold. |
+| Remediation phase | None. |
+
+#### F-E02-002
+
+| Field | Value |
+| --- | --- |
+| Severity | medium |
+| Area | Concurrency / INV-E02-15 |
+| Status | **CLOSED** — `3ccbb18` |
+| Evidence | Repository `updateInvoice` `WHERE voidedAt: null`. Persistence VOID update → `InvoiceNotEditableError`. Concurrent VOID-then-update rejected; amount unchanged. |
+| Impact | VOID cannot be edited after the row is voided. |
+| Remediation phase | None. |
+
+#### F-E02-003
+
+| Field | Value |
+| --- | --- |
+| Severity | low |
+| Area | Documentation |
+| Status | **OPEN** |
+| Evidence | Companions still describe E02 as not started / persistence absent. This plan and the code are the authority. |
+| Impact | Planning companions stale. Implementation and this QA are unaffected. |
+| Remediation | Synchronize in P-E02-07. Do not rewrite R1 freeze snapshots. |
+| Recommended phase | P-E02-07 |
+
+#### F-E02-004
+
+| Field | Value |
+| --- | --- |
+| Severity | low |
+| Area | Environment / E2E |
+| Status | **OPEN** |
+| Evidence | Parallel Playwright (5 workers) timed out `contracts.spec.ts` at 30s. Isolated rerun: 16.3s PASS. Same file passed in P-E02-05 with 2 workers. Product paths in that file are unchanged by E02 except the currency-guard error after invoices exist, which is covered by `contract-invoices.spec.ts`. |
+| Impact | No application defect. Parallel E2E load + default 30s timeout. |
+| Remediation | Do not change product code. Optional timeout / worker hygiene later. Not required for E02 closure. |
+| Recommended phase | Optional test hygiene. Does not block P-E02-07. |
+
+### Regression
+
+E01 Accrued / Expected / reporting / commercial snapshot integration 63/63. Full integration 289/289 includes isolation, membership, timezone, and Contract application. E2E reports 21/21 and dashboard 5/5. Dashboard and `/reports` have no Invoice reads. Contract E2E isolated PASS.
+
+### Concurrency
+
+| Race | Result |
+| --- | --- |
+| In-flight `createInvoice` lock vs `updateContract(currency)` | PASS — currency update rejected; Invoice and Contract stay EUR |
+| In-flight Contract currency lock vs `createInvoice` | PASS — Invoice snapshots committed USD |
+| In-flight VOID vs `updateInvoice` | PASS — `InvoiceNotEditableError`; amount unchanged; `voidedAt` set |
+
+F-E02-001 CLOSED. F-E02-002 CLOSED.
+
+### Security / isolation
+
+PASS. Repository and application queries carry `workspaceId`. `invoiceId` / `contractId` are not tenant grants. Cross-workspace create/get/list/update/VOID → not found. Cross-contract Invoice URL → 404. Server Actions bind route ids and re-check Contract + Invoice association. Form payload cannot set currency, `contractId`, terms, `dueDate`, or `voidedAt`. VOID edit route redirects. No restore.
+
+### Build / tooling
+
+| Check | Result |
+| --- | --- |
+| typecheck | PASS |
+| lint | PASS |
+| build | PASS — invoice routes only under `/contracts/[contractId]/invoices/…`; no workspace invoice index; no Payment route |
+
+### Release impact
+
+| Item | Value |
+| --- | --- |
+| Blocker | No |
+| E02 release-ready | No — P-E02-07 documentation closure remains |
+| Open findings | F-E02-003, F-E02-004 |
+| PO decision required | No |
+| P-E02-07 | **AUTHORIZED** |
+| R2 production-ready | No |
+
+P-E02-07 may start. P-E02-07 is **not** started by this QA.
