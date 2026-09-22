@@ -22,7 +22,7 @@ export async function voidInvoiceAction(
     return { error: "Confirm that you want to void this invoice." };
   }
 
-  const { context, contracts, invoices } = await getAuthenticatedContractContext();
+  const { context, contracts, invoices, payments } = await getAuthenticatedContractContext();
 
   try {
     await getInvoiceOnContract(
@@ -31,6 +31,7 @@ export async function voidInvoiceAction(
       invoiceId,
       contracts,
       invoices,
+      payments,
     );
     await voidInvoice(context, invoiceId, invoices);
   } catch (error) {

@@ -5,6 +5,7 @@ import type {
   ClientRepository,
   ContractRepository,
   InvoiceRepository,
+  PaymentRepository,
   RunInTransaction,
 } from "@/domain/repositories";
 import { getServerAuthSession } from "@/infrastructure/auth/session";
@@ -20,6 +21,7 @@ export type AuthenticatedContractContext = {
   clients: ClientRepository;
   contracts: ContractRepository;
   invoices: InvoiceRepository;
+  payments: PaymentRepository;
   runInTransaction: RunInTransaction;
 };
 
@@ -38,6 +40,7 @@ export async function getAuthenticatedContractContext(): Promise<AuthenticatedCo
     clients: repositories.clients,
     contracts: repositories.contracts,
     invoices: repositories.invoices,
+    payments: repositories.payments,
     runInTransaction,
   };
 }

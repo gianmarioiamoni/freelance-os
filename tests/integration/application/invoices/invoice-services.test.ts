@@ -99,12 +99,13 @@ describe("invoice application services", () => {
     expect(created.invoiceDate).toEqual(date("2026-09-01"));
     expect(created.dueDate).toEqual(date("2026-10-01"));
 
-    const found = await getInvoice(context, created.id, repositories.invoices);
+    const found = await getInvoice(context, created.id, repositories.invoices, repositories.payments);
     const listed = await listInvoicesForContract(
       context,
       contract.id,
       repositories.contracts,
       repositories.invoices,
+      repositories.payments,
     );
 
     expect(found.id).toBe(created.id);
@@ -151,12 +152,14 @@ describe("invoice application services", () => {
       contract.id,
       repositories.contracts,
       repositories.invoices,
+      repositories.payments,
     );
     const listedVoid = await listInvoicesForContract(
       context,
       contract.id,
       repositories.contracts,
       repositories.invoices,
+      repositories.payments,
       "VOID",
     );
 
@@ -164,7 +167,7 @@ describe("invoice application services", () => {
     expect(stillPresent).not.toBeNull();
     expect(listedAfterVoid).toEqual([]);
     expect(listedVoid).toHaveLength(1);
-    await expect(getInvoice(context, created.id, repositories.invoices)).resolves.toMatchObject({
+    await expect(getInvoice(context, created.id, repositories.invoices, repositories.payments)).resolves.toMatchObject({
       id: created.id,
     });
     await expect(voidInvoice(context, created.id, repositories.invoices)).rejects.toBeInstanceOf(
@@ -298,7 +301,7 @@ describe("invoice application services", () => {
         amount: "100",
       }, runInTransaction);
 
-    await expect(getInvoice(contextB, invoiceA.id, repositories.invoices)).rejects.toBeInstanceOf(
+    await expect(getInvoice(contextB, invoiceA.id, repositories.invoices, repositories.payments)).rejects.toBeInstanceOf(
       InvoiceNotFoundError,
     );
     await expect(
@@ -321,6 +324,7 @@ describe("invoice application services", () => {
         seededA.contract.id,
         repositories.contracts,
         repositories.invoices,
+        repositories.payments,
       ),
     ).rejects.toBeInstanceOf(ContractNotFoundError);
     await expect(
@@ -329,6 +333,7 @@ describe("invoice application services", () => {
         seededB.contract.id,
         repositories.contracts,
         repositories.invoices,
+        repositories.payments,
       ),
     ).resolves.toEqual([]);
   });
@@ -364,12 +369,13 @@ describe("invoice application services", () => {
       runInTransaction,
     );
 
-    const found = await getInvoice(context, created.id, repositories.invoices, now);
+    const found = await getInvoice(context, created.id, repositories.invoices, repositories.payments, now);
     const listed = await listInvoicesForContract(
       context,
       contract.id,
       repositories.contracts,
       repositories.invoices,
+      repositories.payments,
       undefined,
       now,
     );

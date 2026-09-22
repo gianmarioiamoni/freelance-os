@@ -9,7 +9,7 @@ import type {
   InvoiceRecord,
   InvoiceTrackingFilter,
 } from "@/domain/persistence-types";
-import type { ContractRepository, InvoiceRepository } from "@/domain/repositories";
+import type { ContractRepository, InvoiceRepository, PaymentRepository } from "@/domain/repositories";
 import {
   getInvoiceOnContract,
   listInvoicesOnContract,
@@ -135,7 +135,29 @@ function repositories(seed: {
     },
   };
 
-  return { contracts: contractRepository, invoices: invoiceRepository };
+  const paymentRepository: PaymentRepository = {
+    async createPayment() {
+      throw new Error("not used");
+    },
+    async getPayment() {
+      return null;
+    },
+    async listPaymentsForInvoice() {
+      return [];
+    },
+    async updatePayment() {
+      throw new Error("not used");
+    },
+    async deletePayment() {
+      throw new Error("not used");
+    },
+  };
+
+  return {
+    contracts: contractRepository,
+    invoices: invoiceRepository,
+    payments: paymentRepository,
+  };
 }
 
 describe("contract invoice access", () => {
@@ -164,12 +186,14 @@ describe("contract invoice access", () => {
       "contract-1",
       repos.contracts,
       repos.invoices,
+      repos.payments,
     );
     const all = await listInvoicesOnContract(
       context,
       "contract-1",
       repos.contracts,
       repos.invoices,
+      repos.payments,
       "ALL",
     );
 
@@ -200,6 +224,7 @@ describe("contract invoice access", () => {
         "invoice-1",
         repos.contracts,
         repos.invoices,
+        repos.payments,
       ),
     ).rejects.toBeInstanceOf(InvoiceNotFoundError);
     await expect(
@@ -209,6 +234,7 @@ describe("contract invoice access", () => {
         "invoice-b",
         repos.contracts,
         repos.invoices,
+        repos.payments,
       ),
     ).rejects.toBeInstanceOf(InvoiceNotFoundError);
     await expect(
@@ -218,6 +244,7 @@ describe("contract invoice access", () => {
         "invoice-1",
         repos.contracts,
         repos.invoices,
+        repos.payments,
       ),
     ).rejects.toBeInstanceOf(ContractNotFoundError);
   });
@@ -238,6 +265,7 @@ describe("contract invoice access", () => {
       "invoice-1",
       repos.contracts,
       repos.invoices,
+      repos.payments,
     );
 
     expect(invoice.trackingState).toBe("VOID");

@@ -20,11 +20,13 @@ import type {
   CreateInvoiceInput,
   InvoiceRecord,
   InvoiceTrackingFilter,
+  PaymentRecord,
   UpdateInvoiceInput,
 } from "@/domain/persistence-types";
 import type {
   ContractRepository,
   InvoiceRepository,
+  PaymentRepository,
   PersistenceRepositories,
   RunInTransaction,
 } from "@/domain/repositories";
@@ -90,6 +92,7 @@ function createFakeRepositories(
 ) {
   const contracts = [...seedContracts];
   const invoices = [...seedInvoices];
+  const payments: PaymentRecord[] = [];
   const calls: {
     getContract?: { workspaceId: string; contractId: string };
     create?: { workspaceId: string; input: CreateInvoiceInput };
@@ -229,12 +232,33 @@ function createFakeRepositories(
     },
   };
 
+  const paymentRepository: PaymentRepository = {
+    async createPayment() {
+      throw new Error("not used");
+    },
+    async getPayment() {
+      return null;
+    },
+    async listPaymentsForInvoice(workspaceId, invoiceId) {
+      return payments.filter(
+        (row) => row.workspaceId === workspaceId && row.invoiceId === invoiceId,
+      );
+    },
+    async updatePayment() {
+      throw new Error("not used");
+    },
+    async deletePayment() {
+      throw new Error("not used");
+    },
+  };
+
   return {
     contracts,
     invoices,
     calls,
     contractRepository,
     invoiceRepository,
+    paymentRepository,
     runInTransaction: (async (work) =>
       work({
         contracts: contractRepository,
@@ -407,7 +431,7 @@ describe("invoice application services", () => {
     );
 
     const now = new Date("2026-09-22T00:30:00.000Z");
-    await expect(getInvoice(context, "invoice-1", fake.invoiceRepository, now)).resolves.toMatchObject({
+    await expect(getInvoice(context, "invoice-1", fake.invoiceRepository, fake.paymentRepository, now)).resolves.toMatchObject({
       id: "invoice-1",
       trackingState: "ACTIVE",
       paidAmount: "0",
@@ -415,18 +439,18 @@ describe("invoice application services", () => {
       overdue: false,
     });
     await expect(
-      getInvoice(context, "invoice-void", fake.invoiceRepository, now),
+      getInvoice(context, "invoice-void", fake.invoiceRepository, fake.paymentRepository, now),
     ).resolves.toMatchObject({
       id: "invoice-void",
       trackingState: "VOID",
       paidAmount: "0",
       amountStatus: "UNPAID",
     });
-    await expect(getInvoice(context, "missing", fake.invoiceRepository)).rejects.toBeInstanceOf(
+    await expect(getInvoice(context, "missing", fake.invoiceRepository, fake.paymentRepository)).rejects.toBeInstanceOf(
       InvoiceNotFoundError,
     );
     await expect(
-      getInvoice(context, "invoice-foreign", fake.invoiceRepository),
+      getInvoice(context, "invoice-foreign", fake.invoiceRepository, fake.paymentRepository),
     ).rejects.toBeInstanceOf(InvoiceNotFoundError);
     expect(fake.calls.get).toEqual({
       workspaceId: "workspace-trusted",
@@ -452,6 +476,7 @@ describe("invoice application services", () => {
       "contract-1",
       fake.contractRepository,
       fake.invoiceRepository,
+      fake.paymentRepository,
       undefined,
       now,
     );
@@ -460,6 +485,7 @@ describe("invoice application services", () => {
       "contract-1",
       fake.contractRepository,
       fake.invoiceRepository,
+      fake.paymentRepository,
       "VOID",
       now,
     );
@@ -484,6 +510,7 @@ describe("invoice application services", () => {
         "missing",
         fake.contractRepository,
         fake.invoiceRepository,
+        fake.paymentRepository,
       ),
     ).rejects.toBeInstanceOf(ContractNotFoundError);
   });
@@ -628,6 +655,7 @@ describe("invoice application services", () => {
         "contract-foreign",
         fake.contractRepository,
         fake.invoiceRepository,
+        fake.paymentRepository,
       ),
     ).rejects.toBeInstanceOf(ContractNotFoundError);
   });
@@ -655,11 +683,12 @@ describe("invoice derived read view", () => {
       [invoiceRecord({ dueDate: calendarDate("2026-09-21") })],
     );
 
-    const rome = await getInvoice(context, "invoice-1", fake.invoiceRepository, now);
+    const rome = await getInvoice(context, "invoice-1", fake.invoiceRepository, fake.paymentRepository, now);
     const losAngeles = await getInvoice(
       { ...context, timezone: "America/Los_Angeles" },
       "invoice-1",
       fake.invoiceRepository,
+      fake.paymentRepository,
       now,
     );
 
@@ -689,10 +718,10 @@ describe("invoice derived read view", () => {
     );
 
     await expect(
-      getInvoice(context, "invoice-1", fake.invoiceRepository, now),
+      getInvoice(context, "invoice-1", fake.invoiceRepository, fake.paymentRepository, now),
     ).resolves.toMatchObject({ overdue: false, amountStatus: "UNPAID" });
     await expect(
-      getInvoice(context, "invoice-no-terms", fake.invoiceRepository, now),
+      getInvoice(context, "invoice-no-terms", fake.invoiceRepository, fake.paymentRepository, now),
     ).resolves.toMatchObject({ overdue: false, dueDate: null });
   });
 
@@ -712,6 +741,7 @@ describe("invoice derived read view", () => {
       context,
       "invoice-void",
       fake.invoiceRepository,
+      fake.paymentRepository,
       new Date("2026-09-22T10:00:00.000Z"),
     );
 

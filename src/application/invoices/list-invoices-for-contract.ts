@@ -4,16 +4,22 @@ import {
   toInvoiceDerivedView,
   type InvoiceDerivedView,
 } from "@/application/invoices/invoice-derived-view";
+import { sumPaidAmount } from "@/application/payments/paid-amount";
 import type { WorkspaceContext } from "@/application/workspace/workspace-context";
 import { ContractNotFoundError } from "@/domain/contract-errors";
 import type { InvoiceTrackingFilter } from "@/domain/persistence-types";
-import type { ContractRepository, InvoiceRepository } from "@/domain/repositories";
+import type {
+  ContractRepository,
+  InvoiceRepository,
+  PaymentRepository,
+} from "@/domain/repositories";
 
 export async function listInvoicesForContract(
   context: WorkspaceContext,
   contractId: string,
   contracts: ContractRepository,
   invoices: InvoiceRepository,
+  payments: PaymentRepository,
   tracking?: InvoiceTrackingFilter | string,
   now?: Date,
 ): Promise<InvoiceDerivedView[]> {
@@ -29,5 +35,19 @@ export async function listInvoicesForContract(
     parseInvoiceTrackingFilter(tracking),
   );
 
-  return rows.map((invoice) => toInvoiceDerivedView(invoice, context, now));
+  return Promise.all(
+    rows.map(async (invoice) => {
+      const paymentRows = await payments.listPaymentsForInvoice(
+        context.workspaceId,
+        invoice.id,
+      );
+
+      return toInvoiceDerivedView(
+        invoice,
+        context,
+        now,
+        sumPaidAmount(paymentRows.map((payment) => payment.amount)),
+      );
+    }),
+  );
 }

@@ -85,6 +85,7 @@ describe("contract-scoped invoice UI access", () => {
       contract.id,
       repositories.contracts,
       repositories.invoices,
+      repositories.payments,
       "ACTIVE",
       now,
     );
@@ -108,6 +109,7 @@ describe("contract-scoped invoice UI access", () => {
       updated.id,
       repositories.contracts,
       repositories.invoices,
+      repositories.payments,
       now,
     );
     expect(formatInvoiceDueDate(afterUpdate.dueDate)).toBe("2026-10-20");
@@ -120,12 +122,14 @@ describe("contract-scoped invoice UI access", () => {
       contract.id,
       repositories.contracts,
       repositories.invoices,
+      repositories.payments,
     );
     const voided = await listInvoicesOnContract(
       context,
       contract.id,
       repositories.contracts,
       repositories.invoices,
+      repositories.payments,
       "VOID",
     );
     const all = await listInvoicesOnContract(
@@ -133,6 +137,7 @@ describe("contract-scoped invoice UI access", () => {
       contract.id,
       repositories.contracts,
       repositories.invoices,
+      repositories.payments,
       "ALL",
     );
     const detail = await getInvoiceOnContract(
@@ -141,6 +146,7 @@ describe("contract-scoped invoice UI access", () => {
       created.id,
       repositories.contracts,
       repositories.invoices,
+      repositories.payments,
     );
 
     expect(active).toEqual([]);
@@ -169,6 +175,7 @@ describe("contract-scoped invoice UI access", () => {
         invoiceA.id,
         repositories.contracts,
         repositories.invoices,
+        repositories.payments,
       ),
     ).rejects.toBeInstanceOf(ContractNotFoundError);
     await expect(
@@ -178,6 +185,7 @@ describe("contract-scoped invoice UI access", () => {
         invoiceA.id,
         repositories.contracts,
         repositories.invoices,
+        repositories.payments,
       ),
     ).rejects.toBeInstanceOf(InvoiceNotFoundError);
     await expect(
@@ -187,6 +195,7 @@ describe("contract-scoped invoice UI access", () => {
         invoiceA.id,
         repositories.contracts,
         repositories.invoices,
+        repositories.payments,
       ),
     ).rejects.toBeInstanceOf(InvoiceNotFoundError);
     await expect(
@@ -195,6 +204,7 @@ describe("contract-scoped invoice UI access", () => {
         seededA.contract.id,
         repositories.contracts,
         repositories.invoices,
+        repositories.payments,
       ),
     ).rejects.toBeInstanceOf(ContractNotFoundError);
 
@@ -210,6 +220,7 @@ describe("contract-scoped invoice UI access", () => {
       noTerms.id,
       repositories.contracts,
       repositories.invoices,
+      repositories.payments,
     );
 
     expect(viewed.dueDate).toBeNull();

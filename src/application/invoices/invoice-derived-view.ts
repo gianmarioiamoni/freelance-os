@@ -9,13 +9,11 @@ import { getTodayInTimezone } from "@/lib/analytics-periods";
 
 export type InvoiceDerivedView = InvoiceRecord & InvoiceDerivedFields;
 
-const E02_PAID_AMOUNT = "0";
-
 export function toInvoiceDerivedView(
   invoice: InvoiceRecord,
   context: WorkspaceContext,
   now?: Date,
-  paidAmount = E02_PAID_AMOUNT,
+  paidAmount = "0",
 ): InvoiceDerivedView {
   const today = getTodayInTimezone(context.timezone, now);
 

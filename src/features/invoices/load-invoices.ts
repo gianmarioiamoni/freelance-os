@@ -21,6 +21,7 @@ export async function loadContractInvoices(
       contractId,
       repositories.contracts,
       repositories.invoices,
+      repositories.payments,
       readInvoiceTrackingParam(tracking),
     );
   } catch (error) {
@@ -46,6 +47,7 @@ export async function loadContractInvoice(
       invoiceId,
       repositories.contracts,
       repositories.invoices,
+      repositories.payments,
     );
   } catch (error) {
     if (error instanceof ContractNotFoundError || error instanceof InvoiceNotFoundError) {

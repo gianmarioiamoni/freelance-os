@@ -6,13 +6,18 @@ import { listInvoicesForContract } from "@/application/invoices/list-invoices-fo
 import type { WorkspaceContext } from "@/application/workspace/workspace-context";
 import { InvoiceNotFoundError } from "@/domain/invoice-errors";
 import type { InvoiceTrackingFilter } from "@/domain/persistence-types";
-import type { ContractRepository, InvoiceRepository } from "@/domain/repositories";
+import type {
+  ContractRepository,
+  InvoiceRepository,
+  PaymentRepository,
+} from "@/domain/repositories";
 
 export async function listInvoicesOnContract(
   context: WorkspaceContext,
   contractId: string,
   contracts: ContractRepository,
   invoices: InvoiceRepository,
+  payments: PaymentRepository,
   tracking?: InvoiceTrackingFilter,
   now?: Date,
 ): Promise<InvoiceDerivedView[]> {
@@ -21,6 +26,7 @@ export async function listInvoicesOnContract(
     contractId,
     contracts,
     invoices,
+    payments,
     tracking,
     now,
   );
@@ -32,10 +38,11 @@ export async function getInvoiceOnContract(
   invoiceId: string,
   contracts: ContractRepository,
   invoices: InvoiceRepository,
+  payments: PaymentRepository,
   now?: Date,
 ): Promise<InvoiceDerivedView> {
   await getContract(context, contractId, contracts);
-  const invoice = await getInvoice(context, invoiceId, invoices, now);
+  const invoice = await getInvoice(context, invoiceId, invoices, payments, now);
 
   if (invoice.contractId !== contractId) {
     throw new InvoiceNotFoundError();
