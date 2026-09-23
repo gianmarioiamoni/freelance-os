@@ -19,6 +19,7 @@ function contractRecord(overrides: Partial<ContractRecord> = {}): ContractRecord
     rate: "100.00",
     currency: "EUR",
     monthlyContractedMinutes: 9600,
+    allocatedMinutes: null,
     paymentTermsDays: 30,
     paymentTermsNote: null,
     createdAt: utcDate("2026-01-01"),

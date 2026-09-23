@@ -136,6 +136,32 @@ export function parseMonthlyContractedHours(
   return Number(minutes);
 }
 
+export function parseAllocatedMinutes(
+  value: string | number | null | undefined,
+): number | null {
+  if (value == null) {
+    return null;
+  }
+
+  const raw = typeof value === "number" ? String(value) : value.trim();
+
+  if (raw.length === 0) {
+    return null;
+  }
+
+  if (!PAYMENT_DAYS_PATTERN.test(raw)) {
+    throw new InvalidContractInputError("allocatedMinutes");
+  }
+
+  const minutes = Number(raw);
+
+  if (!Number.isSafeInteger(minutes) || minutes > MONTHLY_MINUTES_MAX) {
+    throw new InvalidContractInputError("allocatedMinutes");
+  }
+
+  return minutes;
+}
+
 export function parsePaymentTermsDays(
   value: string | number | null | undefined,
 ): number | null {

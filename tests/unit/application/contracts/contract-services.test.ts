@@ -76,6 +76,7 @@ function contractRecord(overrides: Partial<ContractRecord> = {}): ContractRecord
     rate: "80.0000",
     currency: "EUR",
     monthlyContractedMinutes: null,
+    allocatedMinutes: null,
     paymentTermsDays: null,
     paymentTermsNote: null,
     createdAt: calendarDate("2026-01-01"),
@@ -180,6 +181,7 @@ function createFakeRepositories(
         rate: input.rate,
         currency: input.currency,
         monthlyContractedMinutes: input.monthlyContractedMinutes ?? null,
+        allocatedMinutes: input.allocatedMinutes ?? null,
         paymentTermsDays: input.paymentTermsDays ?? null,
         paymentTermsNote: input.paymentTermsNote ?? null,
       });
@@ -223,6 +225,7 @@ function createFakeRepositories(
         rate: input.rate,
         currency: input.currency,
         monthlyContractedMinutes: input.monthlyContractedMinutes ?? null,
+        allocatedMinutes: input.allocatedMinutes ?? null,
         paymentTermsDays: input.paymentTermsDays ?? null,
         paymentTermsNote: input.paymentTermsNote ?? null,
         workspaceId: current.workspaceId,

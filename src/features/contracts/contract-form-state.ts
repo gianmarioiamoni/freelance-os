@@ -52,6 +52,7 @@ export const CONTRACT_FIELD_ERROR_MESSAGES: Record<ContractInputField, string> =
   currency: "Select a valid currency.",
   monthlyContractedHours:
     "Enter monthly contracted hours that convert exactly to minutes.",
+  allocatedMinutes: "Enter allocation as a whole number of minutes, or leave empty.",
   paymentTermsDays: "Enter payment terms as a whole number of days.",
   paymentTermsNote: "Enter a payment terms note with at most 4000 characters.",
 };

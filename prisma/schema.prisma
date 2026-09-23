@@ -115,6 +115,10 @@ model Contract {
   rate                     Decimal      @db.Decimal(19, 4)
   currency                 String       @db.Char(3)
   monthlyContractedMinutes Int?
+  /// Optional total Contract time budget in minutes. Null = no allocation.
+  /// Zero is valid and distinct from null. CHECK (allocatedMinutes IS NULL OR
+  /// allocatedMinutes >= 0) is enforced in SQL.
+  allocatedMinutes         Int?
   paymentTermsDays         Int?
   paymentTermsNote         String?      @db.Text
   createdAt                DateTime     @default(now()) @db.Timestamptz(6)

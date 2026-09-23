@@ -50,6 +50,7 @@ describe("parseContractCreateInput", () => {
       rate: "80.5",
       currency: "EUR",
       monthlyContractedMinutes: 600,
+      allocatedMinutes: null,
       paymentTermsDays: 30,
       paymentTermsNote: "Net 30",
     });
@@ -193,6 +194,68 @@ describe("parseContractCreateInput", () => {
     });
   });
 
+  it("accepts null, zero, and positive allocatedMinutes", () => {
+    expect(
+      parseContractCreateInput({
+        ...validCreateInput,
+        allocatedMinutes: null,
+      }).allocatedMinutes,
+    ).toBeNull();
+    expect(
+      parseContractCreateInput({
+        ...validCreateInput,
+        allocatedMinutes: "",
+      }).allocatedMinutes,
+    ).toBeNull();
+    expect(
+      parseContractCreateInput({
+        ...validCreateInput,
+        allocatedMinutes: "0",
+      }).allocatedMinutes,
+    ).toBe(0);
+    expect(
+      parseContractCreateInput({
+        ...validCreateInput,
+        allocatedMinutes: 0,
+      }).allocatedMinutes,
+    ).toBe(0);
+    expect(
+      parseContractCreateInput({
+        ...validCreateInput,
+        allocatedMinutes: "4800",
+      }).allocatedMinutes,
+    ).toBe(4800);
+    expect(
+      parseContractCreateInput({
+        ...validCreateInput,
+        allocatedMinutes: 4800,
+      }).allocatedMinutes,
+    ).toBe(4800);
+  });
+
+  it("rejects negative and non-integer allocatedMinutes", () => {
+    expectInvalidField(
+      { ...validCreateInput, allocatedMinutes: "-1" },
+      "allocatedMinutes",
+    );
+    expectInvalidField(
+      { ...validCreateInput, allocatedMinutes: -1 },
+      "allocatedMinutes",
+    );
+    expectInvalidField(
+      { ...validCreateInput, allocatedMinutes: "1.5" },
+      "allocatedMinutes",
+    );
+    expectInvalidField(
+      { ...validCreateInput, allocatedMinutes: 1.5 },
+      "allocatedMinutes",
+    );
+    expectInvalidField(
+      { ...validCreateInput, allocatedMinutes: "abc" },
+      "allocatedMinutes",
+    );
+  });
+
   it("does not accept workspaceId from create input", () => {
     const parsed = parseContractCreateInput({
       ...validCreateInput,
@@ -220,6 +283,7 @@ describe("parseContractUpdateInput", () => {
       rate: "500",
       currency: "USD",
       monthlyContractedMinutes: null,
+      allocatedMinutes: null,
       paymentTermsDays: null,
       paymentTermsNote: null,
     });

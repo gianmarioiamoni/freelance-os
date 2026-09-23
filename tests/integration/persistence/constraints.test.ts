@@ -55,6 +55,22 @@ describe("database value constraints", () => {
     ).rejects.toBeInstanceOf(ConstraintViolationError);
   });
 
+  it("rejects negative allocatedMinutes", async () => {
+    const graph = await createWorkspaceGraph(repositories, "allocation-bound");
+
+    await expect(
+      repositories.contracts.createContract(graph.workspaceId, {
+        clientId: graph.clientId,
+        validFrom: date("2027-01-01"),
+        validTo: date("2027-07-01"),
+        billingModel: "HOURLY",
+        rate: "80.0000",
+        currency: "EUR",
+        allocatedMinutes: -1,
+      }),
+    ).rejects.toBeInstanceOf(ConstraintViolationError);
+  });
+
   it("rejects settings thresholds outside 1..100", async () => {
     const graph = await createWorkspaceGraph(repositories, "thresholds");
 

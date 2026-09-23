@@ -7,6 +7,7 @@ export type ContractInputField =
   | "rate"
   | "currency"
   | "monthlyContractedHours"
+  | "allocatedMinutes"
   | "paymentTermsDays"
   | "paymentTermsNote";
 

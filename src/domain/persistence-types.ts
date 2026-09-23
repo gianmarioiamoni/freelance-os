@@ -67,6 +67,7 @@ export type ContractRecord = {
   rate: string;
   currency: string;
   monthlyContractedMinutes: number | null;
+  allocatedMinutes: number | null;
   paymentTermsDays: number | null;
   paymentTermsNote: string | null;
   createdAt: Date;
@@ -200,6 +201,7 @@ export type CreateContractInput = {
   rate: string;
   currency: string;
   monthlyContractedMinutes?: number | null;
+  allocatedMinutes?: number | null;
   paymentTermsDays?: number | null;
   paymentTermsNote?: string | null;
 };
@@ -211,6 +213,7 @@ export type UpdateContractInput = {
   rate: string;
   currency: string;
   monthlyContractedMinutes?: number | null;
+  allocatedMinutes?: number | null;
   paymentTermsDays?: number | null;
   paymentTermsNote?: string | null;
 };

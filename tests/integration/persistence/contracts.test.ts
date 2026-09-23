@@ -18,6 +18,89 @@ describe("contract temporal integrity", () => {
       clientId: graph.clientId,
       billingModel: "HOURLY",
       rate: "80.0000",
+      allocatedMinutes: null,
+    });
+  });
+
+  it("persists null, zero, and positive allocatedMinutes", async () => {
+    const graph = await createWorkspaceGraph(repositories, "allocation");
+
+    expect(
+      await repositories.contracts.getContract(graph.workspaceId, graph.contractId),
+    ).toMatchObject({
+      id: graph.contractId,
+      allocatedMinutes: null,
+    });
+
+    const zero = await repositories.contracts.updateContract(
+      graph.workspaceId,
+      graph.contractId,
+      {
+        validFrom: date("2026-01-01"),
+        validTo: date("2026-07-01"),
+        billingModel: "HOURLY",
+        rate: "80.0000",
+        currency: "EUR",
+        allocatedMinutes: 0,
+      },
+    );
+
+    expect(zero.allocatedMinutes).toBe(0);
+    expect(
+      await repositories.contracts.getContract(graph.workspaceId, graph.contractId),
+    ).toMatchObject({ allocatedMinutes: 0 });
+
+    const positive = await repositories.contracts.updateContract(
+      graph.workspaceId,
+      graph.contractId,
+      {
+        validFrom: date("2026-01-01"),
+        validTo: date("2026-07-01"),
+        billingModel: "HOURLY",
+        rate: "80.0000",
+        currency: "EUR",
+        allocatedMinutes: 4800,
+      },
+    );
+
+    expect(positive.allocatedMinutes).toBe(4800);
+
+    const cleared = await repositories.contracts.updateContract(
+      graph.workspaceId,
+      graph.contractId,
+      {
+        validFrom: date("2026-01-01"),
+        validTo: date("2026-07-01"),
+        billingModel: "HOURLY",
+        rate: "80.0000",
+        currency: "EUR",
+        allocatedMinutes: null,
+      },
+    );
+
+    expect(cleared.allocatedMinutes).toBeNull();
+  });
+
+  it("does not persist allocatedMinutes across workspace boundaries", async () => {
+    const workspaceA = await createWorkspaceGraph(repositories, "alloc-a");
+    const workspaceB = await createWorkspaceGraph(repositories, "alloc-b");
+
+    await expect(
+      repositories.contracts.updateContract(workspaceB.workspaceId, workspaceA.contractId, {
+        validFrom: date("2026-01-01"),
+        validTo: date("2026-07-01"),
+        billingModel: "HOURLY",
+        rate: "80.0000",
+        currency: "EUR",
+        allocatedMinutes: 120,
+      }),
+    ).rejects.toBeInstanceOf(RecordNotFoundError);
+
+    expect(
+      await repositories.contracts.getContract(workspaceA.workspaceId, workspaceA.contractId),
+    ).toMatchObject({
+      id: workspaceA.contractId,
+      allocatedMinutes: null,
     });
   });
 

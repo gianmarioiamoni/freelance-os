@@ -1,5 +1,6 @@
 // src/application/contracts/contract-input.ts
 import {
+  parseAllocatedMinutes,
   parseBillingModel,
   parseCalendarDate,
   parseCurrency,
@@ -25,6 +26,7 @@ export type ContractWriteFields = {
   rate: string;
   currency: string;
   monthlyContractedHours?: string | number | null;
+  allocatedMinutes?: string | number | null;
   paymentTermsDays?: string | number | null;
   paymentTermsNote?: string | null;
 };
@@ -42,6 +44,7 @@ export type ValidatedContractWriteFields = {
   rate: string;
   currency: string;
   monthlyContractedMinutes: number | null;
+  allocatedMinutes: number | null;
   paymentTermsDays: number | null;
   paymentTermsNote: string | null;
 };
@@ -71,6 +74,7 @@ function parseWriteFields(input: ContractWriteFields): ValidatedContractWriteFie
     monthlyContractedMinutes: parseMonthlyContractedHours(
       input.monthlyContractedHours,
     ),
+    allocatedMinutes: parseAllocatedMinutes(input.allocatedMinutes),
     paymentTermsDays: parsePaymentTermsDays(input.paymentTermsDays),
     paymentTermsNote: parsePaymentTermsNote(input.paymentTermsNote),
   };

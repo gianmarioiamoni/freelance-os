@@ -103,9 +103,52 @@ describe("contract application services", () => {
       rate: "500.0000",
       currency: "USD",
       monthlyContractedMinutes: 1200,
+      allocatedMinutes: null,
       paymentTermsDays: 15,
       paymentTermsNote: "Net 15",
     });
+  });
+
+  it("creates and updates allocatedMinutes through the application boundary", async () => {
+    const context = await createWorkspaceContext("allocation");
+    const client = await createClient(
+      context,
+      { companyName: "Client Allocation" },
+      repositories.clients,
+    );
+
+    const created = await createContract(
+      context,
+      { ...createInput, clientId: client.id, allocatedMinutes: "4800" },
+      repositories.clients,
+      repositories.contracts,
+    );
+
+    expect(created.allocatedMinutes).toBe(4800);
+
+    const zeroed = await updateContract(
+      context,
+      created.id,
+      {
+        ...createInput,
+        allocatedMinutes: 0,
+      },
+      runInTransaction,
+    );
+
+    expect(zeroed.allocatedMinutes).toBe(0);
+
+    const cleared = await updateContract(
+      context,
+      created.id,
+      {
+        ...createInput,
+        allocatedMinutes: null,
+      },
+      runInTransaction,
+    );
+
+    expect(cleared.allocatedMinutes).toBeNull();
   });
 
   it("never returns or mutates another workspace's contracts", async () => {

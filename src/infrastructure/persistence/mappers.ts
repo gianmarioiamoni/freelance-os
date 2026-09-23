@@ -86,6 +86,7 @@ export function mapContract(row: Contract): ContractRecord {
     rate: row.rate.toFixed(4),
     currency: row.currency,
     monthlyContractedMinutes: row.monthlyContractedMinutes,
+    allocatedMinutes: row.allocatedMinutes,
     paymentTermsDays: row.paymentTermsDays,
     paymentTermsNote: row.paymentTermsNote,
     createdAt: row.createdAt,
