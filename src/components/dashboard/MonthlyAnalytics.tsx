@@ -2,6 +2,7 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { AnalyticsService } from "@/application/analytics/analytics-service";
 import type { MonthlyAnalytics } from "@/domain/analytics-types";
+import { RevenueSummary } from "@/features/reporting/RevenueSummary";
 import type { JSX } from "react";
 
 type MonthlyAnalyticsProps = {
@@ -65,6 +66,9 @@ export function MonthlyAnalytics({ analytics }: MonthlyAnalyticsProps): JSX.Elem
             </dd>
           </div>
         </dl>
+        <div className="mt-6 border-t pt-4">
+          <RevenueSummary accrued={analytics.accrued} forecast={analytics.forecast} />
+        </div>
       </CardContent>
     </Card>
   );

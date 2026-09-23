@@ -38,6 +38,7 @@ export async function createContract(
     validFrom?: string;
     validTo?: string;
     monthlyContractedHours?: string;
+    allocatedMinutes?: string;
   },
 ): Promise<void> {
   await page.getByRole("link", { name: "New contract" }).click();
@@ -56,6 +57,9 @@ export async function createContract(
       .getByLabel("Monthly contracted hours")
       .fill(options.monthlyContractedHours);
   }
+  if (options.allocatedMinutes !== undefined) {
+    await page.getByLabel("Allocated minutes").fill(options.allocatedMinutes);
+  }
 
   await submitAndFollowActionRedirect(
     page,
@@ -73,6 +77,7 @@ export async function createClientWithContract(
     validFrom?: string;
     validTo?: string;
     monthlyContractedHours?: string;
+    allocatedMinutes?: string;
   },
 ): Promise<string> {
   const clientUrl = await createClient(page, options.companyName);

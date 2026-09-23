@@ -5,6 +5,7 @@ import { Field } from "@/components/forms/Field";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { ContractAllocationField } from "@/features/contracts/ContractAllocationField";
 import { ContractClientField } from "@/features/contracts/ContractClientField";
 import {
   CONTRACT_SELECT_CLASS_NAME,
@@ -155,6 +156,11 @@ export function ContractForm({
           disabled={isPending}
         />
       </Field>
+      <ContractAllocationField
+        value={values.allocatedMinutes}
+        error={fieldError("allocatedMinutes")}
+        isPending={isPending}
+      />
       <Field
         label="Payment terms (days)"
         htmlFor="paymentTermsDays"

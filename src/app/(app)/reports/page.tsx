@@ -8,6 +8,7 @@ import { AnnualOverviewTable } from "@/features/reporting/AnnualOverviewTable";
 import { ContractReportTable } from "@/features/reporting/ContractReportTable";
 import { HoursByClientTable } from "@/features/reporting/HoursByClientTable";
 import { PeriodSelector } from "@/features/reporting/PeriodSelector";
+import { RevenueSummary } from "@/features/reporting/RevenueSummary";
 import {
   getReportingCalendarYear,
   parseReportPeriodParam,
@@ -65,6 +66,16 @@ export default async function ReportsPage({
         </header>
 
         <PeriodSelector current={periodParam} />
+
+        <section aria-labelledby="revenue-heading">
+          <h2 id="revenue-heading" className="text-base font-semibold">
+            Revenue
+          </h2>
+          <RevenueSummary
+            accrued={contractReport.accrued}
+            forecast={contractReport.forecast}
+          />
+        </section>
 
         <section aria-labelledby="hours-by-client-heading">
           <h2 id="hours-by-client-heading" className="sr-only">

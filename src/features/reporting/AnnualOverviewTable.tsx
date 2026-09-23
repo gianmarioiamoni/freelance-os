@@ -3,6 +3,10 @@ import { AnalyticsService } from "@/application/analytics/analytics-service";
 import { EmptyState } from "@/components/states/EmptyState";
 import { Button } from "@/components/ui/button";
 import type { MonthlyAnalytics } from "@/domain/analytics-types";
+import {
+  formatForecastAmounts,
+  formatPublishedAmounts,
+} from "@/features/reporting/revenue-display";
 import Link from "next/link";
 import type { JSX } from "react";
 
@@ -66,8 +70,14 @@ export function AnnualOverviewTable({
             <th scope="col" className="text-right py-2 pr-4 font-medium">
               Billable
             </th>
-            <th scope="col" className="text-right py-2 font-medium">
+            <th scope="col" className="text-right py-2 pr-4 font-medium">
               Billable %
+            </th>
+            <th scope="col" className="text-right py-2 pr-4 font-medium">
+              Accrued
+            </th>
+            <th scope="col" className="text-right py-2 font-medium">
+              Forecast
             </th>
           </tr>
         </thead>
@@ -80,6 +90,7 @@ export function AnnualOverviewTable({
             const pct = AnalyticsService.formatPercentage(
               month.billablePercentage,
             );
+            const forecast = formatForecastAmounts(month.forecast);
             return (
               <tr key={i} className="border-b last:border-0">
                 <td className="py-2 pr-4">{MONTH_NAMES[i]}</td>
@@ -89,8 +100,14 @@ export function AnnualOverviewTable({
                 <td className="text-right py-2 pr-4 tabular-nums">
                   {month.totalMinutes > 0 ? billable : "—"}
                 </td>
-                <td className="text-right py-2 tabular-nums">
+                <td className="text-right py-2 pr-4 tabular-nums">
                   {month.totalMinutes > 0 ? pct : "—"}
+                </td>
+                <td className="text-right py-2 pr-4 tabular-nums">
+                  {formatPublishedAmounts(month.accrued.byCurrency)}
+                </td>
+                <td className="text-right py-2 tabular-nums">
+                  {forecast ?? "—"}
                 </td>
               </tr>
             );
@@ -105,11 +122,13 @@ export function AnnualOverviewTable({
             <td className="text-right py-2 pr-4 tabular-nums">
               {AnalyticsService.formatDuration(billableMinutes)}
             </td>
-            <td className="text-right py-2 tabular-nums">
+            <td className="text-right py-2 pr-4 tabular-nums">
               {AnalyticsService.formatPercentage(
                 totalMinutes > 0 ? (billableMinutes / totalMinutes) * 100 : null,
               )}
             </td>
+            <td className="text-right py-2 pr-4 tabular-nums">—</td>
+            <td className="text-right py-2 tabular-nums">—</td>
           </tr>
         </tfoot>
       </table>

@@ -16,6 +16,7 @@ export type ContractFormValues = {
   rate: string;
   currency: string;
   monthlyContractedHours: string;
+  allocatedMinutes: string;
   paymentTermsDays: string;
   paymentTermsNote: string;
 };
@@ -39,6 +40,7 @@ export const EMPTY_CONTRACT_FORM_VALUES: ContractFormValues = {
   rate: "",
   currency: "",
   monthlyContractedHours: "",
+  allocatedMinutes: "",
   paymentTermsDays: "",
   paymentTermsNote: "",
 };
@@ -78,6 +80,7 @@ export function readContractFormValues(formData: FormData): ContractFormValues {
     rate: String(formData.get("rate") ?? ""),
     currency: String(formData.get("currency") ?? ""),
     monthlyContractedHours: String(formData.get("monthlyContractedHours") ?? ""),
+    allocatedMinutes: String(formData.get("allocatedMinutes") ?? ""),
     paymentTermsDays: String(formData.get("paymentTermsDays") ?? ""),
     paymentTermsNote: String(formData.get("paymentTermsNote") ?? ""),
   };
@@ -113,6 +116,8 @@ export function toContractFormValues(
       contract.monthlyContractedMinutes === null
         ? ""
         : formatHoursFromMinutes(contract.monthlyContractedMinutes),
+    allocatedMinutes:
+      contract.allocatedMinutes === null ? "" : String(contract.allocatedMinutes),
     paymentTermsDays:
       contract.paymentTermsDays === null
         ? ""
@@ -142,6 +147,7 @@ function toContractWriteFields(values: ContractFormValues) {
     rate: values.rate,
     currency: values.currency,
     monthlyContractedHours: values.monthlyContractedHours,
+    allocatedMinutes: values.allocatedMinutes,
     paymentTermsDays: values.paymentTermsDays,
     paymentTermsNote: values.paymentTermsNote,
   };

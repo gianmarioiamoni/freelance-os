@@ -1,10 +1,12 @@
 // src/features/contracts/load-contracts.ts
+import { AnalyticsService } from "@/application/analytics/analytics-service";
 import { getClient } from "@/application/clients/get-client";
 import { listClients } from "@/application/clients/list-clients";
 import { getContract } from "@/application/contracts/get-contract";
 import { listContracts } from "@/application/contracts/list-contracts";
 import { listContractsForClient } from "@/application/contracts/list-contracts-for-client";
 import { getAuthorizedWorkspace } from "@/application/workspace/get-authorized-workspace";
+import type { ContractAllocation } from "@/domain/analytics-types";
 import { ClientNotFoundError } from "@/domain/client-errors";
 import { ContractNotFoundError } from "@/domain/contract-errors";
 import type {
@@ -133,4 +135,24 @@ export async function loadContractDetailPageData(contractId: string): Promise<{
   }
 
   return { contract, client, workspace };
+}
+
+export async function loadContractAllocation(
+  contractId: string,
+): Promise<ContractAllocation> {
+  const { context, repositories } = await loadWorkspaceResources();
+  const analytics = new AnalyticsService(
+    repositories.analytics,
+    repositories.members,
+  );
+
+  try {
+    return await analytics.getContractAllocation(context, contractId);
+  } catch (error) {
+    if (error instanceof ContractNotFoundError) {
+      notFound();
+    }
+
+    throw error;
+  }
 }

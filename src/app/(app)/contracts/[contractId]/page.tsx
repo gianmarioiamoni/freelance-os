@@ -3,9 +3,13 @@ import { deriveContractApplicability } from "@/application/contracts/contract-va
 import { PageContent } from "@/components/page/PageContent";
 import { PageHeader } from "@/components/page/PageHeader";
 import { Button } from "@/components/ui/button";
+import { ContractAllocationDetail } from "@/features/contracts/ContractAllocationDetail";
 import { ContractDetail } from "@/features/contracts/ContractDetail";
 import { getWorkspaceCalendarDate } from "@/features/contracts/contract-display";
-import { loadContractDetailPageData } from "@/features/contracts/load-contracts";
+import {
+  loadContractAllocation,
+  loadContractDetailPageData,
+} from "@/features/contracts/load-contracts";
 import { ContractInvoiceSection } from "@/features/invoices/ContractInvoiceSection";
 import { readInvoiceTrackingParam } from "@/features/invoices/invoice-display";
 import { loadContractInvoices } from "@/features/invoices/load-invoices";
@@ -28,9 +32,10 @@ export default async function ContractDetailPage({
   const { contractId } = await params;
   const { tracking: trackingParam } = await searchParams;
   const tracking = readInvoiceTrackingParam(trackingParam);
-  const [{ contract, client, workspace }, invoices] = await Promise.all([
+  const [{ contract, client, workspace }, invoices, allocation] = await Promise.all([
     loadContractDetailPageData(contractId),
     loadContractInvoices(contractId, trackingParam),
+    loadContractAllocation(contractId),
   ]);
   const applicability = deriveContractApplicability(
     contract.validFrom,
@@ -57,6 +62,7 @@ export default async function ContractDetailPage({
             applicability={applicability}
             timezone={workspace.timezone}
           />
+          <ContractAllocationDetail allocation={allocation} />
           <ContractInvoiceSection
             contractId={contract.id}
             invoices={invoices}
