@@ -79,7 +79,8 @@ test("should record, edit, delete, and freeze payments on an invoice", async ({
     page.getByText("Enter an amount greater than 0 with at most 4 decimal places."),
   ).toBeVisible();
 
-  await page.locator("form").evaluate((form) => {
+  await page.locator("form").evaluate((element) => {
+    const form = element as HTMLFormElement;
     const dateInput = form.querySelector<HTMLInputElement>('[name="paymentDate"]');
     const amountInput = form.querySelector<HTMLInputElement>('[name="amount"]');
     if (!dateInput || !amountInput) {

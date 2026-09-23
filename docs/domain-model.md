@@ -24,10 +24,10 @@ The model must preserve historical correctness and provide deterministic results
 - **Billing Period** — reporting period used to determine billable activity and accrued amount.
 - **Accrued Revenue** *(R2)* — consuntivo economic value of billable TimeEntries using the commercial value applicable when the work occurred. Independent of invoice and payment.
 - **Expected Revenue** *(R2)* — HOURLY contractual-capacity value for the reporting period, using existing pro-rata semantics. Null if capacity is unavailable. DAILY has no Expected Revenue in R2. Independent of TimeEntry, Invoice, and Payment.
-- **Forecast Revenue** *(R2)* — deterministic linear projection of Accrued Revenue from elapsed time in the current reporting period. Not ML/AI. Exact arithmetic residual.
+- **Forecast Revenue** *(R2)* — deterministic linear projection of Accrued Revenue: Accrued / elapsedFraction on the certified current period only. Elapsed includes today. elapsed=0 or Accrued=0 ⇒ 0. Historical/custom ⇒ null. Derived, not persisted. Not ML/AI.
 - **Invoice Tracking** *(R2)* — operational record of an invoiced amount and date for a Contract. Not a fiscal invoice. One Contract has many Invoices; one Invoice has exactly one Contract.
 - **Payment** *(R2)* — operational payment event against an Invoice Tracking record. Status is derived (UNPAID / PARTIAL / PAID / MISMATCH). PAYMENT_OVERDUE is independent.
-- **allocatedMinutes** *(R2)* — optional Contract-level total time budget. Distinct from `monthlyContractedMinutes`.
+- **allocatedMinutes** *(R2)* — optional Contract-level total time budget in minutes. Distinct from `monthlyContractedMinutes`. Null = no allocation / no status / no alert. 0 = valid zero allocation / no status / no alert (8-C). Positive: `<80%` NORMAL, `80–100%` WARNING, `>100%` EXCEEDED.
 - **PIVA Balance** *(external)* — system that owns costs, profitability, and fiscality / accounting. Not part of the FreelanceOS domain.
 
 ## 3. Core Entities

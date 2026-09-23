@@ -1,21 +1,21 @@
 # R2 Epic Map — Planning Baseline
 
-**Status:** Executable planning baseline. R2-E01 COMPLETE / RELEASE-READY. R2-E02 COMPLETE WITH NON-BLOCKING FINDING. R2-E03 CERTIFIED (P-E03-00…P-E03-07). R2-E04 P-E04-00 COMPLETE — PO DECISIONS CLOSED. E05 detailed plan still required. No EPIC-2xx opened. R2 is not production-ready.  
+**Status:** Executable planning baseline. R2-E01 COMPLETE / RELEASE-READY. R2-E02 COMPLETE WITH NON-BLOCKING FINDING. R2-E03 CERTIFIED (P-E03-00…P-E03-07). R2-E04 P-E04-05 COMPLETE — QA PASS WITH FINDINGS. Not certified. E05 detailed plan still required. No EPIC-2xx opened. R2 is not production-ready.  
 **Date:** 2026-09-23  
 **Authority:** `docs/release/r2-decision-pack.md`  
 **E01 plan:** `docs/release/r2-e01-revenue-visibility.md`  
 **E02 plan:** `docs/release/r2-e02-invoice-tracking.md`  
 **E03 plan:** `docs/release/r2-e03-payment-tracking.md`  
 **E04 plan:** `docs/release/r2-e04-forecasting-allocation.md`  
-**Does not:** authorize E04–E05 schema, migrations, APIs, UI, or implementation branches.
+**Does not:** authorize E04 certification, P-E04-06/P-E04-07, or E05 implementation.
 
 ```text
-PLANNING BASELINE (E05; E04 P-E04-00 PO DECISIONS CLOSED)
+PLANNING BASELINE (E05; E04 P-E04-05 QA COMPLETE — NOT CERTIFIED)
 R2-E01: COMPLETE / RELEASE-READY
 R2-E02: COMPLETE WITH NON-BLOCKING FINDING
 R2-E03: CERTIFIED
-R2-E04: P-E04-00 COMPLETE — PO DECISIONS CLOSED
-IMPLEMENTATION: E01 DONE; E02 DONE; E03 CERTIFIED; E04–E05 NOT STARTED
+R2-E04: P-E04-05 COMPLETE — QA PASS WITH FINDINGS — NOT CERTIFIED
+IMPLEMENTATION: E01 DONE; E02 DONE; E03 CERTIFIED; E04 THROUGH P-E04-05; E05 NOT STARTED
 R1: FROZEN / GRANTED
 R2: NOT PRODUCTION-READY
 ```
@@ -402,8 +402,8 @@ See where current-period Accrued is heading, and whether a Contract’s total al
 - Deterministic linear Forecast from Accrued and elapsed time in the current reporting period (R2-OD-005 CLOSED).
 - Optional Contract `allocatedMinutes`, manually configurable and editable (R2-OD-013).
 - Consumption = SUM(TimeEntry.minutes) inside Contract `[validFrom, validTo)`.
-- No allocation alert when `allocatedMinutes` is null.
-- Allocation alerts: `<80%` none; `>=80%` and `<=100%` WARNING; `>100%` EXCEEDED.
+- No allocation status or alert when `allocatedMinutes` is null or `0` (8-C).
+- Allocation alerts when `allocatedMinutes > 0`: `<80%` NORMAL (no alert); `>=80%` and `<=100%` WARNING; `>100%` EXCEEDED.
 
 ### 4. Explicitly out of scope
 
@@ -435,7 +435,7 @@ See where current-period Accrued is heading, and whether a Contract’s total al
 
 ### 8. Persistence impact
 
-- Confirmed: optional `allocatedMinutes` on Contract. **Not in current schema.** Conceptual name only.
+- Confirmed and implemented: optional `allocatedMinutes` on Contract (`Int?`, migration `20260923230000_add_contract_allocated_minutes`).
 - Forecast remains derived.
 - WARNING threshold is the closed constant 80%. EXCEEDED only when consumption `>` allocatedMinutes.
 
@@ -606,7 +606,7 @@ Vision → Architecture → Planning → Implementation → Engineering Review
 Release → Epic → Phase → Commit
 ```
 
-This document is the release-level planning baseline. R2-E01 is COMPLETE / RELEASE-READY (`docs/release/r2-e01-revenue-visibility.md`). R2-E02 is COMPLETE WITH NON-BLOCKING FINDING (`docs/release/r2-e02-invoice-tracking.md`). R2-E03 is CERTIFIED (`docs/release/r2-e03-payment-tracking.md`). R2-E04 P-E04-00 is COMPLETE — PO DECISIONS CLOSED (`docs/release/r2-e04-forecasting-allocation.md`). It does not open E04 implementation or invent commit hashes.
+This document is the release-level planning baseline. R2-E01 is COMPLETE / RELEASE-READY (`docs/release/r2-e01-revenue-visibility.md`). R2-E02 is COMPLETE WITH NON-BLOCKING FINDING (`docs/release/r2-e02-invoice-tracking.md`). R2-E03 is CERTIFIED (`docs/release/r2-e03-payment-tracking.md`). R2-E04 P-E04-05 is COMPLETE — QA PASS WITH FINDINGS (`docs/release/r2-e04-forecasting-allocation.md`). E04 is not certified. It does not authorize P-E04-06 or P-E04-07.
 
 ### Release-level
 
@@ -614,9 +614,9 @@ This document is the release-level planning baseline. R2-E01 is COMPLETE / RELEA
 | --- | --- |
 | Vision | Complete — decision pack |
 | Architecture | Complete as domain delta — `r2-architecture-delta.md` |
-| Planning | This baseline. E01–E03 detailed plans complete. E04 P-E04-00 complete / PO decisions closed. E05 EPIC-2xx plan still required |
-| Implementation | R2-E01 COMPLETE / RELEASE-READY. R2-E02 COMPLETE WITH NON-BLOCKING FINDING. R2-E03 CERTIFIED. E04–E05 implementation not started |
-| Engineering Review → Release | E01–E03 ER + QA complete. E03 CERTIFIED. R2 release gates not started. Do not mark R2 production-ready |
+| Planning | This baseline. E01–E04 detailed plans complete. E05 EPIC-2xx plan still required |
+| Implementation | R2-E01 COMPLETE / RELEASE-READY. R2-E02 COMPLETE WITH NON-BLOCKING FINDING. R2-E03 CERTIFIED. R2-E04 through P-E04-05. E05 not started |
+| Engineering Review → Release | E01–E03 ER + QA complete. E03 CERTIFIED. E04 ER + QA through P-E04-05. E04 not certified. R2 release gates not started. Do not mark R2 production-ready |
 
 ### Proposed small phases (planning labels only)
 
@@ -664,11 +664,11 @@ This document is the release-level planning baseline. R2-E01 is COMPLETE / RELEA
 | Phase | Intent | Status |
 | --- | --- | --- |
 | P-E04-00 | Planning / decision gate | COMPLETE — PO DECISIONS CLOSED |
-| P-E04-01 | Persistence / domain | NOT STARTED / NOT AUTHORIZED |
+| P-E04-01 | Persistence / domain | COMPLETE — ENGINEERING REVIEW APPROVED WITH FINDINGS |
 | P-E04-02 | Application / calculations | COMPLETE — ENGINEERING REVIEW APPROVED WITH FINDINGS |
-| P-E04-03 | Forecast / allocation integration | IMPLEMENTED — AWAITING ENGINEERING REVIEW |
-| P-E04-04 | UI | NOT STARTED / NOT AUTHORIZED |
-| P-E04-05 | QA / documentation | NOT STARTED / NOT AUTHORIZED |
+| P-E04-03 | Forecast / allocation integration | COMPLETE — ENGINEERING REVIEW APPROVED WITH FINDINGS |
+| P-E04-04 | UI | COMPLETE — ENGINEERING REVIEW APPROVED WITH FINDINGS |
+| P-E04-05 | QA / documentation | COMPLETE — QA PASS WITH FINDINGS |
 | P-E04-06 | Release validation | NOT STARTED / NOT AUTHORIZED |
 | P-E04-07 | Certification | NOT STARTED / NOT AUTHORIZED |
 

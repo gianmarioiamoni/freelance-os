@@ -472,7 +472,7 @@ R2 adds Invoice Tracking, Payment Tracking, derived revenue
 See `docs/release/r2-decision-pack.md` and
 `docs/release/r2-architecture-delta.md`. Profitability remains
 outside FreelanceOS (PIVA Balance). E01 and E02 are complete. E03 is
-CERTIFIED. E04–E05 remain unplanned. R2 is not production-ready.
+CERTIFIED. E04 P-E04-05 is COMPLETE — QA PASS WITH FINDINGS and is not certified. E05 remains unplanned. R2 is not production-ready.
 
 ---
 
@@ -487,7 +487,7 @@ Evaluate deterministic rules such as:
 - capacity warning (DEFERRED — PD-106-001; not pulled into R2);
 - capacity exceeded (DEFERRED — PD-106-001; not pulled into R2);
 - payment overdue / partial / mismatch (R2-E03 implemented — D6);
-- contract time-allocation alerts (R2 planned — R2-OD-013; WARNING threshold not decided).
+- contract time-allocation alerts (R2-E04 implemented — `ALLOCATION_WARNING` / `ALLOCATION_EXCEEDED`; 80% / `>100%`; null and zero allocation never alert — 8-C).
 
 The alert engine should consume analytics/application services rather than duplicate calculations.
 

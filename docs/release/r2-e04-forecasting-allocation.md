@@ -3,25 +3,25 @@
 **Epic:** R2-E04 — Forecasting & Contract Time Allocation  
 **Release:** Release 2 — Revenue Operations  
 **MASTER_PLAN identifier:** R2-E04 (`MASTER_PLAN.md` §19)  
-**Status:** P-E04-03 implemented — awaiting Engineering Review. Not certified.  
-**Date:** 2026-09-23  
+**Status:** P-E04-05 COMPLETE — QA PASS WITH FINDINGS. Not certified.  
+**Date:** 2026-09-24  
 **Authority:** `docs/release/r2-decision-pack.md`  
 **Companions:** `docs/release/r2-epic-map.md`, `docs/release/r2-architecture-delta.md`, `docs/release/r2-open-decisions.md`  
 **Predecessors:** R2-E01 COMPLETE / RELEASE-READY. R2-E02 COMPLETE WITH NON-BLOCKING FINDING. R2-E03 CERTIFIED (`2ad1a1e1e032709bb5de7c228f083259ac5d5ecd`).  
 **Does not assign:** an EPIC-2xx number  
-**Does not authorize:** P-E04-04 UI or E04 certification
+**Does not authorize:** P-E04-06 Release Validation, P-E04-07 Certification, or production release
 
 ```text
 P-E04-00  PLANNING / DECISION GATE                 COMPLETE — PO DECISIONS CLOSED
-P-E04-01  PERSISTENCE / DOMAIN                     COMPLETE
+P-E04-01  PERSISTENCE / DOMAIN                     COMPLETE — ENGINEERING REVIEW APPROVED WITH FINDINGS
 P-E04-02  APPLICATION / CALCULATIONS               COMPLETE — ENGINEERING REVIEW APPROVED WITH FINDINGS
-P-E04-03  FORECAST / ALLOCATION INTEGRATION        IMPLEMENTED — AWAITING ENGINEERING REVIEW
-P-E04-04  UI                                       NOT STARTED / NOT AUTHORIZED
-P-E04-05  QA / DOCUMENTATION                       NOT STARTED / NOT AUTHORIZED
+P-E04-03  FORECAST / ALLOCATION INTEGRATION        COMPLETE — ENGINEERING REVIEW APPROVED WITH FINDINGS
+P-E04-04  UI                                       COMPLETE — ENGINEERING REVIEW APPROVED WITH FINDINGS
+P-E04-05  QA / DOCUMENTATION                       COMPLETE — QA PASS WITH FINDINGS
 P-E04-06  RELEASE VALIDATION                       NOT STARTED / NOT AUTHORIZED
 P-E04-07  CERTIFICATION                            NOT STARTED / NOT AUTHORIZED
 
-R2-E04: P-E04-03 IMPLEMENTED — NOT CERTIFIED
+R2-E04: P-E04-05 COMPLETE — NOT CERTIFIED
 R2-E03: CERTIFIED
 R2-E02: COMPLETE WITH NON-BLOCKING FINDING
 R2-E01: COMPLETE / RELEASE-READY
@@ -43,7 +43,7 @@ Implementation beyond persistence/domain is not authorized.
 
 ## P-E04-01 verdict
 
-**COMPLETE** — persistence / domain only. Not self-certified. Awaiting Engineering Review before P-E04-02.
+**COMPLETE** — Engineering Review **APPROVED WITH FINDINGS** (`3012b47`). Persistence / domain only.
 
 | Item | Value |
 | --- | --- |
@@ -52,14 +52,9 @@ Implementation beyond persistence/domain is not authorized.
 | Migration | `20260923230000_add_contract_allocated_minutes` |
 | Domain | `ContractRecord.allocatedMinutes: number \| null`. Create/update input optional. |
 | Repository | `createContract` / `updateContract` persist the field. Workspace scoped. Existing `lockContract`. |
-| Application plumbing | `parseAllocatedMinutes` on the existing Contract write parser. No Forecast / consumption / alerts. |
-| Tests | Unit: null / 0 / positive / negative / non-integer. Integration: round-trip, isolation, CHECK. |
-| Non-scope held | Forecast, consumption, remaining, alerts, UI |
+| Application plumbing | `parseAllocatedMinutes` on the existing Contract write parser. |
 
-Known nonblocking findings:
-
-- Contract UI form does not yet carry `allocatedMinutes`. Form updates omit the field and therefore persist `null` (same omitted-optional convention as `monthlyContractedHours`). P-E04-04 owns the write surface.
-- `docs/storage.md` Contract column table is not updated in this phase.
+The P-E04-01 form-omit write-surface finding is closed by P-E04-04.
 
 ---
 
@@ -69,7 +64,17 @@ Known nonblocking findings:
 
 ## P-E04-03 verdict
 
-**IMPLEMENTED** — ReportingService publishes Forecast + contract allocations. `ALLOCATION_WARNING` / `ALLOCATION_EXCEEDED` reuse AlertService. Awaiting Engineering Review. Not certified. P-E04-04 UI is not authorized.
+**COMPLETE** — Engineering Review **APPROVED WITH FINDINGS** (`7c4ad5d`). ReportingService publishes Forecast + contract allocations. `ALLOCATION_WARNING` / `ALLOCATION_EXCEEDED` reuse AlertService.
+
+## P-E04-04 verdict
+
+**COMPLETE** — Engineering Review **APPROVED WITH FINDINGS** (`ab68c84`). Contract form persists `allocatedMinutes`. Contract detail renders server allocation facts. Existing E01 revenue surfaces show Accrued + current-period Forecast.
+
+## P-E04-05 verdict
+
+**COMPLETE — QA PASS WITH FINDINGS.** Documentation synchronized. E04 is **not** certified. P-E04-06 is **not** authorized.
+
+Accepted nonblocking findings remain: P-E04-02 consumption duplication / list efficiency / selected test gaps; P-E04-03 TimeEntry trigger unit omit `contractId` and allocation trigger coverage integration-only; P-E04-04 extra workspace-context load on Contract detail and optional E2E gaps (zero → positive; WARNING/EXCEEDED with actual consumption). Parallel `contracts` E2E timed out once under load and passed in isolation.
 
 ---
 
@@ -91,7 +96,7 @@ Known nonblocking findings:
 | `prisma/schema.prisma` | `allocatedMinutes Int?` on Contract (P-E04-01). TimeEntry / Invoice / Payment / Alert unchanged |
 | `src/application/analytics/*` | Accrued / Expected / pro-rata owners |
 | `src/lib/analytics-periods.ts` | Timezone / current / historical periods |
-| `src/application/alerts/alert-service.ts` | CONTRACT_* / PAYMENT_*; no allocation types |
+| `src/application/alerts/alert-service.ts` | CONTRACT_* / PAYMENT_* / ALLOCATION_WARNING / ALLOCATION_EXCEEDED |
 
 Where a historical R1 document and the decision pack disagree, the decision pack wins for R2 meaning. Certified E01/E02/E03 contracts are immutable here.
 
@@ -107,10 +112,11 @@ Where a historical R1 document and the decision pack disagree, the decision pack
 | Working tree at inspection | planning artifacts only; no `src/` / Prisma change |
 | Migrations present | foundation → TimeEntry snapshot → Invoice → Payment → payment alerts |
 | `allocatedMinutes` in schema | **present** (`Int?`, P-E04-01) |
-| Forecast code | **absent**. `ReportingService` non-goal: “No Forecast” |
-| Accrued / Expected code | present; dashboard / reports **do not render money** |
+| Forecast code | **present** (P-E04-02+). Derived. Current certified period only |
+| Accrued / Expected / Forecast UI | published on Dashboard, Reports, Annual Overview (P-E04-04) |
+| Migrations | `20260923230000_add_contract_allocated_minutes`; `20260923235000_add_allocation_alerts` |
 
-Inspection did not change `src/` or `prisma/`.
+P-E04-00 inspection was planning-only. P-E04-01…P-E04-04 implemented persistence, calculations, reporting, alerts, and UI.
 
 ---
 
@@ -562,15 +568,15 @@ New index only if validity-window aggregation proves existing indexes insufficie
 | Phase | Objective | Depends | Artifacts | Test gate | Commit | Blockers |
 | --- | --- | --- | --- | --- | --- | --- |
 | P-E04-00 | Planning / decision gate | E01 Accrued; E03 certified | This document | None | `docs(r2-e04): close PO decisions` | — |
-| P-E04-01 | Persistence / domain: optional Contract minutes field | Closed field shape | Prisma + domain types. **No** Forecast formula | Isolation / null / bounds | this P-E04-01 commit | None |
+| P-E04-01 | Persistence / domain: optional Contract minutes field | Closed field shape | Prisma + domain types. **No** Forecast formula | Isolation / null / bounds | `3012b47` | Engineering Review APPROVED WITH FINDINGS |
 | P-E04-02 | Application calculations | Closed Forecast + consumption | AnalyticsService Forecast + consumption / status | Unit formulas | `ca1b4cc` | Engineering Review APPROVED WITH FINDINGS |
-| P-E04-03 | Integration: reporting publish + allocation alerts | P-E04-02; E04-D-ALERT-*; 8-C | ReportingService; AlertService allocation types | Integration + isolation | this P-E04-03 commit | None |
-| P-E04-04 | UI | Closed UI surface; write path | Contract form; existing revenue surfaces | E2E | TBD | None |
-| P-E04-05 | QA / documentation | P-E04-04 | Sync docs to implemented behavior | QA | TBD | — |
+| P-E04-03 | Integration: reporting publish + allocation alerts | P-E04-02; E04-D-ALERT-*; 8-C | ReportingService; AlertService allocation types | Integration + isolation | `7c4ad5d` | Engineering Review APPROVED WITH FINDINGS |
+| P-E04-04 | UI | Closed UI surface; write path | Contract form; existing revenue surfaces | E2E | `ab68c84` | Engineering Review APPROVED WITH FINDINGS |
+| P-E04-05 | QA / documentation | P-E04-04 | Sync docs to implemented behavior | QA | this P-E04-05 commit | — |
 | P-E04-06 | Release validation | P-E04-05 | Validation record | Gate | TBD | — |
 | P-E04-07 | Certification | P-E04-06 | Certification | — | TBD | PO release later |
 
-P-E04-02 is **COMPLETE** (Engineering Review APPROVED WITH FINDINGS). P-E04-03 is **implemented** and awaits Engineering Review. P-E04-04 is **not** authorized.
+P-E04-00…P-E04-05 are **COMPLETE**. E04 is **not** certified. P-E04-06 is **not** authorized.
 
 ---
 
@@ -603,8 +609,8 @@ P-E04-00 closed the original seven. 8-C closed zero-allocation status after the 
 
 ## 21. Recommendation for next phase
 
-Stop. Do **not** start P-E04-02 in this chat.
+Stop. Do **not** start P-E04-06 or P-E04-07 in this chat.
 
-Next authorized work is Engineering Review of P-E04-01, then P-E04-02 application calculations. Alert implementation belongs to P-E04-03.
+Next gate is P-E04-06 Release Validation. E04 remains **NOT CERTIFIED**.
 
 R2 remains not production-ready. E05 remains unplanned.

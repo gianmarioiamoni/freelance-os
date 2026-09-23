@@ -108,7 +108,7 @@ Accrued, Expected and Forecast are separate operational concepts. No ML / AI.
 | --- | --- | --- |
 | Accrued Revenue | Consuntivo economic value of billable work already recorded | TimeEntry + applicable historical commercial value (R2-OD-003) |
 | Expected Revenue | Contract-capacity value for the reporting period | Contract / contractual capacity. Independent of TimeEntry, Invoice, Payment |
-| Forecast Revenue | Deterministic linear projection of Accrued to period end | Accrued + elapsed time in the current reporting period (R2-OD-005 direction) |
+| Forecast Revenue | Deterministic linear projection of Accrued to period end | Accrued / elapsedFraction on the certified current period (R2-OD-005 CLOSED) |
 
 Accrued formulas:
 
@@ -351,7 +351,7 @@ allocatedMinutes         = total project / Contract time budget
 
 Do not conflate them.
 
-The exact WARNING threshold is **not** a product decision. Do not invent one.
+WARNING threshold = 80%. EXCEEDED only when consumption `>` allocatedMinutes. Exactly 100% is WARNING, not EXCEEDED. Closed by P-E04-00 (`docs/release/r2-e04-forecasting-allocation.md` E04-D-ALLOCATION-WARNING / E04-D-ALLOCATION-EXCEEDED). Zero allocation has no status and no allocation alert regardless of consumption (E04-D-ALLOCATION-ZERO-STATUS / 8-C). Implemented through P-E04-05. E04 is not certified.
 
 ### R2-OD-014 — Period closure — APPROVED OUT OF R2
 
@@ -371,13 +371,13 @@ OBD-008 remains historically open for a later release. It does not block R2.
 
 ## 4. Residual planning / product questions
 
-These are **not** approved implementation assumptions.
+R2-OD-005 and the R2-OD-013 WARNING residual are CLOSED by P-E04-00. R2-OD-012 remains the only open residual. Closed rows stay as register history. They are **not** approved implementation assumptions for still-open items.
 
 | ID | Topic | Needed by |
 | --- | --- | --- |
-| R2-OD-005 | Exact Forecast arithmetic (elapsed time, zero cases, historical periods) | R2-E04 |
+| R2-OD-005 | CLOSED — Forecast = Accrued / elapsedFraction on the certified current period (`docs/release/r2-e04-forecasting-allocation.md` E04-D-FORECAST-ARITHMETIC) | R2-E04 |
 | R2-OD-012 | Whether simple tabular / CSV export belongs in R2-E05. PDF / document generation is out of core R2 | R2-E05 |
-| R2-OD-013 residual | Contract Time Allocation WARNING threshold | R2-E04 |
+| R2-OD-013 residual | CLOSED — WARNING 80%; EXCEEDED only when consumption `>` allocation (`docs/release/r2-e04-forecasting-allocation.md`) | R2-E04 |
 | R2-OD-007 residual | CLOSED — VOID one-way soft-delete; default lists exclude; no restore (`docs/release/r2-e02-invoice-tracking.md` E02-D02) | R2-E02 P-E02-00 |
 | R2-OD-011 residual | CLOSED — Invoice currency snapshot; must match Contract at write (`docs/release/r2-e02-invoice-tracking.md` E02-D01) | R2-E02 P-E02-00 |
 | R2-OD-003 residual | CLOSED — TimeEntry `snapshotBillingModel` / `snapshotRate` / `snapshotCurrency` | R2-E01 P-E01-01 |
@@ -484,11 +484,11 @@ R1 freeze deferred these items. Freeze deferral is historical. It does not force
 
 | Conflict | Classification |
 | --- | --- |
-| Revenue / billing calculation ambiguities | **RESOLVED BY PRODUCT DECISION** (D4, R2-OD-001, R2-OD-002, R2-OD-004). Forecast arithmetic residual: R2-OD-005. |
+| Revenue / billing calculation ambiguities | **RESOLVED BY PRODUCT DECISION** (D4, R2-OD-001, R2-OD-002, R2-OD-004, R2-OD-005 CLOSED). |
 | EPIC-105 “billing → R2-E02” vs MASTER_PLAN separate invoice/payment | **RESOLVED BY PRODUCT DECISION.** Invoice Tracking and Payment Tracking are separate. Invoice Lifecycle is withdrawn. |
 | Invoice commercial snapshot vs TimeEntry commercial snapshot | **RESOLVED as product semantics** (R2-OD-003 Commercial Snapshot). Persistence mechanism is an R2-E01 planning dependency. Invoice-generation snapshot is **HISTORICAL / NO LONGER RELEVANT** (D2). |
 | OBD needed-by R2 vs freeze deferral | **HISTORICAL.** 007/008 are out of R2. D7 + R2-OD-011 close OBD-011 direction and mutation. |
-| Capacity alerts vs forecasting | **RESOLVED BY PRODUCT DECISION.** No workspace capacity alerts. Contract Time Allocation instead (R2-OD-013). WARNING threshold still open. |
+| Capacity alerts vs forecasting | **RESOLVED BY PRODUCT DECISION.** No workspace capacity alerts. Contract Time Allocation instead (R2-OD-013). WARNING / EXCEEDED CLOSED by P-E04-00. |
 | Calendar view vs calendar integration | **HISTORICAL / NO LONGER RELEVANT** to R2. Calendar view was deferred in EPIC-103; calendar integration remains R3. |
 | TD ID collisions (`MASTER_PLAN` TD-* vs `testing-strategy` TD-* vs EPIC-001 TD-*) | **DOCUMENTATION CONFLICT.** Do not reuse IDs. Do not “fix” history in this pack. |
 | Excel in EPIC-105 non-goals vs product OD-011 CSV/PDF | **RESOLVED.** Excel was never a Product Owner decision. Not R2. PDF / document generation is out of core R2. |
@@ -520,8 +520,8 @@ See `docs/release/r2-architecture-delta.md`.
 | Kind | Items |
 | --- | --- |
 | APPROVED | D1, D2, D3, D4, D5, D6, D7 |
-| APPROVED OD resolutions | R2-OD-001, R2-OD-002, R2-OD-003 (semantics), R2-OD-004, R2-OD-006, R2-OD-007 (product + VOID semantics), R2-OD-008, R2-OD-009, R2-OD-010, R2-OD-011 (product + Invoice currency snapshot), R2-OD-013 (product), R2-OD-014, R2-OD-015 |
-| RESIDUAL PLANNING / PRODUCT | R2-OD-005 arithmetic, R2-OD-012 CSV-in-E05, allocation WARNING threshold |
+| APPROVED OD resolutions | R2-OD-001, R2-OD-002, R2-OD-003 (semantics), R2-OD-004, R2-OD-005 (arithmetic CLOSED by P-E04-00), R2-OD-006, R2-OD-007 (product + VOID semantics), R2-OD-008, R2-OD-009, R2-OD-010, R2-OD-011 (product + Invoice currency snapshot), R2-OD-013 (product + WARNING / EXCEEDED CLOSED by P-E04-00), R2-OD-014, R2-OD-015 |
+| RESIDUAL PLANNING / PRODUCT | R2-OD-012 CSV-in-E05 |
 | DEFERRED / FUTURE | FX, installment engine, PIVA Balance integration, e-invoicing, calendar integration, AI, Excel, profitability, advanced grace / risk, workspace capacity alerts, period-close, audit ledger |
 
 ---

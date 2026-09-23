@@ -1,11 +1,11 @@
 # R2 Architecture Delta — Revenue Operations
 
-**Status:** Domain and persistence-planning delta. R2-E01 snapshot / Accrued / Expected are implemented. R2-E02 Invoice Tracking is implemented. R2-E03 Payment Tracking is CERTIFIED. R2-E04 P-E04-00 COMPLETE — BLOCKED — PO DECISIONS REQUIRED (`docs/release/r2-e04-forecasting-allocation.md`). E05 remains unauthorized.  
+**Status:** Domain and persistence-planning delta. R2-E01 snapshot / Accrued / Expected are implemented. R2-E02 Invoice Tracking is implemented. R2-E03 Payment Tracking is CERTIFIED. R2-E04 P-E04-05 COMPLETE — QA PASS WITH FINDINGS (`docs/release/r2-e04-forecasting-allocation.md`). E04 is not certified. E05 remains unauthorized.  
 **Date:** 2026-09-23  
 **Authority:** `docs/release/r2-decision-pack.md`  
 **Baseline:** R1 architecture (`docs/architecture.md`, `docs/domain-model.md`, `docs/storage.md`) remains the frozen R1 baseline.
 
-This document records what must change conceptually for R2. Invoice Prisma names exist (`Invoice`). Payment Prisma names exist (`Payment`). E03-D-VOID-PAYMENTS is closed (Option A). It does not invent `allocatedMinutes` Prisma names. It does not open E04–E05 implementation.
+This document records what must change conceptually for R2. Invoice Prisma names exist (`Invoice`). Payment Prisma names exist (`Payment`). E03-D-VOID-PAYMENTS is closed (Option A). `Contract.allocatedMinutes` exists (`Int?`). Forecast remains derived. It does not authorize E04 certification or E05 implementation.
 
 Legend:
 
@@ -73,8 +73,9 @@ These already exist. R2 must not invent a second source of truth.
 | --- | --- | --- |
 | `currency`, `rate`, `billingModel`, `paymentTermsDays`, `monthlyContractedMinutes` | EXISTING MODEL REUSED | Do not duplicate |
 | Currency immutability after first monetary record | CONFIRMED REQUIREMENT | Write-rule change. No new column implied |
-| `allocatedMinutes` | CONFIRMED REQUIREMENT | Optional Contract-level total time budget. **Not in current schema.** Conceptual name only |
-| Allocation WARNING threshold | IMPLEMENTATION DETAIL STILL OPEN | Product decision still required |
+| `allocatedMinutes` | EXISTING MODEL REUSED | Optional Contract-level total time budget. `Contract.allocatedMinutes Int?`. Null = no allocation. Zero is valid. Implemented P-E04-01 |
+| Allocation consumption | DOMAIN DECISION | SUM(TimeEntry.minutes) for the Contract inside `[validFrom, validTo)`. All minutes. Out-of-validity ignored. Closed by P-E04-00 |
+| Allocation WARNING / EXCEEDED predicates | DOMAIN DECISION | WARNING at 80%. EXCEEDED only when consumption `>` allocatedMinutes. Closed by P-E04-00 |
 
 No new Contract entity is implied.
 
@@ -126,7 +127,7 @@ No profitability, tax, accounting recognition, ML, or FX rollup.
 | --- | --- | --- |
 | Accrued / Expected / Forecast totals | EXISTING MODEL REUSED (derived) | Read model unless a later plan proves persistence |
 | Application-service boundary | EXISTING MODEL REUSED | E01 implemented: extend `AnalyticsService`. `ReportingService` stays thin. No parallel RevenueService |
-| Forecast arithmetic | IMPLEMENTATION DETAIL STILL OPEN | R2-OD-005 residual |
+| Forecast arithmetic | DOMAIN DECISION | Accrued / elapsedFraction on the certified current period. Closed by P-E04-00 / R2-OD-005 |
 | Mixed-currency presentation | DOMAIN DECISION | Separate by currency (D7) |
 
 ---
@@ -222,7 +223,7 @@ No risk score, prediction, AI, or percentage-threshold engine for payments.
 | --- | --- | --- |
 | Existing Alert / Notification model | EXISTING MODEL REUSED | `PAYMENT_*` types + nullable `Alert.invoiceId` + unique dedup keys. S2 semantic identity |
 | Payment alert predicates | DOMAIN DECISION | R2-OD-009. Implemented by P-E03-03 |
-| Allocation WARNING threshold | IMPLEMENTATION DETAIL STILL OPEN | Do not invent |
+| Allocation WARNING / EXCEEDED predicates | DOMAIN DECISION | Closed by P-E04-00. Types `ALLOCATION_WARNING` / `ALLOCATION_EXCEEDED` are TECHNICAL CLOSED |
 | On-write vs other trigger | CLOSED by E03-D-ALERT-TRIGGER T3 | Payment C/U/D + Invoice VOID + Invoice amount/`invoiceDate`. Reference-only Invoice update does not evaluate. No scheduler |
 
 ---
@@ -253,19 +254,19 @@ No risk score, prediction, AI, or percentage-threshold engine for payments.
 
 ## 10. Data-model delta (planning only)
 
-Invoice and Payment Prisma names exist. No invented `allocatedMinutes` names. E01 TimeEntry snapshot columns already exist. No E04–E05 migrations.
+Invoice and Payment Prisma names exist. `allocatedMinutes` exists. E01 TimeEntry snapshot columns already exist. E04 migrations: `20260923230000_add_contract_allocated_minutes`, `20260923235000_add_allocation_alerts`. No E05 migrations.
 
 | Concept | Classification | Existing? | Planning note |
 | --- | --- | --- | --- |
 | Invoice | EXISTING MODEL REUSED | Yes (P-E02-01) | 1 Contract : N Invoice; VOID / soft-delete; editable; no fiscal fields |
 | Payment event | EXISTING MODEL REUSED | Yes (P-E03-01) | Many per Invoice; editable / deletable on ACTIVE only; status derived |
-| Contract `allocatedMinutes` | CONFIRMED REQUIREMENT | No | Optional total project budget. Distinct from `monthlyContractedMinutes` |
+| Contract `allocatedMinutes` | EXISTING MODEL REUSED | Yes (P-E04-01) | Optional total project budget. Distinct from `monthlyContractedMinutes`. Null / 0 have no status (8-C) |
 | Historical commercial snapshot | EXISTING MODEL REUSED | Yes (P-E01-01) | TimeEntry `snapshotBillingModel`, `snapshotRate`, `snapshotCurrency` |
 | Derived payment status | CONFIRMED REQUIREMENT | n/a | Function of payment events, not a source of truth |
 | Invoice VOID state | DOMAIN DECISION | Yes | One-way soft-delete. Closed by E02-D02. Payment writes frozen by E03-D-VOID-PAYMENTS A |
 | Contract currency immutability | CONFIRMED REQUIREMENT | Write rule only | After first monetary record, including VOID. Implemented for Invoice |
 | Invoice currency snapshot | DOMAIN DECISION | Yes | Closed by E02-D01. Immutable after create |
-| Accrued / Expected / Forecast tables | IMPLEMENTATION DETAIL STILL OPEN | Derived preferred | Persist only if a later plan proves need |
+| Accrued / Expected / Forecast tables | DOMAIN DECISION | Derived | Forecast is derived, not persisted (E04-D-FORECAST-PERSISTENCE). Accrued / Expected remain derived |
 | `monthlyContractedMinutes`, `rate`, `currency`, `paymentTermsDays` | EXISTING MODEL REUSED | Yes | Do not conflate with `allocatedMinutes` |
 
 ---
@@ -316,13 +317,8 @@ R1 baseline documents keep their historical text. Canonical R2 meaning is this d
 
 ## 13. What this document does not decide
 
-- Prisma models or migrations for E04–E05
-- Final Prisma field names for `allocatedMinutes`
-- API routes, Server Actions, or UI for E04–E05
+- Prisma models or migrations for E05
 - Whether revenue totals are persisted
-- Forecast arithmetic (E04-D-FORECAST-ARITHMETIC / R2-OD-005)
-- Allocation WARNING / EXCEEDED predicates
-- Allocation consumption numerator / window / out-of-validity rule
-- E04 revenue UI surface
+- E04 certification
 
-E04 planning recovered these as OPEN PO items in `docs/release/r2-e04-forecasting-allocation.md`. They are not closed here.
+E04 product residuals (Forecast arithmetic, allocation predicates including 8-C zero-status, consumption rules, revenue UI surface) are CLOSED and implemented through P-E04-05 in `docs/release/r2-e04-forecasting-allocation.md`. Forecast = Accrued / elapsedFraction on the certified current period only; historical/custom null; derived. This document does not authorize P-E04-06, P-E04-07, or production release.

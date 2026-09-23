@@ -485,6 +485,12 @@ This entity is central to historical correctness.
   `monthlyContractedMinutes`   INTEGER           NULL              Contracted
                                                                    monthly capacity
 
+  `allocatedMinutes`           INTEGER           NULL              Optional total
+                                                                   Contract time
+                                                                   budget. Zero is
+                                                                   valid. CHECK
+                                                                   null or `>= 0`
+
   `paymentTermsDays`           INTEGER           NULL              e.g. 30
 
   `paymentTermsNote`           TEXT              NULL              Non-standard
@@ -734,6 +740,8 @@ Contract utilization reached 80%
 Contract utilization exceeded 100%
 Monthly capacity reached warning threshold
 Monthly capacity exceeded
+Contract allocation reached 80%
+Contract allocation exceeded 100%
 ```
 
 Alerts are not the same thing as notifications.
