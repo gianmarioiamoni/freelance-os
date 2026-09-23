@@ -52,7 +52,7 @@ export function createAlertRepository(db: PrismaExecutor): AlertRepository {
       workspaceId: string,
       contractId: string,
       type: AlertType,
-      periodStart: Date,
+      periodStart: Date | null,
     ) {
       return withPersistenceErrors(async () => {
         const row = await db.alert.findFirst({

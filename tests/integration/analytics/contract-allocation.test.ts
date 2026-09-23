@@ -98,7 +98,7 @@ describe("Contract allocation consumption", () => {
     expect(view.consumedMinutes).toBe(0);
     expect(view.allocatedMinutes).toBe(0);
     expect(view.remainingMinutes).toBe(0);
-    expect(view.allocationStatus).toBe("NORMAL");
+    expect(view.allocationStatus).toBeNull();
   });
 
   it("isolates consumption by workspace and aggregates per Contract", async () => {

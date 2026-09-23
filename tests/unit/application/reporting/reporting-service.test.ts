@@ -74,6 +74,8 @@ function analyticsStub(overrides: Partial<AnalyticsService> = {}): AnalyticsServ
     getAccruedRevenue: vi.fn().mockResolvedValue(accrued),
     getExpectedRevenue: vi.fn().mockResolvedValue(expected),
     getClientAllocations: vi.fn().mockResolvedValue(allocations),
+    listContractAllocations: vi.fn().mockResolvedValue([]),
+    getForecastRevenue: vi.fn().mockResolvedValue(null),
     getMonthlyAnalytics: vi.fn().mockResolvedValue({
       period,
       totalMinutes: 120,
@@ -105,9 +107,42 @@ describe("ReportingService revenue mapping", () => {
     expect(report.accrued).toEqual(accrued);
     expect(report.expected).toEqual(expected);
     expect(report.accrued.byCurrency.map((row) => row.currency)).toEqual(["EUR"]);
-    expect(report).not.toHaveProperty("forecast");
+    expect(report.forecast).toBeNull();
+    expect(report.contractAllocations).toEqual([]);
     expect(analytics.getAccruedRevenue).toHaveBeenCalledWith(context, period);
     expect(analytics.getExpectedRevenue).toHaveBeenCalledWith(context, period);
+    expect(analytics.getForecastRevenue).toHaveBeenCalledWith(context, period);
+    expect(analytics.listContractAllocations).toHaveBeenCalledWith(context);
+  });
+
+  it("publishes Forecast and contract allocations from AnalyticsService", async () => {
+    const forecast = {
+      period,
+      timezone: "UTC",
+      elapsedPeriod: 15,
+      totalPeriod: 15,
+      byCurrency: accrued.byCurrency,
+      byContract: accrued.byContract,
+    };
+    const contractAllocations = [
+      {
+        contractId: "contract-1",
+        allocatedMinutes: 1000,
+        consumedMinutes: 800,
+        remainingMinutes: 200,
+        allocationStatus: "WARNING" as const,
+      },
+    ];
+    const analytics = analyticsStub({
+      getForecastRevenue: vi.fn().mockResolvedValue(forecast),
+      listContractAllocations: vi.fn().mockResolvedValue(contractAllocations),
+    });
+    const reporting = new ReportingService(analytics);
+
+    const report = await reporting.getContractReport(context, { kind: "month" });
+
+    expect(report.forecast).toEqual(forecast);
+    expect(report.contractAllocations).toEqual(contractAllocations);
   });
 
   it("preserves Expected null semantics on ContractReport", async () => {

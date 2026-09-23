@@ -22,6 +22,10 @@ import type {
   ContractAlertEvaluationResult,
 } from "@/application/alerts/alert-evaluation-types";
 import {
+  evaluateContractAllocationAlerts,
+  type AllocationAlertEvaluationResult,
+} from "@/application/alerts/evaluate-allocation-alerts";
+import {
   evaluateInvoicePaymentAlerts,
   type PaymentAlertEvaluationResult,
 } from "@/application/alerts/evaluate-payment-alerts";
@@ -142,6 +146,26 @@ export class AlertService {
    * Evaluates PAYMENT_PARTIAL / PAYMENT_OVERDUE / PAYMENT_MISMATCH for one Invoice.
    * Reuses existing derived helpers. Does not scan other invoices.
    */
+  /**
+   * Evaluates ALLOCATION_WARNING / ALLOCATION_EXCEEDED for one Contract.
+   * Mutually exclusive. Null or zero allocation resolves both and creates nothing.
+   */
+  async evaluateAllocationAlerts(
+    context: WorkspaceContext,
+    contractId: string,
+  ): Promise<AllocationAlertEvaluationResult> {
+    return evaluateContractAllocationAlerts(
+      context,
+      contractId,
+      {
+        alerts: this.alerts,
+        notifications: this.notifications,
+        members: this.members,
+      },
+      this.analyticsService,
+    );
+  }
+
   async evaluatePaymentAlerts(
     context: WorkspaceContext,
     invoiceId: string,

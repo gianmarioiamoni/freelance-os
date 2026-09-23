@@ -50,8 +50,11 @@ export async function createTimeEntryAction(
       timeEntries,
     );
 
-    // P106-03: trigger alert evaluation after successful TimeEntry creation (best-effort).
-    await triggerAlertEvaluation(context, { alerts, notifications, members, settings, analytics });
+    await triggerAlertEvaluation(
+      context,
+      { alerts, notifications, members, settings, analytics },
+      values.contractId,
+    );
   } catch (error) {
     if (error instanceof InvalidTimeEntryInputError) {
       return {

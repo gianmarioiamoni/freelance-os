@@ -3,25 +3,25 @@
 **Epic:** R2-E04 — Forecasting & Contract Time Allocation  
 **Release:** Release 2 — Revenue Operations  
 **MASTER_PLAN identifier:** R2-E04 (`MASTER_PLAN.md` §19)  
-**Status:** P-E04-01 COMPLETE — persistence / domain. P-E04-02 NOT STARTED / NOT AUTHORIZED  
+**Status:** P-E04-03 implemented — awaiting Engineering Review. Not certified.  
 **Date:** 2026-09-23  
 **Authority:** `docs/release/r2-decision-pack.md`  
 **Companions:** `docs/release/r2-epic-map.md`, `docs/release/r2-architecture-delta.md`, `docs/release/r2-open-decisions.md`  
 **Predecessors:** R2-E01 COMPLETE / RELEASE-READY. R2-E02 COMPLETE WITH NON-BLOCKING FINDING. R2-E03 CERTIFIED (`2ad1a1e1e032709bb5de7c228f083259ac5d5ecd`).  
 **Does not assign:** an EPIC-2xx number  
-**Does not authorize:** P-E04-02, Forecast, consumption, alerts, or UI
+**Does not authorize:** P-E04-04 UI or E04 certification
 
 ```text
 P-E04-00  PLANNING / DECISION GATE                 COMPLETE — PO DECISIONS CLOSED
 P-E04-01  PERSISTENCE / DOMAIN                     COMPLETE
-P-E04-02  APPLICATION / CALCULATIONS               NOT STARTED / NOT AUTHORIZED
-P-E04-03  FORECAST / ALLOCATION INTEGRATION        NOT STARTED / NOT AUTHORIZED
+P-E04-02  APPLICATION / CALCULATIONS               COMPLETE — ENGINEERING REVIEW APPROVED WITH FINDINGS
+P-E04-03  FORECAST / ALLOCATION INTEGRATION        IMPLEMENTED — AWAITING ENGINEERING REVIEW
 P-E04-04  UI                                       NOT STARTED / NOT AUTHORIZED
 P-E04-05  QA / DOCUMENTATION                       NOT STARTED / NOT AUTHORIZED
 P-E04-06  RELEASE VALIDATION                       NOT STARTED / NOT AUTHORIZED
 P-E04-07  CERTIFICATION                            NOT STARTED / NOT AUTHORIZED
 
-R2-E04: P-E04-01 COMPLETE — P-E04-02 NOT AUTHORIZED
+R2-E04: P-E04-03 IMPLEMENTED — NOT CERTIFIED
 R2-E03: CERTIFIED
 R2-E02: COMPLETE WITH NON-BLOCKING FINDING
 R2-E01: COMPLETE / RELEASE-READY
@@ -60,6 +60,16 @@ Known nonblocking findings:
 
 - Contract UI form does not yet carry `allocatedMinutes`. Form updates omit the field and therefore persist `null` (same omitted-optional convention as `monthlyContractedHours`). P-E04-04 owns the write surface.
 - `docs/storage.md` Contract column table is not updated in this phase.
+
+---
+
+## P-E04-02 verdict
+
+**COMPLETE** — Engineering Review **APPROVED WITH FINDINGS** (`ca1b4cc`). Zero-allocation status was implementation-defined; closed by **E04-D-ALLOCATION-ZERO-STATUS / 8-C** before P-E04-03.
+
+## P-E04-03 verdict
+
+**IMPLEMENTED** — ReportingService publishes Forecast + contract allocations. `ALLOCATION_WARNING` / `ALLOCATION_EXCEEDED` reuse AlertService. Awaiting Engineering Review. Not certified. P-E04-04 UI is not authorized.
 
 ---
 
@@ -524,6 +534,12 @@ New index only if validity-window aggregation proves existing indexes insufficie
 **Decision:** Product buckets are mutually exclusive. Null allocation resolves any active `ALLOCATION_*` for that Contract. `<80%` resolves both. `>=80%` and `<=100%` keeps `ALLOCATION_WARNING` and resolves `ALLOCATION_EXCEEDED`. `>100%` keeps `ALLOCATION_EXCEEDED` and resolves `ALLOCATION_WARNING`. Retrigger uses existing AlertService retrigger-suffix behaviour when a resolved condition becomes true again. Do not keep WARNING and EXCEEDED active together (unlike monthly `CONTRACT_*`).  
 **Status:** **CLOSED — TECHNICAL**
 
+### E04-D-ALLOCATION-ZERO-STATUS
+
+**Question:** Status and alert semantics when `allocatedMinutes = 0`.  
+**Decision (8-C — PO APPROVED):** Zero allocation has no status and no allocation alert, regardless of consumption. Do not generate WARNING or EXCEEDED. Do not divide by zero. Null allocation remains no status / no alert. A transition from a positive allocation to zero or null resolves any active `ALLOCATION_*` and creates nothing. Status bands apply only when `allocatedMinutes > 0`.  
+**Status:** **CLOSED — PO APPROVED — 8-C**
+
 ### Previously closed / not new PO decisions
 
 | ID | Status | Note |
@@ -547,14 +563,14 @@ New index only if validity-window aggregation proves existing indexes insufficie
 | --- | --- | --- | --- | --- | --- | --- |
 | P-E04-00 | Planning / decision gate | E01 Accrued; E03 certified | This document | None | `docs(r2-e04): close PO decisions` | — |
 | P-E04-01 | Persistence / domain: optional Contract minutes field | Closed field shape | Prisma + domain types. **No** Forecast formula | Isolation / null / bounds | this P-E04-01 commit | None |
-| P-E04-02 | Application calculations | Closed Forecast + consumption | AnalyticsService Forecast + consumption / status | Unit formulas | TBD | None |
-| P-E04-03 | Integration: reporting publish + allocation alerts | P-E04-02; E04-D-ALERT-* | ReportingService; AlertService allocation types | Integration + isolation | TBD | None (alerts are technical-closed; implement here, not in P-E04-00) |
+| P-E04-02 | Application calculations | Closed Forecast + consumption | AnalyticsService Forecast + consumption / status | Unit formulas | `ca1b4cc` | Engineering Review APPROVED WITH FINDINGS |
+| P-E04-03 | Integration: reporting publish + allocation alerts | P-E04-02; E04-D-ALERT-*; 8-C | ReportingService; AlertService allocation types | Integration + isolation | this P-E04-03 commit | None |
 | P-E04-04 | UI | Closed UI surface; write path | Contract form; existing revenue surfaces | E2E | TBD | None |
 | P-E04-05 | QA / documentation | P-E04-04 | Sync docs to implemented behavior | QA | TBD | — |
 | P-E04-06 | Release validation | P-E04-05 | Validation record | Gate | TBD | — |
 | P-E04-07 | Certification | P-E04-06 | Certification | — | TBD | PO release later |
 
-P-E04-01 is **COMPLETE**. P-E04-02 is **not** authorized by this update.
+P-E04-02 is **COMPLETE** (Engineering Review APPROVED WITH FINDINGS). P-E04-03 is **implemented** and awaits Engineering Review. P-E04-04 is **not** authorized.
 
 ---
 
@@ -579,8 +595,9 @@ P-E04-01 is **COMPLETE**. P-E04-02 is **not** authorized by this update.
 5. **E04-D-CONSUMPTION-WINDOW** — CLOSED — PO APPROVED.
 6. **E04-D-OUT-OF-VALIDITY-CONSUMPTION** — CLOSED — PO APPROVED.
 7. **E04-D-UI-REVENUE-SURFACE** — CLOSED — PO APPROVED.
+8. **E04-D-ALLOCATION-ZERO-STATUS** — CLOSED — PO APPROVED — 8-C.
 
-P-E04-00 closed these decisions. P-E04-01 implemented persistence only.
+P-E04-00 closed the original seven. 8-C closed zero-allocation status after the P-E04-02 Engineering Review.
 
 ---
 

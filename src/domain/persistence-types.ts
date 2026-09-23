@@ -12,7 +12,9 @@ export type AlertType =
   | "CAPACITY_EXCEEDED"
   | "PAYMENT_PARTIAL"
   | "PAYMENT_OVERDUE"
-  | "PAYMENT_MISMATCH";
+  | "PAYMENT_MISMATCH"
+  | "ALLOCATION_WARNING"
+  | "ALLOCATION_EXCEEDED";
 export type AlertSeverity = "INFO" | "WARNING" | "ERROR";
 
 export type WorkspaceRecord = {

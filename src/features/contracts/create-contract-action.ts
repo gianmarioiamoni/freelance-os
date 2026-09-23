@@ -9,6 +9,7 @@ import {
   InvalidContractPeriodError,
   OverlappingContractError,
 } from "@/domain/contract-errors";
+import { triggerAllocationAlertEvaluation } from "@/application/alerts/trigger-allocation-alert-evaluation";
 import { getAuthenticatedContractContext } from "@/features/contracts/authenticated-contract-context";
 import {
   CONTRACT_ARCHIVED_CLIENT_ERROR,
@@ -26,7 +27,7 @@ export async function createContractAction(
   _previousState: ContractFormActionState,
   formData: FormData,
 ): Promise<ContractFormActionState> {
-  const { context, clients, contracts } =
+  const { context, clients, contracts, runInTransaction } =
     await getAuthenticatedContractContext();
   const values = readContractFormValues(formData);
 
@@ -40,6 +41,7 @@ export async function createContractAction(
       contracts,
     );
     contractId = contract.id;
+    await triggerAllocationAlertEvaluation(context, contract.id, runInTransaction);
   } catch (error) {
     if (error instanceof InvalidContractInputError) {
       return {

@@ -256,7 +256,8 @@ export type AllocationStatus = "NORMAL" | "WARNING" | "EXCEEDED";
 
 /**
  * Derived Contract allocation view. Remaining and status are not persisted.
- * `remainingMinutes` and `allocationStatus` are null when allocation is absent.
+ * `remainingMinutes` is null when allocation is absent.
+ * `allocationStatus` is null when allocation is absent or zero (8-C).
  */
 export type ContractAllocation = {
   contractId: string;

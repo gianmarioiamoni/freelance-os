@@ -31,7 +31,7 @@ export async function updateTimeEntryAction(
   try {
     const durationMinutes = parseDurationFromForm(values.durationHours, values.durationMinutes);
 
-    await updateTimeEntry(
+    const updated = await updateTimeEntry(
       context,
       timeEntryId,
       {
@@ -42,8 +42,11 @@ export async function updateTimeEntryAction(
       timeEntries,
     );
 
-    // P106-03: trigger alert evaluation after successful TimeEntry update (best-effort).
-    await triggerAlertEvaluation(context, { alerts, notifications, members, settings, analytics });
+    await triggerAlertEvaluation(
+      context,
+      { alerts, notifications, members, settings, analytics },
+      updated.contractId,
+    );
   } catch (error) {
     if (error instanceof InvalidTimeEntryInputError) {
       return {

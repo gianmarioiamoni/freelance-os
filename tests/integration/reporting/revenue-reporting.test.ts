@@ -114,7 +114,7 @@ describe("ReportingService revenue integration", () => {
     expect(monthly.expected).toEqual(report.expected);
     expect(monthly.totalMinutes).toBe(120);
     expect(monthly.billableMinutes).toBe(120);
-    expect(report).not.toHaveProperty("forecast");
+    expect(report.forecast).toBeNull();
     expect(monthly.forecast).toBeNull();
   });
 

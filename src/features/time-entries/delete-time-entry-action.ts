@@ -13,10 +13,13 @@ export async function deleteTimeEntryAction(timeEntryId: string, workDate?: stri
     await getAuthenticatedTimeEntryContext();
 
   try {
-    await deleteTimeEntry(context, timeEntryId, timeEntries);
+    const deleted = await deleteTimeEntry(context, timeEntryId, timeEntries);
 
-    // P106-03: trigger alert evaluation after successful TimeEntry deletion (best-effort).
-    await triggerAlertEvaluation(context, { alerts, notifications, members, settings, analytics });
+    await triggerAlertEvaluation(
+      context,
+      { alerts, notifications, members, settings, analytics },
+      deleted.contractId,
+    );
   } catch (error) {
     // Deleting an already-missing entry is treated as success to prevent
     // error loops; any other failure bubbles up.

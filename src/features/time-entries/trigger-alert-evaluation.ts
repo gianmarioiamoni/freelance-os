@@ -30,6 +30,7 @@ type AlertRepositories = {
 export async function triggerAlertEvaluation(
   context: WorkspaceContext,
   repositories: AlertRepositories,
+  contractId?: string,
 ): Promise<void> {
   const analyticsService = new AnalyticsService(
     repositories.analytics,
@@ -46,6 +47,9 @@ export async function triggerAlertEvaluation(
 
   try {
     await alertService.evaluateContractAlerts(context);
+    if (contractId) {
+      await alertService.evaluateAllocationAlerts(context, contractId);
+    }
   } catch (err) {
     console.error(
       `[alert-trigger] alert evaluation failed after TimeEntry mutation workspaceId=${context.workspaceId}`,

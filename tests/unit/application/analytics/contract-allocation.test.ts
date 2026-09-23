@@ -33,16 +33,14 @@ describe("Contract allocation remaining and status", () => {
     expect(result.allocationStatus).toBeNull();
   });
 
-  it("treats zero allocation with zero consumption as NORMAL", () => {
-    const result = allocation({ allocatedMinutes: 0, consumedMinutes: 0 });
-    expect(result.remainingMinutes).toBe(0);
-    expect(result.allocationStatus).toBe("NORMAL");
-  });
+  it("has no status when allocation is zero, regardless of consumption", () => {
+    const unused = allocation({ allocatedMinutes: 0, consumedMinutes: 0 });
+    expect(unused.remainingMinutes).toBe(0);
+    expect(unused.allocationStatus).toBeNull();
 
-  it("treats zero allocation with any consumption as EXCEEDED", () => {
-    const result = allocation({ allocatedMinutes: 0, consumedMinutes: 1 });
-    expect(result.remainingMinutes).toBe(0);
-    expect(result.allocationStatus).toBe("EXCEEDED");
+    const used = allocation({ allocatedMinutes: 0, consumedMinutes: 1 });
+    expect(used.remainingMinutes).toBe(0);
+    expect(used.allocationStatus).toBeNull();
   });
 
   it("keeps remaining at the unused positive allocation", () => {

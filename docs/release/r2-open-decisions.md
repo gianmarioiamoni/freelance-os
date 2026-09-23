@@ -8,7 +8,7 @@
 
 Approved D1–D7 and approved OD resolutions are **not** reopened here.
 
-Do not treat remaining items as implementation defaults. Do not invent WARNING thresholds, Forecast arithmetic, or CSV scope. R2-OD-003 representation, R2-OD-016, R2-OD-017, Invoice currency snapshot, Invoice VOID domain semantics, and E03-D-VOID-PAYMENTS are closed.
+Do not treat remaining items as implementation defaults. Do not invent CSV scope. R2-OD-003 representation, R2-OD-005, R2-OD-016, R2-OD-017, Invoice currency snapshot, Invoice VOID domain semantics, E03-D-VOID-PAYMENTS, and R2-OD-013 WARNING / EXCEEDED are closed.
 
 ---
 
@@ -25,7 +25,7 @@ Do not treat remaining items as implementation defaults. Do not invent WARNING t
 
 ## Residual questions that must be resolved during epic planning
 
-These are the product / planning decisions still required before the corresponding implementation phases. They are **not** approved assumptions.
+Items 1 and 2 are CLOSED by P-E04-00. Item 5 remains OPEN for R2-E05. Closed rows stay here as the register history. They are **not** implementation defaults for still-open items.
 
 ### 1. Contract Time Allocation WARNING threshold
 
@@ -33,12 +33,9 @@ These are the product / planning decisions still required before the correspondi
 | --- | --- |
 | Historical ID | R2-OD-013 residual; PD-106-001 is a different (workspace) question |
 | Question | At what consumption / allocation ratio does a Contract Time Allocation WARNING fire? |
-| Why | R2-OD-013 approves optional `allocatedMinutes` and forbids inventing the threshold. |
-| Impact | Blocks allocation WARNING alerts in R2-E04. EXCEEDED at 100% of allocation is not assumed. |
-| Owner | Product Owner |
-| Status | DIRECTION APPROVED / residual OPEN |
+| Decision | WARNING threshold = 80%. `<80%` no allocation alert. `>=80%` and `<=100%` WARNING. EXCEEDED exists only when consumption `>` allocatedMinutes. Exactly 100% is not EXCEEDED. Null allocation ⇒ no allocation alert. Zero allocation ⇒ no status / no alert regardless of consumption (E04-D-ALLOCATION-ZERO-STATUS / 8-C). |
+| Status | APPROVED / CLOSED by P-E04-00 and 8-C (`docs/release/r2-e04-forecasting-allocation.md`) |
 | Needed by | R2-E04 |
-| Plan | `docs/release/r2-e04-forecasting-allocation.md` E04-D-ALLOCATION-WARNING |
 
 ### 2. Exact Forecast calculation semantics
 
@@ -46,13 +43,9 @@ These are the product / planning decisions still required before the correspondi
 | --- | --- |
 | Historical ID | R2-OD-005 |
 | Question | What is the exact linear Forecast arithmetic? |
-| Why | Direction is approved: simple deterministic linear Forecast from Accrued and elapsed time in the current reporting period. No ML, AI, or extra signals. The implementation must still define the items below. |
-| Must define | current-period elapsed time; projected full-period value; behaviour when elapsed time is zero; behaviour when Accrued is zero; behaviour for historical periods |
-| Impact | Blocks Forecast Revenue in R2-E04. |
-| Owner | Product Owner during R2-E04 planning |
-| Status | DIRECTION APPROVED / residual OPEN |
+| Decision | Forecast Revenue = Accrued / elapsedFraction. elapsedFraction = elapsedPeriod / totalPeriod. Existing certified current period and `Workspace.timezone`. elapsedPeriod includes today. elapsedPeriod = 0 ⇒ Forecast = 0. Accrued = 0 ⇒ Forecast = 0. No Forecast for historical / custom periods. Derived. Invoice, Payment, Expected, Allocation are not inputs. |
+| Status | APPROVED / CLOSED by P-E04-00 (`docs/release/r2-e04-forecasting-allocation.md` E04-D-FORECAST-ARITHMETIC) |
 | Needed by | R2-E04 |
-| Plan | `docs/release/r2-e04-forecasting-allocation.md` E04-D-FORECAST-ARITHMETIC |
 
 ### 3. Invoice currency snapshot representation
 
@@ -136,7 +129,12 @@ These are the product / planning decisions still required before the correspondi
 | R2-OD-009 | paidAmount sum; UNPAID / PARTIAL / PAID / MISMATCH; PAYMENT_OVERDUE independent | APPROVED |
 | R2-OD-010 | Payment events editable / deletable; status derived; no ledger | APPROVED |
 | R2-OD-011 | Contract currency mutable only before monetary records; then immutable; no FX | APPROVED — Invoice currency snapshot closed by E02-D01 / implemented |
-| R2-OD-013 | Optional Contract `allocatedMinutes`; no workspace capacity alerts | APPROVED (WARNING threshold residual) |
+| R2-OD-005 | Exact linear Forecast arithmetic | APPROVED / CLOSED by P-E04-00 — Accrued / elapsedFraction on the certified current period |
+| R2-OD-013 | Optional Contract `allocatedMinutes`; no workspace capacity alerts | APPROVED / CLOSED — WARNING 80%; EXCEEDED only when consumption `>` allocation |
+| E04-D-CONSUMPTION-NUMERATOR | All TimeEntry minutes; no billable-only filter | APPROVED / CLOSED by P-E04-00 |
+| E04-D-CONSUMPTION-WINDOW | Contract `[validFrom, validTo)` | APPROVED / CLOSED by P-E04-00 |
+| E04-D-OUT-OF-VALIDITY-CONSUMPTION | Out-of-validity TimeEntries ignored for allocation; records untouched | APPROVED / CLOSED by P-E04-00 |
+| E04-D-UI-REVENUE-SURFACE | Contract allocation surface; Accrued + Forecast on existing E01 revenue surfaces | APPROVED / CLOSED by P-E04-00 |
 | R2-OD-014 | No period-close / accounting-lock in R2 | OUT OF R2 |
 | R2-OD-015 | No dedicated audit ledger in R2 | OUT OF R2 |
 
@@ -174,4 +172,4 @@ R2-E02 (`docs/release/r2-e02-invoice-tracking.md`) implemented Invoice Tracking 
 
 R2-E03 (`docs/release/r2-e03-payment-tracking.md`) is CERTIFIED. Payment decisions are CLOSED. F-E03-001…005 ACCEPTED.
 
-R2-E04 P-E04-00 (`docs/release/r2-e04-forecasting-allocation.md`) is COMPLETE — BLOCKED — PO DECISIONS REQUIRED. Residuals #1 and #2 remain OPEN. Additional E04 PO items recorded there: E04-D-ALLOCATION-EXCEEDED, E04-D-CONSUMPTION-NUMERATOR, E04-D-CONSUMPTION-WINDOW, E04-D-OUT-OF-VALIDITY-CONSUMPTION, E04-D-UI-REVENUE-SURFACE. This register does not open E04 implementation. R2 is not production-ready.
+R2-E04 P-E04-00 (`docs/release/r2-e04-forecasting-allocation.md`) is COMPLETE — PO DECISIONS CLOSED. Residuals #1 and #2 are APPROVED / CLOSED. Additional E04 PO items CLOSED there: E04-D-ALLOCATION-EXCEEDED, E04-D-CONSUMPTION-NUMERATOR, E04-D-CONSUMPTION-WINDOW, E04-D-OUT-OF-VALIDITY-CONSUMPTION, E04-D-UI-REVENUE-SURFACE. Allocation alert lifecycle is CLOSED TECHNICAL (E04-D-ALERT-*). This register does not open E04 implementation. R2 is not production-ready.

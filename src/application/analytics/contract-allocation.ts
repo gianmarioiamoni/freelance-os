@@ -8,22 +8,15 @@ import type {
 /**
  * Derived allocation status from integer minutes.
  *
- * Null allocation ⇒ no status.
- * Zero allocation uses integer comparison (0/0 is NORMAL; any consumption is EXCEEDED)
- * so a ratio denominator is never invented.
- *
+ * Null or zero allocation ⇒ no status and no ratio (E04-D-ALLOCATION-ZERO-STATUS / 8-C).
  * WARNING is inclusive of 80% and 100%. EXCEEDED is strictly above 100%.
  */
 export function deriveAllocationStatus(
   allocatedMinutes: number | null,
   consumedMinutes: number,
 ): AllocationStatus | null {
-  if (allocatedMinutes === null) {
+  if (allocatedMinutes === null || allocatedMinutes === 0) {
     return null;
-  }
-
-  if (allocatedMinutes === 0) {
-    return consumedMinutes > 0 ? "EXCEEDED" : "NORMAL";
   }
 
   if (consumedMinutes > allocatedMinutes) {

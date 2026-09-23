@@ -212,15 +212,13 @@ export type AlertRepository = {
   /**
    * Returns the currently-active (resolvedAt IS NULL) alert for the given
    * semantic identity: (workspaceId, contractId, type, periodStart).
-   *
-   * Used by resolution logic so it is independent of the specific deduplication
-   * key (which may be timestamp-suffixed after a re-trigger).
+   * Pass `periodStart: null` for period-less ALLOCATION_* alerts.
    */
   findActiveAlertByContractAndType(
     workspaceId: string,
     contractId: string,
     type: AlertType,
-    periodStart: Date,
+    periodStart: Date | null,
   ): Promise<AlertRecord | null>;
   /**
    * Returns the currently-active payment alert for

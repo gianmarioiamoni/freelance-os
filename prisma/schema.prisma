@@ -37,6 +37,8 @@ enum AlertType {
   PAYMENT_PARTIAL
   PAYMENT_OVERDUE
   PAYMENT_MISMATCH
+  ALLOCATION_WARNING
+  ALLOCATION_EXCEEDED
 }
 
 enum AlertSeverity {
@@ -235,7 +237,7 @@ model Alert {
   severity         AlertSeverity
   clientId         String?       @db.Uuid
   contractId       String?       @db.Uuid
-  /// Set for PAYMENT_* alerts. Null for existing CONTRACT_* / CAPACITY_* rows.
+  /// Set for PAYMENT_* alerts. Null for CONTRACT_* / CAPACITY_* / ALLOCATION_*.
   invoiceId        String?       @db.Uuid
   periodStart      DateTime?     @db.Date
   periodEnd        DateTime?     @db.Date
@@ -255,6 +257,7 @@ model Alert {
   @@index([workspaceId, resolvedAt])
   @@index([workspaceId, type])
   @@index([workspaceId, invoiceId, type])
+  @@index([workspaceId, contractId, type])
 }
 
 model Notification {

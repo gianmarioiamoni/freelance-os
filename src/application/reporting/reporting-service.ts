@@ -3,8 +3,10 @@ import type {
   AccruedRevenue,
   AnalyticsPeriod,
   ClientAllocation,
+  ContractAllocation,
   ContractUtilization,
   ExpectedRevenue,
+  ForecastRevenue,
   MonthlyAnalytics,
   ReportingPeriodKind,
 } from "@/domain/analytics-types";
@@ -44,8 +46,10 @@ export type ContractReport = {
   period: AnalyticsPeriod;
   periodKind: ReportingPeriodKind;
   contractUtilizations: ContractUtilization[];
+  contractAllocations: ContractAllocation[];
   accrued: AccruedRevenue;
   expected: ExpectedRevenue;
+  forecast: ForecastRevenue | null;
 };
 
 /**
@@ -82,9 +86,9 @@ export type AnnualOverviewReport = {
  * Non-goals:
  * - No percentage, average, capacity, or utilization arithmetic here.
  * - No pro-rata formula here — it lives in AnalyticsService.
- * - No Accrued / Expected formula here — AnalyticsService is the owner.
+ * - No Accrued / Expected / Forecast / allocation formula here — AnalyticsService is the owner.
  * - No rollover or expiry semantics (OBD-012 open).
- * - No Forecast, FX, or mixed-currency total.
+ * - No FX or mixed-currency total.
  */
 export class ReportingService {
   constructor(private readonly analytics: AnalyticsService) {}
@@ -135,12 +139,23 @@ export class ReportingService {
     now: Date = new Date(),
   ): Promise<ContractReport> {
     const period = this.resolvePeriod(request, context.timezone, now);
-    const [contractUtilizations, accrued, expected] = await Promise.all([
-      this.analytics.getContractUtilizations(context, period),
-      this.analytics.getAccruedRevenue(context, period),
-      this.analytics.getExpectedRevenue(context, period),
-    ]);
-    return { period, periodKind: request, contractUtilizations, accrued, expected };
+    const [contractUtilizations, contractAllocations, accrued, expected, forecast] =
+      await Promise.all([
+        this.analytics.getContractUtilizations(context, period),
+        this.analytics.listContractAllocations(context),
+        this.analytics.getAccruedRevenue(context, period),
+        this.analytics.getExpectedRevenue(context, period),
+        this.analytics.getForecastRevenue(context, period),
+      ]);
+    return {
+      period,
+      periodKind: request,
+      contractUtilizations,
+      contractAllocations,
+      accrued,
+      expected,
+      forecast,
+    };
   }
 
   /**

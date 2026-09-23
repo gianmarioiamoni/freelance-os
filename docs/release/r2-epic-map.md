@@ -1,6 +1,6 @@
 # R2 Epic Map — Planning Baseline
 
-**Status:** Executable planning baseline. R2-E01 COMPLETE / RELEASE-READY. R2-E02 COMPLETE WITH NON-BLOCKING FINDING. R2-E03 CERTIFIED (P-E03-00…P-E03-07). R2-E04 P-E04-00 COMPLETE — BLOCKED — PO DECISIONS REQUIRED. E05 detailed plan still required. No EPIC-2xx opened. R2 is not production-ready.  
+**Status:** Executable planning baseline. R2-E01 COMPLETE / RELEASE-READY. R2-E02 COMPLETE WITH NON-BLOCKING FINDING. R2-E03 CERTIFIED (P-E03-00…P-E03-07). R2-E04 P-E04-00 COMPLETE — PO DECISIONS CLOSED. E05 detailed plan still required. No EPIC-2xx opened. R2 is not production-ready.  
 **Date:** 2026-09-23  
 **Authority:** `docs/release/r2-decision-pack.md`  
 **E01 plan:** `docs/release/r2-e01-revenue-visibility.md`  
@@ -10,11 +10,11 @@
 **Does not:** authorize E04–E05 schema, migrations, APIs, UI, or implementation branches.
 
 ```text
-PLANNING BASELINE (E05; E04 P-E04-00 BLOCKED — PO DECISIONS REQUIRED)
+PLANNING BASELINE (E05; E04 P-E04-00 PO DECISIONS CLOSED)
 R2-E01: COMPLETE / RELEASE-READY
 R2-E02: COMPLETE WITH NON-BLOCKING FINDING
 R2-E03: CERTIFIED
-R2-E04: P-E04-00 COMPLETE — BLOCKED — PO DECISIONS REQUIRED
+R2-E04: P-E04-00 COMPLETE — PO DECISIONS CLOSED
 IMPLEMENTATION: E01 DONE; E02 DONE; E03 CERTIFIED; E04–E05 NOT STARTED
 R1: FROZEN / GRANTED
 R2: NOT PRODUCTION-READY
@@ -399,11 +399,11 @@ See where current-period Accrued is heading, and whether a Contract’s total al
 
 ### 3. In scope
 
-- Deterministic linear Forecast from Accrued and elapsed time in the current reporting period (R2-OD-005 direction).
+- Deterministic linear Forecast from Accrued and elapsed time in the current reporting period (R2-OD-005 CLOSED).
 - Optional Contract `allocatedMinutes`, manually configurable and editable (R2-OD-013).
-- Consumption compared against `allocatedMinutes`.
+- Consumption = SUM(TimeEntry.minutes) inside Contract `[validFrom, validTo)`.
 - No allocation alert when `allocatedMinutes` is null.
-- Allocation alerts are Contract / project operational alerts.
+- Allocation alerts: `<80%` none; `>=80%` and `<=100%` WARNING; `>100%` EXCEEDED.
 
 ### 4. Explicitly out of scope
 
@@ -411,14 +411,14 @@ See where current-period Accrued is heading, and whether a Contract’s total al
 - Extra forecasting signals beyond Accrued + elapsed time.
 - Workspace capacity model and generic `CAPACITY_WARNING` / `CAPACITY_EXCEEDED`.
 - Conflating `allocatedMinutes` with `monthlyContractedMinutes`.
-- Inventing the WARNING threshold.
+- Inventing a different WARNING / EXCEEDED model than the closed 80% / `>100%` predicates.
 
 ### 5. Dependencies
 
 - R2-E01 Accrued Revenue (Forecast).
 - Existing TimeEntry / Contract analytics (consumption, periods).
 - Contract Time Allocation semantics (R2-OD-013).
-- Residual Forecast arithmetic and WARNING threshold.
+- Closed Forecast arithmetic and allocation predicates (`docs/release/r2-e04-forecasting-allocation.md` §17).
 
 ### 6. Domain objects affected
 
@@ -431,23 +431,23 @@ See where current-period Accrued is heading, and whether a Contract’s total al
 
 - Revenue / analytics read path for Forecast.
 - Contract write path for `allocatedMinutes`.
-- `AlertService` for allocation alerts once the threshold exists.
+- `AlertService` for `ALLOCATION_WARNING` / `ALLOCATION_EXCEEDED` in P-E04-03.
 
 ### 8. Persistence impact
 
 - Confirmed: optional `allocatedMinutes` on Contract. **Not in current schema.** Conceptual name only.
 - Forecast remains derived.
-- WARNING threshold is configuration or a constant only after the Product Owner decides it.
+- WARNING threshold is the closed constant 80%. EXCEEDED only when consumption `>` allocatedMinutes.
 
 ### 9. Analytics / reporting impact
 
-- Forecast is a current-period projection companion to Accrued.
-- Allocation consumption may appear on contract / report surfaces.
+- Forecast is a current-period projection companion to Accrued on existing E01 revenue surfaces.
+- Contract detail shows allocation, consumption, remaining, and allocation status.
 
 ### 10. Alerts / notifications impact
 
-- New Contract allocation alerts only after the WARNING threshold is decided.
-- No workspace capacity alerts.
+- New Contract allocation alerts `ALLOCATION_WARNING` / `ALLOCATION_EXCEEDED` after predicates exist in application code. Technical lifecycle is closed in the E04 register.
+- No workspace capacity alerts. Do not reuse `PAYMENT_*` or monthly `CONTRACT_*` types.
 
 ### 11. Authorization / workspace isolation
 
@@ -456,7 +456,7 @@ See where current-period Accrued is heading, and whether a Contract’s total al
 
 ### 12. E2E implications
 
-- Forecast uses only Accrued and elapsed time once arithmetic is defined.
+- Forecast uses only Accrued and elapsed time on the certified current period.
 - Setting / clearing `allocatedMinutes` enables / disables allocation alerts.
 - `monthlyContractedMinutes` utilization alerts remain a separate R1 mechanism.
 
@@ -469,18 +469,13 @@ See where current-period Accrued is heading, and whether a Contract’s total al
 
 ### 14. Product decisions still required
 
-See `docs/release/r2-e04-forecasting-allocation.md` §17. Not closed:
-
-- Exact Forecast arithmetic (E04-D-FORECAST-ARITHMETIC).
-- Allocation WARNING / EXCEEDED (E04-D-ALLOCATION-WARNING / E04-D-ALLOCATION-EXCEEDED).
-- Consumption numerator / window / out-of-validity.
-- Revenue UI surface.
+None. See `docs/release/r2-e04-forecasting-allocation.md` §17. Forecast arithmetic, allocation WARNING / EXCEEDED, consumption rules, and revenue UI surface are CLOSED — PO APPROVED. Alert lifecycle is CLOSED TECHNICAL.
 
 ### 15. Risks / architectural constraints
 
 - Product vision §8 “historical behavior” is **not** adopted.
 - Do not treat PD-106-001 workspace capacity as approved.
-- Do not ship allocation WARNING with an invented percentage.
+- Do not ship allocation WARNING with a percentage other than the closed 80%.
 
 ---
 
@@ -585,15 +580,15 @@ Inspect R2 operational facts over existing period selection without building a s
 
 Do not implement these as assumptions.
 
-1. Contract Time Allocation WARNING threshold — OPEN (E04-D-ALLOCATION-WARNING).
-2. Exact Forecast calculation semantics — OPEN (E04-D-FORECAST-ARITHMETIC).
+1. Contract Time Allocation WARNING threshold — CLOSED (E04-D-ALLOCATION-WARNING / E04-D-ALLOCATION-EXCEEDED).
+2. Exact Forecast calculation semantics — CLOSED (E04-D-FORECAST-ARITHMETIC).
 3. Invoice currency snapshot representation — CLOSED (E02-D01).
 4. Exact Invoice VOID behaviour and UI semantics — CLOSED (E02-D02).
 5. Whether simple CSV export belongs in R2-E05.
 6. Commercial snapshot persistence: CLOSED — TimeEntry `snapshotBillingModel` / `snapshotRate` / `snapshotCurrency`.
 7. R2-OD-016 — APPROVED / implemented — weighted-average daily rate (P-E01-02).
 8. R2-OD-017 — CLOSED / implemented — existing TimeEntries backfilled from current Contract.
-9. E04 allocation EXCEEDED, consumption numerator/window/out-of-validity, and revenue UI surface — OPEN. See `docs/release/r2-e04-forecasting-allocation.md` §17.
+9. E04 allocation EXCEEDED, consumption numerator/window/out-of-validity, and revenue UI surface — CLOSED. See `docs/release/r2-e04-forecasting-allocation.md` §17.
 
 ---
 
@@ -611,7 +606,7 @@ Vision → Architecture → Planning → Implementation → Engineering Review
 Release → Epic → Phase → Commit
 ```
 
-This document is the release-level planning baseline. R2-E01 is COMPLETE / RELEASE-READY (`docs/release/r2-e01-revenue-visibility.md`). R2-E02 is COMPLETE WITH NON-BLOCKING FINDING (`docs/release/r2-e02-invoice-tracking.md`). R2-E03 is CERTIFIED (`docs/release/r2-e03-payment-tracking.md`). R2-E04 P-E04-00 is COMPLETE — BLOCKED — PO DECISIONS REQUIRED (`docs/release/r2-e04-forecasting-allocation.md`). It does not open E04 implementation or invent commit hashes.
+This document is the release-level planning baseline. R2-E01 is COMPLETE / RELEASE-READY (`docs/release/r2-e01-revenue-visibility.md`). R2-E02 is COMPLETE WITH NON-BLOCKING FINDING (`docs/release/r2-e02-invoice-tracking.md`). R2-E03 is CERTIFIED (`docs/release/r2-e03-payment-tracking.md`). R2-E04 P-E04-00 is COMPLETE — PO DECISIONS CLOSED (`docs/release/r2-e04-forecasting-allocation.md`). It does not open E04 implementation or invent commit hashes.
 
 ### Release-level
 
@@ -619,7 +614,7 @@ This document is the release-level planning baseline. R2-E01 is COMPLETE / RELEA
 | --- | --- |
 | Vision | Complete — decision pack |
 | Architecture | Complete as domain delta — `r2-architecture-delta.md` |
-| Planning | This baseline. E01–E03 detailed plans complete. E04 P-E04-00 complete / blocked on PO. E05 EPIC-2xx plan still required |
+| Planning | This baseline. E01–E03 detailed plans complete. E04 P-E04-00 complete / PO decisions closed. E05 EPIC-2xx plan still required |
 | Implementation | R2-E01 COMPLETE / RELEASE-READY. R2-E02 COMPLETE WITH NON-BLOCKING FINDING. R2-E03 CERTIFIED. E04–E05 implementation not started |
 | Engineering Review → Release | E01–E03 ER + QA complete. E03 CERTIFIED. R2 release gates not started. Do not mark R2 production-ready |
 
@@ -668,10 +663,10 @@ This document is the release-level planning baseline. R2-E01 is COMPLETE / RELEA
 
 | Phase | Intent | Status |
 | --- | --- | --- |
-| P-E04-00 | Planning / decision gate | COMPLETE — BLOCKED — PO DECISIONS REQUIRED |
+| P-E04-00 | Planning / decision gate | COMPLETE — PO DECISIONS CLOSED |
 | P-E04-01 | Persistence / domain | NOT STARTED / NOT AUTHORIZED |
-| P-E04-02 | Application / calculations | NOT STARTED / NOT AUTHORIZED |
-| P-E04-03 | Forecast / allocation integration | NOT STARTED / NOT AUTHORIZED |
+| P-E04-02 | Application / calculations | COMPLETE — ENGINEERING REVIEW APPROVED WITH FINDINGS |
+| P-E04-03 | Forecast / allocation integration | IMPLEMENTED — AWAITING ENGINEERING REVIEW |
 | P-E04-04 | UI | NOT STARTED / NOT AUTHORIZED |
 | P-E04-05 | QA / documentation | NOT STARTED / NOT AUTHORIZED |
 | P-E04-06 | Release validation | NOT STARTED / NOT AUTHORIZED |

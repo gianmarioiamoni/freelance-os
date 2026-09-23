@@ -74,3 +74,32 @@ export function buildPaymentRetriggerDedupKey(
 ): string {
   return `${buildPaymentAlertDedupKey(type, workspaceId, invoiceId)}:${createdAt.getTime()}`;
 }
+
+const ALLOCATION_PREFIX: Record<
+  Extract<AlertType, "ALLOCATION_WARNING" | "ALLOCATION_EXCEEDED">,
+  string
+> = {
+  ALLOCATION_WARNING: "aw",
+  ALLOCATION_EXCEEDED: "ae",
+};
+
+/**
+ * Contract-scoped, period-less key.
+ * Format: "{prefix}:{workspaceId}:{contractId}"
+ */
+export function buildAllocationAlertDedupKey(
+  type: Extract<AlertType, "ALLOCATION_WARNING" | "ALLOCATION_EXCEEDED">,
+  workspaceId: string,
+  contractId: string,
+): string {
+  return `${ALLOCATION_PREFIX[type]}:${workspaceId}:${contractId}`;
+}
+
+export function buildAllocationRetriggerDedupKey(
+  type: Extract<AlertType, "ALLOCATION_WARNING" | "ALLOCATION_EXCEEDED">,
+  workspaceId: string,
+  contractId: string,
+  createdAt: Date,
+): string {
+  return `${buildAllocationAlertDedupKey(type, workspaceId, contractId)}:${createdAt.getTime()}`;
+}

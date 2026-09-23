@@ -10,6 +10,7 @@ import {
   InvalidContractPeriodError,
   OverlappingContractError,
 } from "@/domain/contract-errors";
+import { triggerAllocationAlertEvaluation } from "@/application/alerts/trigger-allocation-alert-evaluation";
 import { getAuthenticatedContractContext } from "@/features/contracts/authenticated-contract-context";
 import {
   CONTRACT_CLIENT_NOT_FOUND_ERROR,
@@ -39,6 +40,8 @@ export async function updateContractAction(
       toContractUpdateInput(values),
       runInTransaction,
     );
+
+    await triggerAllocationAlertEvaluation(context, contractId, runInTransaction);
   } catch (error) {
     if (error instanceof InvalidContractInputError) {
       return {
