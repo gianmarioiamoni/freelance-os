@@ -1,11 +1,11 @@
 # R2 Architecture Delta — Revenue Operations
 
-**Status:** Domain and persistence-planning delta. R2-E01 snapshot / Accrued / Expected are implemented. R2-E02 Invoice Tracking is implemented. R2-E03 Payment Tracking is CERTIFIED. E04–E05 remain unauthorized.  
+**Status:** Domain and persistence-planning delta. R2-E01 snapshot / Accrued / Expected are implemented. R2-E02 Invoice Tracking is implemented. R2-E03 Payment Tracking is CERTIFIED. R2-E04 P-E04-00 COMPLETE — BLOCKED — PO DECISIONS REQUIRED (`docs/release/r2-e04-forecasting-allocation.md`). E05 remains unauthorized.  
 **Date:** 2026-09-23  
 **Authority:** `docs/release/r2-decision-pack.md`  
 **Baseline:** R1 architecture (`docs/architecture.md`, `docs/domain-model.md`, `docs/storage.md`) remains the frozen R1 baseline.
 
-This document records what must change conceptually for R2. Invoice Prisma names exist (`Invoice`). Payment Prisma names exist (`Payment`). E03-D-VOID-PAYMENTS is closed (Option A). It does not invent `allocatedMinutes` Prisma names. It does not open E04–E05.
+This document records what must change conceptually for R2. Invoice Prisma names exist (`Invoice`). Payment Prisma names exist (`Payment`). E03-D-VOID-PAYMENTS is closed (Option A). It does not invent `allocatedMinutes` Prisma names. It does not open E04–E05 implementation.
 
 Legend:
 
@@ -320,5 +320,9 @@ R1 baseline documents keep their historical text. Canonical R2 meaning is this d
 - Final Prisma field names for `allocatedMinutes`
 - API routes, Server Actions, or UI for E04–E05
 - Whether revenue totals are persisted
-- Forecast arithmetic
-- Allocation WARNING threshold
+- Forecast arithmetic (E04-D-FORECAST-ARITHMETIC / R2-OD-005)
+- Allocation WARNING / EXCEEDED predicates
+- Allocation consumption numerator / window / out-of-validity rule
+- E04 revenue UI surface
+
+E04 planning recovered these as OPEN PO items in `docs/release/r2-e04-forecasting-allocation.md`. They are not closed here.

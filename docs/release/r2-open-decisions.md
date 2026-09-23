@@ -38,6 +38,7 @@ These are the product / planning decisions still required before the correspondi
 | Owner | Product Owner |
 | Status | DIRECTION APPROVED / residual OPEN |
 | Needed by | R2-E04 |
+| Plan | `docs/release/r2-e04-forecasting-allocation.md` E04-D-ALLOCATION-WARNING |
 
 ### 2. Exact Forecast calculation semantics
 
@@ -51,6 +52,7 @@ These are the product / planning decisions still required before the correspondi
 | Owner | Product Owner during R2-E04 planning |
 | Status | DIRECTION APPROVED / residual OPEN |
 | Needed by | R2-E04 |
+| Plan | `docs/release/r2-e04-forecasting-allocation.md` E04-D-FORECAST-ARITHMETIC |
 
 ### 3. Invoice currency snapshot representation
 
@@ -170,4 +172,6 @@ R2-E01 (`docs/release/r2-e01-revenue-visibility.md`) implemented class-B snapsho
 
 R2-E02 (`docs/release/r2-e02-invoice-tracking.md`) implemented Invoice Tracking (P-E02-00…P-E02-07). Residuals #3 and #4 remain APPROVED / CLOSED and are implemented. E02 is COMPLETE WITH NON-BLOCKING FINDING (F-E02-004 test hygiene).
 
-R2-E03 (`docs/release/r2-e03-payment-tracking.md`) is CERTIFIED. Payment decisions are CLOSED. F-E03-001…005 ACCEPTED. This register does not open E04–E05 implementation. R2 is not production-ready.
+R2-E03 (`docs/release/r2-e03-payment-tracking.md`) is CERTIFIED. Payment decisions are CLOSED. F-E03-001…005 ACCEPTED.
+
+R2-E04 P-E04-00 (`docs/release/r2-e04-forecasting-allocation.md`) is COMPLETE — BLOCKED — PO DECISIONS REQUIRED. Residuals #1 and #2 remain OPEN. Additional E04 PO items recorded there: E04-D-ALLOCATION-EXCEEDED, E04-D-CONSUMPTION-NUMERATOR, E04-D-CONSUMPTION-WINDOW, E04-D-OUT-OF-VALIDITY-CONSUMPTION, E04-D-UI-REVENUE-SURFACE. This register does not open E04 implementation. R2 is not production-ready.

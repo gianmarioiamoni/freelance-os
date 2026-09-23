@@ -135,8 +135,8 @@ context is recovered from repository documentation.
 ## Overall
 
 ``` text
-STATUS: UX Polish COMPLETE; EPIC-107 Public Landing COMPLETE through P107-06 and epic certification; MASTER_PLAN §34 READY FOR RELEASE; §35 GRANTED; EPIC-108 COMPLETE (ER PASS WITH FINDINGS); EPIC-109 COMPLETE (ER PASS); EPIC-110 CLOSED (P110-00 PASS; P110-01 PASS; P110-02 PASS; P110-03 SKIPPED BY DESIGN; P110-04 PASS; P110-05 PASS; P110-06 / P110-06C intermediate findings resolved or superseded; P110-06D PASS; P110-06C FINAL PASS; P110-07 PASS; P110-08 FREEZE). Actionable R1 findings = 0. R1 FROZEN. R2 Decision Workshop complete for in-scope decisions. R2 planning baseline recorded. R2-E01 Revenue Visibility COMPLETE / RELEASE-READY (P-E01-00…P-E01-07). R2-E02 Invoice Tracking COMPLETE WITH NON-BLOCKING FINDING (P-E02-00…P-E02-07). R2-E03 Payment Tracking CERTIFIED (P-E03-00…P-E03-07). R2 is not production-ready.
-NEXT: E04–E05 detailed epic plans still required. E03 plan: `docs/release/r2-e03-payment-tracking.md`. R2 is not production-ready.
+STATUS: UX Polish COMPLETE; EPIC-107 Public Landing COMPLETE through P107-06 and epic certification; MASTER_PLAN §34 READY FOR RELEASE; §35 GRANTED; EPIC-108 COMPLETE (ER PASS WITH FINDINGS); EPIC-109 COMPLETE (ER PASS); EPIC-110 CLOSED (P110-00 PASS; P110-01 PASS; P110-02 PASS; P110-03 SKIPPED BY DESIGN; P110-04 PASS; P110-05 PASS; P110-06 / P110-06C intermediate findings resolved or superseded; P110-06D PASS; P110-06C FINAL PASS; P110-07 PASS; P110-08 FREEZE). Actionable R1 findings = 0. R1 FROZEN. R2 Decision Workshop complete for in-scope decisions. R2 planning baseline recorded. R2-E01 Revenue Visibility COMPLETE / RELEASE-READY (P-E01-00…P-E01-07). R2-E02 Invoice Tracking COMPLETE WITH NON-BLOCKING FINDING (P-E02-00…P-E02-07). R2-E03 Payment Tracking CERTIFIED (P-E03-00…P-E03-07). R2-E04 P-E04-00 COMPLETE — BLOCKED — PO DECISIONS REQUIRED. R2 is not production-ready.
+NEXT: R2-E04 P-E04-00 BLOCKED — PO DECISIONS REQUIRED (`docs/release/r2-e04-forecasting-allocation.md`). E05 detailed plan still required. E03 plan: `docs/release/r2-e03-payment-tracking.md`. R2 is not production-ready.
 Production Validation (§34): EXECUTED — READY FOR RELEASE — docs/release/production-validation.md
 Production Certification (§35): GRANTED — docs/release/production-certification.md
 R1 Freeze: FROZEN — docs/release/r1-freeze.md
@@ -147,6 +147,7 @@ R2 Open Decisions: docs/release/r2-open-decisions.md
 R2-E01 plan: docs/release/r2-e01-revenue-visibility.md
 R2-E02 plan: docs/release/r2-e02-invoice-tracking.md
 R2-E03 plan: docs/release/r2-e03-payment-tracking.md
+R2-E04 plan: docs/release/r2-e04-forecasting-allocation.md
 Release gate resolution: docs/release/release-gate-resolution.md
 Production readiness: RELEASE GRANTED
 ```
@@ -1166,7 +1167,9 @@ evolution. R2-E01 Revenue Visibility is COMPLETE / RELEASE-READY.
 R2-E02 Invoice Tracking is COMPLETE WITH NON-BLOCKING FINDING
 (P-E02-00…P-E02-07). R2-E03 Payment Tracking is CERTIFIED
 (`docs/release/r2-e03-payment-tracking.md`; P-E03-00…P-E03-07).
-E04–E05 detailed plans have not started. R2 is not production-ready.
+R2-E04 P-E04-00 is COMPLETE — BLOCKED — PO DECISIONS REQUIRED
+(`docs/release/r2-e04-forecasting-allocation.md`). E05 detailed plan
+has not started. R2 is not production-ready.
 
 Canonical decisions: `docs/release/r2-decision-pack.md`.
 Architecture delta: `docs/release/r2-architecture-delta.md`.
@@ -1175,8 +1178,9 @@ Residual questions: `docs/release/r2-open-decisions.md`.
 E01 plan: `docs/release/r2-e01-revenue-visibility.md`.
 E02 plan: `docs/release/r2-e02-invoice-tracking.md`.
 E03 plan: `docs/release/r2-e03-payment-tracking.md`.
+E04 plan: `docs/release/r2-e04-forecasting-allocation.md`.
 
-This section does not open E04–E05.
+This section does not authorize E04 implementation or open E05.
 
 ## Objective
 
@@ -1256,8 +1260,11 @@ Accepted findings F-E03-001…005. Release migration: `prisma migrate deploy`.
 ### R2-E04 --- Forecasting & Contract Time Allocation
 
 Deterministic linear Forecast from Accrued and elapsed time. Optional
-`allocatedMinutes`. No workspace capacity alerts. Forecast arithmetic
-and allocation WARNING threshold remain residual decisions.
+`allocatedMinutes`. No workspace capacity alerts. Detailed plan:
+`docs/release/r2-e04-forecasting-allocation.md`. P-E04-00 COMPLETE —
+BLOCKED — PO DECISIONS REQUIRED. Forecast arithmetic, allocation
+WARNING/EXCEEDED, consumption rules, and revenue UI surface remain
+open. P-E04-01 is not authorized.
 
 ### R2-E05 --- Advanced Reporting & Export
 
@@ -2266,9 +2273,10 @@ Next actions:
 10. R2-E01 COMPLETE / RELEASE-READY (P-E01-00…P-E01-07)
 11. R2-E02 COMPLETE WITH NON-BLOCKING FINDING (P-E02-00…P-E02-07)
 12. R2-E03 Payment Tracking CERTIFIED (`docs/release/r2-e03-payment-tracking.md`; P-E03-00…P-E03-07)
-13. E04–E05 detailed plans still required; E03 is certified; R2-E04 is not authorized here
-14. Do not mark R2 production-ready
-15. Do not rewrite historical §34 / §35 rows
+13. R2-E04 P-E04-00 COMPLETE — BLOCKED — PO DECISIONS REQUIRED (`docs/release/r2-e04-forecasting-allocation.md`)
+14. E05 detailed plan still required; R2-E04 implementation is not authorized
+15. Do not mark R2 production-ready
+16. Do not rewrite historical §34 / §35 rows
 ```
 
 FINDING-UX-004, FINDING-QA-002, FINDING-INT-001, FINDING-108-001, F-104-007,
@@ -2408,7 +2416,7 @@ next:
   phase: planning
   epic: none
   gate: none
-  reference: docs/release/r2-epic-map.md
+  reference: docs/release/r2-e04-forecasting-allocation.md
   r1_freeze_reference: docs/release/r1-freeze.md
   production_validation: READY FOR RELEASE
   production_validation_reference: MASTER_PLAN.md §34
@@ -2419,7 +2427,8 @@ next:
   r2_discovery: closed
   r2_planning: baseline
   r2_approved_decisions: D1-D7 and in-scope OD resolutions
-  objective: R1 FROZEN. R2 Revenue Operations is the active next evolution and remains in planning. No implementation epic approved. Residual planning questions in docs/release/r2-open-decisions.md.
+  r2_e04: blocked-po-decisions-required
+  objective: R1 FROZEN. R2-E04 P-E04-00 BLOCKED — PO DECISIONS REQUIRED. Do not start P-E04-01. Residual questions in docs/release/r2-e04-forecasting-allocation.md and docs/release/r2-open-decisions.md.
   open_non_blocking_findings: []
   accepted_r1_limitations:
     - F-103-003
