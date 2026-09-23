@@ -35,6 +35,7 @@ import type {
   MonthlyHoursAnalytics,
   DailyAnalytics,
   ClientAllocation,
+  ContractAllocationFact,
   ContractUtilization,
   ExpectedContractFact,
 } from "@/domain/analytics-types";
@@ -287,6 +288,13 @@ export type AnalyticsRepository = {
     workspaceId: string,
     period: AnalyticsPeriod,
   ): Promise<ExpectedContractFact[]>;
+  getContractAllocationFact(
+    workspaceId: string,
+    contractId: string,
+  ): Promise<ContractAllocationFact | null>;
+  listContractAllocationFacts(
+    workspaceId: string,
+  ): Promise<ContractAllocationFact[]>;
 };
 
 export type PersistenceRepositories = {

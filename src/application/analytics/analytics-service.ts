@@ -7,9 +7,12 @@ import type {
   DailyAnalytics,
   WeeklyAnalytics,
   ClientAllocation,
+  ContractAllocation,
+  ContractAllocationFact,
   ContractUtilization,
   ExpectedContractFact,
   ExpectedRevenue,
+  ForecastRevenue,
 } from "@/domain/analytics-types";
 import type { AnalyticsRepository, WorkspaceMemberRepository } from "@/domain/repositories";
 import type { WorkspaceContext } from "@/application/workspace/workspace-context";
@@ -17,8 +20,16 @@ import {
   calculateAccruedRevenue,
   publishMonetaryAmount,
 } from "@/application/analytics/accrued-revenue";
+import { calculateContractAllocation } from "@/application/analytics/contract-allocation";
 import { calculateExpectedRevenue } from "@/application/analytics/expected-revenue";
-import { getCurrentMonthPeriod, getPeriodDays, isValidPeriod } from "@/lib/analytics-periods";
+import { calculateForecastRevenue } from "@/application/analytics/forecast-revenue";
+import {
+  getCurrentMonthPeriod,
+  getPeriodDays,
+  isCurrentAnalyticsPeriod,
+  isValidPeriod,
+} from "@/lib/analytics-periods";
+import { ContractNotFoundError } from "@/domain/contract-errors";
 import { UnauthorizedWorkspaceAccessError } from "@/domain/workspace-errors";
 
 /**
@@ -82,18 +93,23 @@ export class AnalyticsService {
       this.analytics.listExpectedContracts(context.workspaceId, period),
     ]);
 
+    const accrued = AnalyticsService.calculateAccruedRevenue(
+      period,
+      entries,
+      context.timezone,
+    );
+
     return {
       ...hours,
-      accrued: AnalyticsService.calculateAccruedRevenue(
-        period,
-        entries,
-        context.timezone,
-      ),
+      accrued,
       expected: AnalyticsService.calculateExpectedRevenue(
         period,
         contracts,
         context.timezone,
       ),
+      forecast: isCurrentAnalyticsPeriod(period, context.timezone)
+        ? AnalyticsService.calculateForecastRevenue(accrued)
+        : null,
     };
   }
 
@@ -234,6 +250,64 @@ export class AnalyticsService {
   }
 
   /**
+   * Forecast Revenue for a certified current period. Null for historical/custom.
+   * Accrued is the only business input. Derived, not persisted.
+   */
+  async getForecastRevenue(
+    context: WorkspaceContext,
+    period: AnalyticsPeriod,
+  ): Promise<ForecastRevenue | null> {
+    await this.requireMembership(context);
+
+    if (!isValidPeriod(period)) {
+      throw new AnalyticsError("Invalid period: start date must be <= end date");
+    }
+
+    if (!isCurrentAnalyticsPeriod(period, context.timezone)) {
+      return null;
+    }
+
+    const accrued = await this.getAccruedRevenue(context, period);
+    return AnalyticsService.calculateForecastRevenue(accrued);
+  }
+
+  /**
+   * Derived Contract allocation / consumption view. Not persisted.
+   */
+  async getContractAllocation(
+    context: WorkspaceContext,
+    contractId: string,
+  ): Promise<ContractAllocation> {
+    await this.requireMembership(context);
+
+    const fact = await this.analytics.getContractAllocationFact(
+      context.workspaceId,
+      contractId,
+    );
+
+    if (!fact) {
+      throw new ContractNotFoundError();
+    }
+
+    return AnalyticsService.calculateContractAllocation(fact);
+  }
+
+  /**
+   * Derived allocation views for every Contract in the workspace.
+   */
+  async listContractAllocations(
+    context: WorkspaceContext,
+  ): Promise<ContractAllocation[]> {
+    await this.requireMembership(context);
+
+    const facts = await this.analytics.listContractAllocationFacts(
+      context.workspaceId,
+    );
+
+    return facts.map((fact) => AnalyticsService.calculateContractAllocation(fact));
+  }
+
+  /**
    * Pure Accrued calculation. Exposed for unit tests and later consumers.
    * `timezone` is the workspace IANA zone that resolved `period`.
    */
@@ -260,6 +334,29 @@ export class AnalyticsService {
       timezone,
       AnalyticsService.calculateProRataCapacity,
     );
+  }
+
+  /**
+   * Pure Forecast calculation. Current-period callers pass elapsed === total
+   * from `getPeriodDays` so Forecast equals Accrued unless Accrued or elapsed is 0.
+   */
+  static calculateForecastRevenue(
+    accrued: AccruedRevenue,
+    elapsedPeriod?: number,
+    totalPeriod?: number,
+  ): ForecastRevenue {
+    const elapsed = elapsedPeriod ?? getPeriodDays(accrued.period);
+    const total = totalPeriod ?? elapsed;
+    return calculateForecastRevenue(accrued, elapsed, total);
+  }
+
+  /**
+   * Pure allocation remaining / status calculation.
+   */
+  static calculateContractAllocation(
+    fact: ContractAllocationFact,
+  ): ContractAllocation {
+    return calculateContractAllocation(fact);
   }
 
   /**

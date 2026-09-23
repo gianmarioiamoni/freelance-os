@@ -801,6 +801,6 @@ describe("Accrued Revenue integration", () => {
     expect(monthly.accrued.byCurrency[0]?.unrounded).toBe(160);
     expect(monthly.accrued).toEqual(accrued);
     expect(monthly.expected.byCurrency).toEqual([]);
-    expect(monthly).not.toHaveProperty("forecast");
+    expect(monthly.forecast).toBeNull();
   });
 });

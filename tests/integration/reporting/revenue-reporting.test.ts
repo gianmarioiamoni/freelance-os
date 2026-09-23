@@ -115,7 +115,7 @@ describe("ReportingService revenue integration", () => {
     expect(monthly.totalMinutes).toBe(120);
     expect(monthly.billableMinutes).toBe(120);
     expect(report).not.toHaveProperty("forecast");
-    expect(monthly).not.toHaveProperty("forecast");
+    expect(monthly.forecast).toBeNull();
   });
 
   it("publishes DAILY Expected as null and Accrued from billable days", async () => {

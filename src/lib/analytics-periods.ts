@@ -161,6 +161,30 @@ export function isValidPeriod(period: AnalyticsPeriod): boolean {
   return period.startDate <= period.endDate;
 }
 
+function sameCalendarBounds(left: AnalyticsPeriod, right: AnalyticsPeriod): boolean {
+  return (
+    getCalendarDateKey(left.startDate) === getCalendarDateKey(right.startDate) &&
+    getCalendarDateKey(left.endDate) === getCalendarDateKey(right.endDate)
+  );
+}
+
+/**
+ * True when `period` matches a certified current period in `timezone`.
+ * Historical months and custom ranges are not current, even if they end today.
+ */
+export function isCurrentAnalyticsPeriod(
+  period: AnalyticsPeriod,
+  timezone: string,
+  now: Date = new Date(),
+): boolean {
+  return (
+    sameCalendarBounds(period, getTodayPeriod(timezone, now)) ||
+    sameCalendarBounds(period, getCurrentWeekPeriod(timezone, now)) ||
+    sameCalendarBounds(period, getCurrentMonthPeriod(timezone, now)) ||
+    sameCalendarBounds(period, getCurrentYearPeriod(timezone, now))
+  );
+}
+
 /**
  * Calendar-date key for a Date stored as UTC midnight (`workDate`,
  * `AnalyticsPeriod` bounds). This is the workspace calendar date already

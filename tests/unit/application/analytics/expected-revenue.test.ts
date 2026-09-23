@@ -244,6 +244,8 @@ describe("AnalyticsService Expected Revenue", () => {
         getContractUtilizations: vi.fn(),
         listTimeEntriesForPeriod: vi.fn(),
         listExpectedContracts: vi.fn().mockResolvedValue([]),
+        getContractAllocationFact: vi.fn(),
+        listContractAllocationFacts: vi.fn(),
         ...overrides,
       };
     }

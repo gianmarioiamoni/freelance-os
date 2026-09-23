@@ -4,6 +4,7 @@ import type {
   MonthlyHoursAnalytics,
   DailyAnalytics,
   ClientAllocation,
+  ContractAllocationFact,
   ContractUtilization,
   ExpectedContractFact,
 } from "@/domain/analytics-types";
@@ -255,7 +256,128 @@ export function createAnalyticsRepository(db: PrismaExecutor): AnalyticsReposito
         }));
       });
     },
+
+    async getContractAllocationFact(
+      workspaceId: string,
+      contractId: string,
+    ): Promise<ContractAllocationFact | null> {
+      return withPersistenceErrors(async () => {
+        const contract = await db.contract.findFirst({
+          where: { id: contractId, workspaceId },
+          select: {
+            id: true,
+            allocatedMinutes: true,
+            validFrom: true,
+            validTo: true,
+          },
+        });
+
+        if (!contract) {
+          return null;
+        }
+
+        const consumed = await db.timeEntry.aggregate({
+          where: timeEntryValidityWhere(workspaceId, contract),
+          _sum: { durationMinutes: true },
+        });
+
+        return {
+          contractId: contract.id,
+          allocatedMinutes: contract.allocatedMinutes,
+          validFrom: contract.validFrom,
+          validTo: contract.validTo,
+          consumedMinutes: consumed._sum.durationMinutes ?? 0,
+        };
+      });
+    },
+
+    async listContractAllocationFacts(
+      workspaceId: string,
+    ): Promise<ContractAllocationFact[]> {
+      return withPersistenceErrors(async () => {
+        const contracts = await db.contract.findMany({
+          where: { workspaceId },
+          select: {
+            id: true,
+            allocatedMinutes: true,
+            validFrom: true,
+            validTo: true,
+          },
+          orderBy: { id: "asc" },
+        });
+
+        if (contracts.length === 0) {
+          return [];
+        }
+
+        const entries = await db.timeEntry.findMany({
+          where: { workspaceId },
+          select: {
+            contractId: true,
+            workDate: true,
+            durationMinutes: true,
+          },
+        });
+
+        return contracts.map((contract) => ({
+          contractId: contract.id,
+          allocatedMinutes: contract.allocatedMinutes,
+          validFrom: contract.validFrom,
+          validTo: contract.validTo,
+          consumedMinutes: sumMinutesInValidity(entries, contract),
+        }));
+      });
+    },
   };
+}
+
+type AllocationContractBounds = {
+  id: string;
+  validFrom: Date;
+  validTo: Date | null;
+};
+
+function timeEntryValidityWhere(
+  workspaceId: string,
+  contract: AllocationContractBounds,
+) {
+  return {
+    workspaceId,
+    contractId: contract.id,
+    workDate: {
+      gte: contract.validFrom,
+      ...(contract.validTo ? { lt: contract.validTo } : {}),
+    },
+  };
+}
+
+function sumMinutesInValidity(
+  entries: readonly {
+    contractId: string;
+    workDate: Date;
+    durationMinutes: number;
+  }[],
+  contract: AllocationContractBounds,
+): number {
+  let consumed = 0;
+
+  for (const entry of entries) {
+    if (entry.contractId !== contract.id) {
+      continue;
+    }
+
+    if (entry.workDate.getTime() < contract.validFrom.getTime()) {
+      continue;
+    }
+
+    if (contract.validTo !== null && entry.workDate.getTime() >= contract.validTo.getTime()) {
+      continue;
+    }
+
+    consumed += entry.durationMinutes;
+  }
+
+  return consumed;
 }
 
 // Helper function to get total minutes for a period

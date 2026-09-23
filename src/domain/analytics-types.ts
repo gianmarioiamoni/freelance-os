@@ -29,6 +29,8 @@ export type MonthlyHoursAnalytics = {
 export type MonthlyAnalytics = MonthlyHoursAnalytics & {
   accrued: AccruedRevenue;
   expected: ExpectedRevenue;
+  /** Present only when `period` is a certified current period. */
+  forecast: ForecastRevenue | null;
 };
 
 /**
@@ -223,4 +225,43 @@ export type ExpectedRevenue = {
   timezone: string;
   byCurrency: ExpectedAmount[];
   byContract: ExpectedByContract[];
+};
+
+/**
+ * Authoritative Forecast Revenue for a certified current period.
+ * Derived from Accrued only. Not persisted.
+ */
+export type ForecastRevenue = {
+  period: AnalyticsPeriod;
+  timezone: string;
+  elapsedPeriod: number;
+  totalPeriod: number;
+  byCurrency: AccruedAmount[];
+  byContract: AccruedByContract[];
+};
+
+/**
+ * Persistence/read fact for Contract allocation consumption.
+ * Consumption is already restricted to [validFrom, validTo).
+ */
+export type ContractAllocationFact = {
+  contractId: string;
+  allocatedMinutes: number | null;
+  validFrom: Date;
+  validTo: Date | null;
+  consumedMinutes: number;
+};
+
+export type AllocationStatus = "NORMAL" | "WARNING" | "EXCEEDED";
+
+/**
+ * Derived Contract allocation view. Remaining and status are not persisted.
+ * `remainingMinutes` and `allocationStatus` are null when allocation is absent.
+ */
+export type ContractAllocation = {
+  contractId: string;
+  allocatedMinutes: number | null;
+  consumedMinutes: number;
+  remainingMinutes: number | null;
+  allocationStatus: AllocationStatus | null;
 };

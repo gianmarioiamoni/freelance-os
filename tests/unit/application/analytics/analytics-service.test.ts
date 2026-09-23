@@ -92,6 +92,8 @@ describe("AnalyticsService", () => {
         getContractUtilizations: vi.fn(),
         listTimeEntriesForPeriod: vi.fn().mockResolvedValue([]),
         listExpectedContracts: vi.fn().mockResolvedValue([]),
+        getContractAllocationFact: vi.fn(),
+        listContractAllocationFacts: vi.fn(),
       };
 
       const mockMembersRepository: WorkspaceMemberRepository = {
@@ -107,7 +109,15 @@ describe("AnalyticsService", () => {
       expect(result).toMatchObject(mockMonthlyAnalytics);
       expect(result.accrued.byCurrency).toEqual([]);
       expect(result.expected.byCurrency).toEqual([]);
-      expect(result).not.toHaveProperty("forecast");
+      expect(result.forecast).toEqual({
+        period: result.accrued.period,
+        timezone: "UTC",
+        elapsedPeriod: expect.any(Number),
+        totalPeriod: expect.any(Number),
+        byCurrency: [],
+        byContract: [],
+      });
+      expect(result.forecast?.elapsedPeriod).toBe(result.forecast?.totalPeriod);
       expect(mockMembersRepository.getMember).toHaveBeenCalledWith(
         mockContext.workspaceId,
         mockContext.userId
@@ -126,6 +136,8 @@ describe("AnalyticsService", () => {
         getContractUtilizations: vi.fn(),
         listTimeEntriesForPeriod: vi.fn(),
         listExpectedContracts: vi.fn(),
+        getContractAllocationFact: vi.fn(),
+        listContractAllocationFacts: vi.fn(),
       };
 
       const mockMembersRepository: WorkspaceMemberRepository = {
@@ -153,6 +165,8 @@ describe("AnalyticsService", () => {
         getContractUtilizations: vi.fn(),
         listTimeEntriesForPeriod: vi.fn().mockResolvedValue([]),
         listExpectedContracts: vi.fn().mockResolvedValue([]),
+        getContractAllocationFact: vi.fn(),
+        listContractAllocationFacts: vi.fn(),
       };
 
       const mockMembersRepository: WorkspaceMemberRepository = {
@@ -181,7 +195,7 @@ describe("AnalyticsService", () => {
         byCurrency: [],
         byContract: [],
       });
-      expect(result).not.toHaveProperty("forecast");
+      expect(result.forecast).toBeNull();
       expect(mockAnalyticsRepository.getMonthlyAnalytics).toHaveBeenCalledWith(
         mockContext.workspaceId,
         mockPeriod
@@ -243,6 +257,8 @@ describe("AnalyticsService", () => {
             validTo: new Date("2027-01-01T00:00:00.000Z"),
           },
         ]),
+        getContractAllocationFact: vi.fn(),
+        listContractAllocationFacts: vi.fn(),
       };
 
       const mockMembersRepository: WorkspaceMemberRepository = {
@@ -286,6 +302,8 @@ describe("AnalyticsService", () => {
         getContractUtilizations: vi.fn(),
         listTimeEntriesForPeriod: vi.fn(),
         listExpectedContracts: vi.fn(),
+        getContractAllocationFact: vi.fn(),
+        listContractAllocationFacts: vi.fn(),
       };
 
       const invalidPeriod: AnalyticsPeriod = {
@@ -318,6 +336,8 @@ describe("AnalyticsService", () => {
         getContractUtilizations: vi.fn(),
         listTimeEntriesForPeriod: vi.fn(),
         listExpectedContracts: vi.fn(),
+        getContractAllocationFact: vi.fn(),
+        listContractAllocationFacts: vi.fn(),
       };
 
       const mockMembersRepository: WorkspaceMemberRepository = {
@@ -345,6 +365,8 @@ describe("AnalyticsService", () => {
         getContractUtilizations: vi.fn(),
         listTimeEntriesForPeriod: vi.fn(),
         listExpectedContracts: vi.fn(),
+        getContractAllocationFact: vi.fn(),
+        listContractAllocationFacts: vi.fn(),
       };
 
       const invalidPeriod: AnalyticsPeriod = {
@@ -394,6 +416,8 @@ describe("AnalyticsService", () => {
         getContractUtilizations: vi.fn(),
         listTimeEntriesForPeriod: vi.fn(),
         listExpectedContracts: vi.fn(),
+        getContractAllocationFact: vi.fn(),
+        listContractAllocationFacts: vi.fn(),
       };
 
       const mockMembersRepository: WorkspaceMemberRepository = {
@@ -435,6 +459,8 @@ describe("AnalyticsService", () => {
         getContractUtilizations: vi.fn().mockResolvedValue(utilizations),
         listTimeEntriesForPeriod: vi.fn(),
         listExpectedContracts: vi.fn(),
+        getContractAllocationFact: vi.fn(),
+        listContractAllocationFacts: vi.fn(),
       };
 
       const mockMembersRepository: WorkspaceMemberRepository = {
@@ -473,6 +499,8 @@ describe("AnalyticsService", () => {
         getContractUtilizations: vi.fn().mockResolvedValue(utilizations),
         listTimeEntriesForPeriod: vi.fn(),
         listExpectedContracts: vi.fn(),
+        getContractAllocationFact: vi.fn(),
+        listContractAllocationFacts: vi.fn(),
       };
 
       const mockMembersRepository: WorkspaceMemberRepository = {

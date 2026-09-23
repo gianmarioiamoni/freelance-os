@@ -84,6 +84,7 @@ function analyticsStub(overrides: Partial<AnalyticsService> = {}): AnalyticsServ
       contractUtilizations: utilizations,
       accrued,
       expected,
+      forecast: null,
     } satisfies MonthlyAnalytics),
     ...overrides,
   } as unknown as AnalyticsService;
@@ -173,7 +174,7 @@ describe("ReportingService revenue mapping", () => {
       expect(month.accrued).toEqual(accrued);
       expect(month.expected).toEqual(expected);
       expect(month.totalMinutes).toBe(120);
-      expect(month).not.toHaveProperty("forecast");
+      expect(month.forecast).toBeNull();
     }
   });
 });
