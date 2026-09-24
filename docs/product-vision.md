@@ -295,14 +295,14 @@ The MVP is considered functionally complete when this end-to-end workflow works 
 | OD-008 | Audit log requirements — OUT OF R2 (R2-OD-015) |
 | OD-009 | Workspace roles |
 | OD-010 | Email notification policy |
-| OD-011 | CSV/PDF export — PDF out of core R2; simple CSV residual in R2-E05 (R2-OD-012). Excel is not a decision. |
+| OD-011 | CSV/PDF export — PDF out of core R2; simple CSV CLOSED in R2-E05 (R2-OD-012 / E05-D-EXPORT-FORMATS B). Excel is not a decision. |
 | OD-012 | Multi-currency — closed by R2 D7 + R2-OD-011 + E02-D01 Invoice currency snapshot. |
 
 ## 14. Release Structure
 
 - **Release 0 — Foundation:** architecture and technical infrastructure.
 - **Release 1 — MVP:** authentication, workspace, clients, contracts, time tracking, dashboard, reporting and alerts.
-- **Release 2 — Revenue Operations:** revenue visibility (Accrued / Expected / Forecast), Invoice Tracking (not Invoice Lifecycle), operational payment tracking, deterministic linear Forecast, optional Contract Time Allocation, advanced reporting and simple export if decided. Official decisions: `docs/release/r2-decision-pack.md`. Planning baseline: `docs/release/r2-epic-map.md`. R2-E01: COMPLETE / RELEASE-READY (`docs/release/r2-e01-revenue-visibility.md`). R2-E02: COMPLETE WITH NON-BLOCKING FINDING (`docs/release/r2-e02-invoice-tracking.md`). Historical label “Billing & Intelligence” is superseded. Profitability is out of FreelanceOS (PIVA Balance). R2 is not production-ready. R2-E03 CERTIFIED. R2-E04 CERTIFIED. E05 plan: `docs/release/r2-e05-advanced-reporting-export.md`. P-E05-00 BLOCKED — PO DECISIONS REQUIRED. E05 is not authorized.
+- **Release 2 — Revenue Operations:** revenue visibility (Accrued / Expected / Forecast), Invoice Tracking (not Invoice Lifecycle), operational payment tracking, deterministic linear Forecast, optional Contract Time Allocation, advanced reporting and simple export if decided. Official decisions: `docs/release/r2-decision-pack.md`. Planning baseline: `docs/release/r2-epic-map.md`. R2-E01: COMPLETE / RELEASE-READY (`docs/release/r2-e01-revenue-visibility.md`). R2-E02: COMPLETE WITH NON-BLOCKING FINDING (`docs/release/r2-e02-invoice-tracking.md`). Historical label “Billing & Intelligence” is superseded. Profitability is out of FreelanceOS (PIVA Balance). R2 is not production-ready. R2-E03 CERTIFIED. R2-E04 CERTIFIED. E05 plan: `docs/release/r2-e05-advanced-reporting-export.md`. P-E05-00 COMPLETE — PO DECISIONS CLOSED. P-E05-01 AUTHORIZED. E05 is not certified.
 - **Release 3 — Integrations:** electronic invoicing, calendar and accounting integrations.
 - **Release 4 — AI:** natural-language analytics, timesheet assistant and business assistant.
 

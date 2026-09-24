@@ -472,7 +472,7 @@ R2 adds Invoice Tracking, Payment Tracking, derived revenue
 See `docs/release/r2-decision-pack.md` and
 `docs/release/r2-architecture-delta.md`. Profitability remains
 outside FreelanceOS (PIVA Balance). E01 and E02 are complete. E03 is
-CERTIFIED. E04 is CERTIFIED. E05 planning exists (`docs/release/r2-e05-advanced-reporting-export.md`). P-E05-00 BLOCKED — PO DECISIONS REQUIRED. E05 remains unauthorized. R2 is not production-ready.
+CERTIFIED. E04 is CERTIFIED. E05 planning exists (`docs/release/r2-e05-advanced-reporting-export.md`). P-E05-00 COMPLETE — PO DECISIONS CLOSED. P-E05-01 AUTHORIZED. E05 is not certified. R2 is not production-ready.
 
 ---
 

@@ -262,8 +262,8 @@ COMPLETE WITH NON-BLOCKING FINDING
 (`docs/release/r2-e02-invoice-tracking.md`). E03 is CERTIFIED
 (`docs/release/r2-e03-payment-tracking.md`). E04 is CERTIFIED
 (`docs/release/r2-e04-forecasting-allocation.md`). E05 planning exists
-(`docs/release/r2-e05-advanced-reporting-export.md`). P-E05-00 BLOCKED —
-PO DECISIONS REQUIRED. E05 remains unauthorized.
+(`docs/release/r2-e05-advanced-reporting-export.md`). P-E05-00 COMPLETE —
+PO DECISIONS CLOSED. P-E05-01 AUTHORIZED. E05 is not certified.
 
 ## 13. Capacity Model
 

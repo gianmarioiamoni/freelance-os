@@ -1,6 +1,6 @@
 # R2 Epic Map — Planning Baseline
 
-**Status:** Executable planning baseline. R2-E01 COMPLETE / RELEASE-READY. R2-E02 COMPLETE WITH NON-BLOCKING FINDING. R2-E03 CERTIFIED (P-E03-00…P-E03-07). R2-E04 CERTIFIED (P-E04-00…P-E04-07). E05 detailed plan exists (`docs/release/r2-e05-advanced-reporting-export.md`). P-E05-00 BLOCKED — PO DECISIONS REQUIRED. No EPIC-2xx opened. R2 is not production-ready.  
+**Status:** Executable planning baseline. R2-E01 COMPLETE / RELEASE-READY. R2-E02 COMPLETE WITH NON-BLOCKING FINDING. R2-E03 CERTIFIED (P-E03-00…P-E03-07). R2-E04 CERTIFIED (P-E04-00…P-E04-07). E05 detailed plan exists (`docs/release/r2-e05-advanced-reporting-export.md`). P-E05-00 COMPLETE — PO DECISIONS CLOSED. P-E05-01 AUTHORIZED. E05 is not certified. No EPIC-2xx opened. R2 is not production-ready.  
 **Date:** 2026-09-24  
 **Authority:** `docs/release/r2-decision-pack.md`  
 **E01 plan:** `docs/release/r2-e01-revenue-visibility.md`  
@@ -11,12 +11,12 @@
 **Does not:** authorize E05 implementation.
 
 ```text
-PLANNING BASELINE (E05 P-E05-00 BLOCKED)
+PLANNING BASELINE (E05 P-E05-00 CLOSED; P-E05-01 AUTHORIZED)
 R2-E01: COMPLETE / RELEASE-READY
 R2-E02: COMPLETE WITH NON-BLOCKING FINDING
 R2-E03: CERTIFIED
 R2-E04: CERTIFIED
-IMPLEMENTATION: E01 DONE; E02 DONE; E03 CERTIFIED; E04 CERTIFIED; E05 NOT AUTHORIZED
+IMPLEMENTATION: E01 DONE; E02 DONE; E03 CERTIFIED; E04 CERTIFIED; E05 P-E05-01 AUTHORIZED / NOT STARTED
 R1: FROZEN / GRANTED
 R2: NOT PRODUCTION-READY
 ```
@@ -492,9 +492,9 @@ Inspect R2 operational facts over existing period selection without building a s
 
 ### 3. In scope
 
-- Advanced filtering on existing / R2 operational facts.
-- Revenue / invoice / payment columns once those semantics are finalized.
-- Simple tabular / CSV export **only if** planning shows low complexity and clear value (R2-OD-012 residual).
+- Existing `/reports` surfaces only. Publish already-loaded Expected and Contract Allocation (E05-D-REPORT-SCOPE A).
+- Filters: Period + Client + Contract (E05-D-REPORT-FILTERS B).
+- Native CSV of the same approved filtered dataset (E05-D-EXPORT-FORMATS B / R2-OD-012 CLOSED).
 - Shared calculation services only.
 
 ### 4. Explicitly out of scope
@@ -503,22 +503,24 @@ Inspect R2 operational facts over existing period selection without building a s
 - Excel.
 - Profitability, client scoring, commercial intelligence.
 - Cross-currency totals (D7).
+- Invoice/Payment report axis, temporal reporting, or workspace indexes.
+- Currency / VOID / amountStatus / overdue filters.
 - Blocking E01–E03 until export is decided.
 
 ### 5. Dependencies
 
-- R2-E01 for revenue reports.
-- R2-E02 / R2-E03 if invoice / payment columns are included.
-- Residual CSV decision.
+- R2-E01 for Accrued / Expected.
+- R2-E04 for Forecast / allocation.
+- Closed P-E05-00 contract. No Invoice/Payment reporting dependency.
 
 ### 6. Domain objects affected
 
-- None as write model. Read models over TimeEntry, Contract, Invoice, Payment, derived revenue.
+- None as write model. Read models over TimeEntry, Contract, derived Accrued / Expected / Forecast / allocation.
 
 ### 7. Application services / capabilities affected
 
 - `ReportingService` / analytics read path.
-- Optional export adapter if CSV is approved.
+- Native CSV serializer in P-E05-03.
 
 ### 8. Persistence impact
 
@@ -537,29 +539,29 @@ Inspect R2 operational facts over existing period selection without building a s
 ### 11. Authorization / workspace isolation
 
 - Same RSC / `WorkspaceContext` rules as EPIC-105 `/reports`.
-- Period parameters are view state, not tenant grants.
+- Period / Client / Contract parameters are view state, not tenant grants.
 
 ### 12. E2E implications
 
-- Revenue / invoice / payment figures agree with the originating services.
+- Accrued / Expected / Forecast / allocation figures agree with AnalyticsService.
 - Per-currency separation.
-- Export, if present, is tabular and non-fiscal.
+- CSV is tabular and non-fiscal.
 
 ### 13. Acceptance criteria
 
 - Reporting remains a read model over shared services.
 - No fiscal PDF exists.
-- CSV exists only if explicitly approved during this epic’s planning.
+- Native CSV of the approved filtered dataset.
 - Workspace isolation holds.
 
 ### 14. Product decisions still required
 
-Detailed register: `docs/release/r2-e05-advanced-reporting-export.md` §17.
+None. Closed in `docs/release/r2-e05-advanced-reporting-export.md` §17:
 
-- E05-D-REPORT-SCOPE
-- E05-D-TEMPORAL-MODEL
-- E05-D-REPORT-FILTERS
-- E05-D-EXPORT-FORMATS (residual #5 / R2-OD-012)
+- E05-D-REPORT-SCOPE A
+- E05-D-TEMPORAL-MODEL D
+- E05-D-REPORT-FILTERS B
+- E05-D-EXPORT-FORMATS B (R2-OD-012)
 
 ### 15. Risks / architectural constraints
 
@@ -590,7 +592,7 @@ Do not implement these as assumptions.
 2. Exact Forecast calculation semantics — CLOSED (E04-D-FORECAST-ARITHMETIC).
 3. Invoice currency snapshot representation — CLOSED (E02-D01).
 4. Exact Invoice VOID behaviour and UI semantics — CLOSED (E02-D02).
-5. Whether simple CSV export belongs in R2-E05 (E05-D-EXPORT-FORMATS / R2-OD-012). Also OPEN: E05-D-REPORT-SCOPE, E05-D-TEMPORAL-MODEL, E05-D-REPORT-FILTERS. See `docs/release/r2-e05-advanced-reporting-export.md`.
+5. Simple CSV in R2-E05 — CLOSED (E05-D-EXPORT-FORMATS B / R2-OD-012). E05-D-REPORT-SCOPE A, E05-D-TEMPORAL-MODEL D, E05-D-REPORT-FILTERS B CLOSED. See `docs/release/r2-e05-advanced-reporting-export.md`.
 6. Commercial snapshot persistence: CLOSED — TimeEntry `snapshotBillingModel` / `snapshotRate` / `snapshotCurrency`.
 7. R2-OD-016 — APPROVED / implemented — weighted-average daily rate (P-E01-02).
 8. R2-OD-017 — CLOSED / implemented — existing TimeEntries backfilled from current Contract.
@@ -612,7 +614,7 @@ Vision → Architecture → Planning → Implementation → Engineering Review
 Release → Epic → Phase → Commit
 ```
 
-This document is the release-level planning baseline. R2-E01 is COMPLETE / RELEASE-READY (`docs/release/r2-e01-revenue-visibility.md`). R2-E02 is COMPLETE WITH NON-BLOCKING FINDING (`docs/release/r2-e02-invoice-tracking.md`). R2-E03 is CERTIFIED (`docs/release/r2-e03-payment-tracking.md`). R2-E04 is CERTIFIED (`docs/release/r2-e04-forecasting-allocation.md`). R2-E05 detailed plan exists (`docs/release/r2-e05-advanced-reporting-export.md`). P-E05-00 is BLOCKED — PO DECISIONS REQUIRED. It does not authorize E05 implementation.
+This document is the release-level planning baseline. R2-E01 is COMPLETE / RELEASE-READY (`docs/release/r2-e01-revenue-visibility.md`). R2-E02 is COMPLETE WITH NON-BLOCKING FINDING (`docs/release/r2-e02-invoice-tracking.md`). R2-E03 is CERTIFIED (`docs/release/r2-e03-payment-tracking.md`). R2-E04 is CERTIFIED (`docs/release/r2-e04-forecasting-allocation.md`). R2-E05 detailed plan exists (`docs/release/r2-e05-advanced-reporting-export.md`). P-E05-00 is COMPLETE — PO DECISIONS CLOSED. P-E05-01 is AUTHORIZED. E05 is not certified. It does not start P-E05-01 in this document.
 
 ### Release-level
 
@@ -620,8 +622,8 @@ This document is the release-level planning baseline. R2-E01 is COMPLETE / RELEA
 | --- | --- |
 | Vision | Complete — decision pack |
 | Architecture | Complete as domain delta — `r2-architecture-delta.md` |
-| Planning | This baseline. E01–E04 detailed plans complete. E05 detailed plan exists; P-E05-00 BLOCKED |
-| Implementation | R2-E01 COMPLETE / RELEASE-READY. R2-E02 COMPLETE WITH NON-BLOCKING FINDING. R2-E03 CERTIFIED. R2-E04 CERTIFIED. E05 not authorized |
+| Planning | This baseline. E01–E04 detailed plans complete. E05 P-E05-00 CLOSED |
+| Implementation | R2-E01 COMPLETE / RELEASE-READY. R2-E02 COMPLETE WITH NON-BLOCKING FINDING. R2-E03 CERTIFIED. R2-E04 CERTIFIED. E05 P-E05-01 AUTHORIZED / NOT STARTED |
 | Engineering Review → Release | E01–E04 ER + QA complete. E03 CERTIFIED. E04 CERTIFIED. R2 release gates not started. Do not mark R2 production-ready |
 
 ### Proposed small phases (planning labels only)
@@ -682,10 +684,10 @@ This document is the release-level planning baseline. R2-E01 is COMPLETE / RELEA
 
 | Phase | Intent | Status |
 | --- | --- | --- |
-| P-E05-00 | Planning / decision gate | COMPLETE AS RECOVERY — BLOCKED — PO DECISIONS REQUIRED |
-| P-E05-01 | Report read-model foundation | NOT STARTED / NOT AUTHORIZED |
+| P-E05-00 | Planning / decision gate | COMPLETE — PO DECISIONS CLOSED |
+| P-E05-01 | Report read model + filters | AUTHORIZED / NOT STARTED |
 | P-E05-02 | Additive `/reports` UI | NOT STARTED / NOT AUTHORIZED |
-| P-E05-03 | Simple CSV export only if approved | CONDITIONAL / NOT AUTHORIZED |
+| P-E05-03 | Native CSV export | NOT STARTED / NOT AUTHORIZED |
 | P-E05-04 | QA / documentation | NOT STARTED / NOT AUTHORIZED |
 | P-E05-05 | Release validation | NOT STARTED / NOT AUTHORIZED |
 | P-E05-06 | Certification | NOT STARTED / NOT AUTHORIZED |

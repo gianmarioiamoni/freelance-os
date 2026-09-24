@@ -371,12 +371,12 @@ OBD-008 remains historically open for a later release. It does not block R2.
 
 ## 4. Residual planning / product questions
 
-R2-OD-005 and the R2-OD-013 WARNING residual are CLOSED by P-E04-00. R2-OD-012 remains open and is joined by E05-D-REPORT-SCOPE, E05-D-TEMPORAL-MODEL, and E05-D-REPORT-FILTERS (`docs/release/r2-e05-advanced-reporting-export.md`). Closed rows stay as register history. They are **not** approved implementation assumptions for still-open items.
+R2-OD-005 and the R2-OD-013 WARNING residual are CLOSED by P-E04-00. R2-OD-012 and the E05 planning residuals are CLOSED by P-E05-00 (`docs/release/r2-e05-advanced-reporting-export.md`). Closed rows stay as register history.
 
 | ID | Topic | Needed by |
 | --- | --- | --- |
 | R2-OD-005 | CLOSED — Forecast = Accrued / elapsedFraction on the certified current period (`docs/release/r2-e04-forecasting-allocation.md` E04-D-FORECAST-ARITHMETIC) | R2-E04 |
-| R2-OD-012 | Whether simple tabular / CSV export belongs in R2-E05. PDF / document generation is out of core R2. Recovered as E05-D-EXPORT-FORMATS; still OPEN | R2-E05 |
+| R2-OD-012 | CLOSED — native CSV of the approved filtered `/reports` dataset (E05-D-EXPORT-FORMATS B). PDF / document generation remains out of core R2 | R2-E05 |
 | R2-OD-013 residual | CLOSED — WARNING 80%; EXCEEDED only when consumption `>` allocation (`docs/release/r2-e04-forecasting-allocation.md`) | R2-E04 |
 | R2-OD-007 residual | CLOSED — VOID one-way soft-delete; default lists exclude; no restore (`docs/release/r2-e02-invoice-tracking.md` E02-D02) | R2-E02 P-E02-00 |
 | R2-OD-011 residual | CLOSED — Invoice currency snapshot; must match Contract at write (`docs/release/r2-e02-invoice-tracking.md` E02-D01) | R2-E02 P-E02-00 |
@@ -403,7 +403,7 @@ R2 concentrates on Financial / Revenue Operations, always secondary to Time Trac
 | Invoice Tracking | Yes | Tracking record only |
 | Payment Tracking & Reconciliation | Yes | D5 / D6 / R2-OD-009 |
 | Forecasting / Contract Time Allocation | Yes | Linear Forecast + optional `allocatedMinutes`. No workspace capacity alerts |
-| Advanced Reporting & Export | Conditional | Planning recovered (`docs/release/r2-e05-advanced-reporting-export.md`). Advanced filtering, report columns, temporal joins, and CSV remain PO blockers. No fiscal PDF |
+| Advanced Reporting & Export | Yes within closed contract | Existing `/reports`; Expected + allocation; Period + Client + Contract; native CSV. No Invoice/Payment axis. No fiscal PDF |
 | Cross-cutting | Yes as required | Currency, rounding, commercial snapshot |
 
 ---
@@ -520,8 +520,8 @@ See `docs/release/r2-architecture-delta.md`.
 | Kind | Items |
 | --- | --- |
 | APPROVED | D1, D2, D3, D4, D5, D6, D7 |
-| APPROVED OD resolutions | R2-OD-001, R2-OD-002, R2-OD-003 (semantics), R2-OD-004, R2-OD-005 (arithmetic CLOSED by P-E04-00), R2-OD-006, R2-OD-007 (product + VOID semantics), R2-OD-008, R2-OD-009, R2-OD-010, R2-OD-011 (product + Invoice currency snapshot), R2-OD-013 (product + WARNING / EXCEEDED CLOSED by P-E04-00), R2-OD-014, R2-OD-015 |
-| RESIDUAL PLANNING / PRODUCT | R2-OD-012 CSV-in-E05; E05-D-REPORT-SCOPE; E05-D-TEMPORAL-MODEL; E05-D-REPORT-FILTERS |
+| APPROVED OD resolutions | R2-OD-001, R2-OD-002, R2-OD-003 (semantics), R2-OD-004, R2-OD-005 (arithmetic CLOSED by P-E04-00), R2-OD-006, R2-OD-007 (product + VOID semantics), R2-OD-008, R2-OD-009, R2-OD-010, R2-OD-011 (product + Invoice currency snapshot), R2-OD-012 (CSV CLOSED by P-E05-00), R2-OD-013 (product + WARNING / EXCEEDED CLOSED by P-E04-00), R2-OD-014, R2-OD-015, E05-D-REPORT-SCOPE A, E05-D-TEMPORAL-MODEL D, E05-D-REPORT-FILTERS B |
+| RESIDUAL PLANNING / PRODUCT | None |
 | DEFERRED / FUTURE | FX, installment engine, PIVA Balance integration, e-invoicing, calendar integration, AI, Excel, profitability, advanced grace / risk, workspace capacity alerts, period-close, audit ledger |
 
 ---
