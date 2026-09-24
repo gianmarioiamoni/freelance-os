@@ -1,21 +1,22 @@
 # R2 Epic Map — Planning Baseline
 
-**Status:** Executable planning baseline. R2-E01 COMPLETE / RELEASE-READY. R2-E02 COMPLETE WITH NON-BLOCKING FINDING. R2-E03 CERTIFIED (P-E03-00…P-E03-07). R2-E04 CERTIFIED (P-E04-00…P-E04-07). E05 detailed plan still required. No EPIC-2xx opened. R2 is not production-ready.  
-**Date:** 2026-09-23  
+**Status:** Executable planning baseline. R2-E01 COMPLETE / RELEASE-READY. R2-E02 COMPLETE WITH NON-BLOCKING FINDING. R2-E03 CERTIFIED (P-E03-00…P-E03-07). R2-E04 CERTIFIED (P-E04-00…P-E04-07). E05 detailed plan exists (`docs/release/r2-e05-advanced-reporting-export.md`). P-E05-00 BLOCKED — PO DECISIONS REQUIRED. No EPIC-2xx opened. R2 is not production-ready.  
+**Date:** 2026-09-24  
 **Authority:** `docs/release/r2-decision-pack.md`  
 **E01 plan:** `docs/release/r2-e01-revenue-visibility.md`  
 **E02 plan:** `docs/release/r2-e02-invoice-tracking.md`  
 **E03 plan:** `docs/release/r2-e03-payment-tracking.md`  
 **E04 plan:** `docs/release/r2-e04-forecasting-allocation.md`  
+**E05 plan:** `docs/release/r2-e05-advanced-reporting-export.md`  
 **Does not:** authorize E05 implementation.
 
 ```text
-PLANNING BASELINE (E05; E04 CERTIFIED)
+PLANNING BASELINE (E05 P-E05-00 BLOCKED)
 R2-E01: COMPLETE / RELEASE-READY
 R2-E02: COMPLETE WITH NON-BLOCKING FINDING
 R2-E03: CERTIFIED
 R2-E04: CERTIFIED
-IMPLEMENTATION: E01 DONE; E02 DONE; E03 CERTIFIED; E04 CERTIFIED; E05 NOT STARTED
+IMPLEMENTATION: E01 DONE; E02 DONE; E03 CERTIFIED; E04 CERTIFIED; E05 NOT AUTHORIZED
 R1: FROZEN / GRANTED
 R2: NOT PRODUCTION-READY
 ```
@@ -553,7 +554,12 @@ Inspect R2 operational facts over existing period selection without building a s
 
 ### 14. Product decisions still required
 
-- Whether simple CSV belongs in this epic (residual #5).
+Detailed register: `docs/release/r2-e05-advanced-reporting-export.md` §17.
+
+- E05-D-REPORT-SCOPE
+- E05-D-TEMPORAL-MODEL
+- E05-D-REPORT-FILTERS
+- E05-D-EXPORT-FORMATS (residual #5 / R2-OD-012)
 
 ### 15. Risks / architectural constraints
 
@@ -584,7 +590,7 @@ Do not implement these as assumptions.
 2. Exact Forecast calculation semantics — CLOSED (E04-D-FORECAST-ARITHMETIC).
 3. Invoice currency snapshot representation — CLOSED (E02-D01).
 4. Exact Invoice VOID behaviour and UI semantics — CLOSED (E02-D02).
-5. Whether simple CSV export belongs in R2-E05.
+5. Whether simple CSV export belongs in R2-E05 (E05-D-EXPORT-FORMATS / R2-OD-012). Also OPEN: E05-D-REPORT-SCOPE, E05-D-TEMPORAL-MODEL, E05-D-REPORT-FILTERS. See `docs/release/r2-e05-advanced-reporting-export.md`.
 6. Commercial snapshot persistence: CLOSED — TimeEntry `snapshotBillingModel` / `snapshotRate` / `snapshotCurrency`.
 7. R2-OD-016 — APPROVED / implemented — weighted-average daily rate (P-E01-02).
 8. R2-OD-017 — CLOSED / implemented — existing TimeEntries backfilled from current Contract.
@@ -606,7 +612,7 @@ Vision → Architecture → Planning → Implementation → Engineering Review
 Release → Epic → Phase → Commit
 ```
 
-This document is the release-level planning baseline. R2-E01 is COMPLETE / RELEASE-READY (`docs/release/r2-e01-revenue-visibility.md`). R2-E02 is COMPLETE WITH NON-BLOCKING FINDING (`docs/release/r2-e02-invoice-tracking.md`). R2-E03 is CERTIFIED (`docs/release/r2-e03-payment-tracking.md`). R2-E04 is CERTIFIED (`docs/release/r2-e04-forecasting-allocation.md`). It does not authorize E05 implementation.
+This document is the release-level planning baseline. R2-E01 is COMPLETE / RELEASE-READY (`docs/release/r2-e01-revenue-visibility.md`). R2-E02 is COMPLETE WITH NON-BLOCKING FINDING (`docs/release/r2-e02-invoice-tracking.md`). R2-E03 is CERTIFIED (`docs/release/r2-e03-payment-tracking.md`). R2-E04 is CERTIFIED (`docs/release/r2-e04-forecasting-allocation.md`). R2-E05 detailed plan exists (`docs/release/r2-e05-advanced-reporting-export.md`). P-E05-00 is BLOCKED — PO DECISIONS REQUIRED. It does not authorize E05 implementation.
 
 ### Release-level
 
@@ -614,8 +620,8 @@ This document is the release-level planning baseline. R2-E01 is COMPLETE / RELEA
 | --- | --- |
 | Vision | Complete — decision pack |
 | Architecture | Complete as domain delta — `r2-architecture-delta.md` |
-| Planning | This baseline. E01–E04 detailed plans complete. E05 EPIC-2xx plan still required |
-| Implementation | R2-E01 COMPLETE / RELEASE-READY. R2-E02 COMPLETE WITH NON-BLOCKING FINDING. R2-E03 CERTIFIED. R2-E04 CERTIFIED. E05 not started |
+| Planning | This baseline. E01–E04 detailed plans complete. E05 detailed plan exists; P-E05-00 BLOCKED |
+| Implementation | R2-E01 COMPLETE / RELEASE-READY. R2-E02 COMPLETE WITH NON-BLOCKING FINDING. R2-E03 CERTIFIED. R2-E04 CERTIFIED. E05 not authorized |
 | Engineering Review → Release | E01–E04 ER + QA complete. E03 CERTIFIED. E04 CERTIFIED. R2 release gates not started. Do not mark R2 production-ready |
 
 ### Proposed small phases (planning labels only)
@@ -672,14 +678,17 @@ This document is the release-level planning baseline. R2-E01 is COMPLETE / RELEA
 | P-E04-06 | Release validation | COMPLETE — READY WITH EXPLICIT FINDINGS / GATE B |
 | P-E04-07 | Certification | COMPLETE — CERTIFIED |
 
-**R2-E05**
+**R2-E05** — detailed plan: `docs/release/r2-e05-advanced-reporting-export.md`
 
-| Phase | Intent |
-| --- | --- |
-| E05-P00 | Detailed epic plan; decide CSV |
-| E05-P01 | Reporting extensions over finalized R2 facts |
-| E05-P02 | Simple tabular export only if approved |
-| E05-P03 | Tests, documentation, Engineering Review |
+| Phase | Intent | Status |
+| --- | --- | --- |
+| P-E05-00 | Planning / decision gate | COMPLETE AS RECOVERY — BLOCKED — PO DECISIONS REQUIRED |
+| P-E05-01 | Report read-model foundation | NOT STARTED / NOT AUTHORIZED |
+| P-E05-02 | Additive `/reports` UI | NOT STARTED / NOT AUTHORIZED |
+| P-E05-03 | Simple CSV export only if approved | CONDITIONAL / NOT AUTHORIZED |
+| P-E05-04 | QA / documentation | NOT STARTED / NOT AUTHORIZED |
+| P-E05-05 | Release validation | NOT STARTED / NOT AUTHORIZED |
+| P-E05-06 | Certification | NOT STARTED / NOT AUTHORIZED |
 
 Release gates (QA, UX, Production Validation, Certification, Release) run after the implemented R2 scope is reviewable. They are not claimed here.
 

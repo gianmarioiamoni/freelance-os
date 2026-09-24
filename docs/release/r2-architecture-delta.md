@@ -1,11 +1,11 @@
 # R2 Architecture Delta — Revenue Operations
 
-**Status:** Domain and persistence-planning delta. R2-E01 snapshot / Accrued / Expected are implemented. R2-E02 Invoice Tracking is implemented. R2-E03 Payment Tracking is CERTIFIED. R2-E04 Forecasting & Contract Time Allocation is CERTIFIED (`docs/release/r2-e04-forecasting-allocation.md`). E05 remains unauthorized.  
-**Date:** 2026-09-23  
+**Status:** Domain and persistence-planning delta. R2-E01 snapshot / Accrued / Expected are implemented. R2-E02 Invoice Tracking is implemented. R2-E03 Payment Tracking is CERTIFIED. R2-E04 Forecasting & Contract Time Allocation is CERTIFIED (`docs/release/r2-e04-forecasting-allocation.md`). E05 planning exists (`docs/release/r2-e05-advanced-reporting-export.md`). P-E05-00 BLOCKED — PO DECISIONS REQUIRED. E05 remains unauthorized.  
+**Date:** 2026-09-24  
 **Authority:** `docs/release/r2-decision-pack.md`  
 **Baseline:** R1 architecture (`docs/architecture.md`, `docs/domain-model.md`, `docs/storage.md`) remains the frozen R1 baseline.
 
-This document records what must change conceptually for R2. Invoice Prisma names exist (`Invoice`). Payment Prisma names exist (`Payment`). E03-D-VOID-PAYMENTS is closed (Option A). `Contract.allocatedMinutes` exists (`Int?`). Forecast remains derived. It does not authorize E05 implementation.
+This document records what must change conceptually for R2. Invoice Prisma names exist (`Invoice`). Payment Prisma names exist (`Payment`). E03-D-VOID-PAYMENTS is closed (Option A). `Contract.allocatedMinutes` exists (`Int?`). Forecast remains derived. E05 remains a derived read-model epic. It does not authorize E05 implementation.
 
 Legend:
 
@@ -295,7 +295,7 @@ PIVA Balance remains outside the monolith boundary.
 
 - Repository split for Invoice Tracking and Payment (implemented). Contract-scoped Payment UI is implemented. No scheduler.
 - Revenue lives under AnalyticsService (R2-E01 implemented). Do not add a parallel RevenueService.
-- Reporting/export module if simple CSV is approved in R2-E05.
+- Reporting remains `ReportingService` as a thin publisher over `AnalyticsService` and, if approved, existing Invoice / Payment application reads. Optional native CSV serializer if R2-OD-012 / E05-D-EXPORT-FORMATS is approved. No `ReportEngine`. No E05 schema by default. Plan: `docs/release/r2-e05-advanced-reporting-export.md`.
 
 ---
 
@@ -320,5 +320,6 @@ R1 baseline documents keep their historical text. Canonical R2 meaning is this d
 - Prisma models or migrations for E05
 - Whether revenue totals are persisted
 - E05 implementation
+- E05 report columns, filters, temporal joins, or CSV inclusion (PO blockers in `docs/release/r2-e05-advanced-reporting-export.md`)
 
-E04 product residuals (Forecast arithmetic, allocation predicates including 8-C zero-status, consumption rules, revenue UI surface) are CLOSED and CERTIFIED in `docs/release/r2-e04-forecasting-allocation.md`. Forecast = Accrued / elapsedFraction on the certified current period only; historical/custom null; derived. This document does not authorize E05 or production release.
+E04 product residuals (Forecast arithmetic, allocation predicates including 8-C zero-status, consumption rules, revenue UI surface) are CLOSED and CERTIFIED in `docs/release/r2-e04-forecasting-allocation.md`. Forecast = Accrued / elapsedFraction on the certified current period only; historical/custom null; derived. E05 P-E05-00 recovered the reporting/export envelope and is BLOCKED on PO decisions. This document does not authorize E05 or production release.

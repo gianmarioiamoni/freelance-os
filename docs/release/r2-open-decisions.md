@@ -8,7 +8,7 @@
 
 Approved D1–D7 and approved OD resolutions are **not** reopened here.
 
-Do not treat remaining items as implementation defaults. Do not invent CSV scope. R2-OD-003 representation, R2-OD-005, R2-OD-016, R2-OD-017, Invoice currency snapshot, Invoice VOID domain semantics, E03-D-VOID-PAYMENTS, and R2-OD-013 WARNING / EXCEEDED are closed.
+Do not treat remaining items as implementation defaults. Do not invent CSV scope, report columns, filters, or temporal joins. R2-OD-003 representation, R2-OD-005, R2-OD-016, R2-OD-017, Invoice currency snapshot, Invoice VOID domain semantics, E03-D-VOID-PAYMENTS, and R2-OD-013 WARNING / EXCEEDED are closed.
 
 ---
 
@@ -25,7 +25,7 @@ Do not treat remaining items as implementation defaults. Do not invent CSV scope
 
 ## Residual questions that must be resolved during epic planning
 
-Items 1 and 2 are CLOSED by P-E04-00. Item 5 remains OPEN for R2-E05. Closed rows stay here as the register history. They are **not** implementation defaults for still-open items.
+Items 1 and 2 are CLOSED by P-E04-00. Item 5 remains OPEN and is expanded by P-E05-00. Additional E05 blocking decisions are recorded below. Closed rows stay here as the register history. They are **not** implementation defaults for still-open items.
 
 ### 1. Contract Time Allocation WARNING threshold
 
@@ -69,13 +69,44 @@ Items 1 and 2 are CLOSED by P-E04-00. Item 5 remains OPEN for R2-E05. Closed row
 
 | Field | Value |
 | --- | --- |
-| Historical ID | R2-OD-012; product OD-011 |
+| Historical ID | R2-OD-012; product OD-011; E05-D-EXPORT-FORMATS |
 | Question | Does a simple tabular / CSV export belong in R2-E05? |
 | Why | Document / PDF generation is out of core R2. A simple tabular export may be included only if R2-E05 planning shows low complexity and clear value. Excel is not a decision. |
 | Impact | R2-E05 scope. |
-| Owner | Product Owner during R2-E05 planning |
-| Status | DIRECTION APPROVED / residual OPEN |
+| Owner | Product Owner |
+| Status | DIRECTION APPROVED / residual OPEN — P-E05-00 recovered; not closed |
 | Needed by | R2-E05 |
+| Plan | `docs/release/r2-e05-advanced-reporting-export.md` §17 E05-D-EXPORT-FORMATS. Options: A none; B native CSV of approved tables; C XLSX/PDF invalid in R2 |
+
+### 9. E05 report scope
+
+| Field | Value |
+| --- | --- |
+| ID | E05-D-REPORT-SCOPE |
+| Question | What advanced reporting ships: unused Expected/allocation only; Invoice/Payment columns on existing tables; new `/reports` tables; or workspace indexes? |
+| Status | OPEN — BLOCKING |
+| Needed by | R2-E05 |
+| Plan | `docs/release/r2-e05-advanced-reporting-export.md` §17 |
+
+### 10. E05 temporal model
+
+| Field | Value |
+| --- | --- |
+| ID | E05-D-TEMPORAL-MODEL |
+| Question | If Invoice/Payment appear on a period report, which date enters the selected period (`invoiceDate` / `dueDate` / `paymentDate` / not period-sliced)? |
+| Status | OPEN — BLOCKING unless REPORT-SCOPE publishes no Invoice/Payment period report |
+| Needed by | R2-E05 |
+| Plan | `docs/release/r2-e05-advanced-reporting-export.md` §17 |
+
+### 11. E05 report filters
+
+| Field | Value |
+| --- | --- |
+| ID | E05-D-REPORT-FILTERS |
+| Question | What does “advanced filtering” mean: period only, client/contract, currency, and/or Invoice tracking / amountStatus / overdue? |
+| Status | OPEN — BLOCKING |
+| Needed by | R2-E05 |
+| Plan | `docs/release/r2-e05-advanced-reporting-export.md` §17 |
 
 ### 6. Commercial snapshot persistence detail
 
@@ -172,4 +203,6 @@ R2-E02 (`docs/release/r2-e02-invoice-tracking.md`) implemented Invoice Tracking 
 
 R2-E03 (`docs/release/r2-e03-payment-tracking.md`) is CERTIFIED. Payment decisions are CLOSED. F-E03-001…005 ACCEPTED.
 
-R2-E04 (`docs/release/r2-e04-forecasting-allocation.md`) is CERTIFIED. Residuals #1 and #2 are APPROVED / CLOSED. Additional E04 PO items CLOSED there: E04-D-ALLOCATION-EXCEEDED, E04-D-CONSUMPTION-NUMERATOR, E04-D-CONSUMPTION-WINDOW, E04-D-OUT-OF-VALIDITY-CONSUMPTION, E04-D-UI-REVENUE-SURFACE, E04-D-ALLOCATION-ZERO-STATUS (8-C). Allocation alert lifecycle is CLOSED TECHNICAL (E04-D-ALERT-*). Forecast is derived Accrued / elapsedFraction on the certified current period only. Null and zero allocation have no status and no allocation alert. This register does not open E05 implementation. R2 is not production-ready.
+R2-E04 (`docs/release/r2-e04-forecasting-allocation.md`) is CERTIFIED. Residuals #1 and #2 are APPROVED / CLOSED. Additional E04 PO items CLOSED there: E04-D-ALLOCATION-EXCEEDED, E04-D-CONSUMPTION-NUMERATOR, E04-D-CONSUMPTION-WINDOW, E04-D-OUT-OF-VALIDITY-CONSUMPTION, E04-D-UI-REVENUE-SURFACE, E04-D-ALLOCATION-ZERO-STATUS (8-C). Allocation alert lifecycle is CLOSED TECHNICAL (E04-D-ALERT-*). Forecast is derived Accrued / elapsedFraction on the certified current period only. Null and zero allocation have no status and no allocation alert.
+
+R2-E05 (`docs/release/r2-e05-advanced-reporting-export.md`) P-E05-00 is COMPLETE AS PLANNING RECOVERY and **BLOCKED — PO DECISIONS REQUIRED**. Residual #5 (R2-OD-012) remains OPEN. E05-D-REPORT-SCOPE, E05-D-TEMPORAL-MODEL, and E05-D-REPORT-FILTERS are OPEN. This register does not authorize E05 implementation. R2 is not production-ready.
