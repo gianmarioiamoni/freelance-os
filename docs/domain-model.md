@@ -260,7 +260,8 @@ and overdue are derived, not persisted. Outstanding is presentation-only.
 VOID freezes Payment writes; existing rows remain readable. E02 is
 COMPLETE WITH NON-BLOCKING FINDING
 (`docs/release/r2-e02-invoice-tracking.md`). E03 is CERTIFIED
-(`docs/release/r2-e03-payment-tracking.md`).
+(`docs/release/r2-e03-payment-tracking.md`). E04 is CERTIFIED
+(`docs/release/r2-e04-forecasting-allocation.md`).
 
 ## 13. Capacity Model
 

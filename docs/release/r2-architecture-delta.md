@@ -1,11 +1,11 @@
 # R2 Architecture Delta — Revenue Operations
 
-**Status:** Domain and persistence-planning delta. R2-E01 snapshot / Accrued / Expected are implemented. R2-E02 Invoice Tracking is implemented. R2-E03 Payment Tracking is CERTIFIED. R2-E04 P-E04-05 COMPLETE — QA PASS WITH FINDINGS (`docs/release/r2-e04-forecasting-allocation.md`). E04 is not certified. E05 remains unauthorized.  
+**Status:** Domain and persistence-planning delta. R2-E01 snapshot / Accrued / Expected are implemented. R2-E02 Invoice Tracking is implemented. R2-E03 Payment Tracking is CERTIFIED. R2-E04 Forecasting & Contract Time Allocation is CERTIFIED (`docs/release/r2-e04-forecasting-allocation.md`). E05 remains unauthorized.  
 **Date:** 2026-09-23  
 **Authority:** `docs/release/r2-decision-pack.md`  
 **Baseline:** R1 architecture (`docs/architecture.md`, `docs/domain-model.md`, `docs/storage.md`) remains the frozen R1 baseline.
 
-This document records what must change conceptually for R2. Invoice Prisma names exist (`Invoice`). Payment Prisma names exist (`Payment`). E03-D-VOID-PAYMENTS is closed (Option A). `Contract.allocatedMinutes` exists (`Int?`). Forecast remains derived. It does not authorize E04 certification or E05 implementation.
+This document records what must change conceptually for R2. Invoice Prisma names exist (`Invoice`). Payment Prisma names exist (`Payment`). E03-D-VOID-PAYMENTS is closed (Option A). `Contract.allocatedMinutes` exists (`Int?`). Forecast remains derived. It does not authorize E05 implementation.
 
 Legend:
 
@@ -319,6 +319,6 @@ R1 baseline documents keep their historical text. Canonical R2 meaning is this d
 
 - Prisma models or migrations for E05
 - Whether revenue totals are persisted
-- E04 certification
+- E05 implementation
 
-E04 product residuals (Forecast arithmetic, allocation predicates including 8-C zero-status, consumption rules, revenue UI surface) are CLOSED and implemented through P-E04-05 in `docs/release/r2-e04-forecasting-allocation.md`. Forecast = Accrued / elapsedFraction on the certified current period only; historical/custom null; derived. This document does not authorize P-E04-06, P-E04-07, or production release.
+E04 product residuals (Forecast arithmetic, allocation predicates including 8-C zero-status, consumption rules, revenue UI surface) are CLOSED and CERTIFIED in `docs/release/r2-e04-forecasting-allocation.md`. Forecast = Accrued / elapsedFraction on the certified current period only; historical/custom null; derived. This document does not authorize E05 or production release.

@@ -135,8 +135,8 @@ context is recovered from repository documentation.
 ## Overall
 
 ``` text
-STATUS: UX Polish COMPLETE; EPIC-107 Public Landing COMPLETE through P107-06 and epic certification; MASTER_PLAN §34 READY FOR RELEASE; §35 GRANTED; EPIC-108 COMPLETE (ER PASS WITH FINDINGS); EPIC-109 COMPLETE (ER PASS); EPIC-110 CLOSED (P110-00 PASS; P110-01 PASS; P110-02 PASS; P110-03 SKIPPED BY DESIGN; P110-04 PASS; P110-05 PASS; P110-06 / P110-06C intermediate findings resolved or superseded; P110-06D PASS; P110-06C FINAL PASS; P110-07 PASS; P110-08 FREEZE). Actionable R1 findings = 0. R1 FROZEN. R2 Decision Workshop complete for in-scope decisions. R2 planning baseline recorded. R2-E01 Revenue Visibility COMPLETE / RELEASE-READY (P-E01-00…P-E01-07). R2-E02 Invoice Tracking COMPLETE WITH NON-BLOCKING FINDING (P-E02-00…P-E02-07). R2-E03 Payment Tracking CERTIFIED (P-E03-00…P-E03-07). R2-E04 P-E04-05 COMPLETE — QA PASS WITH FINDINGS. E04 is not certified. R2 is not production-ready.
-NEXT: R2-E04 P-E04-06 Release Validation NOT STARTED / NOT AUTHORIZED (`docs/release/r2-e04-forecasting-allocation.md`). E05 detailed plan still required. R2 is not production-ready.
+STATUS: UX Polish COMPLETE; EPIC-107 Public Landing COMPLETE through P107-06 and epic certification; MASTER_PLAN §34 READY FOR RELEASE; §35 GRANTED; EPIC-108 COMPLETE (ER PASS WITH FINDINGS); EPIC-109 COMPLETE (ER PASS); EPIC-110 CLOSED (P110-00 PASS; P110-01 PASS; P110-02 PASS; P110-03 SKIPPED BY DESIGN; P110-04 PASS; P110-05 PASS; P110-06 / P110-06C intermediate findings resolved or superseded; P110-06D PASS; P110-06C FINAL PASS; P110-07 PASS; P110-08 FREEZE). Actionable R1 findings = 0. R1 FROZEN. R2 Decision Workshop complete for in-scope decisions. R2 planning baseline recorded. R2-E01 Revenue Visibility COMPLETE / RELEASE-READY (P-E01-00…P-E01-07). R2-E02 Invoice Tracking COMPLETE WITH NON-BLOCKING FINDING (P-E02-00…P-E02-07). R2-E03 Payment Tracking CERTIFIED (P-E03-00…P-E03-07). R2-E04 Forecasting & Contract Time Allocation CERTIFIED (P-E04-00…P-E04-07). R2 is not production-ready.
+NEXT: E05 detailed plan still required. E04 plan: `docs/release/r2-e04-forecasting-allocation.md`. R2 is not production-ready.
 Production Validation (§34): EXECUTED — READY FOR RELEASE — docs/release/production-validation.md
 Production Certification (§35): GRANTED — docs/release/production-certification.md
 R1 Freeze: FROZEN — docs/release/r1-freeze.md
@@ -1167,10 +1167,9 @@ evolution. R2-E01 Revenue Visibility is COMPLETE / RELEASE-READY.
 R2-E02 Invoice Tracking is COMPLETE WITH NON-BLOCKING FINDING
 (P-E02-00…P-E02-07). R2-E03 Payment Tracking is CERTIFIED
 (`docs/release/r2-e03-payment-tracking.md`; P-E03-00…P-E03-07).
-R2-E04 P-E04-05 is COMPLETE — QA PASS WITH FINDINGS
-(`docs/release/r2-e04-forecasting-allocation.md`). E04 is not
-certified. E05 detailed plan has not started. R2 is not
-production-ready.
+R2-E04 Forecasting & Contract Time Allocation is CERTIFIED
+(`docs/release/r2-e04-forecasting-allocation.md`; P-E04-00…P-E04-07).
+E05 detailed plan has not started. R2 is not production-ready.
 
 Canonical decisions: `docs/release/r2-decision-pack.md`.
 Architecture delta: `docs/release/r2-architecture-delta.md`.
@@ -1181,8 +1180,7 @@ E02 plan: `docs/release/r2-e02-invoice-tracking.md`.
 E03 plan: `docs/release/r2-e03-payment-tracking.md`.
 E04 plan: `docs/release/r2-e04-forecasting-allocation.md`.
 
-This section does not certify E04 or open E05.
-P-E04-06 is not authorized.
+This section does not open E05.
 
 ## Objective
 
@@ -1263,11 +1261,11 @@ Accepted findings F-E03-001…005. Release migration: `prisma migrate deploy`.
 
 Deterministic linear Forecast from Accrued and elapsed time. Optional
 `allocatedMinutes`. No workspace capacity alerts. Detailed plan:
-`docs/release/r2-e04-forecasting-allocation.md`. P-E04-00…P-E04-05
-COMPLETE. Forecast = Accrued / elapsedFraction on the certified current
-period only. Null and zero allocation have no status / no alert (8-C).
-Positive: `<80` NORMAL, `80–100` WARNING, `>100` EXCEEDED. E04 is not
-certified. Next: P-E04-06 Release Validation.
+`docs/release/r2-e04-forecasting-allocation.md`. CERTIFIED (P-E04-00…P-E04-07).
+Forecast = Accrued / elapsedFraction on the certified current period only.
+Null and zero allocation have no status / no alert (8-C). Positive: `<80`
+NORMAL, `80–100` WARNING, `>100` EXCEEDED. Accepted findings retained.
+Release migration: `prisma migrate deploy`.
 
 ### R2-E05 --- Advanced Reporting & Export
 
@@ -2276,8 +2274,8 @@ Next actions:
 10. R2-E01 COMPLETE / RELEASE-READY (P-E01-00…P-E01-07)
 11. R2-E02 COMPLETE WITH NON-BLOCKING FINDING (P-E02-00…P-E02-07)
 12. R2-E03 Payment Tracking CERTIFIED (`docs/release/r2-e03-payment-tracking.md`; P-E03-00…P-E03-07)
-13. R2-E04 P-E04-05 COMPLETE — QA PASS WITH FINDINGS (`docs/release/r2-e04-forecasting-allocation.md`). Not certified
-14. E05 detailed plan still required; P-E04-06 is not authorized
+13. R2-E04 Forecasting & Contract Time Allocation CERTIFIED (`docs/release/r2-e04-forecasting-allocation.md`; P-E04-00…P-E04-07)
+14. E05 detailed plan still required; R2-E05 is not authorized here
 15. Do not mark R2 production-ready
 16. Do not rewrite historical §34 / §35 rows
 ```
@@ -2430,8 +2428,8 @@ next:
   r2_discovery: closed
   r2_planning: baseline
   r2_approved_decisions: D1-D7 and in-scope OD resolutions
-  r2_e04: qa-complete-not-certified
-  objective: R1 FROZEN. R2-E04 P-E04-05 COMPLETE — QA PASS WITH FINDINGS. Do not start P-E04-06. Closed contract in docs/release/r2-e04-forecasting-allocation.md. CSV residual remains in docs/release/r2-open-decisions.md.
+  r2_e04: certified
+  objective: R1 FROZEN. R2-E04 CERTIFIED. Do not start R2-E05. Closed contract in docs/release/r2-e04-forecasting-allocation.md. CSV residual remains in docs/release/r2-open-decisions.md.
   open_non_blocking_findings: []
   accepted_r1_limitations:
     - F-103-003

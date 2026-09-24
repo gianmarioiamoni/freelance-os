@@ -1,21 +1,21 @@
 # R2 Epic Map — Planning Baseline
 
-**Status:** Executable planning baseline. R2-E01 COMPLETE / RELEASE-READY. R2-E02 COMPLETE WITH NON-BLOCKING FINDING. R2-E03 CERTIFIED (P-E03-00…P-E03-07). R2-E04 P-E04-05 COMPLETE — QA PASS WITH FINDINGS. Not certified. E05 detailed plan still required. No EPIC-2xx opened. R2 is not production-ready.  
+**Status:** Executable planning baseline. R2-E01 COMPLETE / RELEASE-READY. R2-E02 COMPLETE WITH NON-BLOCKING FINDING. R2-E03 CERTIFIED (P-E03-00…P-E03-07). R2-E04 CERTIFIED (P-E04-00…P-E04-07). E05 detailed plan still required. No EPIC-2xx opened. R2 is not production-ready.  
 **Date:** 2026-09-23  
 **Authority:** `docs/release/r2-decision-pack.md`  
 **E01 plan:** `docs/release/r2-e01-revenue-visibility.md`  
 **E02 plan:** `docs/release/r2-e02-invoice-tracking.md`  
 **E03 plan:** `docs/release/r2-e03-payment-tracking.md`  
 **E04 plan:** `docs/release/r2-e04-forecasting-allocation.md`  
-**Does not:** authorize E04 certification, P-E04-06/P-E04-07, or E05 implementation.
+**Does not:** authorize E05 implementation.
 
 ```text
-PLANNING BASELINE (E05; E04 P-E04-05 QA COMPLETE — NOT CERTIFIED)
+PLANNING BASELINE (E05; E04 CERTIFIED)
 R2-E01: COMPLETE / RELEASE-READY
 R2-E02: COMPLETE WITH NON-BLOCKING FINDING
 R2-E03: CERTIFIED
-R2-E04: P-E04-05 COMPLETE — QA PASS WITH FINDINGS — NOT CERTIFIED
-IMPLEMENTATION: E01 DONE; E02 DONE; E03 CERTIFIED; E04 THROUGH P-E04-05; E05 NOT STARTED
+R2-E04: CERTIFIED
+IMPLEMENTATION: E01 DONE; E02 DONE; E03 CERTIFIED; E04 CERTIFIED; E05 NOT STARTED
 R1: FROZEN / GRANTED
 R2: NOT PRODUCTION-READY
 ```
@@ -606,7 +606,7 @@ Vision → Architecture → Planning → Implementation → Engineering Review
 Release → Epic → Phase → Commit
 ```
 
-This document is the release-level planning baseline. R2-E01 is COMPLETE / RELEASE-READY (`docs/release/r2-e01-revenue-visibility.md`). R2-E02 is COMPLETE WITH NON-BLOCKING FINDING (`docs/release/r2-e02-invoice-tracking.md`). R2-E03 is CERTIFIED (`docs/release/r2-e03-payment-tracking.md`). R2-E04 P-E04-05 is COMPLETE — QA PASS WITH FINDINGS (`docs/release/r2-e04-forecasting-allocation.md`). E04 is not certified. It does not authorize P-E04-06 or P-E04-07.
+This document is the release-level planning baseline. R2-E01 is COMPLETE / RELEASE-READY (`docs/release/r2-e01-revenue-visibility.md`). R2-E02 is COMPLETE WITH NON-BLOCKING FINDING (`docs/release/r2-e02-invoice-tracking.md`). R2-E03 is CERTIFIED (`docs/release/r2-e03-payment-tracking.md`). R2-E04 is CERTIFIED (`docs/release/r2-e04-forecasting-allocation.md`). It does not authorize E05 implementation.
 
 ### Release-level
 
@@ -615,8 +615,8 @@ This document is the release-level planning baseline. R2-E01 is COMPLETE / RELEA
 | Vision | Complete — decision pack |
 | Architecture | Complete as domain delta — `r2-architecture-delta.md` |
 | Planning | This baseline. E01–E04 detailed plans complete. E05 EPIC-2xx plan still required |
-| Implementation | R2-E01 COMPLETE / RELEASE-READY. R2-E02 COMPLETE WITH NON-BLOCKING FINDING. R2-E03 CERTIFIED. R2-E04 through P-E04-05. E05 not started |
-| Engineering Review → Release | E01–E03 ER + QA complete. E03 CERTIFIED. E04 ER + QA through P-E04-05. E04 not certified. R2 release gates not started. Do not mark R2 production-ready |
+| Implementation | R2-E01 COMPLETE / RELEASE-READY. R2-E02 COMPLETE WITH NON-BLOCKING FINDING. R2-E03 CERTIFIED. R2-E04 CERTIFIED. E05 not started |
+| Engineering Review → Release | E01–E04 ER + QA complete. E03 CERTIFIED. E04 CERTIFIED. R2 release gates not started. Do not mark R2 production-ready |
 
 ### Proposed small phases (planning labels only)
 
@@ -669,8 +669,8 @@ This document is the release-level planning baseline. R2-E01 is COMPLETE / RELEA
 | P-E04-03 | Forecast / allocation integration | COMPLETE — ENGINEERING REVIEW APPROVED WITH FINDINGS |
 | P-E04-04 | UI | COMPLETE — ENGINEERING REVIEW APPROVED WITH FINDINGS |
 | P-E04-05 | QA / documentation | COMPLETE — QA PASS WITH FINDINGS |
-| P-E04-06 | Release validation | NOT STARTED / NOT AUTHORIZED |
-| P-E04-07 | Certification | NOT STARTED / NOT AUTHORIZED |
+| P-E04-06 | Release validation | COMPLETE — READY WITH EXPLICIT FINDINGS / GATE B |
+| P-E04-07 | Certification | COMPLETE — CERTIFIED |
 
 **R2-E05**
 

@@ -3,13 +3,15 @@
 **Epic:** R2-E04 — Forecasting & Contract Time Allocation  
 **Release:** Release 2 — Revenue Operations  
 **MASTER_PLAN identifier:** R2-E04 (`MASTER_PLAN.md` §19)  
-**Status:** P-E04-05 COMPLETE — QA PASS WITH FINDINGS. Not certified.  
-**Date:** 2026-09-24  
+**Status:** CERTIFIED — P-E04-00…P-E04-07 COMPLETE. QA PASS WITH FINDINGS. Release Validation READY WITH EXPLICIT FINDINGS (Gate B). Accepted findings retained.  
+**Certification date:** 2026-09-24  
+**Certification commit:** this P-E04-07 commit  
+**Release migration:** `prisma migrate deploy`  
 **Authority:** `docs/release/r2-decision-pack.md`  
 **Companions:** `docs/release/r2-epic-map.md`, `docs/release/r2-architecture-delta.md`, `docs/release/r2-open-decisions.md`  
 **Predecessors:** R2-E01 COMPLETE / RELEASE-READY. R2-E02 COMPLETE WITH NON-BLOCKING FINDING. R2-E03 CERTIFIED (`2ad1a1e1e032709bb5de7c228f083259ac5d5ecd`).  
 **Does not assign:** an EPIC-2xx number  
-**Does not authorize:** P-E04-06 Release Validation, P-E04-07 Certification, or production release
+**Does not authorize:** R2-E05 or production release
 
 ```text
 P-E04-00  PLANNING / DECISION GATE                 COMPLETE — PO DECISIONS CLOSED
@@ -18,10 +20,10 @@ P-E04-02  APPLICATION / CALCULATIONS               COMPLETE — ENGINEERING REVI
 P-E04-03  FORECAST / ALLOCATION INTEGRATION        COMPLETE — ENGINEERING REVIEW APPROVED WITH FINDINGS
 P-E04-04  UI                                       COMPLETE — ENGINEERING REVIEW APPROVED WITH FINDINGS
 P-E04-05  QA / DOCUMENTATION                       COMPLETE — QA PASS WITH FINDINGS
-P-E04-06  RELEASE VALIDATION                       NOT STARTED / NOT AUTHORIZED
-P-E04-07  CERTIFICATION                            NOT STARTED / NOT AUTHORIZED
+P-E04-06  RELEASE VALIDATION                       COMPLETE — READY WITH EXPLICIT FINDINGS / GATE B
+P-E04-07  CERTIFICATION                            COMPLETE — CERTIFIED
 
-R2-E04: P-E04-05 COMPLETE — NOT CERTIFIED
+R2-E04: CERTIFIED
 R2-E03: CERTIFIED
 R2-E02: COMPLETE WITH NON-BLOCKING FINDING
 R2-E01: COMPLETE / RELEASE-READY
@@ -75,6 +77,18 @@ The P-E04-01 form-omit write-surface finding is closed by P-E04-04.
 **COMPLETE — QA PASS WITH FINDINGS.** Documentation synchronized. E04 is **not** certified. P-E04-06 is **not** authorized.
 
 Accepted nonblocking findings remain: P-E04-02 consumption duplication / list efficiency / selected test gaps; P-E04-03 TimeEntry trigger unit omit `contractId` and allocation trigger coverage integration-only; P-E04-04 extra workspace-context load on Contract detail and optional E2E gaps (zero → positive; WARNING/EXCEEDED with actual consumption). Parallel `contracts` E2E timed out once under load and passed in isolation.
+
+---
+
+## P-E04-06 verdict
+
+**COMPLETE — READY WITH EXPLICIT FINDINGS / Release Gate B.** Validation-only. No commit. No blocker. P-E04-07 was authorized.
+
+---
+
+## P-E04-07 verdict
+
+**COMPLETE — CERTIFIED.** Certification metadata only. No application, schema, or test change.
 
 ---
 
@@ -572,11 +586,11 @@ New index only if validity-window aggregation proves existing indexes insufficie
 | P-E04-02 | Application calculations | Closed Forecast + consumption | AnalyticsService Forecast + consumption / status | Unit formulas | `ca1b4cc` | Engineering Review APPROVED WITH FINDINGS |
 | P-E04-03 | Integration: reporting publish + allocation alerts | P-E04-02; E04-D-ALERT-*; 8-C | ReportingService; AlertService allocation types | Integration + isolation | `7c4ad5d` | Engineering Review APPROVED WITH FINDINGS |
 | P-E04-04 | UI | Closed UI surface; write path | Contract form; existing revenue surfaces | E2E | `ab68c84` | Engineering Review APPROVED WITH FINDINGS |
-| P-E04-05 | QA / documentation | P-E04-04 | Sync docs to implemented behavior | QA | this P-E04-05 commit | — |
-| P-E04-06 | Release validation | P-E04-05 | Validation record | Gate | TBD | — |
-| P-E04-07 | Certification | P-E04-06 | Certification | — | TBD | PO release later |
+| P-E04-05 | QA / documentation | P-E04-04 | Sync docs to implemented behavior | QA | `68424cf` | — |
+| P-E04-06 | Release validation | P-E04-05 | Validation record | Gate | none | — |
+| P-E04-07 | Certification | P-E04-06 | Certification | — | this commit | — |
 
-P-E04-00…P-E04-05 are **COMPLETE**. E04 is **not** certified. P-E04-06 is **not** authorized.
+P-E04-00…P-E04-07 are **COMPLETE**. E04 is **CERTIFIED**. R2-E05 is **not** authorized.
 
 ---
 
@@ -609,8 +623,129 @@ P-E04-00 closed the original seven. 8-C closed zero-allocation status after the 
 
 ## 21. Recommendation for next phase
 
-Stop. Do **not** start P-E04-06 or P-E04-07 in this chat.
+Stop. Do **not** start R2-E05 in this chat.
 
-Next gate is P-E04-06 Release Validation. E04 remains **NOT CERTIFIED**.
+E04 is **CERTIFIED**. R2 remains not production-ready. E05 remains unplanned.
 
-R2 remains not production-ready. E05 remains unplanned.
+---
+
+## 22. P-E04-05 QA Gate
+
+**Date:** 2026-09-24  
+**Phase:** P-E04-05  
+**Reviewed HEAD:** `68424cf74198a23fae423a3ab27b4bf57f1cc0dd`  
+**Commit:** `68424cf` — `chore(r2-e04): complete qa and documentation`
+
+### Verdict
+
+**PASS WITH FINDINGS**
+
+No blocker. Frozen Forecast / allocation / alert contract holds on unit, integration, and focused E2E evidence. Accepted findings remain non-blocking. No application remediation after this gate.
+
+### Commands executed
+
+| Command | Result |
+| --- | --- |
+| Focused unit | PASS — 82 |
+| Focused integration | PASS — 337 |
+| Focused E2E / regression | PASS — 37 |
+| `contracts` E2E under 5-worker parallel load | 1 timeout (30s) |
+| Isolated `contracts` E2E retry | PASS — 15.7s |
+| `pnpm typecheck` | PASS |
+| `pnpm lint` | PASS |
+| `pnpm build` | PASS after `.next` cleanup |
+| `pnpm exec prisma validate` | PASS |
+| `pnpm exec prisma generate` | PASS |
+| Test DB migrations | 11 applied; no pending |
+
+No source changes after P-E04-05.
+
+---
+
+## 23. P-E04-06 Release Validation
+
+**Date:** 2026-09-24  
+**Phase:** P-E04-06  
+**Reviewed HEAD at validation:** `68424cf74198a23fae423a3ab27b4bf57f1cc0dd`  
+**Commit:** none (validation-only)
+
+### Verdict
+
+**READY WITH EXPLICIT FINDINGS**
+
+Release classification: **B — READY WITH EXPLICIT FINDINGS**
+
+No blocker. Migration path deterministic. `prisma migrate deploy` is sufficient. Local `freelance_os` pending migrations are environment drift, not a repository defect. Isolated `freelanceos_test` was current. Accepted findings remain non-blocking, including the stale planning sentence that `allocatedMinutes` is "not in current schema".
+
+P-E04-06 is **not** certification.
+
+---
+
+## 24. P-E04-07 Certification
+
+**Date:** 2026-09-24  
+**Phase:** P-E04-07  
+**Certification HEAD:** this commit  
+**Scope:** Certification metadata only. No application, schema, or test change.
+
+### Verdict
+
+**CERTIFIED**
+
+R2-E04 Forecasting & Contract Time Allocation is CERTIFIED.
+
+Accepted findings from P-E04-02…P-E04-06 remain non-blocking. Release migration command: `prisma migrate deploy`. R2-E05 is not authorized. R2 is not production-ready.
+
+### Phase commits
+
+| Phase | Commit |
+| --- | --- |
+| P-E04-00 | `4d9f5fdd6fc59b616049380a81c01505b1b5f947` |
+| P-E04-01 | `3012b47e7915f8b2f038bda486903057c6bedf84` |
+| P-E04-02 | `ca1b4cc0bc922d59d701d779f68a55710f0c6f8d` |
+| P-E04-03 | `7c4ad5d7b59df9aa7839f4fdf0f9aaa9705515b2` |
+| P-E04-04 | `ab68c84750a422390d07590a9c428556bff0cb8a` |
+| P-E04-05 | `68424cf74198a23fae423a3ab27b4bf57f1cc0dd` |
+| P-E04-06 | none (validation-only) |
+| P-E04-07 | this commit |
+
+### Accepted findings (retained, non-blocking)
+
+| Source | Finding |
+| --- | --- |
+| P-E04-02 | consumption implementation duplication |
+| P-E04-02 | `listContractAllocationFacts` efficiency |
+| P-E04-02 | open-ended validity test gap |
+| P-E04-02 | `listContractAllocations` boundary test gap |
+| P-E04-02 | `isCurrentAnalyticsPeriod` test gap |
+| P-E04-02 | Forecast Accrued=0 integration test gap |
+| P-E04-03 | TimeEntry trigger unit tests omit `contractId` |
+| P-E04-03 | allocation trigger coverage integration-only |
+| P-E04-04 | extra workspace-context load on Contract detail |
+| P-E04-04 | no E2E for zero → positive |
+| P-E04-04 | no E2E for WARNING/EXCEEDED with actual consumption |
+| P-E04-05 | contracts E2E 30s timeout under parallel load; isolated retry passed |
+| P-E04-06 | stale sentence in E04 planning allocation section saying field is "not in current schema" |
+
+### Migration certification
+
+| Item | Result |
+| --- | --- |
+| `20260923230000_add_contract_allocated_minutes` | additive; `allocatedMinutes INTEGER` nullable; non-negative CHECK |
+| `20260923235000_add_allocation_alerts` | additive; enum values + CHECK + index |
+| Destructive SQL | none |
+| Data rewrite / backfill | none |
+| Existing Contract rows | remain valid with NULL allocation |
+| Existing Alert rows | remain valid |
+| Production command | `prisma migrate deploy` |
+| Manual production SQL | none |
+
+### Final status
+
+```text
+R2-E04 Forecasting & Contract Time Allocation = CERTIFIED
+
+NEXT:                      R2-E05 is NOT AUTHORIZED in this chat
+E05:                       NOT COMPLETE
+R2 PRODUCTION-READY:       NO
+```

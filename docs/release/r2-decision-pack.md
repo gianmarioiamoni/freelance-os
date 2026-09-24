@@ -351,7 +351,7 @@ allocatedMinutes         = total project / Contract time budget
 
 Do not conflate them.
 
-WARNING threshold = 80%. EXCEEDED only when consumption `>` allocatedMinutes. Exactly 100% is WARNING, not EXCEEDED. Closed by P-E04-00 (`docs/release/r2-e04-forecasting-allocation.md` E04-D-ALLOCATION-WARNING / E04-D-ALLOCATION-EXCEEDED). Zero allocation has no status and no allocation alert regardless of consumption (E04-D-ALLOCATION-ZERO-STATUS / 8-C). Implemented through P-E04-05. E04 is not certified.
+WARNING threshold = 80%. EXCEEDED only when consumption `>` allocatedMinutes. Exactly 100% is WARNING, not EXCEEDED. Closed by P-E04-00 (`docs/release/r2-e04-forecasting-allocation.md` E04-D-ALLOCATION-WARNING / E04-D-ALLOCATION-EXCEEDED). Zero allocation has no status and no allocation alert regardless of consumption (E04-D-ALLOCATION-ZERO-STATUS / 8-C). CERTIFIED (P-E04-00…P-E04-07).
 
 ### R2-OD-014 — Period closure — APPROVED OUT OF R2
 
