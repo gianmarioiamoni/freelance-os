@@ -1,6 +1,6 @@
 # R2 Epic Map — Planning Baseline
 
-**Status:** Executable planning baseline. R2-E01 COMPLETE / RELEASE-READY. R2-E02 COMPLETE WITH NON-BLOCKING FINDING. R2-E03 CERTIFIED (P-E03-00…P-E03-07). R2-E04 CERTIFIED (P-E04-00…P-E04-07). R2-E05 CERTIFIED (P-E05-00…P-E05-06). No EPIC-2xx opened. R2 is not production-ready.  
+**Status:** Executable planning baseline. R2-E01 COMPLETE / RELEASE-READY. R2-E02 COMPLETE WITH NON-BLOCKING FINDING. R2-E03 CERTIFIED (P-E03-00…P-E03-07). R2-E04 CERTIFIED (P-E04-00…P-E04-07). R2-E05 CERTIFIED (P-E05-00…P-E05-06). R2 CERTIFIED (`docs/release/r2-certification.md`). No EPIC-2xx opened. R2 is not production-ready. Release has not occurred.  
 **Date:** 2026-09-24  
 **Authority:** `docs/release/r2-decision-pack.md`  
 **E01 plan:** `docs/release/r2-e01-revenue-visibility.md`  
@@ -11,7 +11,7 @@
 **Does not:** authorize R2 production release.
 
 ```text
-PLANNING BASELINE (E05 CERTIFIED)
+PLANNING BASELINE (R2 CERTIFIED)
 R2-E01: COMPLETE / RELEASE-READY
 R2-E02: COMPLETE WITH NON-BLOCKING FINDING
 R2-E03: CERTIFIED
@@ -19,7 +19,8 @@ R2-E04: CERTIFIED
 R2-E05: CERTIFIED
 IMPLEMENTATION: E01 DONE; E02 DONE; E03 CERTIFIED; E04 CERTIFIED; E05 CERTIFIED
 R1: FROZEN / GRANTED
-R2: NOT PRODUCTION-READY
+R2: CERTIFIED / NOT PRODUCTION-READY
+RELEASE: HAS NOT OCCURRED
 ```
 
 Priority:
@@ -615,7 +616,7 @@ Vision → Architecture → Planning → Implementation → Engineering Review
 Release → Epic → Phase → Commit
 ```
 
-This document is the release-level planning baseline. R2-E01 is COMPLETE / RELEASE-READY (`docs/release/r2-e01-revenue-visibility.md`). R2-E02 is COMPLETE WITH NON-BLOCKING FINDING (`docs/release/r2-e02-invoice-tracking.md`). R2-E03 is CERTIFIED (`docs/release/r2-e03-payment-tracking.md`). R2-E04 is CERTIFIED (`docs/release/r2-e04-forecasting-allocation.md`). R2-E05 is CERTIFIED (`docs/release/r2-e05-advanced-reporting-export.md`; P-E05-00…P-E05-06). R2 is not production-ready.
+This document is the release-level planning baseline. R2-E01 is COMPLETE / RELEASE-READY (`docs/release/r2-e01-revenue-visibility.md`). R2-E02 is COMPLETE WITH NON-BLOCKING FINDING (`docs/release/r2-e02-invoice-tracking.md`). R2-E03 is CERTIFIED (`docs/release/r2-e03-payment-tracking.md`). R2-E04 is CERTIFIED (`docs/release/r2-e04-forecasting-allocation.md`). R2-E05 is CERTIFIED (`docs/release/r2-e05-advanced-reporting-export.md`; P-E05-00…P-E05-06). R2 is CERTIFIED (`docs/release/r2-certification.md`). R2 is not production-ready. Release has not occurred.
 
 ### Release-level
 
@@ -625,7 +626,7 @@ This document is the release-level planning baseline. R2-E01 is COMPLETE / RELEA
 | Architecture | Complete as domain delta — `r2-architecture-delta.md` |
 | Planning | This baseline. E01–E05 detailed plans complete. E05 CERTIFIED |
 | Implementation | R2-E01 COMPLETE / RELEASE-READY. R2-E02 COMPLETE WITH NON-BLOCKING FINDING. R2-E03 CERTIFIED. R2-E04 CERTIFIED. E05 CERTIFIED |
-| Engineering Review → Release | E01–E05 ER + QA complete. E03 CERTIFIED. E04 CERTIFIED. E05 CERTIFIED. R2 release gates not started. Do not mark R2 production-ready |
+| Engineering Review → Release | E01–E05 ER + QA complete. Release QA / UX / Production Validation PASS WITH FINDINGS. R2 CERTIFIED. Next: R2 Release. Do not mark R2 production-ready |
 
 ### Proposed small phases (planning labels only)
 

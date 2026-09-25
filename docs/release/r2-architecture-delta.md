@@ -1,6 +1,6 @@
 # R2 Architecture Delta — Revenue Operations
 
-**Status:** Domain and persistence-planning delta. R2-E01 snapshot / Accrued / Expected are implemented. R2-E02 Invoice Tracking is implemented. R2-E03 Payment Tracking is CERTIFIED. R2-E04 Forecasting & Contract Time Allocation is CERTIFIED (`docs/release/r2-e04-forecasting-allocation.md`). R2-E05 Advanced Reporting & Export is CERTIFIED (`docs/release/r2-e05-advanced-reporting-export.md`; P-E05-00…P-E05-06).  
+**Status:** Domain and persistence-planning delta. R2-E01 snapshot / Accrued / Expected are implemented. R2-E02 Invoice Tracking is implemented. R2-E03 Payment Tracking is CERTIFIED. R2-E04 Forecasting & Contract Time Allocation is CERTIFIED (`docs/release/r2-e04-forecasting-allocation.md`). R2-E05 Advanced Reporting & Export is CERTIFIED (`docs/release/r2-e05-advanced-reporting-export.md`; P-E05-00…P-E05-06). R2 is CERTIFIED (`docs/release/r2-certification.md`). R2 is not production-ready.  
 **Date:** 2026-09-24  
 **Authority:** `docs/release/r2-decision-pack.md`  
 **Baseline:** R1 architecture (`docs/architecture.md`, `docs/domain-model.md`, `docs/storage.md`) remains the frozen R1 baseline.
@@ -320,4 +320,4 @@ R1 baseline documents keep their historical text. Canonical R2 meaning is this d
 - Prisma models or migrations for E05
 - Whether revenue totals are persisted
 
-E04 product residuals (Forecast arithmetic, allocation predicates including 8-C zero-status, consumption rules, revenue UI surface) are CLOSED and CERTIFIED in `docs/release/r2-e04-forecasting-allocation.md`. Forecast = Accrued / elapsedFraction on the certified current period only; historical/custom null; derived. E05 is CERTIFIED in `docs/release/r2-e05-advanced-reporting-export.md`. R2 is not production-ready.
+E04 product residuals (Forecast arithmetic, allocation predicates including 8-C zero-status, consumption rules, revenue UI surface) are CLOSED and CERTIFIED in `docs/release/r2-e04-forecasting-allocation.md`. Forecast = Accrued / elapsedFraction on the certified current period only; historical/custom null; derived. E05 is CERTIFIED in `docs/release/r2-e05-advanced-reporting-export.md`. R2 is CERTIFIED in `docs/release/r2-certification.md`. R2 is not production-ready. Release has not occurred.

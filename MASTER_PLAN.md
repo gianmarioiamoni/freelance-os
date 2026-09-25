@@ -1,10 +1,10 @@
 # FreelanceOS --- MASTER PLAN
 
-**Status:** R1 FROZEN / GRANTED. R2 Revenue Operations in planning.\
+**Status:** R1 FROZEN / GRANTED. R2 CERTIFIED / NOT PRODUCTION-READY.\
 **Document:** `MASTER_PLAN.md`\
 **Product:** FreelanceOS\
 **Canonical format:** Markdown\
-**Current phase:** EPIC-110 CLOSED. R1 FROZEN / GRANTED (`docs/release/r1-freeze.md`). Candidate `c6712224e8d093b6f64cb46a17823a20de356a31`. Production deployment `6558481150` at `https://freelance-os-timeplan.vercel.app`. Actionable R1 findings = 0. Historical §34 / §35 snapshots unchanged. R2 Revenue Operations is the active next product evolution and remains in planning. No R2 implementation epic approved.
+**Current phase:** EPIC-110 CLOSED. R1 FROZEN / GRANTED (`docs/release/r1-freeze.md`). Candidate `c6712224e8d093b6f64cb46a17823a20de356a31`. Production deployment `6558481150` at `https://freelance-os-timeplan.vercel.app`. Actionable R1 findings = 0. Historical §34 / §35 snapshots unchanged. R2 Revenue Operations is CERTIFIED (`docs/release/r2-certification.md`) at `670e7505857649efe62775d7e12d47e60c747080`. Next authorized phase: R2 Release. R2 is not production-ready. Release has not occurred.
 
 ------------------------------------------------------------------------
 
@@ -135,8 +135,8 @@ context is recovered from repository documentation.
 ## Overall
 
 ``` text
-STATUS: UX Polish COMPLETE; EPIC-107 Public Landing COMPLETE through P107-06 and epic certification; MASTER_PLAN §34 READY FOR RELEASE; §35 GRANTED; EPIC-108 COMPLETE (ER PASS WITH FINDINGS); EPIC-109 COMPLETE (ER PASS); EPIC-110 CLOSED (P110-00 PASS; P110-01 PASS; P110-02 PASS; P110-03 SKIPPED BY DESIGN; P110-04 PASS; P110-05 PASS; P110-06 / P110-06C intermediate findings resolved or superseded; P110-06D PASS; P110-06C FINAL PASS; P110-07 PASS; P110-08 FREEZE). Actionable R1 findings = 0. R1 FROZEN. R2 Decision Workshop complete for in-scope decisions. R2 planning baseline recorded. R2-E01 Revenue Visibility COMPLETE / RELEASE-READY (P-E01-00…P-E01-07). R2-E02 Invoice Tracking COMPLETE WITH NON-BLOCKING FINDING (P-E02-00…P-E02-07). R2-E03 Payment Tracking CERTIFIED (P-E03-00…P-E03-07). R2-E04 Forecasting & Contract Time Allocation CERTIFIED (P-E04-00…P-E04-07). R2-E05 Advanced Reporting & Export CERTIFIED (P-E05-00…P-E05-06). R2 is not production-ready.
-NEXT: R2 release-level gates are not started and not authorized here. E05 plan: `docs/release/r2-e05-advanced-reporting-export.md`. R2 is not production-ready.
+STATUS: UX Polish COMPLETE; EPIC-107 Public Landing COMPLETE through P107-06 and epic certification; MASTER_PLAN §34 READY FOR RELEASE; §35 GRANTED; EPIC-108 COMPLETE (ER PASS WITH FINDINGS); EPIC-109 COMPLETE (ER PASS); EPIC-110 CLOSED (P110-00 PASS; P110-01 PASS; P110-02 PASS; P110-03 SKIPPED BY DESIGN; P110-04 PASS; P110-05 PASS; P110-06 / P110-06C intermediate findings resolved or superseded; P110-06D PASS; P110-06C FINAL PASS; P110-07 PASS; P110-08 FREEZE). Actionable R1 findings = 0. R1 FROZEN. R2 Decision Workshop complete for in-scope decisions. R2 planning baseline recorded. R2-E01 Revenue Visibility COMPLETE / RELEASE-READY (P-E01-00…P-E01-07). R2-E02 Invoice Tracking COMPLETE WITH NON-BLOCKING FINDING (P-E02-00…P-E02-07). R2-E03 Payment Tracking CERTIFIED (P-E03-00…P-E03-07). R2-E04 Forecasting & Contract Time Allocation CERTIFIED (P-E04-00…P-E04-07). R2-E05 Advanced Reporting & Export CERTIFIED (P-E05-00…P-E05-06). R2 Release QA PASS WITH FINDINGS. R2 UX Validation PASS WITH FINDINGS. R2 Production Validation PASS WITH FINDINGS. R2 CERTIFIED (`docs/release/r2-certification.md`). R2 is not production-ready. Release has not occurred.
+NEXT: R2 Release. Certification: `docs/release/r2-certification.md`. Do not execute Release here. R2 is not production-ready.
 Production Validation (§34): EXECUTED — READY FOR RELEASE — docs/release/production-validation.md
 Production Certification (§35): GRANTED — docs/release/production-certification.md
 R1 Freeze: FROZEN — docs/release/r1-freeze.md
@@ -149,6 +149,7 @@ R2-E02 plan: docs/release/r2-e02-invoice-tracking.md
 R2-E03 plan: docs/release/r2-e03-payment-tracking.md
 R2-E04 plan: docs/release/r2-e04-forecasting-allocation.md
 R2-E05 plan: docs/release/r2-e05-advanced-reporting-export.md
+R2 Certification: CERTIFIED — docs/release/r2-certification.md
 Release gate resolution: docs/release/release-gate-resolution.md
 Production readiness: RELEASE GRANTED
 ```
@@ -1172,7 +1173,9 @@ R2-E04 Forecasting & Contract Time Allocation is CERTIFIED
 (`docs/release/r2-e04-forecasting-allocation.md`; P-E04-00…P-E04-07).
 R2-E05 Advanced Reporting & Export is CERTIFIED
 (`docs/release/r2-e05-advanced-reporting-export.md`; P-E05-00…P-E05-06).
-R2 is not production-ready.
+R2 is CERTIFIED (`docs/release/r2-certification.md`) at
+`670e7505857649efe62775d7e12d47e60c747080`. R2 is not production-ready.
+Release has not occurred.
 
 Canonical decisions: `docs/release/r2-decision-pack.md`.
 Architecture delta: `docs/release/r2-architecture-delta.md`.
@@ -1184,7 +1187,7 @@ E03 plan: `docs/release/r2-e03-payment-tracking.md`.
 E04 plan: `docs/release/r2-e04-forecasting-allocation.md`.
 E05 plan: `docs/release/r2-e05-advanced-reporting-export.md`.
 
-This section records the closed E05 contract. E05 is CERTIFIED. This section does not authorize R2 production release.
+This section records the closed E05 contract. E05 is CERTIFIED. R2 is CERTIFIED (`docs/release/r2-certification.md`). This section does not authorize R2 production release. Release has not occurred.
 
 ## Objective
 
@@ -2284,9 +2287,14 @@ Next actions:
 12. R2-E03 Payment Tracking CERTIFIED (`docs/release/r2-e03-payment-tracking.md`; P-E03-00…P-E03-07)
 13. R2-E04 Forecasting & Contract Time Allocation CERTIFIED (`docs/release/r2-e04-forecasting-allocation.md`; P-E04-00…P-E04-07)
 14. R2-E05 Advanced Reporting & Export CERTIFIED (`docs/release/r2-e05-advanced-reporting-export.md`; P-E05-00…P-E05-06)
-15. R2 release-level gates are not started and not authorized here
-16. Do not mark R2 production-ready
-17. Do not rewrite historical §34 / §35 rows
+15. R2 Release QA PASS WITH FINDINGS
+16. R2 UX Validation PASS WITH FINDINGS
+17. R2 Production Validation PASS WITH FINDINGS
+18. R2 CERTIFIED (`docs/release/r2-certification.md`) at `670e7505857649efe62775d7e12d47e60c747080`
+19. Next authorized phase: R2 Release
+20. Do not execute Release here
+21. Do not mark R2 production-ready
+22. Do not rewrite historical §34 / §35 rows
 ```
 
 FINDING-UX-004, FINDING-QA-002, FINDING-INT-001, FINDING-108-001, F-104-007,
@@ -2334,13 +2342,16 @@ releases:
     status: frozen
   R2:
     name: Revenue Operations
-    status: planning
+    status: certified
     decision_pack: docs/release/r2-decision-pack.md
     architecture_delta: docs/release/r2-architecture-delta.md
     epic_map: docs/release/r2-epic-map.md
     open_decisions: docs/release/r2-open-decisions.md
+    certification: docs/release/r2-certification.md
+    certified_head: 670e7505857649efe62775d7e12d47e60c747080
     implementation_epic: none
     production_ready: false
+    release: not-occurred
   R3:
     name: Integrations
     status: future
@@ -2423,10 +2434,10 @@ last_completed:
     - F-110-P06-002 CLOSED TECHNICAL / production-verified (EPIC-110 / P110-06C FINAL)
 
 next:
-  phase: planning
+  phase: release
   epic: none
-  gate: none
-  reference: docs/release/r2-e05-advanced-reporting-export.md
+  gate: R2 Release
+  reference: docs/release/r2-certification.md
   r1_freeze_reference: docs/release/r1-freeze.md
   production_validation: READY FOR RELEASE
   production_validation_reference: MASTER_PLAN.md §34
@@ -2439,7 +2450,11 @@ next:
   r2_approved_decisions: D1-D7 and in-scope OD resolutions
   r2_e04: certified
   r2_e05: certified
-  objective: R1 FROZEN. R2-E04 CERTIFIED. R2-E05 CERTIFIED. Do not start R2 release-level gates here. Closed contract in docs/release/r2-e05-advanced-reporting-export.md.
+  r2_certification: certified
+  r2_certified_head: 670e7505857649efe62775d7e12d47e60c747080
+  r2_production_ready: false
+  r2_release: not-occurred
+  objective: R1 FROZEN. R2 CERTIFIED. Next authorized phase: R2 Release. Do not execute Release here. R2 is not production-ready.
   open_non_blocking_findings: []
   accepted_r1_limitations:
     - F-103-003
