@@ -145,6 +145,20 @@ export function periodHrefFromState(
   return periodHref(period.kind, undefined, undefined, filter);
 }
 
+/**
+ * CSV download href for the current report view-state.
+ * Reuses `periodHrefFromState` — same query params, export path only.
+ */
+export function reportExportHrefFromState(
+  period: ReportPeriodParam,
+  filter?: ReportEntityFilterParam,
+): string {
+  return periodHrefFromState(period, filter).replace(
+    /^\/reports\?/,
+    "/reports/export?",
+  );
+}
+
 function appendEntityFilterParams(
   href: string,
   filter?: ReportEntityFilterParam,

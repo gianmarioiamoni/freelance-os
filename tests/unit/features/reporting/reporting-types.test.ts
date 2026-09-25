@@ -6,6 +6,7 @@ import {
   parseReportPeriodParam,
   periodHref,
   periodHrefFromState,
+  reportExportHrefFromState,
   toReportingPeriodKind,
 } from "@/features/reporting/reporting-types";
 
@@ -222,6 +223,33 @@ describe("periodHrefFromState — URL preservation", () => {
   it("unsets Contract and preserves Client + Period", () => {
     expect(periodHrefFromState(june, { clientId })).toBe(
       `/reports?period=custom&start=2026-06-01&end=2026-06-30&clientId=${clientId}`,
+    );
+  });
+});
+
+describe("reportExportHrefFromState", () => {
+  const clientId = "11111111-1111-4111-8111-111111111111";
+  const contractId = "22222222-2222-4222-8222-222222222222";
+
+  it("reuses the reports query string on the export path", () => {
+    const period = { kind: "year" as const };
+    const filter = { clientId, contractId };
+    expect(reportExportHrefFromState(period, filter)).toBe(
+      periodHrefFromState(period, filter).replace("/reports?", "/reports/export?"),
+    );
+    expect(reportExportHrefFromState(period, filter)).toBe(
+      `/reports/export?period=year&clientId=${clientId}&contractId=${contractId}`,
+    );
+  });
+
+  it("preserves custom period plus entity filters", () => {
+    expect(
+      reportExportHrefFromState(
+        { kind: "custom", start: "2026-01-01", end: "2026-03-31" },
+        { clientId, contractId },
+      ),
+    ).toBe(
+      `/reports/export?period=custom&start=2026-01-01&end=2026-03-31&clientId=${clientId}&contractId=${contractId}`,
     );
   });
 });

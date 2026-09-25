@@ -10,6 +10,7 @@ import { AnnualOverviewTable } from "@/features/reporting/AnnualOverviewTable";
 import { ContractReportTable } from "@/features/reporting/ContractReportTable";
 import { HoursByClientTable } from "@/features/reporting/HoursByClientTable";
 import { PeriodSelector } from "@/features/reporting/PeriodSelector";
+import { ReportCsvExportLink } from "@/features/reporting/ReportCsvExportLink";
 import { ReportEntityFilters } from "@/features/reporting/ReportEntityFilters";
 import { toReportFilterOptions } from "@/features/reporting/report-filter-options";
 import { RevenueSummary } from "@/features/reporting/RevenueSummary";
@@ -75,6 +76,7 @@ export default async function ReportsPage({
           <p className="text-muted-foreground">
             Operational reporting — {periodLabel}
           </p>
+          <ReportCsvExportLink period={periodParam} filter={entityFilter} />
         </header>
 
         <PeriodSelector current={periodParam} filter={entityFilter} />

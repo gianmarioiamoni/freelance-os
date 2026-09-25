@@ -803,6 +803,92 @@ test.describe("entity filters", () => {
   });
 });
 
+test.describe("CSV export", () => {
+  test("unauthenticated /reports/export redirects to sign-in", async ({ page }) => {
+    await page.goto("/reports/export");
+    await expect(page).toHaveURL(/\/sign-in/);
+    await expect(page.getByRole("heading", { name: /sign in/i })).toBeVisible();
+  });
+
+  test("Export CSV preserves current filters and downloads the filtered dataset", async ({
+    page,
+  }) => {
+    const email = uniqueE2EEmail("reports-csv");
+    await registerAndCreateFirstWorkspace(page, {
+      email,
+      name: "CSV Export User",
+      workspaceName: "CSV Export Workspace",
+    });
+
+    const clientUrl = await createClientWithContract(page, {
+      companyName: "CSV Filter Client",
+      rate: "100",
+      monthlyContractedHours: "40",
+      allocatedMinutes: "1000",
+    });
+    const contractUrl = page.url();
+    const clientId = new URL(clientUrl).pathname.split("/").pop()!;
+    const contractId = new URL(contractUrl).pathname.split("/").pop()!;
+
+    await createTimeEntry(page, {
+      clientName: "CSV Filter Client",
+      hours: "2",
+      minutes: "0",
+      description: "Logged for CSV download",
+      billable: true,
+    });
+
+    await page.goto("/reports");
+    await waitForReportsPage(page);
+
+    const filters = page.getByRole("group", { name: "Report filters" });
+    await filters.getByLabel("Client").selectOption(clientId);
+    await expect(page).toHaveURL(new RegExp(`clientId=${clientId}`));
+    await filters.getByLabel("Contract").selectOption(contractId);
+    await expect(page).toHaveURL(new RegExp(`contractId=${contractId}`));
+    await page.getByRole("navigation", { name: /report period/i })
+      .getByRole("link", { name: "This Year" })
+      .click();
+    await expect(page).toHaveURL(
+      `/reports?period=year&clientId=${clientId}&contractId=${contractId}`,
+    );
+    await waitForReportsPage(page);
+
+    const exportLink = page.getByRole("link", { name: "Export CSV" });
+    await expect(exportLink).toHaveAttribute(
+      "href",
+      `/reports/export?period=year&clientId=${clientId}&contractId=${contractId}`,
+    );
+
+    const [download] = await Promise.all([
+      page.waitForEvent("download"),
+      exportLink.click(),
+    ]);
+
+    expect(download.suggestedFilename()).toMatch(
+      /^reports-year-\d{4}-\d{2}-\d{2}-\d{4}-\d{2}-\d{2}\.csv$/,
+    );
+
+    const stream = await download.createReadStream();
+    expect(stream).not.toBeNull();
+    const chunks: Buffer[] = [];
+    for await (const chunk of stream!) {
+      chunks.push(Buffer.from(chunk));
+    }
+    const csv = Buffer.concat(chunks).toString("utf8");
+
+    expect(csv).toContain("section,meta");
+    expect(csv).toContain(`year,`);
+    expect(csv).toContain(clientId);
+    expect(csv).toContain(contractId);
+    expect(csv).toContain("CSV Filter Client");
+    expect(csv).toContain("section,revenue");
+    expect(csv).toContain("section,hours_by_client");
+    expect(csv).toContain("section,contract_report");
+    expect(csv).not.toContain("Annual Overview");
+  });
+});
+
 test.describe("error recovery", () => {
   test("navigating away from /reports and back restores the page correctly", async ({
     page,
