@@ -290,5 +290,22 @@ describe("AnalyticsService Expected Revenue", () => {
       expect(result.byCurrency[0]?.unrounded).toBe(6400);
       expect(result.timezone).toBe("UTC");
     });
+
+    it("passes Client/Contract filter to the Expected contract query", async () => {
+      const listExpectedContracts = vi.fn().mockResolvedValue([]);
+      const service = new AnalyticsService(
+        analytics({ listExpectedContracts }),
+        members(membership),
+      );
+      const filter = { clientId: "client-1", contractId: "contract-1" };
+
+      await service.getExpectedRevenue(context, period, filter);
+
+      expect(listExpectedContracts).toHaveBeenCalledWith(
+        context.workspaceId,
+        period,
+        filter,
+      );
+    });
   });
 });

@@ -23,6 +23,45 @@ export type ReportPeriodParam =
   | { kind: "year" }
   | { kind: "custom"; start: string; end: string };
 
+const ENTITY_ID_PATTERN =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/**
+ * Optional Client/Contract view-state from /reports URL params.
+ * Empty or invalid IDs are treated as unset (same fail-open as invalid period).
+ */
+export type ReportEntityFilterParam = {
+  clientId?: string;
+  contractId?: string;
+};
+
+/**
+ * Parses Client/Contract report filters from URL search params.
+ * Missing, empty, or non-UUID values are ignored (no entity filter).
+ */
+export function parseReportEntityFilterParam(params: {
+  clientId?: string;
+  contractId?: string;
+}): ReportEntityFilterParam {
+  const clientId = parseOptionalEntityId(params.clientId);
+  const contractId = parseOptionalEntityId(params.contractId);
+  return {
+    ...(clientId ? { clientId } : {}),
+    ...(contractId ? { contractId } : {}),
+  };
+}
+
+function parseOptionalEntityId(value: string | undefined): string | undefined {
+  if (!value) {
+    return undefined;
+  }
+  const trimmed = value.trim();
+  if (!trimmed || !ENTITY_ID_PATTERN.test(trimmed)) {
+    return undefined;
+  }
+  return trimmed;
+}
+
 /**
  * Parses and validates the report period from URL search params.
  * Falls back to "month" when params are absent or invalid.
@@ -76,12 +115,52 @@ export function toReportingPeriodKind(param: ReportPeriodParam): import("@/domai
 
 /**
  * Returns the href for a period selector link.
+ * Optional Client/Contract filters are appended in a fixed order:
+ * period, start, end, clientId, contractId.
  */
-export function periodHref(kind: ReportPeriodParam["kind"], start?: string, end?: string): string {
-  if (kind === "custom" && start && end) {
-    return `/reports?period=custom&start=${start}&end=${end}`;
+export function periodHref(
+  kind: ReportPeriodParam["kind"],
+  start?: string,
+  end?: string,
+  filter?: ReportEntityFilterParam,
+): string {
+  const base =
+    kind === "custom" && start && end
+      ? `/reports?period=custom&start=${start}&end=${end}`
+      : `/reports?period=${kind}`;
+  return appendEntityFilterParams(base, filter);
+}
+
+/**
+ * Serializes the current report period plus optional entity filters.
+ * Delegates to `periodHref` — not a second query-param system.
+ */
+export function periodHrefFromState(
+  period: ReportPeriodParam,
+  filter?: ReportEntityFilterParam,
+): string {
+  if (period.kind === "custom") {
+    return periodHref(period.kind, period.start, period.end, filter);
   }
-  return `/reports?period=${kind}`;
+  return periodHref(period.kind, undefined, undefined, filter);
+}
+
+function appendEntityFilterParams(
+  href: string,
+  filter?: ReportEntityFilterParam,
+): string {
+  if (!filter) {
+    return href;
+  }
+
+  let result = href;
+  if (filter.clientId) {
+    result += `&clientId=${filter.clientId}`;
+  }
+  if (filter.contractId) {
+    result += `&contractId=${filter.contractId}`;
+  }
+  return result;
 }
 
 /**

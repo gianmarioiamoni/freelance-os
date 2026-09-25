@@ -2,8 +2,10 @@
 import { describe, expect, it } from "vitest";
 import {
   getReportingCalendarYear,
+  parseReportEntityFilterParam,
   parseReportPeriodParam,
   periodHref,
+  periodHrefFromState,
   toReportingPeriodKind,
 } from "@/features/reporting/reporting-types";
 
@@ -78,6 +80,43 @@ describe("parseReportPeriodParam", () => {
   });
 });
 
+describe("parseReportEntityFilterParam", () => {
+  const clientId = "11111111-1111-4111-8111-111111111111";
+  const contractId = "22222222-2222-4222-8222-222222222222";
+
+  it("returns empty filter when params are absent", () => {
+    expect(parseReportEntityFilterParam({})).toEqual({});
+  });
+
+  it("returns empty filter when IDs are empty", () => {
+    expect(parseReportEntityFilterParam({ clientId: "", contractId: "  " })).toEqual({});
+  });
+
+  it("ignores non-UUID IDs", () => {
+    expect(
+      parseReportEntityFilterParam({
+        clientId: "not-a-uuid",
+        contractId: "contract-1",
+      }),
+    ).toEqual({});
+  });
+
+  it("accepts valid Client and Contract UUIDs", () => {
+    expect(parseReportEntityFilterParam({ clientId, contractId })).toEqual({
+      clientId,
+      contractId,
+    });
+  });
+
+  it("accepts Client only", () => {
+    expect(parseReportEntityFilterParam({ clientId })).toEqual({ clientId });
+  });
+
+  it("accepts Contract only", () => {
+    expect(parseReportEntityFilterParam({ contractId })).toEqual({ contractId });
+  });
+});
+
 describe("toReportingPeriodKind", () => {
   it.each(["today", "week", "month", "year"] as const)(
     "passes through standard kind: %s",
@@ -103,6 +142,9 @@ describe("toReportingPeriodKind", () => {
 });
 
 describe("periodHref", () => {
+  const clientId = "11111111-1111-4111-8111-111111111111";
+  const contractId = "22222222-2222-4222-8222-222222222222";
+
   it.each(["today", "week", "month", "year"] as const)(
     "returns /reports?period=%s for standard kinds",
     (kind) => {
@@ -113,6 +155,73 @@ describe("periodHref", () => {
   it("returns custom href with start and end", () => {
     expect(periodHref("custom", "2026-01-01", "2026-03-31")).toBe(
       "/reports?period=custom&start=2026-01-01&end=2026-03-31",
+    );
+  });
+
+  it("appends Client only", () => {
+    expect(periodHref("month", undefined, undefined, { clientId })).toBe(
+      `/reports?period=month&clientId=${clientId}`,
+    );
+  });
+
+  it("appends Contract only", () => {
+    expect(periodHref("week", undefined, undefined, { contractId })).toBe(
+      `/reports?period=week&contractId=${contractId}`,
+    );
+  });
+
+  it("appends Client then Contract in that order", () => {
+    expect(
+      periodHref("year", undefined, undefined, { clientId, contractId }),
+    ).toBe(`/reports?period=year&clientId=${clientId}&contractId=${contractId}`);
+  });
+
+  it("appends entity filters after custom start and end", () => {
+    expect(
+      periodHref("custom", "2026-01-01", "2026-03-31", { clientId, contractId }),
+    ).toBe(
+      `/reports?period=custom&start=2026-01-01&end=2026-03-31&clientId=${clientId}&contractId=${contractId}`,
+    );
+  });
+});
+
+describe("periodHrefFromState — URL preservation", () => {
+  const clientId = "11111111-1111-4111-8111-111111111111";
+  const contractId = "22222222-2222-4222-8222-222222222222";
+  const june = { kind: "custom" as const, start: "2026-06-01", end: "2026-06-30" };
+  const july = { kind: "custom" as const, start: "2026-07-01", end: "2026-07-31" };
+
+  it("serializes period only when no entity filter is set", () => {
+    expect(periodHrefFromState({ kind: "month" })).toBe("/reports?period=month");
+  });
+
+  it("preserves Client when Period changes", () => {
+    expect(periodHrefFromState(july, { clientId })).toBe(
+      `/reports?period=custom&start=2026-07-01&end=2026-07-31&clientId=${clientId}`,
+    );
+  });
+
+  it("preserves Contract when Period changes", () => {
+    expect(periodHrefFromState({ kind: "today" }, { contractId })).toBe(
+      `/reports?period=today&contractId=${contractId}`,
+    );
+  });
+
+  it("preserves Client + Contract when Period changes", () => {
+    expect(periodHrefFromState(july, { clientId, contractId })).toBe(
+      `/reports?period=custom&start=2026-07-01&end=2026-07-31&clientId=${clientId}&contractId=${contractId}`,
+    );
+  });
+
+  it("unsets Client and preserves Contract + Period", () => {
+    expect(periodHrefFromState(june, { contractId })).toBe(
+      `/reports?period=custom&start=2026-06-01&end=2026-06-30&contractId=${contractId}`,
+    );
+  });
+
+  it("unsets Contract and preserves Client + Period", () => {
+    expect(periodHrefFromState(june, { clientId })).toBe(
+      `/reports?period=custom&start=2026-06-01&end=2026-06-30&clientId=${clientId}`,
     );
   });
 });

@@ -26,6 +26,15 @@ describe("revenue display", () => {
     expect(formatForecastAmounts(null)).toBeNull();
   });
 
+  it("formats published Expected amounts from the read model", () => {
+    expect(
+      formatPublishedAmounts([
+        { currency: "EUR", unrounded: 6400, published: 6400 },
+        { currency: "USD", unrounded: 800, published: 800 },
+      ]),
+    ).toBe("6400 EUR, 800 USD");
+  });
+
   it("displays a server-derived Forecast, including a real zero", () => {
     const forecast: ForecastRevenue = {
       period,

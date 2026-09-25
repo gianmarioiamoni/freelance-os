@@ -1,5 +1,6 @@
 // src/infrastructure/persistence/analytics-repository.ts
 import type {
+  AnalyticsFilter,
   AnalyticsPeriod,
   MonthlyHoursAnalytics,
   DailyAnalytics,
@@ -194,22 +195,31 @@ export function createAnalyticsRepository(db: PrismaExecutor): AnalyticsReposito
       });
     },
 
-    async getClientAllocations(workspaceId: string, period: AnalyticsPeriod): Promise<ClientAllocation[]> {
+    async getClientAllocations(
+      workspaceId: string,
+      period: AnalyticsPeriod,
+      filter?: AnalyticsFilter,
+    ): Promise<ClientAllocation[]> {
       return withPersistenceErrors(async () => {
-        const totalMinutes = await getTotalMinutesForPeriod(db, workspaceId, period);
-        return getClientAllocations(db, workspaceId, period, totalMinutes);
+        const totalMinutes = await getTotalMinutesForPeriod(db, workspaceId, period, filter);
+        return getClientAllocations(db, workspaceId, period, totalMinutes, filter);
       });
     },
 
-    async getContractUtilizations(workspaceId: string, period: AnalyticsPeriod): Promise<ContractUtilization[]> {
+    async getContractUtilizations(
+      workspaceId: string,
+      period: AnalyticsPeriod,
+      filter?: AnalyticsFilter,
+    ): Promise<ContractUtilization[]> {
       return withPersistenceErrors(async () => {
-        return getContractUtilizations(db, workspaceId, period);
+        return getContractUtilizations(db, workspaceId, period, filter);
       });
     },
 
     async listTimeEntriesForPeriod(
       workspaceId: string,
       period: AnalyticsPeriod,
+      filter?: AnalyticsFilter,
     ): Promise<TimeEntryRecord[]> {
       return withPersistenceErrors(async () => {
         const rows = await db.timeEntry.findMany({
@@ -219,6 +229,7 @@ export function createAnalyticsRepository(db: PrismaExecutor): AnalyticsReposito
               gte: period.startDate,
               lte: period.endDate,
             },
+            ...timeEntryEntityWhere(filter),
           },
           orderBy: [{ workDate: "asc" }, { createdAt: "asc" }],
         });
@@ -229,6 +240,7 @@ export function createAnalyticsRepository(db: PrismaExecutor): AnalyticsReposito
     async listExpectedContracts(
       workspaceId: string,
       period: AnalyticsPeriod,
+      filter?: AnalyticsFilter,
     ): Promise<ExpectedContractFact[]> {
       return withPersistenceErrors(async () => {
         // Validity overlap only. TimeEntry consumption is not a relevance signal
@@ -241,6 +253,7 @@ export function createAnalyticsRepository(db: PrismaExecutor): AnalyticsReposito
               { validTo: null },
               { validTo: { gt: period.startDate } },
             ],
+            ...contractEntityWhere(filter),
           },
           orderBy: [{ id: "asc" }],
         });
@@ -293,10 +306,11 @@ export function createAnalyticsRepository(db: PrismaExecutor): AnalyticsReposito
 
     async listContractAllocationFacts(
       workspaceId: string,
+      filter?: AnalyticsFilter,
     ): Promise<ContractAllocationFact[]> {
       return withPersistenceErrors(async () => {
         const contracts = await db.contract.findMany({
-          where: { workspaceId },
+          where: { workspaceId, ...contractEntityWhere(filter) },
           select: {
             id: true,
             allocatedMinutes: true,
@@ -311,7 +325,7 @@ export function createAnalyticsRepository(db: PrismaExecutor): AnalyticsReposito
         }
 
         const entries = await db.timeEntry.findMany({
-          where: { workspaceId },
+          where: { workspaceId, ...timeEntryEntityWhere(filter) },
           select: {
             contractId: true,
             workDate: true,
@@ -336,6 +350,34 @@ type AllocationContractBounds = {
   validFrom: Date;
   validTo: Date | null;
 };
+
+function timeEntryEntityWhere(filter?: AnalyticsFilter): {
+  clientId?: string;
+  contractId?: string;
+} {
+  const where: { clientId?: string; contractId?: string } = {};
+  if (filter?.clientId) {
+    where.clientId = filter.clientId;
+  }
+  if (filter?.contractId) {
+    where.contractId = filter.contractId;
+  }
+  return where;
+}
+
+function contractEntityWhere(filter?: AnalyticsFilter): {
+  clientId?: string;
+  id?: string;
+} {
+  const where: { clientId?: string; id?: string } = {};
+  if (filter?.clientId) {
+    where.clientId = filter.clientId;
+  }
+  if (filter?.contractId) {
+    where.id = filter.contractId;
+  }
+  return where;
+}
 
 function timeEntryValidityWhere(
   workspaceId: string,
@@ -384,7 +426,8 @@ function sumMinutesInValidity(
 async function getTotalMinutesForPeriod(
   db: PrismaExecutor,
   workspaceId: string,
-  period: AnalyticsPeriod
+  period: AnalyticsPeriod,
+  filter?: AnalyticsFilter,
 ): Promise<number> {
   const result = await db.timeEntry.aggregate({
     where: {
@@ -393,6 +436,7 @@ async function getTotalMinutesForPeriod(
         gte: period.startDate,
         lte: period.endDate,
       },
+      ...timeEntryEntityWhere(filter),
     },
     _sum: {
       durationMinutes: true,
@@ -406,7 +450,8 @@ async function getClientAllocations(
   db: PrismaExecutor,
   workspaceId: string,
   period: AnalyticsPeriod,
-  totalMinutes: number
+  totalMinutes: number,
+  filter?: AnalyticsFilter,
 ): Promise<ClientAllocation[]> {
   // Get client totals
   const clientTotals = await db.timeEntry.groupBy({
@@ -417,6 +462,7 @@ async function getClientAllocations(
         gte: period.startDate,
         lte: period.endDate,
       },
+      ...timeEntryEntityWhere(filter),
     },
     _sum: {
       durationMinutes: true,
@@ -433,6 +479,7 @@ async function getClientAllocations(
         gte: period.startDate,
         lte: period.endDate,
       },
+      ...timeEntryEntityWhere(filter),
     },
     _sum: {
       durationMinutes: true,
@@ -497,7 +544,8 @@ async function getClientAllocations(
 async function getContractUtilizations(
   db: PrismaExecutor,
   workspaceId: string,
-  period: AnalyticsPeriod
+  period: AnalyticsPeriod,
+  filter?: AnalyticsFilter,
 ): Promise<ContractUtilization[]> {
   // 1. Contracts with validity overlap with the period (validTo is exclusive).
   //    For ongoing contracts (validTo === null), treat as infinitely valid — OR filter applied.
@@ -509,6 +557,7 @@ async function getContractUtilizations(
         { validTo: null },
         { validTo: { gt: period.startDate } },
       ],
+      ...contractEntityWhere(filter),
     },
     include: {
       client: { select: { companyName: true, status: true } },
@@ -524,6 +573,7 @@ async function getContractUtilizations(
         gte: period.startDate,
         lte: period.endDate,
       },
+      ...timeEntryEntityWhere(filter),
     },
     _sum: { durationMinutes: true },
   });
@@ -543,7 +593,11 @@ async function getContractUtilizations(
   const extraContracts =
     consumptionOnlyContractIds.length > 0
       ? await db.contract.findMany({
-          where: { workspaceId, id: { in: consumptionOnlyContractIds } },
+          where: {
+            workspaceId,
+            id: { in: consumptionOnlyContractIds },
+            ...contractEntityWhere(filter),
+          },
           include: { client: { select: { companyName: true, status: true } } },
         })
       : [];

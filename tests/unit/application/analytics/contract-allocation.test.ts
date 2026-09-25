@@ -161,4 +161,20 @@ describe("AnalyticsService contract allocation access", () => {
     expect(listed).toHaveLength(2);
     expect(listed[1]?.allocationStatus).toBeNull();
   });
+
+  it("passes Client/Contract filter to listContractAllocationFacts", async () => {
+    const listContractAllocationFacts = vi.fn().mockResolvedValue([]);
+    const service = new AnalyticsService(
+      analytics({ listContractAllocationFacts }),
+      members(membership),
+    );
+    const filter = { clientId: "client-1", contractId: "contract-1" };
+
+    await service.listContractAllocations(context, filter);
+
+    expect(listContractAllocationFacts).toHaveBeenCalledWith(
+      context.workspaceId,
+      filter,
+    );
+  });
 });

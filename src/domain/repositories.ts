@@ -31,6 +31,7 @@ import type {
   WorkspaceSettingsRecord,
 } from "@/domain/persistence-types";
 import type {
+  AnalyticsFilter,
   AnalyticsPeriod,
   MonthlyHoursAnalytics,
   DailyAnalytics,
@@ -273,18 +274,22 @@ export type AnalyticsRepository = {
   getClientAllocations(
     workspaceId: string,
     period: AnalyticsPeriod,
+    filter?: AnalyticsFilter,
   ): Promise<ClientAllocation[]>;
   getContractUtilizations(
     workspaceId: string,
     period: AnalyticsPeriod,
+    filter?: AnalyticsFilter,
   ): Promise<ContractUtilization[]>;
   listTimeEntriesForPeriod(
     workspaceId: string,
     period: AnalyticsPeriod,
+    filter?: AnalyticsFilter,
   ): Promise<TimeEntryRecord[]>;
   listExpectedContracts(
     workspaceId: string,
     period: AnalyticsPeriod,
+    filter?: AnalyticsFilter,
   ): Promise<ExpectedContractFact[]>;
   getContractAllocationFact(
     workspaceId: string,
@@ -292,6 +297,7 @@ export type AnalyticsRepository = {
   ): Promise<ContractAllocationFact | null>;
   listContractAllocationFacts(
     workspaceId: string,
+    filter?: AnalyticsFilter,
   ): Promise<ContractAllocationFact[]>;
 };
 

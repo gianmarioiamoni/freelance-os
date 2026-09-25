@@ -9,6 +9,15 @@ export type AnalyticsPeriod = {
 };
 
 /**
+ * Optional workspace-scoped Client/Contract restriction for analytics reads.
+ * Empty/unset means no entity filter. IDs are view state, not tenant grants.
+ */
+export type AnalyticsFilter = {
+  clientId?: string;
+  contractId?: string;
+};
+
+/**
  * Hours-only monthly analytics produced by the analytics repository.
  * Monetary figures are composed by AnalyticsService (P-E01-04).
  */

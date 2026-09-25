@@ -8,16 +8,19 @@ import {
   validateCustomPeriodFields,
   type CustomPeriodFieldErrors,
 } from "@/features/reporting/custom-period-validation";
+import type { ReportEntityFilterParam } from "@/features/reporting/reporting-types";
 import { type FormEvent, type JSX, useState } from "react";
 
 type CustomPeriodFieldsProps = {
   defaultStart?: string;
   defaultEnd?: string;
+  filter?: ReportEntityFilterParam;
 };
 
 export function CustomPeriodFields({
   defaultStart,
   defaultEnd,
+  filter,
 }: CustomPeriodFieldsProps): JSX.Element {
   const [start, setStart] = useState(defaultStart ?? "");
   const [errors, setErrors] = useState<CustomPeriodFieldErrors>({});
@@ -72,6 +75,12 @@ export function CustomPeriodFields({
           className="h-11 md:h-8"
         />
       </Field>
+      {filter?.clientId ? (
+        <input type="hidden" name="clientId" value={filter.clientId} />
+      ) : null}
+      {filter?.contractId ? (
+        <input type="hidden" name="contractId" value={filter.contractId} />
+      ) : null}
       <Button type="submit" className="h-11 w-full md:h-8 md:w-auto">
         Apply
       </Button>

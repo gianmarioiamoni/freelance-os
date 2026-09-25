@@ -1,6 +1,7 @@
 // src/application/reporting/reporting-service.ts
 import type {
   AccruedRevenue,
+  AnalyticsFilter,
   AnalyticsPeriod,
   ClientAllocation,
   ContractAllocation,
@@ -10,6 +11,10 @@ import type {
   MonthlyAnalytics,
   ReportingPeriodKind,
 } from "@/domain/analytics-types";
+import {
+  normalizeAnalyticsFilter,
+  optionalAnalyticsFilter,
+} from "@/application/analytics/analytics-filter";
 import type { AnalyticsService } from "@/application/analytics/analytics-service";
 import type { WorkspaceContext } from "@/application/workspace/workspace-context";
 import {
@@ -45,6 +50,7 @@ export type PeriodKindRequest = ReportingPeriodKind;
 export type ContractReport = {
   period: AnalyticsPeriod;
   periodKind: ReportingPeriodKind;
+  filter: AnalyticsFilter;
   contractUtilizations: ContractUtilization[];
   contractAllocations: ContractAllocation[];
   accrued: AccruedRevenue;
@@ -58,6 +64,7 @@ export type ContractReport = {
 export type HoursByClientReport = {
   period: AnalyticsPeriod;
   periodKind: ReportingPeriodKind;
+  filter: AnalyticsFilter;
   clientAllocations: ClientAllocation[];
 };
 
@@ -80,6 +87,7 @@ export type AnnualOverviewReport = {
  * Responsibilities:
  * - Accept a validated period request and resolve it into an `AnalyticsPeriod`
  *   using `Workspace.timezone` (BR-105-014).
+ * - Propagate optional workspace-scoped Client/Contract filters.
  * - Orchestrate shared analytics calls — AnalyticsService owns ALL arithmetic.
  * - Fail closed for invalid input (BR-105-010).
  *
@@ -137,19 +145,22 @@ export class ReportingService {
     context: WorkspaceContext,
     request: PeriodKindRequest,
     now: Date = new Date(),
+    filter?: AnalyticsFilter,
   ): Promise<ContractReport> {
     const period = this.resolvePeriod(request, context.timezone, now);
+    const normalized = normalizeAnalyticsFilter(filter);
     const [contractUtilizations, contractAllocations, accrued, expected, forecast] =
       await Promise.all([
-        this.analytics.getContractUtilizations(context, period),
-        this.analytics.listContractAllocations(context),
-        this.analytics.getAccruedRevenue(context, period),
-        this.analytics.getExpectedRevenue(context, period),
-        this.analytics.getForecastRevenue(context, period),
+        this.analytics.getContractUtilizations(context, period, ...optionalAnalyticsFilter(normalized)),
+        this.analytics.listContractAllocations(context, ...optionalAnalyticsFilter(normalized)),
+        this.analytics.getAccruedRevenue(context, period, ...optionalAnalyticsFilter(normalized)),
+        this.analytics.getExpectedRevenue(context, period, ...optionalAnalyticsFilter(normalized)),
+        this.analytics.getForecastRevenue(context, period, ...optionalAnalyticsFilter(normalized)),
       ]);
     return {
       period,
       periodKind: request,
+      filter: normalized ?? {},
       contractUtilizations,
       contractAllocations,
       accrued,
@@ -165,13 +176,16 @@ export class ReportingService {
     context: WorkspaceContext,
     request: PeriodKindRequest,
     now: Date = new Date(),
+    filter?: AnalyticsFilter,
   ): Promise<HoursByClientReport> {
     const period = this.resolvePeriod(request, context.timezone, now);
+    const normalized = normalizeAnalyticsFilter(filter);
     const clientAllocations = await this.analytics.getClientAllocations(
       context,
       period,
+      ...optionalAnalyticsFilter(normalized),
     );
-    return { period, periodKind: request, clientAllocations };
+    return { period, periodKind: request, filter: normalized ?? {}, clientAllocations };
   }
 
   /**
@@ -214,3 +228,4 @@ export class ReportingError extends Error {
     this.name = "ReportingError";
   }
 }
+

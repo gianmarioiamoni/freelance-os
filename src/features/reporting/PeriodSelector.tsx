@@ -2,10 +2,16 @@
 import { CustomPeriodFields } from "@/features/reporting/CustomPeriodFields";
 import Link from "next/link";
 import type { JSX } from "react";
-import { PERIOD_LABELS, periodHref, type ReportPeriodParam } from "./reporting-types";
+import {
+  PERIOD_LABELS,
+  periodHref,
+  type ReportEntityFilterParam,
+  type ReportPeriodParam,
+} from "./reporting-types";
 
 type PeriodSelectorProps = {
   current: ReportPeriodParam;
+  filter?: ReportEntityFilterParam;
 };
 
 const STANDARD_PERIODS: Array<"today" | "week" | "month" | "year"> = [
@@ -20,7 +26,10 @@ const PILL_ACTIVE =
 const PILL_INACTIVE =
   "inline-flex items-center rounded-md px-3 py-1.5 text-sm font-medium bg-muted text-muted-foreground hover:bg-muted/80";
 
-export function PeriodSelector({ current }: PeriodSelectorProps): JSX.Element {
+export function PeriodSelector({
+  current,
+  filter,
+}: PeriodSelectorProps): JSX.Element {
   const isCustom = current.kind === "custom";
 
   return (
@@ -31,7 +40,7 @@ export function PeriodSelector({ current }: PeriodSelectorProps): JSX.Element {
           return (
             <li key={kind}>
               <Link
-                href={periodHref(kind)}
+                href={periodHref(kind, undefined, undefined, filter)}
                 aria-current={isActive ? "page" : undefined}
                 className={isActive ? PILL_ACTIVE : PILL_INACTIVE}
               >
@@ -53,6 +62,7 @@ export function PeriodSelector({ current }: PeriodSelectorProps): JSX.Element {
           key={isCustom ? `${current.start}_${current.end}` : "preset"}
           defaultStart={isCustom ? current.start : undefined}
           defaultEnd={isCustom ? current.end : undefined}
+          filter={filter}
         />
       </div>
     </nav>

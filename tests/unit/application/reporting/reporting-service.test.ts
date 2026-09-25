@@ -106,6 +106,7 @@ describe("ReportingService revenue mapping", () => {
     expect(report.contractUtilizations).toEqual(utilizations);
     expect(report.accrued).toEqual(accrued);
     expect(report.expected).toEqual(expected);
+    expect(report.filter).toEqual({});
     expect(report.accrued.byCurrency.map((row) => row.currency)).toEqual(["EUR"]);
     expect(report.forecast).toBeNull();
     expect(report.contractAllocations).toEqual([]);
@@ -113,6 +114,7 @@ describe("ReportingService revenue mapping", () => {
     expect(analytics.getExpectedRevenue).toHaveBeenCalledWith(context, period);
     expect(analytics.getForecastRevenue).toHaveBeenCalledWith(context, period);
     expect(analytics.listContractAllocations).toHaveBeenCalledWith(context);
+    expect(analytics.getContractUtilizations).toHaveBeenCalledWith(context, period);
   });
 
   it("publishes Forecast and contract allocations from AnalyticsService", async () => {
@@ -191,11 +193,68 @@ describe("ReportingService revenue mapping", () => {
     });
 
     expect(report.clientAllocations).toEqual(allocations);
+    expect(report.filter).toEqual({});
     expect(report).not.toHaveProperty("accrued");
     expect(report).not.toHaveProperty("expected");
     expect(report).not.toHaveProperty("forecast");
     expect(analytics.getAccruedRevenue).not.toHaveBeenCalled();
     expect(analytics.getExpectedRevenue).not.toHaveBeenCalled();
+  });
+
+  it("propagates Client and Contract filters to AnalyticsService", async () => {
+    const analytics = analyticsStub();
+    const reporting = new ReportingService(analytics);
+    const filter = { clientId: "client-1", contractId: "contract-1" };
+
+    const report = await reporting.getContractReport(
+      context,
+      {
+        kind: "custom",
+        startDate: period.startDate,
+        endDate: period.endDate,
+      },
+      new Date(),
+      filter,
+    );
+    const hours = await reporting.getHoursByClient(
+      context,
+      {
+        kind: "custom",
+        startDate: period.startDate,
+        endDate: period.endDate,
+      },
+      new Date(),
+      filter,
+    );
+
+    expect(report.filter).toEqual(filter);
+    expect(hours.filter).toEqual(filter);
+    expect(analytics.getAccruedRevenue).toHaveBeenCalledWith(context, period, filter);
+    expect(analytics.getExpectedRevenue).toHaveBeenCalledWith(context, period, filter);
+    expect(analytics.getForecastRevenue).toHaveBeenCalledWith(context, period, filter);
+    expect(analytics.getContractUtilizations).toHaveBeenCalledWith(context, period, filter);
+    expect(analytics.listContractAllocations).toHaveBeenCalledWith(context, filter);
+    expect(analytics.getClientAllocations).toHaveBeenCalledWith(context, period, filter);
+  });
+
+  it("treats empty Client/Contract IDs as no entity filter", async () => {
+    const analytics = analyticsStub();
+    const reporting = new ReportingService(analytics);
+
+    const report = await reporting.getContractReport(
+      context,
+      {
+        kind: "custom",
+        startDate: period.startDate,
+        endDate: period.endDate,
+      },
+      new Date(),
+      { clientId: "  ", contractId: "" },
+    );
+
+    expect(report.filter).toEqual({});
+    expect(analytics.getAccruedRevenue).toHaveBeenCalledWith(context, period);
+    expect(analytics.listContractAllocations).toHaveBeenCalledWith(context);
   });
 
   it("carries per-month Accrued and Expected on AnnualOverview", async () => {
@@ -211,5 +270,17 @@ describe("ReportingService revenue mapping", () => {
       expect(month.totalMinutes).toBe(120);
       expect(month.forecast).toBeNull();
     }
+    expect(report).not.toHaveProperty("filter");
+    expect(analytics.getMonthlyAnalytics).toHaveBeenCalledTimes(12);
+    expect(analytics.getMonthlyAnalytics).toHaveBeenCalledWith(
+      context,
+      expect.objectContaining({
+        startDate: expect.any(Date),
+        endDate: expect.any(Date),
+      }),
+    );
+    expect(analytics.getAccruedRevenue).not.toHaveBeenCalled();
+    expect(analytics.getExpectedRevenue).not.toHaveBeenCalled();
+    expect(analytics.listContractAllocations).not.toHaveBeenCalled();
   });
 });

@@ -730,6 +730,79 @@ test.describe("responsive layout", () => {
 // Error recovery — navigate away and back
 // ---------------------------------------------------------------------------
 
+test.describe("entity filters", () => {
+  test("Client and Contract survive a Period change and keep the filtered report", async ({
+    page,
+  }) => {
+    const email = uniqueE2EEmail("reports-filters");
+    await registerAndCreateFirstWorkspace(page, {
+      email,
+      name: "Filter User",
+      workspaceName: "Filter Workspace",
+    });
+
+    const clientUrl = await createClientWithContract(page, {
+      companyName: "Filter Client",
+      rate: "100",
+      monthlyContractedHours: "40",
+      allocatedMinutes: "1000",
+    });
+    const contractUrl = page.url();
+    const clientId = new URL(clientUrl).pathname.split("/").pop()!;
+    const contractId = new URL(contractUrl).pathname.split("/").pop()!;
+
+    await createTimeEntry(page, {
+      clientName: "Filter Client",
+      hours: "2",
+      minutes: "0",
+      description: "Filtered report work",
+      billable: true,
+    });
+
+    await page.goto("/reports");
+    await waitForReportsPage(page);
+
+    const filters = page.getByRole("group", { name: "Report filters" });
+    await filters.getByLabel("Client").selectOption(clientId);
+    await expect(page).toHaveURL(new RegExp(`clientId=${clientId}`));
+
+    await filters.getByLabel("Contract").selectOption(contractId);
+    await expect(page).toHaveURL(new RegExp(`contractId=${contractId}`));
+
+    const yearLink = page.getByRole("navigation", { name: /report period/i })
+      .getByRole("link", { name: "This Year" });
+    await expect(yearLink).toHaveAttribute(
+      "href",
+      `/reports?period=year&clientId=${clientId}&contractId=${contractId}`,
+    );
+    await yearLink.click();
+    await expect(page).toHaveURL(
+      `/reports?period=year&clientId=${clientId}&contractId=${contractId}`,
+    );
+    await waitForReportsPage(page);
+
+    const url = new URL(page.url());
+    expect(url.pathname).toBe("/reports");
+    expect(url.searchParams.get("period")).toBe("year");
+    expect(url.searchParams.get("clientId")).toBe(clientId);
+    expect(url.searchParams.get("contractId")).toBe(contractId);
+
+    await expect(filters.getByLabel("Client")).toHaveValue(clientId);
+    await expect(filters.getByLabel("Contract")).toHaveValue(contractId);
+    await expect(page.getByRole("cell", { name: /Filter Client/ }).first()).toBeVisible();
+    const revenue = page.getByRole("region", { name: "Revenue" });
+    await expect(revenue.getByText("Accrued", { exact: true })).toBeVisible();
+    await expect(revenue.getByText("Expected", { exact: true })).toBeVisible();
+    await expect(page.getByRole("columnheader", { name: "Allocated" })).toBeVisible();
+    const { year: currentYear } = getTodayInTimezone("Europe/Rome");
+    await expect(
+      page.getByRole("main").locator("caption").filter({
+        hasText: `Annual Overview — ${currentYear}`,
+      }),
+    ).toBeVisible();
+  });
+});
+
 test.describe("error recovery", () => {
   test("navigating away from /reports and back restores the page correctly", async ({
     page,

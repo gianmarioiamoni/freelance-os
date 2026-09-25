@@ -551,5 +551,36 @@ describe("AnalyticsService Accrued Revenue", () => {
       expect(listTimeEntriesForPeriod).toHaveBeenCalledWith(context.workspaceId, period);
       expect(result.byCurrency[0]?.unrounded).toBe(50);
     });
+
+    it("passes Client/Contract filter to the TimeEntry query", async () => {
+      const listTimeEntriesForPeriod = vi.fn().mockResolvedValue([]);
+      const service = new AnalyticsService(
+        {
+          getMonthlyAnalytics: vi.fn(),
+          getDailyAnalytics: vi.fn(),
+          getClientAllocations: vi.fn(),
+          getContractUtilizations: vi.fn(),
+          listTimeEntriesForPeriod,
+          listExpectedContracts: vi.fn(),
+          getContractAllocationFact: vi.fn(),
+          listContractAllocationFacts: vi.fn(),
+        } satisfies AnalyticsRepository,
+        {
+          getMember: vi.fn().mockResolvedValue(membership),
+          addMember: vi.fn(),
+          listMembers: vi.fn(),
+          listMembershipsByUserId: vi.fn(),
+        },
+      );
+      const filter = { clientId: "client-1", contractId: "contract-1" };
+
+      await service.getAccruedRevenue(context, period, filter);
+
+      expect(listTimeEntriesForPeriod).toHaveBeenCalledWith(
+        context.workspaceId,
+        period,
+        filter,
+      );
+    });
   });
 });

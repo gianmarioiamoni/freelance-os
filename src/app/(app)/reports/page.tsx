@@ -1,5 +1,7 @@
 // src/app/(app)/reports/page.tsx
 import { AnalyticsService } from "@/application/analytics/analytics-service";
+import { listClients } from "@/application/clients/list-clients";
+import { listContracts } from "@/application/contracts/list-contracts";
 import { ReportingService } from "@/application/reporting/reporting-service";
 import { ErrorState } from "@/components/states/ErrorState";
 import { createRepositories } from "@/infrastructure/persistence/create-repositories";
@@ -8,9 +10,12 @@ import { AnnualOverviewTable } from "@/features/reporting/AnnualOverviewTable";
 import { ContractReportTable } from "@/features/reporting/ContractReportTable";
 import { HoursByClientTable } from "@/features/reporting/HoursByClientTable";
 import { PeriodSelector } from "@/features/reporting/PeriodSelector";
+import { ReportEntityFilters } from "@/features/reporting/ReportEntityFilters";
+import { toReportFilterOptions } from "@/features/reporting/report-filter-options";
 import { RevenueSummary } from "@/features/reporting/RevenueSummary";
 import {
   getReportingCalendarYear,
+  parseReportEntityFilterParam,
   parseReportPeriodParam,
   toReportingPeriodKind,
   PERIOD_LABELS,
@@ -22,6 +27,8 @@ type ReportsPageProps = {
     period?: string;
     start?: string;
     end?: string;
+    clientId?: string;
+    contractId?: string;
   }>;
 };
 
@@ -33,6 +40,7 @@ export default async function ReportsPage({
   const params = await searchParams;
   const periodParam = parseReportPeriodParam(params);
   const periodKind = toReportingPeriodKind(periodParam);
+  const entityFilter = parseReportEntityFilterParam(params);
 
   const repositories = createRepositories();
   const analyticsService = new AnalyticsService(
@@ -45,11 +53,15 @@ export default async function ReportsPage({
   const currentYear = getReportingCalendarYear(context.timezone, now);
 
   try {
-    const [hoursByClient, contractReport, annualOverview] = await Promise.all([
-      reportingService.getHoursByClient(context, periodKind, now),
-      reportingService.getContractReport(context, periodKind, now),
-      reportingService.getAnnualOverview(context, currentYear, now),
-    ]);
+    const [hoursByClient, contractReport, annualOverview, clients, contracts] =
+      await Promise.all([
+        reportingService.getHoursByClient(context, periodKind, now, entityFilter),
+        reportingService.getContractReport(context, periodKind, now, entityFilter),
+        reportingService.getAnnualOverview(context, currentYear, now),
+        listClients(context, repositories.clients),
+        listContracts(context, repositories.contracts),
+      ]);
+    const filterOptions = toReportFilterOptions(clients, contracts);
 
     const periodLabel =
       periodParam.kind === "custom"
@@ -65,7 +77,13 @@ export default async function ReportsPage({
           </p>
         </header>
 
-        <PeriodSelector current={periodParam} />
+        <PeriodSelector current={periodParam} filter={entityFilter} />
+        <ReportEntityFilters
+          period={periodParam}
+          filter={entityFilter}
+          clients={filterOptions.clients}
+          contracts={filterOptions.contracts}
+        />
 
         <section aria-labelledby="revenue-heading">
           <h2 id="revenue-heading" className="text-base font-semibold">
@@ -73,6 +91,7 @@ export default async function ReportsPage({
           </h2>
           <RevenueSummary
             accrued={contractReport.accrued}
+            expected={contractReport.expected}
             forecast={contractReport.forecast}
           />
         </section>
@@ -92,6 +111,7 @@ export default async function ReportsPage({
           </h2>
           <ContractReportTable
             contractUtilizations={contractReport.contractUtilizations}
+            contractAllocations={contractReport.contractAllocations}
           />
         </section>
 
@@ -113,7 +133,7 @@ export default async function ReportsPage({
         <header className="grid gap-1">
           <h1>Reports</h1>
         </header>
-        <PeriodSelector current={periodParam} />
+        <PeriodSelector current={periodParam} filter={entityFilter} />
         <ErrorState
           title="Unable to load report"
           message="An error occurred while loading your reporting data. Please try refreshing the page."

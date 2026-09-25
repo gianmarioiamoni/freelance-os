@@ -2,6 +2,7 @@
 import type { 
   AccruedRevenue,
   AccruedTimeEntryFact,
+  AnalyticsFilter,
   AnalyticsPeriod, 
   MonthlyAnalytics, 
   DailyAnalytics,
@@ -20,6 +21,7 @@ import {
   calculateAccruedRevenue,
   publishMonetaryAmount,
 } from "@/application/analytics/accrued-revenue";
+import { optionalAnalyticsFilter } from "@/application/analytics/analytics-filter";
 import { calculateContractAllocation } from "@/application/analytics/contract-allocation";
 import { calculateExpectedRevenue } from "@/application/analytics/expected-revenue";
 import { calculateForecastRevenue } from "@/application/analytics/forecast-revenue";
@@ -167,7 +169,8 @@ export class AnalyticsService {
    */
   async getClientAllocations(
     context: WorkspaceContext,
-    period: AnalyticsPeriod
+    period: AnalyticsPeriod,
+    filter?: AnalyticsFilter,
   ): Promise<ClientAllocation[]> {
     await this.requireMembership(context);
     
@@ -175,7 +178,11 @@ export class AnalyticsService {
       throw new AnalyticsError("Invalid period: start date must be <= end date");
     }
 
-    return await this.analytics.getClientAllocations(context.workspaceId, period);
+    return await this.analytics.getClientAllocations(
+      context.workspaceId,
+      period,
+      ...optionalAnalyticsFilter(filter),
+    );
   }
 
   /**
@@ -184,7 +191,8 @@ export class AnalyticsService {
    */
   async getContractUtilizations(
     context: WorkspaceContext,
-    period: AnalyticsPeriod
+    period: AnalyticsPeriod,
+    filter?: AnalyticsFilter,
   ): Promise<ContractUtilization[]> {
     await this.requireMembership(context);
     
@@ -192,7 +200,11 @@ export class AnalyticsService {
       throw new AnalyticsError("Invalid period: start date must be <= end date");
     }
 
-    return await this.analytics.getContractUtilizations(context.workspaceId, period);
+    return await this.analytics.getContractUtilizations(
+      context.workspaceId,
+      period,
+      ...optionalAnalyticsFilter(filter),
+    );
   }
 
   /**
@@ -203,6 +215,7 @@ export class AnalyticsService {
   async getAccruedRevenue(
     context: WorkspaceContext,
     period: AnalyticsPeriod,
+    filter?: AnalyticsFilter,
   ): Promise<AccruedRevenue> {
     await this.requireMembership(context);
 
@@ -213,6 +226,7 @@ export class AnalyticsService {
     const entries = await this.analytics.listTimeEntriesForPeriod(
       context.workspaceId,
       period,
+      ...optionalAnalyticsFilter(filter),
     );
 
     return AnalyticsService.calculateAccruedRevenue(
@@ -230,6 +244,7 @@ export class AnalyticsService {
   async getExpectedRevenue(
     context: WorkspaceContext,
     period: AnalyticsPeriod,
+    filter?: AnalyticsFilter,
   ): Promise<ExpectedRevenue> {
     await this.requireMembership(context);
 
@@ -240,6 +255,7 @@ export class AnalyticsService {
     const contracts = await this.analytics.listExpectedContracts(
       context.workspaceId,
       period,
+      ...optionalAnalyticsFilter(filter),
     );
 
     return AnalyticsService.calculateExpectedRevenue(
@@ -256,6 +272,7 @@ export class AnalyticsService {
   async getForecastRevenue(
     context: WorkspaceContext,
     period: AnalyticsPeriod,
+    filter?: AnalyticsFilter,
   ): Promise<ForecastRevenue | null> {
     await this.requireMembership(context);
 
@@ -267,7 +284,7 @@ export class AnalyticsService {
       return null;
     }
 
-    const accrued = await this.getAccruedRevenue(context, period);
+    const accrued = await this.getAccruedRevenue(context, period, filter);
     return AnalyticsService.calculateForecastRevenue(accrued);
   }
 
@@ -297,11 +314,13 @@ export class AnalyticsService {
    */
   async listContractAllocations(
     context: WorkspaceContext,
+    filter?: AnalyticsFilter,
   ): Promise<ContractAllocation[]> {
     await this.requireMembership(context);
 
     const facts = await this.analytics.listContractAllocationFacts(
       context.workspaceId,
+      ...optionalAnalyticsFilter(filter),
     );
 
     return facts.map((fact) => AnalyticsService.calculateContractAllocation(fact));

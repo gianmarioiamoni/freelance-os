@@ -2,16 +2,25 @@
 import { AnalyticsService } from "@/application/analytics/analytics-service";
 import { EmptyState } from "@/components/states/EmptyState";
 import { Button } from "@/components/ui/button";
-import type { ContractUtilization } from "@/domain/analytics-types";
+import type {
+  ContractAllocation,
+  ContractUtilization,
+} from "@/domain/analytics-types";
+import {
+  allocationByContractId,
+  reportAllocationDisplay,
+} from "@/features/reporting/report-allocation-display";
 import Link from "next/link";
 import type { JSX } from "react";
 
 type ContractReportTableProps = {
   contractUtilizations: ContractUtilization[];
+  contractAllocations?: ContractAllocation[];
 };
 
 export function ContractReportTable({
   contractUtilizations,
+  contractAllocations = [],
 }: ContractReportTableProps): JSX.Element {
   if (contractUtilizations.length === 0) {
     return (
@@ -26,6 +35,8 @@ export function ContractReportTable({
       />
     );
   }
+
+  const allocations = allocationByContractId(contractAllocations);
 
   return (
     <div className="overflow-x-auto">
@@ -44,8 +55,20 @@ export function ContractReportTable({
             <th scope="col" className="text-right py-2 pr-4 font-medium">
               Capacity
             </th>
-            <th scope="col" className="text-right py-2 font-medium">
+            <th scope="col" className="text-right py-2 pr-4 font-medium">
               Utilization
+            </th>
+            <th scope="col" className="text-right py-2 pr-4 font-medium">
+              Allocated
+            </th>
+            <th scope="col" className="text-right py-2 pr-4 font-medium">
+              Allocation consumed
+            </th>
+            <th scope="col" className="text-right py-2 pr-4 font-medium">
+              Remaining
+            </th>
+            <th scope="col" className="text-right py-2 font-medium">
+              Allocation
             </th>
           </tr>
         </thead>
@@ -58,6 +81,9 @@ export function ContractReportTable({
                 : "Unlimited";
             const utilization = AnalyticsService.formatPercentage(
               u.utilizationPercentage,
+            );
+            const allocation = reportAllocationDisplay(
+              allocations.get(u.contractId),
             );
 
             return (
@@ -94,8 +120,23 @@ export function ContractReportTable({
                 </td>
                 <td className="text-right py-2 pr-4 tabular-nums">{consumed}</td>
                 <td className="text-right py-2 pr-4 tabular-nums">{capacity}</td>
-                <td className="text-right py-2 tabular-nums">
+                <td className="text-right py-2 pr-4 tabular-nums">
                   {u.contractedMinutes !== null ? utilization : "—"}
+                </td>
+                <td className="text-right py-2 pr-4 tabular-nums">
+                  {allocation.allocatedLabel}
+                </td>
+                <td className="text-right py-2 pr-4 tabular-nums">
+                  {allocation.consumedLabel}
+                </td>
+                <td className="text-right py-2 pr-4 tabular-nums">
+                  {allocation.remainingLabel}
+                </td>
+                <td className="text-right py-2">
+                  <AllocationStatusCell
+                    label={allocation.statusLabel}
+                    tone={allocation.statusTone}
+                  />
                 </td>
               </tr>
             );
@@ -104,4 +145,25 @@ export function ContractReportTable({
       </table>
     </div>
   );
+}
+
+function AllocationStatusCell({
+  label,
+  tone,
+}: {
+  label: string | null;
+  tone: "default" | "warning" | "error" | null;
+}): JSX.Element {
+  if (label === null || tone === null) {
+    return <span>—</span>;
+  }
+
+  const className =
+    tone === "warning"
+      ? "text-xs text-warning-foreground bg-warning px-1.5 py-0.5 rounded"
+      : tone === "error"
+        ? "text-xs text-destructive"
+        : "text-xs text-muted-foreground bg-muted px-1.5 py-0.5 rounded";
+
+  return <span className={className}>{label}</span>;
 }
