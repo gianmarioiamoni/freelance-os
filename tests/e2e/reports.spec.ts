@@ -220,7 +220,9 @@ test.describe("custom period selector", () => {
     await expect(
       page.getByText(`Operational reporting — ${includedDay} — ${includedDay}`),
     ).toBeVisible();
-    await expect(page.getByText("Custom Period Client").first()).toBeVisible();
+    await expect(
+      page.getByRole("cell", { name: /Custom Period Client/ }).first(),
+    ).toBeVisible();
   });
 
   test("same-day custom range is accepted", async ({ page }) => {
@@ -481,8 +483,9 @@ test.describe("tabular report sections", () => {
       main.locator("caption").filter({ hasText: "Hours by Client" }),
     ).toBeVisible();
 
-    // The client name must appear.
-    await expect(page.getByText("Acme Reporting").first()).toBeVisible();
+    await expect(
+      page.getByRole("cell", { name: /Acme Reporting/ }).first(),
+    ).toBeVisible();
 
     // Contract Report: caption element inside the table.
     await expect(
@@ -527,8 +530,9 @@ test.describe("tabular report sections", () => {
     await page.goto("/reports");
     await waitForReportsPage(page);
 
-    // The contract row must appear.
-    await expect(page.getByText("Unlimited Corp").first()).toBeVisible();
+    await expect(
+      page.getByRole("cell", { name: /Unlimited Corp/ }).first(),
+    ).toBeVisible();
     // "Unlimited" in the Capacity column (null monthlyContractedMinutes renders "Unlimited").
     await expect(page.getByText("Unlimited", { exact: true })).toBeVisible();
   });
@@ -582,9 +586,8 @@ test.describe("tabular report sections", () => {
     await page.goto("/reports");
     await waitForReportsPage(page);
 
-    // The archived client must appear in Hours by Client.
     await expect(
-      page.getByText("Archived Reporting Client").first(),
+      page.getByRole("cell", { name: /Archived Reporting Client/ }).first(),
     ).toBeVisible();
     // The "Archived" badge must be visible.
     await expect(page.getByText("Archived").first()).toBeVisible();
@@ -808,6 +811,36 @@ test.describe("CSV export", () => {
     await page.goto("/reports/export");
     await expect(page).toHaveURL(/\/sign-in/);
     await expect(page.getByRole("heading", { name: /sign in/i })).toBeVisible();
+  });
+
+  test("incomplete custom period on /reports/export fails open to month", async ({
+    page,
+  }) => {
+    const email = uniqueE2EEmail("reports-csv-incomplete");
+    await registerAndCreateFirstWorkspace(page, {
+      email,
+      name: "CSV Incomplete User",
+      workspaceName: "CSV Incomplete Workspace",
+    });
+
+    const response = await page.request.get(
+      "/reports/export?period=custom&start=2026-01-01",
+    );
+
+    expect(response.status()).toBe(200);
+    expect(response.headers()["content-type"]).toBe("text/csv; charset=utf-8");
+    expect(response.headers()["content-disposition"]).toMatch(
+      /^attachment; filename="reports-month-\d{4}-\d{2}-\d{2}-\d{4}-\d{2}-\d{2}\.csv"$/,
+    );
+
+    const csv = await response.text();
+    expect(csv).toContain("section,meta");
+    expect(csv).toMatch(/\nmonth,\d{4}-\d{2}-\d{2},\d{4}-\d{2}-\d{2},,\n/);
+    expect(csv).not.toContain("custom,");
+    expect(csv).toContain("section,revenue");
+    expect(csv).toContain("section,hours_by_client");
+    expect(csv).toContain("section,contract_report");
+    expect(csv.endsWith("\n")).toBe(true);
   });
 
   test("Export CSV preserves current filters and downloads the filtered dataset", async ({

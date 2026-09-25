@@ -472,7 +472,7 @@ R2 adds Invoice Tracking, Payment Tracking, derived revenue
 See `docs/release/r2-decision-pack.md` and
 `docs/release/r2-architecture-delta.md`. Profitability remains
 outside FreelanceOS (PIVA Balance). E01 and E02 are complete. E03 is
-CERTIFIED. E04 is CERTIFIED. E05 planning exists (`docs/release/r2-e05-advanced-reporting-export.md`). P-E05-00 COMPLETE — PO DECISIONS CLOSED. P-E05-01 AUTHORIZED. E05 is not certified. R2 is not production-ready.
+CERTIFIED. E04 is CERTIFIED. E05 is COMPLETE WITH FINDINGS (`docs/release/r2-e05-advanced-reporting-export.md`; P-E05-00…P-E05-04). E05 is not certified. Ready for Release Validation Gate. R2 is not production-ready.
 
 ---
 
@@ -1081,10 +1081,13 @@ any `try` block. Period selection is URL-driven (search parameters only);
 no browser-supplied tenant identifier can influence the workspace scope.
 `PeriodSelector` keeps the four preset links and adds a Custom Range GET
 form (FINDING-UX-004 CLOSED, EPIC-108 Stream C):
-`/reports?period=custom&start=YYYY-MM-DD&end=YYYY-MM-DD`. Custom Range is
-not a `Link`. JS validation is the authority; the form is `noValidate` so
-native `end.min` does not swallow submit. `min={start}` remains a picker
-affordance. Annual Overview stays current-year and is not period-filtered.
+`/reports?period=custom&start=YYYY-MM-DD&end=YYYY-MM-DD`. Optional Client
+and Contract filters use `clientId` / `contractId` on the same URL.
+Custom Range is not a `Link`. JS validation is the authority; the form is
+`noValidate` so native `end.min` does not swallow submit. `min={start}`
+remains a picker affordance. Annual Overview stays current-year and is
+not period-filtered or Client/Contract-filtered. Native CSV export is
+`GET /reports/export` with the same parser and workspace authorization.
 No new timezone logic; `getDateRangePeriod` / `resolvePeriod` unchanged.
 
 Performance: a baseline has been measured at the EPIC-104 reference

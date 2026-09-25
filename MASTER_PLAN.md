@@ -135,8 +135,8 @@ context is recovered from repository documentation.
 ## Overall
 
 ``` text
-STATUS: UX Polish COMPLETE; EPIC-107 Public Landing COMPLETE through P107-06 and epic certification; MASTER_PLAN §34 READY FOR RELEASE; §35 GRANTED; EPIC-108 COMPLETE (ER PASS WITH FINDINGS); EPIC-109 COMPLETE (ER PASS); EPIC-110 CLOSED (P110-00 PASS; P110-01 PASS; P110-02 PASS; P110-03 SKIPPED BY DESIGN; P110-04 PASS; P110-05 PASS; P110-06 / P110-06C intermediate findings resolved or superseded; P110-06D PASS; P110-06C FINAL PASS; P110-07 PASS; P110-08 FREEZE). Actionable R1 findings = 0. R1 FROZEN. R2 Decision Workshop complete for in-scope decisions. R2 planning baseline recorded. R2-E01 Revenue Visibility COMPLETE / RELEASE-READY (P-E01-00…P-E01-07). R2-E02 Invoice Tracking COMPLETE WITH NON-BLOCKING FINDING (P-E02-00…P-E02-07). R2-E03 Payment Tracking CERTIFIED (P-E03-00…P-E03-07). R2-E04 Forecasting & Contract Time Allocation CERTIFIED (P-E04-00…P-E04-07). R2-E05 P-E05-00 COMPLETE — PO DECISIONS CLOSED. P-E05-01 AUTHORIZED. E05 is not certified. R2 is not production-ready.
-NEXT: P-E05-01 report read model + filters. E05 plan: `docs/release/r2-e05-advanced-reporting-export.md`. Do not start P-E05-02. R2 is not production-ready.
+STATUS: UX Polish COMPLETE; EPIC-107 Public Landing COMPLETE through P107-06 and epic certification; MASTER_PLAN §34 READY FOR RELEASE; §35 GRANTED; EPIC-108 COMPLETE (ER PASS WITH FINDINGS); EPIC-109 COMPLETE (ER PASS); EPIC-110 CLOSED (P110-00 PASS; P110-01 PASS; P110-02 PASS; P110-03 SKIPPED BY DESIGN; P110-04 PASS; P110-05 PASS; P110-06 / P110-06C intermediate findings resolved or superseded; P110-06D PASS; P110-06C FINAL PASS; P110-07 PASS; P110-08 FREEZE). Actionable R1 findings = 0. R1 FROZEN. R2 Decision Workshop complete for in-scope decisions. R2 planning baseline recorded. R2-E01 Revenue Visibility COMPLETE / RELEASE-READY (P-E01-00…P-E01-07). R2-E02 Invoice Tracking COMPLETE WITH NON-BLOCKING FINDING (P-E02-00…P-E02-07). R2-E03 Payment Tracking CERTIFIED (P-E03-00…P-E03-07). R2-E04 Forecasting & Contract Time Allocation CERTIFIED (P-E04-00…P-E04-07). R2-E05 Advanced Reporting & Export COMPLETE WITH FINDINGS (P-E05-00…P-E05-04). E05 is not certified. Ready for Release Validation Gate. R2 is not production-ready.
+NEXT: R2 E05 Release Validation Gate. E05 plan: `docs/release/r2-e05-advanced-reporting-export.md`. Do not certify E05 here. R2 is not production-ready.
 Production Validation (§34): EXECUTED — READY FOR RELEASE — docs/release/production-validation.md
 Production Certification (§35): GRANTED — docs/release/production-certification.md
 R1 Freeze: FROZEN — docs/release/r1-freeze.md
@@ -1170,9 +1170,10 @@ R2-E02 Invoice Tracking is COMPLETE WITH NON-BLOCKING FINDING
 (`docs/release/r2-e03-payment-tracking.md`; P-E03-00…P-E03-07).
 R2-E04 Forecasting & Contract Time Allocation is CERTIFIED
 (`docs/release/r2-e04-forecasting-allocation.md`; P-E04-00…P-E04-07).
-R2-E05 detailed plan exists (`docs/release/r2-e05-advanced-reporting-export.md`).
-P-E05-00 is COMPLETE — PO DECISIONS CLOSED. P-E05-01 is AUTHORIZED. E05
-is not certified. R2 is not production-ready.
+R2-E05 Advanced Reporting & Export is COMPLETE WITH FINDINGS
+(`docs/release/r2-e05-advanced-reporting-export.md`; P-E05-00…P-E05-04).
+E05 is not certified. Ready for Release Validation Gate. R2 is not
+production-ready.
 
 Canonical decisions: `docs/release/r2-decision-pack.md`.
 Architecture delta: `docs/release/r2-architecture-delta.md`.
@@ -1184,7 +1185,7 @@ E03 plan: `docs/release/r2-e03-payment-tracking.md`.
 E04 plan: `docs/release/r2-e04-forecasting-allocation.md`.
 E05 plan: `docs/release/r2-e05-advanced-reporting-export.md`.
 
-This section records the closed E05 contract. P-E05-01 is AUTHORIZED. It does not start implementation here.
+This section records the closed E05 contract. P-E05-00…P-E05-04 are complete. E05 is not certified.
 
 ## Objective
 
@@ -1204,7 +1205,7 @@ fiscality / accounting. Integration with PIVA Balance is not R2.
 -   Invoice Tracking only (D2)
 -   Payment Tracking and simple discrepancies (D5, D6, R2-OD-009)
 -   Forecasting and optional Contract Time Allocation (R2-OD-013)
--   Advanced reporting; simple CSV only if R2-E05 planning justifies it
+-   Advanced reporting; native CSV of the filtered `/reports` dataset
 
 ## Out of R2
 
@@ -1276,8 +1277,10 @@ Release migration: `prisma migrate deploy`.
 Operational reporting extensions. Document / PDF generation is out of
 core R2. Simple CSV only if planning shows low complexity. Excel is not
 an R2 decision. Detailed plan:
-`docs/release/r2-e05-advanced-reporting-export.md`. P-E05-00 COMPLETE —
-PO DECISIONS CLOSED. P-E05-01 AUTHORIZED. E05 is not certified.
+`docs/release/r2-e05-advanced-reporting-export.md`. COMPLETE WITH FINDINGS
+(P-E05-00…P-E05-04). Period + Client + Contract filters. Expected +
+allocation published. Native CSV on `GET /reports/export`. Annual Overview
+unfiltered. E05 is not certified. Ready for Release Validation Gate.
 
 ## Historical map (superseded)
 
@@ -2281,8 +2284,8 @@ Next actions:
 11. R2-E02 COMPLETE WITH NON-BLOCKING FINDING (P-E02-00…P-E02-07)
 12. R2-E03 Payment Tracking CERTIFIED (`docs/release/r2-e03-payment-tracking.md`; P-E03-00…P-E03-07)
 13. R2-E04 Forecasting & Contract Time Allocation CERTIFIED (`docs/release/r2-e04-forecasting-allocation.md`; P-E04-00…P-E04-07)
-14. R2-E05 P-E05-00 COMPLETE — PO DECISIONS CLOSED (`docs/release/r2-e05-advanced-reporting-export.md`)
-15. P-E05-01 AUTHORIZED; do not start P-E05-02
+14. R2-E05 COMPLETE WITH FINDINGS (`docs/release/r2-e05-advanced-reporting-export.md`; P-E05-00…P-E05-04)
+15. E05 ready for Release Validation Gate
 16. Do not mark E05 certified
 17. Do not mark R2 production-ready
 18. Do not rewrite historical §34 / §35 rows
@@ -2437,8 +2440,8 @@ next:
   r2_planning: baseline
   r2_approved_decisions: D1-D7 and in-scope OD resolutions
   r2_e04: certified
-  r2_e05: planning-closed
-  objective: R1 FROZEN. R2-E04 CERTIFIED. R2-E05 P-E05-00 COMPLETE — PO DECISIONS CLOSED. P-E05-01 AUTHORIZED. E05 not certified. Plan in docs/release/r2-e05-advanced-reporting-export.md.
+  r2_e05: complete-with-findings
+  objective: R1 FROZEN. R2-E04 CERTIFIED. R2-E05 COMPLETE WITH FINDINGS (P-E05-00…P-E05-04). E05 not certified. Ready for Release Validation Gate. Plan in docs/release/r2-e05-advanced-reporting-export.md.
   open_non_blocking_findings: []
   accepted_r1_limitations:
     - F-103-003

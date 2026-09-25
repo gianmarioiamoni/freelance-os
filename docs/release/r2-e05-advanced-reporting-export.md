@@ -3,8 +3,9 @@
 **Epic:** R2-E05 — Advanced Reporting & Export  
 **Release:** Release 2 — Revenue Operations  
 **MASTER_PLAN identifier:** R2-E05 (`MASTER_PLAN.md` §19)  
-**Status:** P-E05-00 COMPLETE — **PO DECISIONS CLOSED**. P-E05-01 AUTHORIZED. E05 is **not** certified.  
+**Status:** P-E05-00…P-E05-04 COMPLETE. QA PASS WITH FINDINGS. E05 is **COMPLETE WITH FINDINGS** and **not** certified. Ready for Release Validation Gate.  
 **Planning date:** 2026-09-24  
+**QA date:** 2026-09-25  
 **Inspection HEAD:** `39714a184e3e97c19d434f9111f67354f604d8b6`  
 **Inspection subject:** `chore(r2-e04): certify forecasting and contract allocation`  
 **Planning recovery commit:** `2b9871b`  
@@ -12,19 +13,19 @@
 **Companions:** `docs/release/r2-epic-map.md`, `docs/release/r2-architecture-delta.md`, `docs/release/r2-open-decisions.md`  
 **Predecessors:** R2-E01 COMPLETE / RELEASE-READY. R2-E02 COMPLETE WITH NON-BLOCKING FINDING. R2-E03 CERTIFIED. R2-E04 CERTIFIED.  
 **Does not assign:** an EPIC-2xx number  
-**Does not authorize:** P-E05-02…P-E05-06, schema, UI, CSV implementation, or production release in this chat
+**Does not authorize:** P-E05-05, P-E05-06, E05 certification, or R2 production release
 
 ```text
 P-E05-00  PLANNING / DECISION GATE                 COMPLETE — PO DECISIONS CLOSED
-P-E05-01  REPORT READ MODEL + FILTERS              AUTHORIZED / NOT STARTED
-P-E05-02  REPORT UI                                NOT STARTED / NOT AUTHORIZED
-P-E05-03  CSV EXPORT                               NOT STARTED / NOT AUTHORIZED
-P-E05-04  QA / DOCUMENTATION                       NOT STARTED / NOT AUTHORIZED
+P-E05-01  REPORT READ MODEL + FILTERS              COMPLETE — APPROVED WITH FINDINGS
+P-E05-02  REPORT UI                                COMPLETE — APPROVED WITH FINDINGS
+P-E05-03  CSV EXPORT                               COMPLETE — APPROVED WITH FINDINGS
+P-E05-04  QA / DOCUMENTATION                       COMPLETE — QA PASS WITH FINDINGS
 P-E05-05  RELEASE VALIDATION                       NOT STARTED / NOT AUTHORIZED
 P-E05-06  CERTIFICATION                            NOT STARTED / NOT AUTHORIZED
 
-R2-E05: NOT CERTIFIED
-P-E05-01: AUTHORIZED
+R2-E05: COMPLETE WITH FINDINGS / NOT CERTIFIED
+E05 READY FOR: Release Validation Gate
 R2-E04: CERTIFIED
 R2-E03: CERTIFIED
 R2-E02: COMPLETE WITH NON-BLOCKING FINDING
@@ -132,6 +133,8 @@ Where a historical R1 document and the decision pack disagree, the decision pack
 
 ## 2. Repository / Git state (inspection)
 
+Planning inspection at P-E05-00. Shipped state is §23.
+
 | Item | Value |
 | --- | --- |
 | Branch | `main` |
@@ -177,8 +180,8 @@ Legend: **FACT** = repository text. **OPEN** = PO required. **NOT AUTHORIZED** =
 | Hours by Client | Client, total, billable, share. Archived labelled |
 | Contract Report | Client, consumed, capacity, utilization. Archived / Ongoing / Out of validity flags |
 | Annual Overview | Current workspace year only. Hours + Accrued + Forecast. Footer hours total; money footer is `—` |
-| Revenue summary | Accrued + Forecast. Forecast hidden when `null` |
-| `ReportingService.getContractReport` | Also loads Expected and `contractAllocations` — **not rendered** |
+| Revenue summary | Accrued + Expected + Forecast. Forecast hidden when `null` |
+| `ReportingService.getContractReport` | Publishes Expected and `contractAllocations`. Rendered on `/reports` and exported in CSV |
 | Dashboard | Reuses `RevenueSummary` (Accrued + Forecast) |
 | Invoice | Contract detail list. Filter ACTIVE / VOID / ALL. Derived UNPAID / PARTIAL / PAID / MISMATCH / overdue |
 | Payment | Invoice-scoped events. `paidAmount` derived |
@@ -531,8 +534,18 @@ Expected and allocation are already loaded into `ContractReport` and not shown. 
 
 #### E05-D-CSV-FORMAT
 
-Engineering for P-E05-01 / P-E05-03: UTF-8, deterministic column order, deterministic filename, locale/date consistent with existing conventions, published-money currency formatting, null representation, authorization, download response.  
-**Status:** TECHNICAL — not a PO residual. Do not invent in P-E05-00.
+**Status:** TECHNICAL — shipped. Not a PO residual.
+
+Native UTF-8 CSV of the filtered operational `/reports` read model (`getHoursByClient` + `getContractReport`). Annual Overview is excluded. Four sections in page order, RFC 4180-style escaping, LF lines, final newline:
+
+| Section | Columns |
+| --- | --- |
+| `meta` | `period_kind,period_start,period_end,client_id,contract_id` |
+| `revenue` | `metric,currency,published` — Accrued, Expected, Forecast; Forecast omitted when `null`; one row per currency/metric; published values only |
+| `hours_by_client` | `client_name,is_archived,total_minutes,billable_minutes,share_percent` |
+| `contract_report` | utilization + allocation columns from the read model |
+
+Route: `GET /reports/export` with the same `period` / `start` / `end` / `clientId` / `contractId` parser as `/reports`. Filename: `reports-{kind}-{start}-{end}.csv`. `Content-Type: text/csv; charset=utf-8`. Incomplete custom period fails open to `month`. No FX. No mixed-currency totals.
 
 #### E05-D-EXPORT-LIMITS
 
@@ -564,15 +577,15 @@ Technical default: no extra cap beyond the current report query; no streaming un
 
 ## 18. Proposed phase plan
 
-P-E05-01 is authorized. Later phases stay unauthorized until their own chats.
+P-E05-00…P-E05-04 are complete. P-E05-05 and P-E05-06 stay unauthorized.
 
 | Phase | Objective | Depends | Deliverables | Tests | Commit intent | Exit | Risks |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| P-E05-00 | Planning / PO gate | E01–E04 certified | This document | None | `docs(r2-e05): close planning decisions` | PO decisions closed | Implicit product invention |
-| P-E05-01 | Report read model + filters | Closed A/D/B | Expected + allocation publication; Period + Client + Contract filter projection; CSV-ready dataset. No Prisma. No UI. No CSV file | Unit + integration isolation / authority | `feat(r2-e05): extend reporting read model` | Approved fields + filters from AnalyticsService | Formula duplication; Invoice/Payment leakage |
-| P-E05-02 | Additive `/reports` UI | P-E05-01 | Expected / allocation on existing surfaces; Client + Contract filters | E2E reports | `feat(r2-e05): add approved report surfaces` | Additive UI only | Redesigning E01–E04 |
-| P-E05-03 | Native CSV | EXPORT-FORMATS B; P-E05-02 | Native CSV of the same filtered dataset | Unit serialize; E2E download; authz | `feat(r2-e05): add simple csv export` | Tabular non-fiscal CSV | New library / document generation |
-| P-E05-04 | QA / documentation | P-E05-03 | Docs match shipped behavior | QA | `chore(r2-e05): complete qa and documentation` | PASS / PASS WITH FINDINGS | Doc drift |
+| P-E05-00 | Planning / PO gate | E01–E04 certified | This document | None | `docs(r2-e05): close planning decisions` | COMPLETE — PO DECISIONS CLOSED | Implicit product invention |
+| P-E05-01 | Report read model + filters | Closed A/D/B | Expected + allocation publication; Period + Client + Contract filter projection; CSV-ready dataset | Unit + integration isolation / authority | bundled in `f482ec1` | COMPLETE — APPROVED WITH FINDINGS | Formula duplication; Invoice/Payment leakage |
+| P-E05-02 | Additive `/reports` UI | P-E05-01 | Expected / allocation on existing surfaces; Client + Contract filters | E2E reports | `feat(r2-e05): add report filters and revenue surfaces` | COMPLETE — APPROVED WITH FINDINGS | Redesigning E01–E04 |
+| P-E05-03 | Native CSV | EXPORT-FORMATS B; P-E05-02 | Native CSV of the same filtered dataset | Unit serialize; E2E download; authz | `feat(r2-e05): add native csv export` | COMPLETE — APPROVED WITH FINDINGS | New library / document generation |
+| P-E05-04 | QA / documentation | P-E05-03 | Docs match shipped behavior | QA | `chore(r2-e05): close advanced reporting and export` | COMPLETE — QA PASS WITH FINDINGS | Doc drift |
 | P-E05-05 | Release validation | P-E05-04 | Validation record | Gate B | none or docs-only | READY / BLOCKED | Claiming R2 production-ready |
 | P-E05-06 | Certification | P-E05-05 | Certification metadata | — | `chore(r2-e05): certify advanced reporting` | CERTIFIED; R2 still not production-ready | Starting R2 release gates early |
 
@@ -619,23 +632,107 @@ P-E05-01 is authorized. Later phases stay unauthorized until their own chats.
 
 ```text
 P-E05-00: COMPLETE — PO DECISIONS CLOSED
-P-E05-01: AUTHORIZED / NOT STARTED
-P-E05-02…P-E05-06: NOT AUTHORIZED
-E05: NOT CERTIFIED
-SCHEMA / UI / CSV / ReportingService CHANGES: FORBIDDEN IN THIS CHAT
+P-E05-01: COMPLETE — APPROVED WITH FINDINGS
+P-E05-02: COMPLETE — APPROVED WITH FINDINGS
+P-E05-03: COMPLETE — APPROVED WITH FINDINGS
+P-E05-04: COMPLETE — QA PASS WITH FINDINGS
+P-E05-05…P-E05-06: NOT AUTHORIZED
+E05: COMPLETE WITH FINDINGS / NOT CERTIFIED
+E05 READY FOR: Release Validation Gate
 R2: NOT PRODUCTION-READY
 ```
 
-A later chat may start P-E05-01. That chat must not expand beyond the closed contract.
+P-E05-05 Release Validation is the next authorized gate. Do not certify E05 here.
 
 ---
 
-## 22. Stop condition
+## 22. P-E05-00 stop condition (historical)
 
-P-E05-00 stops here.
+P-E05-00 stopped after PO decisions closed. Implementation began in later chats.
 
-Do not implement P-E05-01 in this chat.  
-Do not create migrations.  
-Do not create UI.  
-Do not implement CSV.  
-Do not modify `ReportingService`.
+---
+
+## 23. P-E05-04 QA / Closure
+
+**Date:** 2026-09-25  
+**Phase:** P-E05-04  
+**Commit:** `chore(r2-e05): close advanced reporting and export`
+
+### E05 STATUS
+
+**COMPLETE WITH FINDINGS**
+
+E05 is QA validated and ready for the Release Validation Gate. E05 is **not** certified. R2 is **not** production-ready.
+
+### PHASES
+
+| Phase | Status | Commit | Review | Findings |
+| --- | --- | --- | --- | --- |
+| P-E05-00 | COMPLETE — PO DECISIONS CLOSED | `2b9871b` planning; `bd623e5` close decisions | PO APPROVED | none |
+| P-E05-01 | COMPLETE — APPROVED WITH FINDINGS | bundled in `f482ec1` | APPROVED WITH FINDINGS | F-E05-01-001 closed in P-E05-02; F-E05-01-002 LOW residual; F-E05-01-003 ACCEPTED |
+| P-E05-02 | COMPLETE — APPROVED WITH FINDINGS | `f482ec1` | APPROVED WITH FINDINGS | F-E05-02-001 closed in P-E05-04 |
+| P-E05-03 | COMPLETE — APPROVED WITH FINDINGS | `a65e928` | APPROVED WITH FINDINGS | F-E05-03-001 ACCEPTED; F-E05-03-002 closed in P-E05-04 |
+| P-E05-04 | COMPLETE — QA PASS WITH FINDINGS | this commit | QA PASS WITH FINDINGS | no new findings |
+
+### FINAL CAPABILITIES
+
+**Read model.** Accrued, Expected, Forecast, Contract Allocation, Hours by Client, Contract Report. Same `ReportingService` → `AnalyticsService` path. No Invoice/Payment axis. No formula change.
+
+**Filters.** Period + Client + Contract. Workspace-scoped. Invalid IDs fail open to unset. IDs are view state, not grants.
+
+**URL state.** `period`, `start`, `end`, `clientId`, `contractId`. Each dimension change preserves the others. Unset removes only that dimension.
+
+**UI.** Client filter, Contract filter, Expected, Allocation, Accrued, Forecast on existing `/reports`. UI presents the read model; it does not recalculate.
+
+**Annual Overview.** Unfiltered. `getAnnualOverview` unchanged. Client/Contract are not applied. ACCEPTED (F-E05-01-003).
+
+**CSV.** Native only. `GET /reports/export`. Same filtered operational dataset. UTF-8. RFC 4180-style escaping. Deterministic filename `reports-{kind}-{start}-{end}.csv`. Multi-section: meta, revenue, hours_by_client, contract_report. No mixed-currency totals. No FX. Forecast omitted when null. Incomplete custom period fails open to month.
+
+### FINAL FINDINGS
+
+| ID | Severity | Status | Note |
+| --- | --- | --- | --- |
+| F-E05-01-001 | LOW | CLOSED | Additive filter tests added in P-E05-02 |
+| F-E05-01-002 | LOW | OPEN residual | `contractEntityWhere` can overwrite `id: { in: consumptionOnly }`. No real defect evidenced. Not refactored |
+| F-E05-01-003 | — | ACCEPTED | Annual Overview remains unfiltered |
+| F-E05-02-001 | LOW | CLOSED | Absorbed by QA: entity-filter E2E, CSV E2E, URL-state unit, incomplete-custom HTTP |
+| F-E05-03-001 | — | ACCEPTED | CSV multi-section is a serializer of the approved read model |
+| F-E05-03-002 | LOW | CLOSED | `GET /reports/export?period=custom&start=<date>` without `end` fails open to month; HTTP E2E added |
+
+### QA
+
+| Suite | Result |
+| --- | --- |
+| Focused unit (`features/reporting`, `application/reporting`, `application/analytics`) | PASS — 234 |
+| Full unit | 727 passed; 2 failed |
+| Full integration | PASS — 353 |
+| Reports E2E | PASS — 26 / 42.8s |
+| `pnpm typecheck` | PASS |
+| `pnpm lint` | PASS |
+| `pnpm build` | PASS |
+
+Full-unit failures are pre-existing and outside E05: `time-entry-action-revalidation.test.ts` update/delete mocks (`NEXT_REDIRECT` vs action error / missing `contractId`). Create-path assertions still pass. Not introduced by E05. Classified, not ignored.
+
+E2E locator hygiene: four historical `getByText(clientName).first()` assertions resolved to hidden Client `<option>` nodes after P-E05-02. Assertions now use table cells. No product change.
+
+**Security.** Workspace isolation holds. Unauthenticated `/reports` and `/reports/export` redirect to sign-in. Foreign Client/Contract and mismatch yield empty authorized-workspace results. Filter IDs are not grants.
+
+**Performance.** Baseline 100 clients / 50 contracts / 1000 TimeEntries executed (existing suite, PASS). Entity filters are Prisma `where` predicates. Export reuses `ReportingService`; no second pipeline. No new N+1. No premature optimization.
+
+**Temporal / revenue / allocation.** Existing integration and unit coverage re-executed. Hours/Accrued use `workDate`. Expected uses validity ∩ period. Forecast is current certified period only; historical/custom null. Allocation is `[validFrom, validTo)`, not period-sliced. Currency rows stay separate. UI presents read-model allocation status.
+
+### DOCUMENTATION
+
+Updated: `docs/release/r2-e05-advanced-reporting-export.md`, `docs/release/r2-epic-map.md`, `docs/release/r2-open-decisions.md`, `docs/release/r2-architecture-delta.md`, `MASTER_PLAN.md`, `CHANGELOG.md`, `docs/product-vision.md`, `docs/architecture.md`, `docs/domain-model.md`.
+
+`docs/release/r2-decision-pack.md` already recorded the closed E05 PO decisions; no stale current-state claim required a change.
+
+### RELEASE READINESS
+
+```text
+E05 ready for Release Validation Gate
+
+E05:                       COMPLETE WITH FINDINGS / NOT CERTIFIED
+NEXT:                      R2 E05 Release Validation Gate
+R2 PRODUCTION-READY:       NO
+```

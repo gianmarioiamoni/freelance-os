@@ -261,9 +261,10 @@ VOID freezes Payment writes; existing rows remain readable. E02 is
 COMPLETE WITH NON-BLOCKING FINDING
 (`docs/release/r2-e02-invoice-tracking.md`). E03 is CERTIFIED
 (`docs/release/r2-e03-payment-tracking.md`). E04 is CERTIFIED
-(`docs/release/r2-e04-forecasting-allocation.md`). E05 planning exists
-(`docs/release/r2-e05-advanced-reporting-export.md`). P-E05-00 COMPLETE —
-PO DECISIONS CLOSED. P-E05-01 AUTHORIZED. E05 is not certified.
+(`docs/release/r2-e04-forecasting-allocation.md`). E05 is COMPLETE WITH
+FINDINGS (`docs/release/r2-e05-advanced-reporting-export.md`;
+P-E05-00…P-E05-04). E05 is not certified. Ready for Release Validation
+Gate.
 
 ## 13. Capacity Model
 
