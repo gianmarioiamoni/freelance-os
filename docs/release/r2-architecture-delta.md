@@ -1,11 +1,11 @@
 # R2 Architecture Delta — Revenue Operations
 
-**Status:** Domain and persistence-planning delta. R2-E01 snapshot / Accrued / Expected are implemented. R2-E02 Invoice Tracking is implemented. R2-E03 Payment Tracking is CERTIFIED. R2-E04 Forecasting & Contract Time Allocation is CERTIFIED (`docs/release/r2-e04-forecasting-allocation.md`). R2-E05 Advanced Reporting & Export is COMPLETE WITH FINDINGS (`docs/release/r2-e05-advanced-reporting-export.md`; P-E05-00…P-E05-04). E05 is not certified.  
+**Status:** Domain and persistence-planning delta. R2-E01 snapshot / Accrued / Expected are implemented. R2-E02 Invoice Tracking is implemented. R2-E03 Payment Tracking is CERTIFIED. R2-E04 Forecasting & Contract Time Allocation is CERTIFIED (`docs/release/r2-e04-forecasting-allocation.md`). R2-E05 Advanced Reporting & Export is CERTIFIED (`docs/release/r2-e05-advanced-reporting-export.md`; P-E05-00…P-E05-06).  
 **Date:** 2026-09-24  
 **Authority:** `docs/release/r2-decision-pack.md`  
 **Baseline:** R1 architecture (`docs/architecture.md`, `docs/domain-model.md`, `docs/storage.md`) remains the frozen R1 baseline.
 
-This document records what must change conceptually for R2. Invoice Prisma names exist (`Invoice`). Payment Prisma names exist (`Payment`). E03-D-VOID-PAYMENTS is closed (Option A). `Contract.allocatedMinutes` exists (`Int?`). Forecast remains derived. E05 remains a derived read-model epic. Native CSV of the filtered `/reports` dataset is implemented. This document does not certify E05 or authorize production release.
+This document records what must change conceptually for R2. Invoice Prisma names exist (`Invoice`). Payment Prisma names exist (`Payment`). E03-D-VOID-PAYMENTS is closed (Option A). `Contract.allocatedMinutes` exists (`Int?`). Forecast remains derived. E05 remains a derived read-model epic. Native CSV of the filtered `/reports` dataset is implemented. This document does not authorize production release.
 
 Legend:
 
@@ -320,4 +320,4 @@ R1 baseline documents keep their historical text. Canonical R2 meaning is this d
 - Prisma models or migrations for E05
 - Whether revenue totals are persisted
 
-E04 product residuals (Forecast arithmetic, allocation predicates including 8-C zero-status, consumption rules, revenue UI surface) are CLOSED and CERTIFIED in `docs/release/r2-e04-forecasting-allocation.md`. Forecast = Accrued / elapsedFraction on the certified current period only; historical/custom null; derived. E05 is COMPLETE WITH FINDINGS and not certified. Ready for Release Validation Gate. R2 is not production-ready.
+E04 product residuals (Forecast arithmetic, allocation predicates including 8-C zero-status, consumption rules, revenue UI surface) are CLOSED and CERTIFIED in `docs/release/r2-e04-forecasting-allocation.md`. Forecast = Accrued / elapsedFraction on the certified current period only; historical/custom null; derived. E05 is CERTIFIED in `docs/release/r2-e05-advanced-reporting-export.md`. R2 is not production-ready.

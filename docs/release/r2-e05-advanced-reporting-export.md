@@ -3,9 +3,12 @@
 **Epic:** R2-E05 — Advanced Reporting & Export  
 **Release:** Release 2 — Revenue Operations  
 **MASTER_PLAN identifier:** R2-E05 (`MASTER_PLAN.md` §19)  
-**Status:** P-E05-00…P-E05-04 COMPLETE. QA PASS WITH FINDINGS. E05 is **COMPLETE WITH FINDINGS** and **not** certified. Ready for Release Validation Gate.  
+**Status:** CERTIFIED — P-E05-00…P-E05-06 COMPLETE. QA PASS WITH FINDINGS. Release Validation PASS WITH FINDINGS. Residual findings retained.  
 **Planning date:** 2026-09-24  
 **QA date:** 2026-09-25  
+**Certification date:** 2026-09-25  
+**Certification commit:** this P-E05-06 commit  
+**Release migration:** none  
 **Inspection HEAD:** `39714a184e3e97c19d434f9111f67354f604d8b6`  
 **Inspection subject:** `chore(r2-e04): certify forecasting and contract allocation`  
 **Planning recovery commit:** `2b9871b`  
@@ -13,7 +16,7 @@
 **Companions:** `docs/release/r2-epic-map.md`, `docs/release/r2-architecture-delta.md`, `docs/release/r2-open-decisions.md`  
 **Predecessors:** R2-E01 COMPLETE / RELEASE-READY. R2-E02 COMPLETE WITH NON-BLOCKING FINDING. R2-E03 CERTIFIED. R2-E04 CERTIFIED.  
 **Does not assign:** an EPIC-2xx number  
-**Does not authorize:** P-E05-05, P-E05-06, E05 certification, or R2 production release
+**Does not authorize:** R2 production release
 
 ```text
 P-E05-00  PLANNING / DECISION GATE                 COMPLETE — PO DECISIONS CLOSED
@@ -21,11 +24,10 @@ P-E05-01  REPORT READ MODEL + FILTERS              COMPLETE — APPROVED WITH FI
 P-E05-02  REPORT UI                                COMPLETE — APPROVED WITH FINDINGS
 P-E05-03  CSV EXPORT                               COMPLETE — APPROVED WITH FINDINGS
 P-E05-04  QA / DOCUMENTATION                       COMPLETE — QA PASS WITH FINDINGS
-P-E05-05  RELEASE VALIDATION                       NOT STARTED / NOT AUTHORIZED
-P-E05-06  CERTIFICATION                            NOT STARTED / NOT AUTHORIZED
+P-E05-05  RELEASE VALIDATION                       COMPLETE — PASS WITH FINDINGS
+P-E05-06  CERTIFICATION                            COMPLETE — CERTIFIED
 
-R2-E05: COMPLETE WITH FINDINGS / NOT CERTIFIED
-E05 READY FOR: Release Validation Gate
+R2-E05: CERTIFIED
 R2-E04: CERTIFIED
 R2-E03: CERTIFIED
 R2-E02: COMPLETE WITH NON-BLOCKING FINDING
@@ -577,7 +579,7 @@ Technical default: no extra cap beyond the current report query; no streaming un
 
 ## 18. Proposed phase plan
 
-P-E05-00…P-E05-04 are complete. P-E05-05 and P-E05-06 stay unauthorized.
+P-E05-00…P-E05-06 are **COMPLETE**. E05 is **CERTIFIED**. R2 remains not production-ready.
 
 | Phase | Objective | Depends | Deliverables | Tests | Commit intent | Exit | Risks |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -586,8 +588,8 @@ P-E05-00…P-E05-04 are complete. P-E05-05 and P-E05-06 stay unauthorized.
 | P-E05-02 | Additive `/reports` UI | P-E05-01 | Expected / allocation on existing surfaces; Client + Contract filters | E2E reports | `feat(r2-e05): add report filters and revenue surfaces` | COMPLETE — APPROVED WITH FINDINGS | Redesigning E01–E04 |
 | P-E05-03 | Native CSV | EXPORT-FORMATS B; P-E05-02 | Native CSV of the same filtered dataset | Unit serialize; E2E download; authz | `feat(r2-e05): add native csv export` | COMPLETE — APPROVED WITH FINDINGS | New library / document generation |
 | P-E05-04 | QA / documentation | P-E05-03 | Docs match shipped behavior | QA | `chore(r2-e05): close advanced reporting and export` | COMPLETE — QA PASS WITH FINDINGS | Doc drift |
-| P-E05-05 | Release validation | P-E05-04 | Validation record | Gate B | none or docs-only | READY / BLOCKED | Claiming R2 production-ready |
-| P-E05-06 | Certification | P-E05-05 | Certification metadata | — | `chore(r2-e05): certify advanced reporting` | CERTIFIED; R2 still not production-ready | Starting R2 release gates early |
+| P-E05-05 | Release validation | P-E05-04 | Validation record | Gate B | none (validation-only) | COMPLETE — PASS WITH FINDINGS | Claiming R2 production-ready |
+| P-E05-06 | Certification | P-E05-05 | Certification metadata | — | `chore(r2-e05): certify advanced reporting and export` | COMPLETE — CERTIFIED; R2 still not production-ready | Starting R2 release gates early |
 
 ---
 
@@ -636,13 +638,13 @@ P-E05-01: COMPLETE — APPROVED WITH FINDINGS
 P-E05-02: COMPLETE — APPROVED WITH FINDINGS
 P-E05-03: COMPLETE — APPROVED WITH FINDINGS
 P-E05-04: COMPLETE — QA PASS WITH FINDINGS
-P-E05-05…P-E05-06: NOT AUTHORIZED
-E05: COMPLETE WITH FINDINGS / NOT CERTIFIED
-E05 READY FOR: Release Validation Gate
+P-E05-05: COMPLETE — PASS WITH FINDINGS
+P-E05-06: COMPLETE — CERTIFIED
+E05: CERTIFIED
 R2: NOT PRODUCTION-READY
 ```
 
-P-E05-05 Release Validation is the next authorized gate. Do not certify E05 here.
+Stop. Do **not** start R2 release gates in this chat. E05 is **CERTIFIED**. R2 remains not production-ready.
 
 ---
 
@@ -734,5 +736,165 @@ E05 ready for Release Validation Gate
 
 E05:                       COMPLETE WITH FINDINGS / NOT CERTIFIED
 NEXT:                      R2 E05 Release Validation Gate
+R2 PRODUCTION-READY:       NO
+```
+
+---
+
+## 24. P-E05-05 Release Validation
+
+**Date:** 2026-09-25  
+**Phase:** P-E05-05  
+**Reviewed HEAD at validation:** `d2fc0358961435e0d29bd06f033825dab46e6769`  
+**Commit:** none (validation-only)
+
+### Verdict
+
+**PASS WITH FINDINGS**
+
+No E05 BLOCKER/HIGH. No security blocker. No data corruption. No semantic regression. All PO decisions closed. Mandatory E05 scope implemented. Residual findings are non-blocking or accepted. P-E05-06 was authorized.
+
+P-E05-05 is **not** certification.
+
+### Functional
+
+PASS — default/preset/custom period; Client; Contract; Client + Contract; mismatch; contract-only; URL state preservation; unset behavior; Accrued; Expected; Forecast; Allocation; Annual Overview unfiltered.
+
+### CSV
+
+PASS — `GET /reports/export`; same filtered operational dataset; meta; revenue; hours_by_client; contract_report; UTF-8; RFC4180-style escaping; deterministic ordering; deterministic filename; no FX; no mixed-currency totals; Forecast omitted when null.
+
+### Security
+
+PASS — unauthenticated `/reports` redirects; unauthenticated `/reports/export` redirects; workspace isolation; foreign IDs do not grant access; no cross-workspace leakage.
+
+### Temporal
+
+PASS — Hours/Accrued → `workDate`; Expected → validity ∩ period; Forecast → current certified period only; historical/custom Forecast → `null`; Allocation → `[validFrom, validTo)`; Allocation not period-sliced; OOV TimeEntry excluded from consumption.
+
+### Regression
+
+| Suite | Result |
+| --- | --- |
+| Full unit | 727 passed / 2 failed / 729 |
+| Full integration | PASS — 353 |
+| Reports E2E | PASS — 26 |
+| `pnpm typecheck` | PASS |
+| `pnpm lint` | PASS |
+| `pnpm build` | PASS |
+
+The two unit failures are pre-existing, present at E04 certification commit `39714a1`, outside E05, untouched by E05, and not caused by E05. They are documented in P-E05-06 as external / pre-existing. They are not E05 certification failures.
+
+### Performance
+
+PASS — baseline 100 clients / 50 contracts / 1000 TimeEntries. No new N+1. No second analytics pipeline. Export reuses `ReportingService`.
+
+---
+
+## 25. P-E05-06 Certification
+
+**Date:** 2026-09-25  
+**Phase:** P-E05-06  
+**Certification HEAD:** this commit  
+**Scope:** Certification metadata only. No application, schema, or test change.
+
+### E05
+
+Advanced Reporting & Export
+
+### STATUS
+
+**CERTIFIED**
+
+### RELEASE VALIDATION
+
+**PASS WITH FINDINGS**
+
+### CERTIFICATION BASIS
+
+- all E05 phases complete;
+- PO decisions closed;
+- functional QA passed;
+- security passed;
+- performance baseline passed;
+- documentation synchronized;
+- no E05 BLOCKER/HIGH.
+
+### CERTIFIED CAPABILITIES
+
+- Accrued
+- Expected
+- Forecast
+- Contract Allocation
+- Hours by Client
+- Contract Report
+- Period filter
+- Client filter
+- Contract filter
+- URL state
+- native CSV export
+- `/reports/export`
+
+### EXPLICIT CERTIFIED CONSTRAINTS
+
+- Annual Overview remains unfiltered;
+- no Invoice/Payment reporting;
+- no FX;
+- no mixed-currency totals;
+- no XLSX/PDF;
+- no report persistence;
+- no saved/scheduled reports;
+- E04 semantics unchanged.
+
+### OPEN / ACCEPTED FINDINGS
+
+| ID | Severity | Status | Note |
+| --- | --- | --- | --- |
+| F-E05-01-002 | LOW | OPEN residual | `contractEntityWhere` can overwrite `id: { in: consumptionOnly }` when `contractId` is set. No leak; combined-filter/mismatch tests pass; no wrong-result behavior evidenced. Not closed without evidence. |
+| F-E05-01-003 | — | ACCEPTED | Annual Overview intentionally unfiltered. `getAnnualOverview` unchanged. |
+| F-E05-03-001 | — | ACCEPTED | CSV four-section serialization is a presentation serialization of the approved read model, not a second reporting model. |
+
+Closed before certification: F-E05-01-001, F-E05-02-001, F-E05-03-002.
+
+### EXTERNAL / PRE-EXISTING TEST FAILURES
+
+Not E05 certification failures.
+
+| Item | Classification |
+| --- | --- |
+| Suite | `tests/unit/features/time-entries/time-entry-action-revalidation.test.ts` |
+| Cases | `updateTimeEntryAction` revalidatePath; `deleteTimeEntryAction` revalidatePath |
+| Present at | E04 certification commit `39714a1` |
+| Scope | outside E05; untouched by E05; not caused by E05 |
+| Disposition | documented; not fixed in certification |
+
+### Phase commits
+
+| Phase | Commit |
+| --- | --- |
+| P-E05-00 | `2b9871b05a7299d02912419e8b0b74ff986079c7`; `bd623e515cd41a43e09eb215b7c511b7fb148569` |
+| P-E05-01 | bundled in `f482ec1851f15e0f95c26007b2d9cc7f84f1f2d5` |
+| P-E05-02 | `f482ec1851f15e0f95c26007b2d9cc7f84f1f2d5` |
+| P-E05-03 | `a65e92830e4c6d86090403ddda4ca6d3cc4d76d5` |
+| P-E05-04 | `d2fc0358961435e0d29bd06f033825dab46e6769` |
+| P-E05-05 | none (validation-only) |
+| P-E05-06 | this commit |
+
+### Migration certification
+
+| Item | Result |
+| --- | --- |
+| Schema / Prisma change | none |
+| Destructive SQL | none |
+| Data rewrite / backfill | none |
+| Production command | none |
+| Manual production SQL | none |
+
+### Final status
+
+```text
+R2-E05 Advanced Reporting & Export = CERTIFIED
+
+NEXT:                      R2 release-level gates are NOT AUTHORIZED in this chat
 R2 PRODUCTION-READY:       NO
 ```
