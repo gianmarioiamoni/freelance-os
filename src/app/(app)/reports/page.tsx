@@ -3,6 +3,7 @@ import { AnalyticsService } from "@/application/analytics/analytics-service";
 import { listClients } from "@/application/clients/list-clients";
 import { listContracts } from "@/application/contracts/list-contracts";
 import { ReportingService } from "@/application/reporting/reporting-service";
+import { AnalyticsAskBox } from "@/components/ai/AnalyticsAskBox";
 import { ErrorState } from "@/components/states/ErrorState";
 import { createRepositories } from "@/infrastructure/persistence/create-repositories";
 import { getCurrentWorkspaceContext } from "@/infrastructure/workspace/current-workspace";
@@ -79,6 +80,8 @@ export default async function ReportsPage({
           <ReportCsvExportLink period={periodParam} filter={entityFilter} />
         </header>
 
+        <AnalyticsAskBox surface="reports" />
+
         <PeriodSelector current={periodParam} filter={entityFilter} />
         <ReportEntityFilters
           period={periodParam}
@@ -135,6 +138,7 @@ export default async function ReportsPage({
         <header className="grid gap-1">
           <h1>Reports</h1>
         </header>
+        <AnalyticsAskBox surface="reports" />
         <PeriodSelector current={periodParam} filter={entityFilter} />
         <ErrorState
           title="Unable to load report"

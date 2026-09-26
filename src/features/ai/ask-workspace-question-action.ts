@@ -9,7 +9,7 @@ import { askWorkspaceQuestion } from "@/application/ai/orchestrator";
 import type { AiAskInput, AiAskResult } from "@/application/ai/ai-types";
 import { ReportingService } from "@/application/reporting/reporting-service";
 import { createRepositories } from "@/infrastructure/persistence/create-repositories";
-import { createNullAiProviderAdapter } from "@/infrastructure/ai/null-ai-provider-adapter";
+import { resolveAskProviderAdapter } from "@/features/ai/resolve-ask-provider-adapter";
 import { getCurrentWorkspaceContext } from "@/infrastructure/workspace/current-workspace";
 
 export async function askWorkspaceQuestionAction(
@@ -30,7 +30,7 @@ export async function askWorkspaceQuestionAction(
   return askWorkspaceQuestion(
     { question: input.question, surface: input.surface, context },
     {
-      adapter: createNullAiProviderAdapter(),
+      adapter: resolveAskProviderAdapter(),
       registry: createAnalyticsToolRegistry(
         bindAnalyticsServices({
           analytics,

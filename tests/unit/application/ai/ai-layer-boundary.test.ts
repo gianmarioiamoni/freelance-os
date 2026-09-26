@@ -44,9 +44,13 @@ describe("AI layer persistence and tenant boundary", () => {
 
   it("does not accept workspaceId on the Server Action entry", () => {
     const action = source("src/features/ai/ask-workspace-question-action.ts");
+    const resolver = source("src/features/ai/resolve-ask-provider-adapter.ts");
     expect(action).toMatch(/getCurrentWorkspaceContext/);
-    expect(action).toMatch(/createNullAiProviderAdapter/);
+    expect(action).toMatch(/resolveAskProviderAdapter/);
     expect(action).not.toMatch(/workspaceId/);
     expect(action).not.toMatch(/openai|anthropic|@ai-sdk|langchain/i);
+    expect(resolver).toMatch(/createNullAiProviderAdapter/);
+    expect(resolver).toMatch(/AI_E2E_MOCK/);
+    expect(resolver).not.toMatch(/openai|anthropic|@ai-sdk|langchain/i);
   });
 });

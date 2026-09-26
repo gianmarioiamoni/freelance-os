@@ -2,6 +2,10 @@
 import { AiClarificationError } from "@/application/ai/ai-errors";
 import type { AiAnalyticsServices } from "@/application/ai/ai-service-ports";
 import type { AiReadTool } from "@/application/ai/tool-contract";
+import {
+  resolveAllocationClientLabels,
+  resolveOneAllocationClientLabel,
+} from "@/application/ai/grounding/allocation-client-labels";
 import { capRows } from "@/application/ai/grounding/serialize";
 import { minimizeAllocation } from "@/application/ai/grounding/minimize-dtos";
 import { parseRequiredString } from "@/application/ai/parse-tool-args";
@@ -17,8 +21,15 @@ export function createListContractAllocationsTool(
     argumentKeys: ["clientId", "clientName", "contractId"],
     async execute(context, args) {
       const filter = await resolveAnalyticsFilter(context, args, services);
-      const rows = await services.listContractAllocations(context, filter);
-      return { allocations: capRows(rows).map(minimizeAllocation) };
+      const rows = capRows(await services.listContractAllocations(context, filter));
+      const labels = await resolveAllocationClientLabels(
+        context,
+        rows.map((row) => row.contractId),
+        services,
+      );
+      return {
+        allocations: rows.map((row) => minimizeAllocation(row, labels.get(row.contractId))),
+      };
     },
   };
 }
@@ -37,7 +48,11 @@ export function createGetContractAllocationTool(
       if (!contractId) {
         throw new AiClarificationError("unknown_entity");
       }
-      return minimizeAllocation(await services.getContractAllocation(context, contractId));
+      const [allocation, clientName] = await Promise.all([
+        services.getContractAllocation(context, contractId),
+        resolveOneAllocationClientLabel(context, contractId, services),
+      ]);
+      return minimizeAllocation(allocation, clientName);
     },
   };
 }

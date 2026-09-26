@@ -1,103 +1,20 @@
 // src/application/ai/grounding/assemble-grounded-answer.ts
-import type { AiCitation, AiGroundedFact } from "@/application/ai/ai-types";
-import { AnalyticsService } from "@/application/analytics/analytics-service";
-import type { AiPeriodDto } from "@/application/ai/grounding/serialize";
+import {
+  fact,
+  finish,
+  isRecord,
+  moneyFacts,
+  moneyList,
+  periodOf,
+  type GroundedAnswer,
+} from "@/application/ai/grounding/answer-facts";
+import {
+  assembleAllocations,
+  assembleAnnualOverview,
+  assembleContractReport,
+} from "@/application/ai/grounding/assemble-report-answers";
 
-export type GroundedAnswer = {
-  text: string;
-  facts: AiGroundedFact[];
-  citations: AiCitation[];
-};
-
-function fact(
-  metric: string,
-  value: AiGroundedFact["value"],
-  extras: Omit<AiGroundedFact, "metric" | "value"> = {},
-): AiGroundedFact {
-  return { metric, value, ...extras };
-}
-
-function cite(
-  tool: string,
-  item: AiGroundedFact,
-  period?: AiPeriodDto,
-): AiCitation {
-  return {
-    tool,
-    metric: item.metric,
-    value: item.value,
-    currency: item.currency,
-    unit: item.unit,
-    period,
-    clientLabel: item.label,
-    contractLabel: item.label && item.metric.startsWith("contract") ? item.label : undefined,
-  };
-}
-
-function moneyFacts(
-  prefix: string,
-  rows: ReadonlyArray<{ currency: string; published: number | null }>,
-): AiGroundedFact[] {
-  if (rows.length === 0) {
-    return [fact(prefix, 0)];
-  }
-  return rows.map((row) => fact(prefix, row.published, { currency: row.currency }));
-}
-
-function formatFact(item: AiGroundedFact): string {
-  if (item.value === null) {
-    return `${item.metric}: non disponibile`;
-  }
-  if (item.currency) {
-    return `${item.metric}: ${item.value} ${item.currency}`;
-  }
-  if (item.unit === "minutes") {
-    return `${item.metric}: ${AnalyticsService.formatDuration(Number(item.value))}`;
-  }
-  if (item.label) {
-    return `${item.metric} (${item.label}): ${item.value}`;
-  }
-  return `${item.metric}: ${item.value}`;
-}
-
-function finish(tool: string, facts: AiGroundedFact[], period?: AiPeriodDto): GroundedAnswer {
-  return {
-    text: facts.map(formatFact).join(". ") + ".",
-    facts,
-    citations: facts.map((item) => cite(tool, item, period)),
-  };
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-}
-
-function periodOf(value: unknown): AiPeriodDto | undefined {
-  if (!isRecord(value) || !isRecord(value.period)) {
-    return undefined;
-  }
-  const { startDate, endDate } = value.period;
-  if (typeof startDate === "string" && typeof endDate === "string") {
-    return { startDate, endDate };
-  }
-  return undefined;
-}
-
-function moneyList(value: unknown): Array<{ currency: string; published: number | null }> {
-  if (!isRecord(value) || !Array.isArray(value.byCurrency)) {
-    return [];
-  }
-  return value.byCurrency.flatMap((row) => {
-    if (!isRecord(row) || typeof row.currency !== "string") {
-      return [];
-    }
-    const published = row.published;
-    if (published !== null && typeof published !== "number") {
-      return [];
-    }
-    return [{ currency: row.currency, published }];
-  });
-}
+export type { GroundedAnswer };
 
 export function assembleGroundedAnswer(tool: string, dto: unknown): GroundedAnswer {
   if (!isRecord(dto)) {
@@ -148,53 +65,28 @@ export function assembleGroundedAnswer(tool: string, dto: unknown): GroundedAnsw
         }),
       ];
     });
-    return finish(tool, facts.length > 0 ? facts : [fact("clientHours", 0, { unit: "minutes" })], period);
+    return finish(
+      tool,
+      facts.length > 0 ? facts : [fact("clientHours", 0, { unit: "minutes" })],
+      period,
+    );
   }
 
   if (tool === "get_contract_report") {
-    return finish(tool, [
-      ...moneyFacts("accrued", moneyList(dto.accrued)),
-      ...moneyFacts("expected", moneyList(dto.expected)),
-      ...(dto.forecast === null
-        ? [fact("forecast", null)]
-        : moneyFacts("forecast", moneyList(dto.forecast))),
-    ], period);
+    return assembleContractReport(tool, dto, period);
   }
 
   if (tool === "list_contract_allocations") {
     const rows = Array.isArray(dto.allocations) ? dto.allocations : [];
-    const facts = rows.flatMap((row) => {
-      if (!isRecord(row)) {
-        return [];
-      }
-      return [
-        fact("consumedMinutes", row.consumedMinutes as number, { unit: "minutes" }),
-        fact("remainingMinutes", (row.remainingMinutes as number | null) ?? null, {
-          unit: "minutes",
-        }),
-        fact("allocationStatus", (row.allocationStatus as string | null) ?? null),
-      ];
-    });
-    return finish(tool, facts.length > 0 ? facts : [fact("allocations", 0)]);
+    return assembleAllocations(tool, rows);
   }
 
   if (tool === "get_contract_allocation") {
-    return finish(tool, [
-      fact("consumedMinutes", dto.consumedMinutes as number, { unit: "minutes" }),
-      fact("remainingMinutes", (dto.remainingMinutes as number | null) ?? null, { unit: "minutes" }),
-      fact("allocationStatus", (dto.allocationStatus as string | null) ?? null),
-    ]);
+    return assembleAllocations(tool, [dto]);
   }
 
   if (tool === "get_annual_overview") {
-    const months = Array.isArray(dto.months) ? dto.months : [];
-    const facts = months.flatMap((month) => {
-      if (!isRecord(month)) {
-        return [];
-      }
-      return moneyFacts("accrued", moneyList(month.accrued));
-    });
-    return finish(tool, facts.length > 0 ? facts : [fact("accrued", 0)], period);
+    return assembleAnnualOverview(tool, dto);
   }
 
   if (tool === "list_clients" || tool === "get_client") {

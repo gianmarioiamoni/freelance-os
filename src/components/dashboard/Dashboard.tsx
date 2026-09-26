@@ -1,4 +1,5 @@
 // src/components/dashboard/Dashboard.tsx
+import { AnalyticsAskBox } from "@/components/ai/AnalyticsAskBox";
 import { MonthlyAnalytics } from "@/components/dashboard/MonthlyAnalytics";
 import { ClientAllocation } from "@/components/dashboard/ClientAllocation";
 import { ContractUtilization } from "@/components/dashboard/ContractUtilization";
@@ -22,13 +23,27 @@ export function Dashboard({
   const hasTimeEntries = analytics.totalMinutes > 0;
   const periodDisplay = formatPeriodDisplay(analytics.period);
 
-  if (!hasTimeEntries) {
-    return (
-      <div className="space-y-6">
-        <PageHeader
-          title={`Dashboard - ${periodDisplay}`}
-          description="Track your work analytics and contract utilization"
-        />
+  return (
+    <div className="space-y-6">
+      <PageHeader
+        title={`Dashboard - ${periodDisplay}`}
+        description="Track your work analytics and contract utilization"
+      />
+      <AnalyticsAskBox surface="dashboard" />
+
+      {hasTimeEntries ? (
+        <div className="grid gap-6 lg:grid-cols-3">
+          <div className="lg:col-span-3">
+            <MonthlyAnalytics analytics={analytics} />
+          </div>
+          <div className="lg:col-span-2">
+            <ClientAllocation allocations={analytics.clientAllocations} />
+          </div>
+          <div className="lg:col-span-1">
+            <ContractUtilization utilizations={analytics.contractUtilizations} />
+          </div>
+        </div>
+      ) : (
         <EmptyState
           title="No time entries yet"
           description={
@@ -48,33 +63,7 @@ export function Dashboard({
             )
           }
         />
-      </div>
-    );
-  }
-
-  return (
-    <div className="space-y-6">
-      <PageHeader
-        title={`Dashboard - ${periodDisplay}`}
-        description="Track your work analytics and contract utilization"
-      />
-
-      <div className="grid gap-6 lg:grid-cols-3">
-        {/* Monthly Summary - Takes full width on mobile, 1 column on large screens */}
-        <div className="lg:col-span-3">
-          <MonthlyAnalytics analytics={analytics} />
-        </div>
-
-        {/* Client Allocation - Left column on large screens */}
-        <div className="lg:col-span-2">
-          <ClientAllocation allocations={analytics.clientAllocations} />
-        </div>
-
-        {/* Contract Utilization - Right column on large screens */}
-        <div className="lg:col-span-1">
-          <ContractUtilization utilizations={analytics.contractUtilizations} />
-        </div>
-      </div>
+      )}
     </div>
   );
 }

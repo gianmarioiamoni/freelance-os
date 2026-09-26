@@ -88,10 +88,19 @@ function scriptForCase(id: string) {
 describe("analytics eval harness", () => {
   it("evaluates GP and RF cases against scripted Mock/Null adapters, not a live model", async () => {
     const context = workspaceContext();
-    const captured: { context?: ReturnType<typeof workspaceContext> } = {};
+    const captured: {
+      context?: ReturnType<typeof workspaceContext>;
+      periodKind?: string;
+    } = {};
+    const defaults = stubAnalyticsServices({}, captured);
     const services = stubAnalyticsServices(
       {
+        resolvePeriod: (request, timezone, now) => {
+          captured.periodKind = request.kind;
+          return defaults.resolvePeriod(request, timezone, now);
+        },
         listClients: async () => [
+          clientRecord(),
           clientRecord({ id: "client-a", companyName: "ACME" }),
           clientRecord({ id: "client-b", companyName: "ACME" }),
         ],
@@ -133,7 +142,26 @@ describe("analytics eval harness", () => {
         expect(result.citations.length, evalCase.id).toBeGreaterThan(0);
         expect(result.citations.every((citation) => citation.tool === evalCase.expectedTool)).toBe(true);
         expect(JSON.stringify(result), evalCase.id).not.toContain("workspace-owned");
+        expect(JSON.stringify(result), evalCase.id).not.toContain("contract-1");
         expect(captured.context?.workspaceId, evalCase.id).toBe(context.workspaceId);
+        if (
+          evalCase.expectedPeriodKind &&
+          evalCase.expectedTool !== "get_current_month_analytics" &&
+          evalCase.expectedTool !== "list_contract_allocations"
+        ) {
+          expect(captured.periodKind, evalCase.id).toBe(evalCase.expectedPeriodKind);
+        }
+      }
+
+      if (evalCase.id === "GP-08") {
+        expect(result.facts.some((item) => item.metric === "utilizationPercentage")).toBe(true);
+        expect(result.facts.some((item) => item.metric === "allocationStatus")).toBe(true);
+        expect(result.citations.some((citation) => citation.contractLabel === "ACME")).toBe(true);
+      }
+
+      if (evalCase.id === "GP-09") {
+        expect(result.facts.some((item) => item.metric === "allocationStatus" && item.value === "WARNING")).toBe(true);
+        expect(result.citations.some((citation) => citation.contractLabel === "ACME")).toBe(true);
       }
 
       if (evalCase.id === "RF-08") {

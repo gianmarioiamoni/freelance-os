@@ -46,6 +46,7 @@ export default defineConfig({
       DATABASE_URL: testDatabaseUrl,
       TEST_DATABASE_URL: testDatabaseUrl,
       AUTH_EMAIL_DELIVERY: "test",
+      AI_E2E_MOCK: "true",
       BETTER_AUTH_URL: betterAuthUrl,
       BETTER_AUTH_SECRET: betterAuthSecret,
       ...(useProductionWebServer ? { AUTH_E2E_RUNTIME: "true" } : {}),

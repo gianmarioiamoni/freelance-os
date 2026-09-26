@@ -117,18 +117,25 @@ export function minimizeHoursByClient(result: HoursByClientReport) {
 }
 
 export function minimizeContractReport(result: ContractReport) {
+  const clientNames = new Map(
+    result.contractUtilizations.map((row) => [row.contractId, row.clientName]),
+  );
+
   return {
     period: serializePeriod(result.period),
     contractUtilizations: minimizeUtilizations(result.contractUtilizations),
-    contractAllocations: capRows(result.contractAllocations).map(minimizeAllocation),
+    contractAllocations: capRows(result.contractAllocations).map((row) =>
+      minimizeAllocation(row, clientNames.get(row.contractId)),
+    ),
     accrued: minimizeRevenue(result.accrued),
     expected: minimizeRevenue(result.expected),
     forecast: result.forecast ? minimizeRevenue(result.forecast) : null,
   };
 }
 
-export function minimizeAllocation(row: ContractAllocation) {
+export function minimizeAllocation(row: ContractAllocation, clientName?: string) {
   return {
+    ...(clientName ? { clientName } : {}),
     allocatedMinutes: row.allocatedMinutes,
     consumedMinutes: row.consumedMinutes,
     remainingMinutes: row.remainingMinutes,

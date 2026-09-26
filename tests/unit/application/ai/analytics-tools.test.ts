@@ -51,6 +51,29 @@ describe("analytics read tools", () => {
     ).rejects.toBeInstanceOf(ClientNotFoundError);
   });
 
+  it("attaches a safe client label to allocations and omits contract ids", async () => {
+    const registry = createAnalyticsToolRegistry(stubAnalyticsServices());
+    const listed = await registry.get("list_contract_allocations")?.execute(
+      workspaceContext(),
+      {},
+    );
+    const single = await registry.get("get_contract_allocation")?.execute(
+      workspaceContext(),
+      { contractId: "contract-1" },
+    );
+    const report = await registry.get("get_contract_report")?.execute(
+      workspaceContext(),
+      { periodKind: "month" },
+    );
+
+    expect(listed).toMatchObject({ allocations: [expect.objectContaining({ clientName: "ACME" })] });
+    expect(single).toMatchObject({ clientName: "ACME" });
+    expect(report).toMatchObject({
+      contractAllocations: [expect.objectContaining({ clientName: "ACME" })],
+    });
+    expect(JSON.stringify({ listed, single, report })).not.toContain("contract-1");
+  });
+
   it("omits contract notes and workspace ids from minimized DTOs", async () => {
     const registry = createAnalyticsToolRegistry(stubAnalyticsServices());
     const result = await registry.get("get_contract")?.execute(workspaceContext(), {

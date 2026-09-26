@@ -27,6 +27,10 @@ function parseIsoDate(value: unknown): Date | undefined {
 /**
  * Interprets model-visible period args into a ReportingService period request.
  * Missing period defaults to current month. Invalid args do not substitute.
+ *
+ * `today` and `week` are valid period kinds for existing periodized analytics
+ * (the same named periods Reports already resolves). They are not a daily or
+ * weekly analytics capability.
  */
 export function parseAiPeriodRequest(
   args: Record<string, unknown>,

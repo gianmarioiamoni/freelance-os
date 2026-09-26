@@ -9,7 +9,11 @@ import type {
   ExpectedRevenue,
   MonthlyAnalytics,
 } from "@/domain/analytics-types";
-import type { ClientRecord, WorkspaceMemberRecord } from "@/domain/persistence-types";
+import type {
+  ClientRecord,
+  ContractRecord,
+  WorkspaceMemberRecord,
+} from "@/domain/persistence-types";
 import type { WorkspaceMemberRepository } from "@/domain/repositories";
 
 export function workspaceContext(
@@ -79,7 +83,20 @@ export function monthlyAnalyticsFixture(
         percentage: 100,
       },
     ],
-    contractUtilizations: [],
+    contractUtilizations: [
+      {
+        contractId: "contract-1",
+        clientName: "ACME",
+        isArchived: false,
+        validFrom: new Date("2026-01-01T00:00:00.000Z"),
+        validTo: null,
+        isOngoing: true,
+        consumedMinutes: 120,
+        contractedMinutes: 600,
+        utilizationPercentage: 20,
+        isOutOfValidity: false,
+      },
+    ],
     accrued: revenueFixture(period, 160),
     expected: expectedFixture(period, 6400),
     forecast: { ...revenueFixture(period, 160), elapsedPeriod: 26, totalPeriod: 26 },
@@ -125,6 +142,28 @@ export function stubCurrentMonthAnalytics(
   };
 }
 
+export function contractRecord(
+  overrides: Partial<ContractRecord> = {},
+): ContractRecord {
+  return {
+    id: "contract-1",
+    workspaceId: "workspace-owned",
+    clientId: "client-1",
+    validFrom: new Date("2026-01-01T00:00:00.000Z"),
+    validTo: null,
+    billingModel: "HOURLY",
+    rate: "80",
+    currency: "EUR",
+    monthlyContractedMinutes: 600,
+    allocatedMinutes: 600,
+    paymentTermsDays: 30,
+    paymentTermsNote: "secret note",
+    createdAt: new Date("2026-01-01T00:00:00.000Z"),
+    updatedAt: new Date("2026-01-01T00:00:00.000Z"),
+    ...overrides,
+  };
+}
+
 export function clientRecord(
   overrides: Partial<ClientRecord> = {},
 ): ClientRecord {
@@ -157,6 +196,16 @@ export function stubAnalyticsServices(
   const monthly = monthlyAnalyticsFixture();
   const reporting = new ReportingService({} as AnalyticsService);
   const clients = [clientRecord()];
+  const contracts = [contractRecord()];
+  const contractAllocations = [
+    {
+      contractId: "contract-1",
+      allocatedMinutes: 600,
+      consumedMinutes: 480,
+      remainingMinutes: 120,
+      allocationStatus: "WARNING" as const,
+    },
+  ];
 
   return {
     resolvePeriod: (request, timezone, now) =>
@@ -197,7 +246,7 @@ export function stubAnalyticsServices(
         periodKind: { kind: "month" },
         filter: {},
         contractUtilizations: monthly.contractUtilizations,
-        contractAllocations: [],
+        contractAllocations,
         accrued: monthly.accrued,
         expected: monthly.expected,
         forecast: monthly.forecast,
@@ -209,25 +258,11 @@ export function stubAnalyticsServices(
     },
     listContractAllocations: async (context) => {
       captured.context = context;
-      return [
-        {
-          contractId: "contract-1",
-          allocatedMinutes: 600,
-          consumedMinutes: 480,
-          remainingMinutes: 120,
-          allocationStatus: "WARNING",
-        },
-      ];
+      return contractAllocations;
     },
     getContractAllocation: async (context) => {
       captured.context = context;
-      return {
-        contractId: "contract-1",
-        allocatedMinutes: 600,
-        consumedMinutes: 480,
-        remainingMinutes: 120,
-        allocationStatus: "WARNING",
-      };
+      return contractAllocations[0];
     },
     listClients: async (context) => {
       captured.context = context;
@@ -246,7 +281,7 @@ export function stubAnalyticsServices(
     },
     listContracts: async (context) => {
       captured.context = context;
-      return [];
+      return contracts.filter((row) => row.workspaceId === context.workspaceId);
     },
     listContractsForClient: async (context) => {
       captured.context = context;
@@ -258,22 +293,7 @@ export function stubAnalyticsServices(
         const { ContractNotFoundError } = await import("@/domain/contract-errors");
         throw new ContractNotFoundError();
       }
-      return {
-        id: "contract-1",
-        workspaceId: context.workspaceId,
-        clientId: "client-1",
-        validFrom: new Date("2026-01-01T00:00:00.000Z"),
-        validTo: null,
-        billingModel: "HOURLY",
-        rate: "80",
-        currency: "EUR",
-        monthlyContractedMinutes: 600,
-        allocatedMinutes: 600,
-        paymentTermsDays: 30,
-        paymentTermsNote: "secret note",
-        createdAt: new Date("2026-01-01T00:00:00.000Z"),
-        updatedAt: new Date("2026-01-01T00:00:00.000Z"),
-      };
+      return contractRecord({ workspaceId: context.workspaceId });
     },
     listInvoicesForContract: async (context) => {
       captured.context = context;
