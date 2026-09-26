@@ -41,6 +41,7 @@ describe("Vercel deployment configuration", () => {
   it("does not embed secrets, E2E markers, or a hosted project identity", () => {
     expect(vercelRaw).not.toMatch(/AUTH_E2E_RUNTIME/);
     expect(vercelRaw).not.toMatch(/AI_E2E_MOCK/);
+    expect(vercelRaw).not.toMatch(/AI_EVAL_/);
     expect(vercelRaw).not.toMatch(/TEST_DATABASE_URL/);
     expect(vercelRaw).not.toMatch(/GOOGLE_CLIENT/);
     expect(vercelRaw).not.toMatch(/RESEND_API_KEY/);

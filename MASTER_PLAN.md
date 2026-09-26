@@ -1318,7 +1318,7 @@ PLAN:   docs/release/r2.1-ai-plan.md
 RECORD: docs/release/r2.1-ai-discovery.md
 CERT:   docs/release/r2.1-certification.md
 PROVIDER: Null. Live AI NOT ENABLED
-NEXT:   Do not start model/provider integration. Do not start R3.
+NEXT:   Provider eval recorded. R21-OD-001 is a PO decision. Production stays Null. Do not start R3.
 ```
 
 Epics:
@@ -2335,7 +2335,7 @@ Next actions:
 21. Official sequence: R1 → R2 → R2.1 → R3 (Deferred) → R4
 22. R2.1 planning frozen (`docs/release/r2.1-ai-plan.md`; P-R2.1-00)
 23. R2.1 PRODUCTION-CERTIFIED (`docs/release/r2.1-certification.md`). Provider Null. Live AI NOT ENABLED
-24. Do not start model/provider integration. Do not start R3
+24. R2.1 provider eval recorded (`docs/release/r2.1-ai-provider-evaluation.md`). R21-OD-001 remains a PO decision. Production stays Null. Do not start R3
 25. Do not rewrite historical §34 / §35 rows
 ```
 

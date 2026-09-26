@@ -6,6 +6,7 @@ All notable changes to FreelanceOS are documented in this file.
 
 ### Added
 
+- R2.1 provider/model evaluation recorded (`docs/release/r2.1-ai-provider-evaluation.md`). Isolated eval harness only. Production provider remains Null. Live AI NOT ENABLED. R21-OD-001 remains a PO decision. Do not start R3.
 - R2.1 PRODUCTION-CERTIFIED (`docs/release/r2.1-certification.md`) at implementation HEAD `74437afb49759e10f47582c850d88561a0081f51`. E01–E03 complete. Production provider Null. Live AI NOT ENABLED. F-E02-01…04 closed. F-E02-05 remains LOW / not expanded. No schema migration. No live provider. Do not start R3.
 - R2 RELEASED WITH FINDINGS (`docs/release/r2-release.md`). Certified application `670e7505857649efe62775d7e12d47e60c747080`. Deployed `a0707e1da3392cadcdf5ae6356913da220b531bb` / GitHub Production `6672213732` at `https://freelance-os-timeplan.vercel.app`. Migration via `prisma migrate deploy`. Critical smoke PASS. Known findings retained. Invoice/payment live-record smoke not exercised (empty workspace). No release tag. R2 is PRODUCTION-RELEASED. Do not start R3.
 - R2 CERTIFIED (`docs/release/r2-certification.md`) at `670e7505857649efe62775d7e12d47e60c747080`. Release-level QA PASS WITH FINDINGS. UX Validation PASS WITH FINDINGS. Production Validation PASS WITH FINDINGS. No BLOCKER. No HIGH open. Known LOW/MEDIUM findings retained. Environment limitations recorded. Release has not occurred. R2 is not production-ready. Next: R2 Release.

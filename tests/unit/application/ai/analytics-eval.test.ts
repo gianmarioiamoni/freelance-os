@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import { createAnalyticsToolRegistry } from "@/application/ai/create-analytics-registry";
 import { ANALYTICS_EVAL_CASES } from "@/application/ai/eval/analytics-eval-cases";
+import { scriptForAnalyticsEvalCase } from "@/application/ai/eval/scripted-eval-adapter";
 import { askWorkspaceQuestion } from "@/application/ai/orchestrator";
 import { createMockAiProviderAdapter } from "@/infrastructure/ai/mock-ai-provider-adapter";
 import { createNullAiProviderAdapter } from "@/infrastructure/ai/null-ai-provider-adapter";
@@ -13,77 +14,6 @@ import {
   stubAnalyticsServices,
   workspaceContext,
 } from "./ai-test-helpers";
-
-function scriptForCase(id: string) {
-  if (id === "GP-01" || id === "GP-02" || id === "GP-06") {
-    return {
-      type: "tool_calls" as const,
-      calls: [{ name: "get_current_month_analytics", args: {} }],
-    };
-  }
-  if (id === "GP-03") {
-    return {
-      type: "tool_calls" as const,
-      calls: [{ name: "get_accrued_revenue", args: { periodKind: "month" } }],
-    };
-  }
-  if (id === "GP-04") {
-    return {
-      type: "tool_calls" as const,
-      calls: [{ name: "get_expected_revenue", args: { periodKind: "month" } }],
-    };
-  }
-  if (id === "GP-05") {
-    return {
-      type: "tool_calls" as const,
-      calls: [{ name: "get_forecast_revenue", args: { periodKind: "month" } }],
-    };
-  }
-  if (id === "GP-07") {
-    return {
-      type: "tool_calls" as const,
-      calls: [{ name: "get_hours_by_client", args: { periodKind: "month" } }],
-    };
-  }
-  if (id === "GP-08") {
-    return {
-      type: "tool_calls" as const,
-      calls: [{ name: "get_contract_report", args: { periodKind: "month" } }],
-    };
-  }
-  if (id === "GP-09") {
-    return {
-      type: "tool_calls" as const,
-      calls: [{ name: "list_contract_allocations", args: {} }],
-    };
-  }
-  if (id === "RF-07") {
-    return {
-      type: "tool_calls" as const,
-      calls: [{ name: "get_accrued_revenue", args: { periodKind: "month", clientName: "ACME" } }],
-    };
-  }
-  if (id === "RF-08") {
-    return {
-      type: "tool_calls" as const,
-      calls: [
-        {
-          name: "get_forecast_revenue",
-          args: { periodKind: "custom", startDate: "2025-01-01", endDate: "2025-01-31" },
-        },
-      ],
-    };
-  }
-  if (id.startsWith("RF-") && id !== "RF-09") {
-    const refusal =
-      id === "RF-05" ? "write_forbidden" : id === "RF-06" ? "injection" : "unsupported_capability";
-    return {
-      type: "message" as const,
-      message: JSON.stringify({ refusal }),
-    };
-  }
-  return { type: "unavailable" as const };
-}
 
 describe("analytics eval harness", () => {
   it("evaluates GP and RF cases against scripted Mock/Null adapters, not a live model", async () => {
@@ -128,7 +58,7 @@ describe("analytics eval harness", () => {
           adapter:
             evalCase.expectedOutcome === "unavailable"
               ? createNullAiProviderAdapter()
-              : createMockAiProviderAdapter({ script: scriptForCase(evalCase.id) }),
+              : createMockAiProviderAdapter({ script: scriptForAnalyticsEvalCase(evalCase.id) }),
           registry: createAnalyticsToolRegistry(services),
           members: owningMembers(context),
           createCorrelationId: () => `eval-${evalCase.id}`,
