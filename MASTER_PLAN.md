@@ -1,10 +1,10 @@
 # FreelanceOS --- MASTER PLAN
 
-**Status:** R1 FROZEN / GRANTED. R2 CERTIFIED / NOT PRODUCTION-READY.\
+**Status:** R1 FROZEN / GRANTED. R2 PRODUCTION-RELEASED.\
 **Document:** `MASTER_PLAN.md`\
 **Product:** FreelanceOS\
 **Canonical format:** Markdown\
-**Current phase:** EPIC-110 CLOSED. R1 FROZEN / GRANTED (`docs/release/r1-freeze.md`). Candidate `c6712224e8d093b6f64cb46a17823a20de356a31`. Production deployment `6558481150` at `https://freelance-os-timeplan.vercel.app`. Actionable R1 findings = 0. Historical §34 / §35 snapshots unchanged. R2 Revenue Operations is CERTIFIED (`docs/release/r2-certification.md`) at `670e7505857649efe62775d7e12d47e60c747080`. Next authorized phase: R2 Release. R2 is not production-ready. Release has not occurred.
+**Current phase:** EPIC-110 CLOSED. R1 FROZEN / GRANTED (`docs/release/r1-freeze.md`). Historical R1 candidate `c6712224e8d093b6f64cb46a17823a20de356a31` / deployment `6558481150`. Actionable R1 findings = 0. Historical §34 / §35 snapshots unchanged. R2 Revenue Operations is PRODUCTION-RELEASED (`docs/release/r2-release.md`) — verdict RELEASED WITH FINDINGS. Certified application `670e7505857649efe62775d7e12d47e60c747080`. Deployed git SHA `a0707e1da3392cadcdf5ae6356913da220b531bb`. GitHub Production `6672213732` at `https://freelance-os-timeplan.vercel.app`. Next authorized phase: none. Do not start R3.
 
 ------------------------------------------------------------------------
 
@@ -135,8 +135,8 @@ context is recovered from repository documentation.
 ## Overall
 
 ``` text
-STATUS: UX Polish COMPLETE; EPIC-107 Public Landing COMPLETE through P107-06 and epic certification; MASTER_PLAN §34 READY FOR RELEASE; §35 GRANTED; EPIC-108 COMPLETE (ER PASS WITH FINDINGS); EPIC-109 COMPLETE (ER PASS); EPIC-110 CLOSED (P110-00 PASS; P110-01 PASS; P110-02 PASS; P110-03 SKIPPED BY DESIGN; P110-04 PASS; P110-05 PASS; P110-06 / P110-06C intermediate findings resolved or superseded; P110-06D PASS; P110-06C FINAL PASS; P110-07 PASS; P110-08 FREEZE). Actionable R1 findings = 0. R1 FROZEN. R2 Decision Workshop complete for in-scope decisions. R2 planning baseline recorded. R2-E01 Revenue Visibility COMPLETE / RELEASE-READY (P-E01-00…P-E01-07). R2-E02 Invoice Tracking COMPLETE WITH NON-BLOCKING FINDING (P-E02-00…P-E02-07). R2-E03 Payment Tracking CERTIFIED (P-E03-00…P-E03-07). R2-E04 Forecasting & Contract Time Allocation CERTIFIED (P-E04-00…P-E04-07). R2-E05 Advanced Reporting & Export CERTIFIED (P-E05-00…P-E05-06). R2 Release QA PASS WITH FINDINGS. R2 UX Validation PASS WITH FINDINGS. R2 Production Validation PASS WITH FINDINGS. R2 CERTIFIED (`docs/release/r2-certification.md`). R2 is not production-ready. Release has not occurred.
-NEXT: R2 Release. Certification: `docs/release/r2-certification.md`. Do not execute Release here. R2 is not production-ready.
+STATUS: UX Polish COMPLETE; EPIC-107 Public Landing COMPLETE through P107-06 and epic certification; MASTER_PLAN §34 READY FOR RELEASE; §35 GRANTED; EPIC-108 COMPLETE (ER PASS WITH FINDINGS); EPIC-109 COMPLETE (ER PASS); EPIC-110 CLOSED (P110-00 PASS; P110-01 PASS; P110-02 PASS; P110-03 SKIPPED BY DESIGN; P110-04 PASS; P110-05 PASS; P110-06 / P110-06C intermediate findings resolved or superseded; P110-06D PASS; P110-06C FINAL PASS; P110-07 PASS; P110-08 FREEZE). Actionable R1 findings = 0. R1 FROZEN. R2 Decision Workshop complete for in-scope decisions. R2 planning baseline recorded. R2-E01 Revenue Visibility COMPLETE / RELEASE-READY (P-E01-00…P-E01-07). R2-E02 Invoice Tracking COMPLETE WITH NON-BLOCKING FINDING (P-E02-00…P-E02-07). R2-E03 Payment Tracking CERTIFIED (P-E03-00…P-E03-07). R2-E04 Forecasting & Contract Time Allocation CERTIFIED (P-E04-00…P-E04-07). R2-E05 Advanced Reporting & Export CERTIFIED (P-E05-00…P-E05-06). R2 Release QA PASS WITH FINDINGS. R2 UX Validation PASS WITH FINDINGS. R2 Production Validation PASS WITH FINDINGS. R2 CERTIFIED (`docs/release/r2-certification.md`). R2 RELEASED WITH FINDINGS (`docs/release/r2-release.md`). R2 is PRODUCTION-RELEASED.
+NEXT: none. Do not start R3.
 Production Validation (§34): EXECUTED — READY FOR RELEASE — docs/release/production-validation.md
 Production Certification (§35): GRANTED — docs/release/production-certification.md
 R1 Freeze: FROZEN — docs/release/r1-freeze.md
@@ -150,6 +150,7 @@ R2-E03 plan: docs/release/r2-e03-payment-tracking.md
 R2-E04 plan: docs/release/r2-e04-forecasting-allocation.md
 R2-E05 plan: docs/release/r2-e05-advanced-reporting-export.md
 R2 Certification: CERTIFIED — docs/release/r2-certification.md
+R2 Release: RELEASED WITH FINDINGS — docs/release/r2-release.md
 Release gate resolution: docs/release/release-gate-resolution.md
 Production readiness: RELEASE GRANTED
 ```
@@ -2291,9 +2292,9 @@ Next actions:
 16. R2 UX Validation PASS WITH FINDINGS
 17. R2 Production Validation PASS WITH FINDINGS
 18. R2 CERTIFIED (`docs/release/r2-certification.md`) at `670e7505857649efe62775d7e12d47e60c747080`
-19. Next authorized phase: R2 Release
-20. Do not execute Release here
-21. Do not mark R2 production-ready
+19. R2 RELEASED WITH FINDINGS (`docs/release/r2-release.md`). Deployed `a0707e1` / GitHub Production `6672213732`
+20. R2 GLOBAL STATUS: PRODUCTION-RELEASED
+21. Next authorized phase: none. Do not start R3
 22. Do not rewrite historical §34 / §35 rows
 ```
 
@@ -2452,9 +2453,11 @@ next:
   r2_e05: certified
   r2_certification: certified
   r2_certified_head: 670e7505857649efe62775d7e12d47e60c747080
-  r2_production_ready: false
-  r2_release: not-occurred
-  objective: R1 FROZEN. R2 CERTIFIED. Next authorized phase: R2 Release. Do not execute Release here. R2 is not production-ready.
+  r2_production_ready: true
+  r2_release: released-with-findings
+  r2_deployed_sha: a0707e1da3392cadcdf5ae6356913da220b531bb
+  r2_github_production: "6672213732"
+  objective: R1 FROZEN. R2 PRODUCTION-RELEASED. Next authorized phase: none. Do not start R3.
   open_non_blocking_findings: []
   accepted_r1_limitations:
     - F-103-003
