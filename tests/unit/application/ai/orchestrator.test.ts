@@ -17,6 +17,7 @@ import {
 function ask(
   overrides: {
     question?: string;
+    surface?: "dashboard" | "reports";
     adapter?: ReturnType<typeof createMockAiProviderAdapter>;
     context?: ReturnType<typeof workspaceContext>;
     members?: ReturnType<typeof owningMembers>;
@@ -31,7 +32,7 @@ function ask(
   return askWorkspaceQuestion(
     {
       question: overrides.question ?? "Come sto andando questo mese?",
-      surface: "dashboard",
+      surface: overrides.surface ?? "dashboard",
       context,
     },
     {
@@ -59,7 +60,36 @@ describe("askWorkspaceQuestion", () => {
     expect(result.outcome).toBe("success");
     expect(result.selectedTools).toEqual(["get_current_month_analytics"]);
     expect(result.citations[0]?.tool).toBe("get_current_month_analytics");
+    expect(result.citations.some((citation) => citation.metric === "accrued" && citation.value === 160)).toBe(true);
     expect(captured.context).toEqual(workspaceContext());
+  });
+
+  it("does not treat ungrounded provider prose as success", async () => {
+    const result = await ask({
+      adapter: createMockAiProviderAdapter({
+        script: { type: "message", message: "Hai maturato 99999 EUR questo mese." },
+      }),
+    });
+
+    expect(result.outcome).toBe("error");
+    expect(result.selectedTools).toEqual([]);
+    expect(result.citations).toEqual([]);
+    expect(result.text).not.toContain("99999");
+  });
+
+  it("maps a tool failure to a generic error without leaking internals", async () => {
+    const result = await ask({
+      analytics: {
+        async getCurrentMonthAnalytics() {
+          throw new Error("PrismaClientKnownRequestError at analytics-repository.ts:88");
+        },
+      },
+    });
+
+    expect(result.outcome).toBe("error");
+    expect(result.text).toBe("");
+    expect(JSON.stringify(result)).not.toContain("Prisma");
+    expect(JSON.stringify(result)).not.toContain("analytics-repository");
   });
 
   it("ignores a provider-supplied workspaceId and keeps the session workspace", async () => {
@@ -154,6 +184,25 @@ describe("askWorkspaceQuestion", () => {
     await expect(
       ask({ members: membersLookingUp(() => null) }),
     ).rejects.toBeInstanceOf(UnauthorizedWorkspaceAccessError);
+  });
+
+  it("does not map a tool authorization failure to an AI success or generic error", async () => {
+    await expect(
+      ask({
+        analytics: {
+          async getCurrentMonthAnalytics() {
+            throw new UnauthorizedWorkspaceAccessError();
+          },
+        },
+      }),
+    ).rejects.toBeInstanceOf(UnauthorizedWorkspaceAccessError);
+  });
+
+  it("rejects an invalid surface at the entry boundary", async () => {
+    const result = await ask({ surface: "assistant" as "dashboard" });
+
+    expect(result.outcome).toBe("error");
+    expect(result.selectedTools).toEqual([]);
   });
 
   it("does not log the user question", async () => {

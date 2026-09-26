@@ -5,15 +5,18 @@ import {
   AI_ADAPTER_TIMEOUT_MS,
   type AiAskInput,
   type AiAskResult,
-  type AiCitation,
 } from "@/application/ai/ai-types";
+import { assembleGroundedAnswer } from "@/application/ai/grounding/assemble-grounded-answer";
 import { logAiRequest } from "@/application/ai/log-ai-request";
+import { mapToolFailure } from "@/application/ai/map-tool-failure";
 import { parseAiQuestion } from "@/application/ai/parse-ai-question";
+import { parseAiSurface } from "@/application/ai/parse-ai-surface";
 import { parseProviderEnvelope } from "@/application/ai/parse-provider-envelope";
 import { requireAiMembership } from "@/application/ai/require-ai-membership";
 import { sanitizeToolArgs } from "@/application/ai/sanitize-tool-args";
 import type { AiToolRegistry } from "@/application/ai/tool-registry";
 import type { WorkspaceContext } from "@/application/workspace/workspace-context";
+import { UnauthorizedWorkspaceAccessError } from "@/domain/workspace-errors";
 import type { WorkspaceMemberRepository } from "@/domain/repositories";
 
 const SYSTEM_INSTRUCTIONS =
@@ -32,21 +35,8 @@ export type AiOrchestratorRequest = AiAskInput & {
   context: WorkspaceContext;
 };
 
-function citationsFromTool(tool: string, result: unknown): AiCitation[] {
-  if (!result || typeof result !== "object") {
-    return [{ tool }];
-  }
-
-  const record = result as { period?: { startDate?: Date; endDate?: Date } };
-  const period =
-    record.period?.startDate instanceof Date && record.period.endDate instanceof Date
-      ? {
-          startDate: record.period.startDate.toISOString(),
-          endDate: record.period.endDate.toISOString(),
-        }
-      : undefined;
-
-  return [{ tool, period }];
+function emptyAnswer(): Pick<AiAskResult, "text" | "facts" | "citations" | "selectedTools"> {
+  return { text: "", facts: [], citations: [], selectedTools: [] };
 }
 
 export async function askWorkspaceQuestion(
@@ -62,14 +52,13 @@ export async function askWorkspaceQuestion(
   let question: string;
   try {
     question = parseAiQuestion(request.question);
+    parseAiSurface(request.surface);
   } catch (error) {
     if (error instanceof InvalidAiQuestionError) {
       return finish(
         {
           outcome: "error",
-          text: "",
-          citations: [],
-          selectedTools: [],
+          ...emptyAnswer(),
           correlationId,
           latencyMs: (deps.now ?? Date.now)() - started,
           providerId: "none",
@@ -104,9 +93,7 @@ export async function askWorkspaceQuestion(
         ...base,
         outcome: "unavailable",
         refusalClass: "provider_unavailable",
-        text: "",
-        citations: [],
-        selectedTools: [],
+        ...emptyAnswer(),
       },
       request,
       log,
@@ -115,18 +102,14 @@ export async function askWorkspaceQuestion(
 
   if (adapterResult.status === "timeout") {
     return finish(
-      { ...base, outcome: "timeout", text: "", citations: [], selectedTools: [] },
+      { ...base, outcome: "timeout", ...emptyAnswer() },
       request,
       log,
     );
   }
 
   if (adapterResult.status === "error") {
-    return finish(
-      { ...base, outcome: "error", text: "", citations: [], selectedTools: [] },
-      request,
-      log,
-    );
+    return finish({ ...base, outcome: "error", ...emptyAnswer() }, request, log);
   }
 
   const interpreted =
@@ -135,11 +118,7 @@ export async function askWorkspaceQuestion(
       : parseProviderEnvelope(adapterResult.message);
 
   if (interpreted.kind === "malformed") {
-    return finish(
-      { ...base, outcome: "error", text: "", citations: [], selectedTools: [] },
-      request,
-      log,
-    );
+    return finish({ ...base, outcome: "error", ...emptyAnswer() }, request, log);
   }
 
   if (interpreted.kind === "refusal") {
@@ -148,9 +127,7 @@ export async function askWorkspaceQuestion(
         ...base,
         outcome: "refusal",
         refusalClass: interpreted.refusalClass,
-        text: "",
-        citations: [],
-        selectedTools: [],
+        ...emptyAnswer(),
       },
       request,
       log,
@@ -158,25 +135,11 @@ export async function askWorkspaceQuestion(
   }
 
   if (interpreted.kind === "message") {
-    return finish(
-      {
-        ...base,
-        outcome: "success",
-        text: interpreted.message,
-        citations: [],
-        selectedTools: [],
-      },
-      request,
-      log,
-    );
+    return finish({ ...base, outcome: "error", ...emptyAnswer() }, request, log);
   }
 
   if (interpreted.toolCalls.length !== 1) {
-    return finish(
-      { ...base, outcome: "error", text: "", citations: [], selectedTools: [] },
-      request,
-      log,
-    );
+    return finish({ ...base, outcome: "error", ...emptyAnswer() }, request, log);
   }
 
   const [call] = interpreted.toolCalls;
@@ -187,9 +150,7 @@ export async function askWorkspaceQuestion(
         ...base,
         outcome: "refusal",
         refusalClass: "unsupported_capability",
-        text: "",
-        citations: [],
-        selectedTools: [],
+        ...emptyAnswer(),
       },
       request,
       log,
@@ -197,19 +158,45 @@ export async function askWorkspaceQuestion(
   }
 
   const sanitized = sanitizeToolArgs(call.args, tool.argumentKeys);
-  const result = await tool.execute(request.context, sanitized.args);
 
-  return finish(
-    {
-      ...base,
-      outcome: "success",
-      text: "",
-      citations: citationsFromTool(tool.name, result),
-      selectedTools: [tool.name],
-    },
-    request,
-    log,
-  );
+  try {
+    const result = await tool.execute(request.context, sanitized.args);
+    const grounded = assembleGroundedAnswer(tool.name, result);
+    return finish(
+      {
+        ...base,
+        outcome: "success",
+        text: grounded.text,
+        facts: grounded.facts,
+        citations: grounded.citations,
+        selectedTools: [tool.name],
+      },
+      request,
+      log,
+    );
+  } catch (error) {
+    const mapped = mapToolFailure(error);
+    if (mapped.kind === "authorization") {
+      throw error instanceof UnauthorizedWorkspaceAccessError
+        ? error
+        : new UnauthorizedWorkspaceAccessError();
+    }
+
+    if (mapped.kind === "clarification") {
+      return finish(
+        {
+          ...base,
+          outcome: "clarification",
+          refusalClass: mapped.refusalClass,
+          ...emptyAnswer(),
+        },
+        request,
+        log,
+      );
+    }
+
+    return finish({ ...base, outcome: "error", ...emptyAnswer() }, request, log);
+  }
 }
 
 function finish(

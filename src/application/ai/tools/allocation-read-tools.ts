@@ -1,0 +1,43 @@
+// src/application/ai/tools/allocation-read-tools.ts
+import { AiClarificationError } from "@/application/ai/ai-errors";
+import type { AiAnalyticsServices } from "@/application/ai/ai-service-ports";
+import type { AiReadTool } from "@/application/ai/tool-contract";
+import { capRows } from "@/application/ai/grounding/serialize";
+import { minimizeAllocation } from "@/application/ai/grounding/minimize-dtos";
+import { parseRequiredString } from "@/application/ai/parse-tool-args";
+import { resolveAnalyticsFilter, resolveContractReference } from "@/application/ai/resolve-ai-entity";
+
+export function createListContractAllocationsTool(
+  services: AiAnalyticsServices,
+): AiReadTool {
+  return {
+    name: "list_contract_allocations",
+    description: "Derived allocation, remaining minutes, and status for workspace contracts.",
+    readOnly: true,
+    argumentKeys: ["clientId", "clientName", "contractId"],
+    async execute(context, args) {
+      const filter = await resolveAnalyticsFilter(context, args, services);
+      const rows = await services.listContractAllocations(context, filter);
+      return { allocations: capRows(rows).map(minimizeAllocation) };
+    },
+  };
+}
+
+export function createGetContractAllocationTool(
+  services: AiAnalyticsServices,
+): AiReadTool {
+  return {
+    name: "get_contract_allocation",
+    description: "Derived allocation view for one resolved contract.",
+    readOnly: true,
+    argumentKeys: ["contractId"],
+    async execute(context, args) {
+      const resolved = await resolveContractReference(context, args, services);
+      const contractId = resolved?.contractId ?? parseRequiredString(args.contractId);
+      if (!contractId) {
+        throw new AiClarificationError("unknown_entity");
+      }
+      return minimizeAllocation(await services.getContractAllocation(context, contractId));
+    },
+  };
+}

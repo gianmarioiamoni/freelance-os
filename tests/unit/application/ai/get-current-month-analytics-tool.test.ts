@@ -30,5 +30,7 @@ describe("createGetCurrentMonthAnalyticsTool", () => {
 
     expect(captured.context).toEqual(context);
     expect(result.totalMinutes).toBe(45);
+    expect(result.period.startDate).toBe("2026-09-01T00:00:00.000Z");
+    expect(JSON.stringify(result)).not.toContain("workspaceId");
   });
 });

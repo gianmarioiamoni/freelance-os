@@ -12,6 +12,7 @@ const REFUSAL_CLASSES = new Set<AiRefusalClass>([
   "unsupported_capability",
   "write_forbidden",
   "ambiguous_entity",
+  "unknown_entity",
   "invalid_period",
   "provider_unavailable",
   "injection",
