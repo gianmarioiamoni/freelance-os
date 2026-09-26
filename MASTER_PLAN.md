@@ -4,7 +4,7 @@
 **Document:** `MASTER_PLAN.md`\
 **Product:** FreelanceOS\
 **Canonical format:** Markdown\
-**Current phase:** EPIC-110 CLOSED. R1 FROZEN / GRANTED (`docs/release/r1-freeze.md`). Historical R1 candidate `c6712224e8d093b6f64cb46a17823a20de356a31` / deployment `6558481150`. Actionable R1 findings = 0. Historical §34 / §35 snapshots unchanged. R2 Revenue Operations is PRODUCTION-RELEASED (`docs/release/r2-release.md`) — verdict RELEASED WITH FINDINGS. Certified application `670e7505857649efe62775d7e12d47e60c747080`. Deployed git SHA `a0707e1da3392cadcdf5ae6356913da220b531bb`. GitHub Production `6672213732` at `https://freelance-os-timeplan.vercel.app`. Official sequence: R1 → R2 → R2.1 → R3 (Deferred) → R4. R2.1-E01 AI Foundation IMPLEMENTED. Next authorized phase: R2.1-E02 Natural Language Analytics. Do not start R3.
+**Current phase:** EPIC-110 CLOSED. R1 FROZEN / GRANTED (`docs/release/r1-freeze.md`). Historical R1 candidate `c6712224e8d093b6f64cb46a17823a20de356a31` / deployment `6558481150`. Actionable R1 findings = 0. Historical §34 / §35 snapshots unchanged. R2 Revenue Operations is PRODUCTION-RELEASED (`docs/release/r2-release.md`) — verdict RELEASED WITH FINDINGS. Certified application `670e7505857649efe62775d7e12d47e60c747080`. Deployed git SHA `a0707e1da3392cadcdf5ae6356913da220b531bb`. GitHub Production `6672213732` at `https://freelance-os-timeplan.vercel.app`. Official sequence: R1 → R2 → R2.1 → R3 (Deferred) → R4. R2.1 PRODUCTION-CERTIFIED (`docs/release/r2.1-certification.md`). Production provider Null. Live AI NOT ENABLED. Do not start model/provider integration. Do not start R3.
 
 ------------------------------------------------------------------------
 
@@ -136,7 +136,7 @@ context is recovered from repository documentation.
 
 ``` text
 STATUS: UX Polish COMPLETE; EPIC-107 Public Landing COMPLETE through P107-06 and epic certification; MASTER_PLAN §34 READY FOR RELEASE; §35 GRANTED; EPIC-108 COMPLETE (ER PASS WITH FINDINGS); EPIC-109 COMPLETE (ER PASS); EPIC-110 CLOSED (P110-00 PASS; P110-01 PASS; P110-02 PASS; P110-03 SKIPPED BY DESIGN; P110-04 PASS; P110-05 PASS; P110-06 / P110-06C intermediate findings resolved or superseded; P110-06D PASS; P110-06C FINAL PASS; P110-07 PASS; P110-08 FREEZE). Actionable R1 findings = 0. R1 FROZEN. R2 Decision Workshop complete for in-scope decisions. R2 planning baseline recorded. R2-E01 Revenue Visibility COMPLETE / RELEASE-READY (P-E01-00…P-E01-07). R2-E02 Invoice Tracking COMPLETE WITH NON-BLOCKING FINDING (P-E02-00…P-E02-07). R2-E03 Payment Tracking CERTIFIED (P-E03-00…P-E03-07). R2-E04 Forecasting & Contract Time Allocation CERTIFIED (P-E04-00…P-E04-07). R2-E05 Advanced Reporting & Export CERTIFIED (P-E05-00…P-E05-06). R2 Release QA PASS WITH FINDINGS. R2 UX Validation PASS WITH FINDINGS. R2 Production Validation PASS WITH FINDINGS. R2 CERTIFIED (`docs/release/r2-certification.md`). R2 RELEASED WITH FINDINGS (`docs/release/r2-release.md`). R2 is PRODUCTION-RELEASED.
-NEXT: R2.1-E02 Natural Language Analytics. R3 is deferred. Do not start R3.
+NEXT: R2.1 PRODUCTION-CERTIFIED. Do not start model/provider integration. R3 is deferred. Do not start R3.
 Production Validation (§34): EXECUTED — READY FOR RELEASE — docs/release/production-validation.md
 Production Certification (§35): GRANTED — docs/release/production-certification.md
 R1 Freeze: FROZEN — docs/release/r1-freeze.md
@@ -1313,10 +1313,12 @@ Language Analytics + explanation above existing R2 services. Not R3.
 Not the full R4 AI release.
 
 ``` text
-STATUS: R2.1-E01 AI Foundation IMPLEMENTED
+STATUS: R2.1 PRODUCTION-CERTIFIED
 PLAN:   docs/release/r2.1-ai-plan.md
 RECORD: docs/release/r2.1-ai-discovery.md
-NEXT:   R2.1-E02 Natural Language Analytics
+CERT:   docs/release/r2.1-certification.md
+PROVIDER: Null. Live AI NOT ENABLED
+NEXT:   Do not start model/provider integration. Do not start R3.
 ```
 
 Epics:
@@ -2332,8 +2334,9 @@ Next actions:
 20. R2 GLOBAL STATUS: PRODUCTION-RELEASED
 21. Official sequence: R1 → R2 → R2.1 → R3 (Deferred) → R4
 22. R2.1 planning frozen (`docs/release/r2.1-ai-plan.md`; P-R2.1-00)
-23. Next authorized phase: R2.1-E02 Natural Language Analytics. Do not start R3
-24. Do not rewrite historical §34 / §35 rows
+23. R2.1 PRODUCTION-CERTIFIED (`docs/release/r2.1-certification.md`). Provider Null. Live AI NOT ENABLED
+24. Do not start model/provider integration. Do not start R3
+25. Do not rewrite historical §34 / §35 rows
 ```
 
 FINDING-UX-004, FINDING-QA-002, FINDING-INT-001, FINDING-108-001, F-104-007,
@@ -2393,11 +2396,17 @@ releases:
     release: not-occurred
   R2.1:
     name: AI above R2
-    status: e01-implemented
+    status: production-certified
     discovery: docs/release/r2.1-ai-discovery.md
     plan: docs/release/r2.1-ai-plan.md
-    implementation_epic: R2.1-E02
+    certification: docs/release/r2.1-certification.md
+    implementation_head: 74437afb49759e10f47582c850d88561a0081f51
+    implementation_epic: none
     e01: implemented
+    e02: implemented
+    e03: implemented
+    provider: null
+    live_ai: not-enabled
   R3:
     name: Integrations
     status: deferred
@@ -2480,10 +2489,10 @@ last_completed:
     - F-110-P06-002 CLOSED TECHNICAL / production-verified (EPIC-110 / P110-06C FINAL)
 
 next:
-  phase: R2.1-E02
-  epic: R2.1-E02
-  gate: R2.1 Natural Language Analytics
-  reference: docs/release/r2.1-ai-plan.md
+  phase: R2.1-certified
+  epic: none
+  gate: R2.1 release certification
+  reference: docs/release/r2.1-certification.md
   r1_freeze_reference: docs/release/r1-freeze.md
   production_validation: READY FOR RELEASE
   production_validation_reference: MASTER_PLAN.md §34
@@ -2502,7 +2511,7 @@ next:
   r2_release: released-with-findings
   r2_deployed_sha: a0707e1da3392cadcdf5ae6356913da220b531bb
   r2_github_production: "6672213732"
-  objective: R1 FROZEN. R2 PRODUCTION-RELEASED. R2.1-E01 implemented. Next authorized phase: R2.1-E02. R3 deferred. Do not start R3.
+  objective: R1 FROZEN. R2 PRODUCTION-RELEASED. R2.1 PRODUCTION-CERTIFIED. Provider Null. Live AI NOT ENABLED. Do not start model/provider integration. R3 deferred. Do not start R3.
   open_non_blocking_findings: []
   accepted_r1_limitations:
     - F-103-003

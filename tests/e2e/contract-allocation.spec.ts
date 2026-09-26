@@ -119,8 +119,8 @@ test("should show Accrued and current-period Forecast on existing revenue surfac
   });
 
   await page.goto("/dashboard");
-  await expect(page.getByText("Accrued")).toBeVisible();
-  await expect(page.getByText("Forecast")).toBeVisible();
+  await expect(page.getByText("Accrued", { exact: true })).toBeVisible();
+  await expect(page.getByText("Forecast", { exact: true })).toBeVisible();
   await expect(page.getByText("80 EUR").first()).toBeVisible();
 
   await page.goto("/reports");

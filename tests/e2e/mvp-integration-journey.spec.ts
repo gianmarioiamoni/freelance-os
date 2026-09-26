@@ -136,10 +136,11 @@ test(
     const main = page.getByRole("main");
 
     // Hours by Client section contains MVP Journey Client
-    await expect(
-      main.locator("caption").filter({ hasText: "Hours by Client" }),
-    ).toBeVisible();
-    await expect(page.getByText(CLIENT_NAME).first()).toBeVisible();
+    const hoursByClient = main.locator("table").filter({
+      has: page.locator("caption").filter({ hasText: "Hours by Client" }),
+    });
+    await expect(hoursByClient).toBeVisible();
+    await expect(hoursByClient.getByText(CLIENT_NAME)).toBeVisible();
 
     // Contract Report section present
     await expect(
