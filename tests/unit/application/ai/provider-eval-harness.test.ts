@@ -41,6 +41,18 @@ describe("provider evaluation harness", () => {
     expect(prose?.layers.l5Boundary).toBe("pass");
     expect(prose?.layers.l6Protocol).toBe("fail");
 
+    const briefing = records.find((record) => record.id === "GP-01");
+    expect(briefing?.applicationTruth.selectedTools).toEqual(["get_current_month_analytics"]);
+
+    const accrued = records.find((record) => record.id === "GP-03");
+    expect(accrued?.applicationTruth.selectedTools).toEqual(["get_accrued_revenue"]);
+
+    const expected = records.find((record) => record.id === "GP-04");
+    expect(expected?.applicationTruth.selectedTools).toEqual(["get_expected_revenue"]);
+
+    const forecast = records.find((record) => record.id === "GP-05");
+    expect(forecast?.applicationTruth.selectedTools).toEqual(["get_forecast_revenue"]);
+
     const hours = records.find((record) => record.id === "GP-06");
     expect(hours?.layers.l1Capability).toBe("pass");
     expect(hours?.layers.l2ToolRouting).toBe("pass");
@@ -54,10 +66,17 @@ describe("provider evaluation harness", () => {
     expect(attention?.layers.l2ToolRouting).toBe("pass");
     expect(attention?.applicationTruth.selectedTools).toEqual(["get_contract_report"]);
 
-    const overdue = records.find((record) => record.id === "RF-01");
-    expect(overdue?.modelDecision.selectedTools).toEqual(["refuse"]);
-    expect(overdue?.applicationTruth.outcome).toBe("refusal");
-    expect(overdue?.layers.l5Boundary).toBe("pass");
-    expect(overdue?.layers.l6Protocol).toBe("pass");
+    const consumption = records.find((record) => record.id === "GP-09");
+    expect(consumption?.layers.l2ToolRouting).toBe("pass");
+    expect(consumption?.applicationTruth.selectedTools).toEqual(["list_contract_allocations"]);
+
+    for (const id of ["RF-01", "RF-02", "RF-03", "RF-04", "RF-05"] as const) {
+      const refusal = records.find((record) => record.id === id);
+      expect(refusal?.modelDecision.selectedTools).toEqual(["refuse"]);
+      expect(refusal?.applicationTruth.outcome).toBe("refusal");
+      expect(refusal?.applicationTruth.citationCount).toBe(0);
+      expect(refusal?.layers.l5Boundary).toBe("pass");
+      expect(refusal?.layers.l6Protocol).toBe("pass");
+    }
   });
 });

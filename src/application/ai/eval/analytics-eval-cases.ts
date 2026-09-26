@@ -79,7 +79,8 @@ export const ANALYTICS_EVAL_CASES: readonly AnalyticsEvalCase[] = [
     id: "GP-09",
     question: "Quali contratti stanno consumando più rapidamente l'allocazione?",
     expectedTool: "list_contract_allocations",
-    notes: "Allocation remaining and status. Not periodized by the service.",
+    notes:
+      "OPT-D: exact chip Quali contratti stanno consumando più rapidamente l'allocazione owned by list_contract_allocations. Not get_contract_report.",
   },
   {
     id: "RF-01",

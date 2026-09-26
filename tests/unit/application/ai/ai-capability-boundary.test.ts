@@ -52,8 +52,15 @@ describe("AI capability boundary", () => {
     expect(system).toContain(AI_MODEL_REFUSAL_CLASSES.join(", "));
     expect(system).toContain("call refuse");
     expect(system).toContain("Implicit current-month hours use get_current_month_analytics");
+    expect(system).toContain(
+      "Named Accrued, Expected, Forecast, or maturato use the specialized revenue tool even when the question contains questo mese.",
+    );
     expect(system).toContain("get_hours_by_client");
     expect(system).toContain("attenzione");
+    expect(system).toContain(
+      "Quali contratti stanno consumando più rapidamente l'allocazione uses list_contract_allocations.",
+    );
+    expect(system).toContain("call refuse with class exactly one of: unsupported_capability, write_forbidden, injection");
     expect(system).toContain("Prose is not a valid refusal");
     expect(system).not.toMatch(/fatture scadute/);
   });
