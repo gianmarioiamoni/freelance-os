@@ -38,7 +38,7 @@ export function createGetAccruedRevenueTool(services: AiAnalyticsServices): AiRe
   return {
     name: "get_accrued_revenue",
     description:
-      "Owns Accrued Revenue user-intent for a supported period. Use only when the question asks specifically for Accrued. Not an overview, entity list, or collection tool.",
+      "Owns Accrued Revenue user-intent for a supported period. Italian maturato is Accrued. Use only when the question asks specifically for Accrued. Not an overview, entity list, or collection tool.",
     readOnly: true,
     argumentKeys: PERIOD_FILTER_KEYS,
     async execute(context, args) {

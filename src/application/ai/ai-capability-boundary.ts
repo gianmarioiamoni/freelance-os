@@ -49,7 +49,7 @@ export function buildAiSystemInstructions(): string {
     "Do not choose workspace, user, or role.",
     `Supported capabilities, only via the matching allow-listed tool: ${AI_SUPPORTED_CAPABILITIES.join("; ")}.`,
     "Implicit current-month hours use get_current_month_analytics, not get_monthly_analytics.",
-    "Named Accrued, Expected, Forecast, or maturato use the specialized revenue tool even when the question contains questo mese.",
+    "Named Accrued or Italian maturato use get_accrued_revenue even when the question contains questo mese. Named Expected or Forecast use the matching specialized revenue tool even when the question contains questo mese.",
     "Hours grouped by client, including distribution questions, use get_hours_by_client.",
     "Contract attention (attenzione) uses get_contract_report.",
     "Quali contratti stanno consumando più rapidamente l'allocazione uses list_contract_allocations.",

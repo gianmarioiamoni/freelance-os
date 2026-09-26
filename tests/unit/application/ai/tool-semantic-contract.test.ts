@@ -48,8 +48,11 @@ describe("tool catalog semantic exclusivity", () => {
     );
     expect(byName.get_current_month_analytics).toMatch(/even if it contains questo mese/i);
     expect(byName.get_accrued_revenue).toMatch(/owns accrued revenue user-intent/i);
+    expect(byName.get_accrued_revenue).toMatch(/Italian maturato is Accrued/);
     expect(byName.get_expected_revenue).toMatch(/owns expected revenue user-intent/i);
     expect(byName.get_forecast_revenue).toMatch(/owns forecast revenue user-intent/i);
+    expect(byName.get_expected_revenue).not.toMatch(/maturato/);
+    expect(byName.get_forecast_revenue).not.toMatch(/maturato/);
   });
 
   it("binds hours distribution to get_hours_by_client only", () => {

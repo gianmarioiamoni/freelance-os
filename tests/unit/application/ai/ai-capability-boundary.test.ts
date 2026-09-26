@@ -53,7 +53,7 @@ describe("AI capability boundary", () => {
     expect(system).toContain("call refuse");
     expect(system).toContain("Implicit current-month hours use get_current_month_analytics");
     expect(system).toContain(
-      "Named Accrued, Expected, Forecast, or maturato use the specialized revenue tool even when the question contains questo mese.",
+      "Named Accrued or Italian maturato use get_accrued_revenue even when the question contains questo mese. Named Expected or Forecast use the matching specialized revenue tool even when the question contains questo mese.",
     );
     expect(system).toContain("get_hours_by_client");
     expect(system).toContain("attenzione");
