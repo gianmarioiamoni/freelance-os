@@ -62,7 +62,10 @@ export function scriptForAnalyticsEvalCase(id: string): MockAiScript {
   if (id.startsWith("RF-") && id !== "RF-09") {
     const refusalClass =
       id === "RF-05" ? "write_forbidden" : id === "RF-06" ? "injection" : "unsupported_capability";
-    return { type: "refusal", refusalClass };
+    return {
+      type: "tool_calls",
+      calls: [{ name: "refuse", args: { class: refusalClass } }],
+    };
   }
   return { type: "unavailable" };
 }

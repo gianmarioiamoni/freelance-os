@@ -38,5 +38,26 @@ describe("provider evaluation harness", () => {
     expect(prose?.applicationTruth.outcome).toBe("error");
     expect(prose?.applicationTruth.inventedFigure).toBe(false);
     expect(prose?.applicationTruth.citationCount).toBe(0);
+    expect(prose?.layers.l5Boundary).toBe("pass");
+    expect(prose?.layers.l6Protocol).toBe("fail");
+
+    const hours = records.find((record) => record.id === "GP-06");
+    expect(hours?.layers.l1Capability).toBe("pass");
+    expect(hours?.layers.l2ToolRouting).toBe("pass");
+    expect(hours?.applicationTruth.selectedTools).toEqual(["get_current_month_analytics"]);
+
+    const distribution = records.find((record) => record.id === "GP-07");
+    expect(distribution?.layers.l2ToolRouting).toBe("pass");
+    expect(distribution?.applicationTruth.selectedTools).toEqual(["get_hours_by_client"]);
+
+    const attention = records.find((record) => record.id === "GP-08");
+    expect(attention?.layers.l2ToolRouting).toBe("pass");
+    expect(attention?.applicationTruth.selectedTools).toEqual(["get_contract_report"]);
+
+    const overdue = records.find((record) => record.id === "RF-01");
+    expect(overdue?.modelDecision.selectedTools).toEqual(["refuse"]);
+    expect(overdue?.applicationTruth.outcome).toBe("refusal");
+    expect(overdue?.layers.l5Boundary).toBe("pass");
+    expect(overdue?.layers.l6Protocol).toBe("pass");
   });
 });

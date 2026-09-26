@@ -5,6 +5,7 @@ import { createAnalyticsToolRegistry } from "@/application/ai/create-analytics-r
 import type { ProviderEvalCase } from "@/application/ai/eval/provider-eval-cases";
 import type { ProviderEvalRecord } from "@/application/ai/eval/provider-eval-types";
 import { scoreEvalCase } from "@/application/ai/eval/score-eval-case";
+import { scoreEvalLayers } from "@/application/ai/eval/score-eval-layers";
 import {
   scriptForAnalyticsEvalCase,
   scriptForBoundaryEvalCase,
@@ -130,5 +131,14 @@ export async function runProviderEvalCase(
     usage: lastResult && "usage" in lastResult && lastResult.usage ? lastResult.usage : {},
     estimatedCostUsd: "NOT_MEASURED",
     checks: scoreEvalCase(evalCase, result),
+    layers: scoreEvalLayers(evalCase, result, {
+      adapterStatus: lastResult?.status ?? "none",
+      selectedTools:
+        lastResult && lastResult.status === "tool_calls"
+          ? lastResult.toolCalls.map((call) => call.name)
+          : [],
+      toolArgs: firstCall?.args,
+      attemptedTenantKeys: tenantKeysFrom(firstCall?.args),
+    }),
   };
 }

@@ -2,6 +2,7 @@
 import type { AiAskResult } from "@/application/ai/ai-types";
 import type { AiAdapterResult } from "@/application/ai/ai-provider-port";
 import type { ProviderEvalCase } from "@/application/ai/eval/provider-eval-cases";
+import type { EvalLayerScores } from "@/application/ai/eval/score-eval-layers";
 
 export type EvalCheck = "pass" | "fail" | "na";
 
@@ -31,6 +32,7 @@ export type ProviderEvalRecord = {
     grounding: EvalCheck;
     security: EvalCheck;
   };
+  layers: EvalLayerScores;
 };
 
 export type ProviderEvalScore = {
