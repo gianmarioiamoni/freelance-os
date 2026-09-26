@@ -1318,7 +1318,7 @@ PLAN:   docs/release/r2.1-ai-plan.md
 RECORD: docs/release/r2.1-ai-discovery.md
 CERT:   docs/release/r2.1-certification.md
 PROVIDER: Null. Live AI NOT ENABLED
-NEXT:   Provider eval recorded. R21-OD-001 is a PO decision. Production stays Null. Do not start R3.
+NEXT:   R21-OD-001 CLOSED — criteria revised (§8.5 v2). Historical A1/A2 remain NOT §8.5 eligible. B1 NOT AUTHORIZED. Production stays Null. Do not start R3.
 ```
 
 Epics:
@@ -2337,6 +2337,7 @@ Next actions:
 23. R2.1 PRODUCTION-CERTIFIED (`docs/release/r2.1-certification.md`). Provider Null. Live AI NOT ENABLED
 24. R2.1 provider eval recorded (`docs/release/r2.1-ai-provider-evaluation.md`). R21-OD-001 remains a PO decision. Production stays Null. Do not start R3
 25. Do not rewrite historical §34 / §35 rows
+26. R21-OD-001 CLOSED — criteria revised. Frozen §8.5 v2 in `docs/release/r2.1-ai-provider-evaluation.md` §24. B1 NOT AUTHORIZED. Production stays Null. Do not start R3
 ```
 
 FINDING-UX-004, FINDING-QA-002, FINDING-INT-001, FINDING-108-001, F-104-007,
