@@ -1,6 +1,7 @@
 // src/application/ai/tools/reporting-read-tools.ts
 import { AiClarificationError } from "@/application/ai/ai-errors";
 import type { AiAnalyticsServices } from "@/application/ai/ai-service-ports";
+import { AI_TOOL_DESCRIPTIONS } from "@/application/ai/capability-catalog";
 import type { AiReadTool } from "@/application/ai/tool-contract";
 import {
   minimizeAnnualOverview,
@@ -24,8 +25,7 @@ const PERIOD_FILTER_KEYS = [
 export function createGetHoursByClientTool(services: AiAnalyticsServices): AiReadTool {
   return {
     name: "get_hours_by_client",
-    description:
-      "Owns hours-by-client user-intent for a supported reporting period. Returns hours grouped by client. Not a workspace overview and not a client entity list.",
+    description: AI_TOOL_DESCRIPTIONS.get_hours_by_client,
     readOnly: true,
     argumentKeys: PERIOD_FILTER_KEYS,
     async execute(context, args) {
@@ -41,8 +41,7 @@ export function createGetHoursByClientTool(services: AiAnalyticsServices): AiRea
 export function createGetContractReportTool(services: AiAnalyticsServices): AiReadTool {
   return {
     name: "get_contract_report",
-    description:
-      "Owns contract utilization and allocation-attention user-intent for a period. Returns utilization, allocation, Accrued, Expected, and Forecast. Semantic discriminator: analytics report, not a commercial contract entity list. Not a substitute for list_contracts.",
+    description: AI_TOOL_DESCRIPTIONS.get_contract_report,
     readOnly: true,
     argumentKeys: PERIOD_FILTER_KEYS,
     async execute(context, args) {

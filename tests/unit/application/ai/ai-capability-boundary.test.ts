@@ -50,6 +50,11 @@ describe("AI capability boundary", () => {
     expect(system).toMatch(/Unsupported/);
     expect(system).toContain("Do not substitute a related list or overview tool");
     expect(system).toContain(AI_MODEL_REFUSAL_CLASSES.join(", "));
-    expect(system).not.toMatch(/attenzione|fatture scadute/);
+    expect(system).toContain("call refuse");
+    expect(system).toContain("Implicit current-month hours use get_current_month_analytics");
+    expect(system).toContain("get_hours_by_client");
+    expect(system).toContain("attenzione");
+    expect(system).toContain("Prose is not a valid refusal");
+    expect(system).not.toMatch(/fatture scadute/);
   });
 });

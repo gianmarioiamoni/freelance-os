@@ -1,5 +1,6 @@
 // src/application/ai/tools/analytics-read-tools.ts
 import type { AiAnalyticsServices } from "@/application/ai/ai-service-ports";
+import { AI_TOOL_DESCRIPTIONS } from "@/application/ai/capability-catalog";
 import type { AiReadTool } from "@/application/ai/tool-contract";
 import { minimizeMonthlyAnalytics, minimizeRevenue } from "@/application/ai/grounding/minimize-dtos";
 import { resolveAiPeriod } from "@/application/ai/resolve-ai-period";
@@ -23,8 +24,7 @@ export function createGetMonthlyAnalyticsTool(
 ): AiReadTool {
   return {
     name: "get_monthly_analytics",
-    description:
-      "Broad hours, Accrued, Expected, and Forecast overview for a supported reporting period. Not a substitute for specialized metric tools when the user asks for one specific metric.",
+    description: AI_TOOL_DESCRIPTIONS.get_monthly_analytics,
     readOnly: true,
     argumentKeys: PERIOD_KEYS,
     async execute(context, args) {

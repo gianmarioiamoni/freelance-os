@@ -1,6 +1,7 @@
 // src/application/ai/tools/allocation-read-tools.ts
 import { AiClarificationError } from "@/application/ai/ai-errors";
 import type { AiAnalyticsServices } from "@/application/ai/ai-service-ports";
+import { AI_TOOL_DESCRIPTIONS } from "@/application/ai/capability-catalog";
 import type { AiReadTool } from "@/application/ai/tool-contract";
 import {
   resolveAllocationClientLabels,
@@ -16,8 +17,7 @@ export function createListContractAllocationsTool(
 ): AiReadTool {
   return {
     name: "list_contract_allocations",
-    description:
-      "Owns derived allocation, remaining minutes, and status for workspace contracts. Not a commercial contract entity list and not a utilization report.",
+    description: AI_TOOL_DESCRIPTIONS.list_contract_allocations,
     readOnly: true,
     argumentKeys: ["clientId", "clientName", "contractId"],
     async execute(context, args) {
@@ -40,7 +40,7 @@ export function createGetContractAllocationTool(
 ): AiReadTool {
   return {
     name: "get_contract_allocation",
-    description: "Derived allocation view for one resolved contract.",
+    description: AI_TOOL_DESCRIPTIONS.get_contract_allocation,
     readOnly: true,
     argumentKeys: ["contractId"],
     async execute(context, args) {

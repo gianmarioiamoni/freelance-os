@@ -19,7 +19,26 @@ describe("providerArgumentSchema", () => {
     expect(schema).not.toHaveProperty("allOf");
     expect(schema.properties.startDate?.type).toBe("string");
     expect(schema.properties.startDate?.description).toMatch(/custom/);
-    expect(schema.properties.clientId).toEqual({ type: "string" });
+    expect(schema.properties.clientId).toEqual({
+      type: "string",
+      description:
+        "Optional filter. Omit to include all matching entities. Does not require a named identity.",
+    });
+  });
+
+  it("serializes the refuse class enum", () => {
+    const schema = providerArgumentSchema(["class"]);
+
+    expect(schema.properties.class).toEqual({
+      type: "string",
+      enum: ["unsupported_capability", "write_forbidden", "injection"],
+      description:
+        "Refusal class. Use unsupported_capability, write_forbidden, or injection. No facts.",
+    });
+    expect(
+      acceptsProviderArgumentSchema(schema, { class: "unsupported_capability" }),
+    ).toBe(true);
+    expect(acceptsProviderArgumentSchema(schema, { class: "ambiguous_entity" })).toBe(false);
   });
 
   it("accepts each application period kind", () => {

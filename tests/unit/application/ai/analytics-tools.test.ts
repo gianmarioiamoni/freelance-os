@@ -12,10 +12,19 @@ describe("analytics read tools", () => {
     const serialized = JSON.stringify(registry.descriptors());
 
     expect(registry.names().length).toBeGreaterThan(8);
+    expect(registry.names()).toContain("refuse");
     expect(serialized).not.toMatch(/workspaceId|userId|"role"/);
     for (const name of registry.names()) {
       expect(registry.get(name)?.readOnly).toBe(true);
     }
+  });
+
+  it("does not execute an application service when refuse is invoked directly", async () => {
+    const registry = createAnalyticsToolRegistry(stubAnalyticsServices());
+
+    await expect(
+      registry.get("refuse")?.execute(workspaceContext(), { class: "unsupported_capability" }),
+    ).rejects.toThrow(/must not execute/);
   });
 
   it("binds the trusted workspace context on every implemented tool", async () => {

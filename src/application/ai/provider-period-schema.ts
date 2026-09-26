@@ -1,4 +1,5 @@
 // src/application/ai/provider-period-schema.ts
+import { AI_SENTINEL_REFUSE_CLASSES } from "@/application/ai/capability-catalog";
 import { AI_PERIOD_KINDS } from "@/application/ai/resolve-ai-period";
 
 export type ProviderArgumentPropertySchema = {
@@ -30,6 +31,23 @@ function providerArgumentProperty(key: string): ProviderArgumentPropertySchema {
       type: "string",
       description:
         "ISO date. Required with periodKind custom. Forbidden with today, week, month, or year.",
+    };
+  }
+
+  if (key === "class") {
+    return {
+      type: "string",
+      enum: AI_SENTINEL_REFUSE_CLASSES,
+      description:
+        "Refusal class. Use unsupported_capability, write_forbidden, or injection. No facts.",
+    };
+  }
+
+  if (key === "clientId" || key === "clientName" || key === "contractId") {
+    return {
+      type: "string",
+      description:
+        "Optional filter. Omit to include all matching entities. Does not require a named identity.",
     };
   }
 

@@ -19,6 +19,7 @@ import {
 } from "@/application/ai/tools/entity-read-tools";
 import { createGetCurrentMonthAnalyticsTool } from "@/application/ai/tools/get-current-month-analytics-tool";
 import { createGetNotificationsTool } from "@/application/ai/tools/get-notifications-tool";
+import { createRefuseTool } from "@/application/ai/tools/refuse-tool";
 import {
   createGetInvoiceTool,
   createGetPaymentTool,
@@ -54,5 +55,6 @@ export function createAnalyticsToolRegistry(
     createListPaymentsForInvoiceTool(services),
     createGetPaymentTool(services),
     createGetNotificationsTool(services),
+    createRefuseTool(),
   ]);
 }

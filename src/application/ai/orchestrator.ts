@@ -9,6 +9,7 @@ import {
 } from "@/application/ai/ai-types";
 import { assembleGroundedAnswer } from "@/application/ai/grounding/assemble-grounded-answer";
 import { logAiRequest } from "@/application/ai/log-ai-request";
+import { mapRefuseToolCall } from "@/application/ai/map-refuse-tool";
 import { mapToolFailure } from "@/application/ai/map-tool-failure";
 import { isAiRefusalClass } from "@/application/ai/normalize-adapter-refusal";
 import { parseAiQuestion } from "@/application/ai/parse-ai-question";
@@ -175,6 +176,23 @@ export async function askWorkspaceQuestion(
   }
 
   const sanitized = sanitizeToolArgs(call.args, tool.argumentKeys);
+
+  const refuse = mapRefuseToolCall(tool.name, sanitized.args);
+  if (refuse.kind === "error") {
+    return finish({ ...base, outcome: "error", ...emptyAnswer() }, request, log);
+  }
+  if (refuse.kind === "refusal") {
+    return finish(
+      {
+        ...base,
+        outcome: "refusal",
+        refusalClass: refuse.refusalClass,
+        ...emptyAnswer(),
+      },
+      request,
+      log,
+    );
+  }
 
   try {
     const result = await tool.execute(request.context, sanitized.args);

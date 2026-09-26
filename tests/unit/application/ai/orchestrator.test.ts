@@ -154,6 +154,62 @@ describe("askWorkspaceQuestion", () => {
     expect(result.selectedTools).toEqual([]);
   });
 
+  it("maps a refuse tool call to a typed refusal without executing a read", async () => {
+    const captured: { context?: ReturnType<typeof workspaceContext> } = {};
+    const result = await ask({
+      captured,
+      adapter: createMockAiProviderAdapter({
+        script: {
+          type: "tool_calls",
+          calls: [{ name: "refuse", args: { class: "unsupported_capability" } }],
+        },
+      }),
+    });
+
+    expect(result).toMatchObject({
+      outcome: "refusal",
+      refusalClass: "unsupported_capability",
+    });
+    expect(result.text).toBe("");
+    expect(result.facts).toEqual([]);
+    expect(result.citations).toEqual([]);
+    expect(result.selectedTools).toEqual([]);
+    expect(captured.context).toBeUndefined();
+  });
+
+  it("maps write and injection refuse classes without facts", async () => {
+    for (const refusalClass of ["write_forbidden", "injection"] as const) {
+      const result = await ask({
+        adapter: createMockAiProviderAdapter({
+          script: {
+            type: "tool_calls",
+            calls: [{ name: "refuse", args: { class: refusalClass } }],
+          },
+        }),
+      });
+
+      expect(result.outcome).toBe("refusal");
+      expect(result.refusalClass).toBe(refusalClass);
+      expect(result.facts).toEqual([]);
+      expect(result.citations).toEqual([]);
+    }
+  });
+
+  it("fails closed when refuse is called with an unknown class", async () => {
+    const result = await ask({
+      adapter: createMockAiProviderAdapter({
+        script: {
+          type: "tool_calls",
+          calls: [{ name: "refuse", args: { class: "not_a_class" } }],
+        },
+      }),
+    });
+
+    expect(result.outcome).toBe("error");
+    expect(result.refusalClass).toBeUndefined();
+    expect(result.selectedTools).toEqual([]);
+  });
+
   it("honors a first-class adapter refusal without turning it into success", async () => {
     const result = await ask({
       adapter: createMockAiProviderAdapter({
