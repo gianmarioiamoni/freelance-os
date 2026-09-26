@@ -6,6 +6,7 @@ All notable changes to FreelanceOS are documented in this file.
 
 ### Added
 
+- R2.1 A1 controlled period-schema retest recorded (`docs/release/r2.1-ai-provider-evaluation.md` §19). Provider-facing `periodKind` enum matches application `PERIOD_KINDS`. GP-05 and RF-08 period failures cleared. A1 remains not §8.5 eligible. Production provider remains Null. Live AI NOT ENABLED. R21-OD-001 remains open. Do not start R3.
 - R2.1 A1 live baseline recorded (`docs/release/r2.1-ai-provider-evaluation.md` §18). OpenAI `gpt-4o-mini-2024-07-18` via eval-only adapter. A2/B1 NOT MEASURED. Production provider remains Null. Live AI NOT ENABLED. R21-OD-001 remains open. Do not start R3.
 - R2.1 provider/model evaluation recorded (`docs/release/r2.1-ai-provider-evaluation.md`). Isolated eval harness only. Production provider remains Null. Live AI NOT ENABLED. R21-OD-001 remains a PO decision. Do not start R3.
 - R2.1 PRODUCTION-CERTIFIED (`docs/release/r2.1-certification.md`) at implementation HEAD `74437afb49759e10f47582c850d88561a0081f51`. E01–E03 complete. Production provider Null. Live AI NOT ENABLED. F-E02-01…04 closed. F-E02-05 remains LOW / not expanded. No schema migration. No live provider. Do not start R3.

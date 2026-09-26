@@ -4,7 +4,11 @@ import { parseOptionalString } from "@/application/ai/parse-tool-args";
 import type { PeriodKindRequest } from "@/application/reporting/reporting-service";
 import type { AnalyticsPeriod } from "@/domain/analytics-types";
 
-const PERIOD_KINDS = new Set(["today", "week", "month", "year", "custom"]);
+export const AI_PERIOD_KINDS = ["today", "week", "month", "year", "custom"] as const;
+
+export type AiPeriodKind = (typeof AI_PERIOD_KINDS)[number];
+
+const PERIOD_KINDS = new Set<string>(AI_PERIOD_KINDS);
 
 function parseIsoDate(value: unknown): Date | undefined {
   if (value instanceof Date && !Number.isNaN(value.getTime())) {

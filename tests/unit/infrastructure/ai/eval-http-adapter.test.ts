@@ -95,4 +95,52 @@ describe("createEvalHttpAiProviderAdapter", () => {
     expect(body).not.toMatch(/corr-eval/);
     expect(body).toMatch(/get_current_month_analytics/);
   });
+
+  it("serializes periodKind as the application period enum", async () => {
+    let body = "";
+    const adapter = createEvalHttpAiProviderAdapter({
+      baseUrl: "https://example.test/v1",
+      apiKey: "eval-only",
+      modelId: "gpt-4o-mini-2024-07-18",
+      fetchImpl: async (_url, init) => {
+        body = String(init?.body ?? "");
+        return new Response(JSON.stringify({ choices: [{ message: { content: "no" } }] }), {
+          status: 200,
+        });
+      },
+    });
+
+    await adapter.complete({
+      ...request,
+      toolDescriptors: [
+        {
+          name: "get_forecast_revenue",
+          description: "Forecast Revenue for a certified current period. Null when the period is not current.",
+          argumentKeys: ["periodKind", "startDate", "endDate", "clientId"],
+        },
+      ],
+    });
+
+    const payload = JSON.parse(body) as {
+      tools: Array<{
+        function: {
+          parameters: {
+            properties: { periodKind?: { type: string; enum?: string[] } };
+            allOf?: unknown[];
+          };
+        };
+      }>;
+    };
+    const parameters = payload.tools[0]?.function.parameters;
+
+    expect(parameters?.properties.periodKind?.enum).toEqual([
+      "today",
+      "week",
+      "month",
+      "year",
+      "custom",
+    ]);
+    expect(parameters?.properties.periodKind?.enum).not.toContain("current");
+    expect(parameters?.allOf).toBeUndefined();
+  });
 });

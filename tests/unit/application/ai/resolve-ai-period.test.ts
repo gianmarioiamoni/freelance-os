@@ -17,6 +17,17 @@ describe("parseAiPeriodRequest", () => {
     expect(() => parseAiPeriodRequest({ periodKind: "quarter" })).toThrow(AiClarificationError);
   });
 
+  it("still refuses current because it is not an application period kind", () => {
+    expect(() => parseAiPeriodRequest({ periodKind: "current" })).toThrow(AiClarificationError);
+  });
+
+  it("still accepts each application period kind", () => {
+    expect(parseAiPeriodRequest({ periodKind: "today" })).toEqual({ kind: "today" });
+    expect(parseAiPeriodRequest({ periodKind: "week" })).toEqual({ kind: "week" });
+    expect(parseAiPeriodRequest({ periodKind: "month" })).toEqual({ kind: "month" });
+    expect(parseAiPeriodRequest({ periodKind: "year" })).toEqual({ kind: "year" });
+  });
+
   it("refuses custom bounds without periodKind custom", () => {
     expect(() =>
       parseAiPeriodRequest({

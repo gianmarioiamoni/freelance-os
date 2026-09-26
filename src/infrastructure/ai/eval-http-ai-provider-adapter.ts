@@ -5,6 +5,7 @@ import type {
   AiProviderAdapter,
   AiToolCall,
 } from "@/application/ai/ai-provider-port";
+import { providerArgumentSchema } from "@/application/ai/provider-period-schema";
 
 export const AI_EVAL_ENABLED_ENV = "AI_EVAL_ENABLED";
 
@@ -78,13 +79,7 @@ export function createEvalHttpAiProviderAdapter(
               function: {
                 name: tool.name,
                 description: tool.description,
-                parameters: {
-                  type: "object",
-                  additionalProperties: false,
-                  properties: Object.fromEntries(
-                    tool.argumentKeys.map((key) => [key, { type: "string" }]),
-                  ),
-                },
+                parameters: providerArgumentSchema(tool.argumentKeys),
               },
             })),
           }),
