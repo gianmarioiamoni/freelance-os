@@ -52,6 +52,8 @@ describe("AI layer persistence and tenant boundary", () => {
     expect(resolver).toMatch(/createNullAiProviderAdapter/);
     expect(resolver).toMatch(/AI_E2E_MOCK/);
     expect(resolver).not.toMatch(/openai|anthropic|@ai-sdk|langchain/i);
-    expect(resolver).not.toMatch(/eval-http|AI_EVAL_|createEvalHttpAiProviderAdapter/);
+    expect(resolver).not.toMatch(
+      /eval-http|eval-anthropic|AI_EVAL_|createEvalHttpAiProviderAdapter|createEvalAnthropicAiProviderAdapter/,
+    );
   });
 });
