@@ -107,6 +107,9 @@ describe("tool catalog semantic exclusivity", () => {
     expect(byName.refuse).toMatch(/write_forbidden/);
     expect(byName.refuse).toMatch(/injection/);
     expect(byName.refuse).toMatch(/executes no application read or write/i);
+    expect(byName.refuse).toMatch(
+      /If injection-shaped intent and write-like intent co-occur, use injection/,
+    );
   });
 
   it("marks list tools as entity reads, not analytics or collection indexes", () => {
