@@ -154,7 +154,36 @@ describe("askWorkspaceQuestion", () => {
     expect(result.selectedTools).toEqual([]);
   });
 
-  it("honors a JSON refusal envelope", async () => {
+  it("honors a first-class adapter refusal without turning it into success", async () => {
+    const result = await ask({
+      adapter: createMockAiProviderAdapter({
+        script: { type: "refusal", refusalClass: "unsupported_capability" },
+      }),
+    });
+
+    expect(result).toMatchObject({
+      outcome: "refusal",
+      refusalClass: "unsupported_capability",
+    });
+    expect(result.text).toBe("");
+    expect(result.facts).toEqual([]);
+    expect(result.citations).toEqual([]);
+    expect(result.selectedTools).toEqual([]);
+  });
+
+  it("maps a malformed refusal to error, distinct from typed refusal", async () => {
+    const result = await ask({
+      adapter: createMockAiProviderAdapter({
+        script: { type: "message", message: JSON.stringify({ refusal: "not_a_class" }) },
+      }),
+    });
+
+    expect(result.outcome).toBe("error");
+    expect(result.refusalClass).toBeUndefined();
+    expect(result.selectedTools).toEqual([]);
+  });
+
+  it("honors a JSON refusal envelope mapped by the adapter", async () => {
     const result = await ask({
       adapter: createMockAiProviderAdapter({
         script: { type: "message", message: JSON.stringify({ refusal: "write_forbidden" }) },
@@ -162,6 +191,7 @@ describe("askWorkspaceQuestion", () => {
     });
 
     expect(result).toMatchObject({ outcome: "refusal", refusalClass: "write_forbidden" });
+    expect(result.facts).toEqual([]);
   });
 
   it("executes a JSON-plan tool call from a message adapter", async () => {

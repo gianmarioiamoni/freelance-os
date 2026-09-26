@@ -22,6 +22,12 @@ describe("parseProviderEnvelope", () => {
     });
   });
 
+  it("treats a refusal envelope with facts as malformed", () => {
+    expect(
+      parseProviderEnvelope(JSON.stringify({ refusal: "unsupported_capability", amount: 99999 })),
+    ).toEqual({ kind: "malformed" });
+  });
+
   it("treats empty output as malformed", () => {
     expect(parseProviderEnvelope("")).toEqual({ kind: "malformed" });
     expect(parseProviderEnvelope("{")).toEqual({ kind: "malformed" });

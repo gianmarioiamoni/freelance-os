@@ -24,7 +24,8 @@ const PERIOD_FILTER_KEYS = [
 export function createGetHoursByClientTool(services: AiAnalyticsServices): AiReadTool {
   return {
     name: "get_hours_by_client",
-    description: "Hours distributed by client for a supported reporting period.",
+    description:
+      "Owns hours-by-client user-intent for a supported reporting period. Returns hours grouped by client. Not a workspace overview and not a client entity list.",
     readOnly: true,
     argumentKeys: PERIOD_FILTER_KEYS,
     async execute(context, args) {
@@ -40,7 +41,8 @@ export function createGetHoursByClientTool(services: AiAnalyticsServices): AiRea
 export function createGetContractReportTool(services: AiAnalyticsServices): AiReadTool {
   return {
     name: "get_contract_report",
-    description: "Contract utilization, allocation, Accrued, Expected, and Forecast for a period.",
+    description:
+      "Owns contract utilization and allocation-attention user-intent for a period. Returns utilization, allocation, Accrued, Expected, and Forecast. Semantic discriminator: analytics report, not a commercial contract entity list. Not a substitute for list_contracts.",
     readOnly: true,
     argumentKeys: PERIOD_FILTER_KEYS,
     async execute(context, args) {
@@ -56,7 +58,8 @@ export function createGetContractReportTool(services: AiAnalyticsServices): AiRe
 export function createGetAnnualOverviewTool(services: AiAnalyticsServices): AiReadTool {
   return {
     name: "get_annual_overview",
-    description: "Unfiltered annual overview of monthly analytics buckets.",
+    description:
+      "Unfiltered annual overview of monthly analytics buckets. Not a substitute for specialized metric tools or get_contract_report.",
     readOnly: true,
     argumentKeys: ["year"],
     async execute(context, args) {

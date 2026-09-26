@@ -60,9 +60,9 @@ export function scriptForAnalyticsEvalCase(id: string): MockAiScript {
     };
   }
   if (id.startsWith("RF-") && id !== "RF-09") {
-    const refusal =
+    const refusalClass =
       id === "RF-05" ? "write_forbidden" : id === "RF-06" ? "injection" : "unsupported_capability";
-    return { type: "message", message: JSON.stringify({ refusal }) };
+    return { type: "refusal", refusalClass };
   }
   return { type: "unavailable" };
 }

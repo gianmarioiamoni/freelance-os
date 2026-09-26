@@ -5,6 +5,7 @@ import type {
   AiProviderAdapter,
   AiToolCall,
 } from "@/application/ai/ai-provider-port";
+import { mapAdapterTextOutcome } from "@/application/ai/normalize-adapter-refusal";
 import { providerArgumentSchema } from "@/application/ai/provider-period-schema";
 
 export const AI_EVAL_ENABLED_ENV = "AI_EVAL_ENABLED";
@@ -21,6 +22,7 @@ type ChatCompletionResponse = {
   choices?: Array<{
     message?: {
       content?: string | null;
+      refusal?: string | null;
       tool_calls?: Array<{
         function?: { name?: string; arguments?: string };
       }>;
@@ -113,14 +115,16 @@ export function createEvalHttpAiProviderAdapter(
           };
         }
 
-        const text = message?.content?.trim() ?? "";
-        return {
-          status: "message",
-          message: text,
-          usage,
-          providerId,
-          modelId: options.modelId,
-        };
+        const meta = { providerId, modelId: options.modelId, usage };
+        const nativeRefusal = message?.refusal?.trim() ?? "";
+        if (nativeRefusal.length > 0) {
+          const mapped = mapAdapterTextOutcome(nativeRefusal, meta);
+          if (mapped.status !== "message") {
+            return mapped;
+          }
+        }
+
+        return mapAdapterTextOutcome(message?.content?.trim() ?? "", meta);
       } catch (error) {
         if (isRecord(error) && error.name === "AbortError") {
           return { status: "timeout", providerId, modelId: options.modelId };

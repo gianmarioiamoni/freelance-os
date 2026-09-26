@@ -23,7 +23,8 @@ export function createGetMonthlyAnalyticsTool(
 ): AiReadTool {
   return {
     name: "get_monthly_analytics",
-    description: "Hours, Accrued, Expected, and Forecast for a supported reporting period.",
+    description:
+      "Broad hours, Accrued, Expected, and Forecast overview for a supported reporting period. Not a substitute for specialized metric tools when the user asks for one specific metric.",
     readOnly: true,
     argumentKeys: PERIOD_KEYS,
     async execute(context, args) {
@@ -36,7 +37,8 @@ export function createGetMonthlyAnalyticsTool(
 export function createGetAccruedRevenueTool(services: AiAnalyticsServices): AiReadTool {
   return {
     name: "get_accrued_revenue",
-    description: "Authoritative Accrued Revenue for a supported period.",
+    description:
+      "Owns Accrued Revenue user-intent for a supported period. Use only when the question asks specifically for Accrued. Not an overview, entity list, or collection tool.",
     readOnly: true,
     argumentKeys: PERIOD_FILTER_KEYS,
     async execute(context, args) {
@@ -49,7 +51,8 @@ export function createGetAccruedRevenueTool(services: AiAnalyticsServices): AiRe
 export function createGetExpectedRevenueTool(services: AiAnalyticsServices): AiReadTool {
   return {
     name: "get_expected_revenue",
-    description: "Authoritative Expected Revenue for a supported period. Nulls are preserved.",
+    description:
+      "Owns Expected Revenue user-intent for a supported period. Nulls are preserved. Use only when the question asks specifically for Expected. Not an overview, entity list, or collection tool.",
     readOnly: true,
     argumentKeys: PERIOD_FILTER_KEYS,
     async execute(context, args) {
@@ -63,7 +66,7 @@ export function createGetForecastRevenueTool(services: AiAnalyticsServices): AiR
   return {
     name: "get_forecast_revenue",
     description:
-      "Forecast Revenue for a certified current period. Null when the period is not current.",
+      "Owns Forecast Revenue user-intent for a certified current period. Null when the period is not current. Use only when the question asks specifically for Forecast. Not an overview, entity list, or collection tool.",
     readOnly: true,
     argumentKeys: PERIOD_FILTER_KEYS,
     async execute(context, args) {

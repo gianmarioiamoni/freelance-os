@@ -1,5 +1,5 @@
 // src/application/ai/ai-provider-port.ts
-import type { AiUsage } from "@/application/ai/ai-types";
+import type { AiRefusalClass, AiUsage } from "@/application/ai/ai-types";
 
 export type AiToolDescriptor = {
   name: string;
@@ -31,6 +31,13 @@ export type AiAdapterResult =
   | {
       status: "message";
       message: string;
+      usage?: AiUsage;
+      providerId: string;
+      modelId: string;
+    }
+  | {
+      status: "refusal";
+      refusalClass: AiRefusalClass;
       usage?: AiUsage;
       providerId: string;
       modelId: string;

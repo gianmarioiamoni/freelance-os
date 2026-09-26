@@ -143,4 +143,26 @@ describe("createEvalHttpAiProviderAdapter", () => {
     expect(parameters?.properties.periodKind?.enum).not.toContain("current");
     expect(parameters?.allOf).toBeUndefined();
   });
+
+  it("maps a structural refusal onto the certified refusal status", async () => {
+    const adapter = createEvalHttpAiProviderAdapter({
+      baseUrl: "https://example.test/v1",
+      apiKey: "eval-only",
+      modelId: "gpt-4o-mini-2024-07-18",
+      fetchImpl: async () =>
+        new Response(
+          JSON.stringify({
+            choices: [
+              { message: { content: JSON.stringify({ refusal: "write_forbidden" }) } },
+            ],
+          }),
+          { status: 200 },
+        ),
+    });
+
+    await expect(adapter.complete(request)).resolves.toMatchObject({
+      status: "refusal",
+      refusalClass: "write_forbidden",
+    });
+  });
 });

@@ -17,22 +17,13 @@ function scriptForCase(id: string) {
     };
   }
   if (id === "RF-01") {
-    return {
-      type: "message" as const,
-      message: JSON.stringify({ refusal: "unsupported_capability" }),
-    };
+    return { type: "refusal" as const, refusalClass: "unsupported_capability" as const };
   }
   if (id === "RF-05") {
-    return {
-      type: "message" as const,
-      message: JSON.stringify({ refusal: "write_forbidden" }),
-    };
+    return { type: "refusal" as const, refusalClass: "write_forbidden" as const };
   }
   if (id === "RF-06") {
-    return {
-      type: "message" as const,
-      message: JSON.stringify({ refusal: "injection" }),
-    };
+    return { type: "refusal" as const, refusalClass: "injection" as const };
   }
   return { type: "unavailable" as const };
 }

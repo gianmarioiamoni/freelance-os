@@ -22,9 +22,15 @@ describe("createMockAiProviderAdapter", () => {
 
     await expect(
       createMockAiProviderAdapter({
-        script: { type: "message", message: JSON.stringify({ refusal: "write_forbidden" }) },
+        script: { type: "refusal", refusalClass: "write_forbidden" },
       }).complete(request),
-    ).resolves.toMatchObject({ status: "message" });
+    ).resolves.toMatchObject({ status: "refusal", refusalClass: "write_forbidden" });
+
+    await expect(
+      createMockAiProviderAdapter({
+        script: { type: "message", message: JSON.stringify({ refusal: "injection" }) },
+      }).complete(request),
+    ).resolves.toMatchObject({ status: "refusal", refusalClass: "injection" });
 
     await expect(
       createMockAiProviderAdapter({ script: { type: "timeout" } }).complete(request),

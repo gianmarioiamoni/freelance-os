@@ -14,7 +14,8 @@ export function createListInvoicesForContractTool(
 ): AiReadTool {
   return {
     name: "list_invoices_for_contract",
-    description: "Derived invoices for a resolved contract. Workspace invoice index is unsupported.",
+    description:
+      "Derived invoices for one resolved contract. Requires contractId. Workspace-wide invoice, overdue, or collection indexes are unsupported. Not a substitute for list_clients.",
     readOnly: true,
     argumentKeys: ["contractId", "tracking"],
     async execute(context, args) {

@@ -35,5 +35,15 @@ describe("AiProviderAdapter contract", () => {
       status: "tool_calls",
       providerId: "mock",
     });
+
+    await expect(
+      createMockAiProviderAdapter({
+        script: { type: "refusal", refusalClass: "unsupported_capability" },
+      }).complete(request),
+    ).resolves.toMatchObject({
+      status: "refusal",
+      refusalClass: "unsupported_capability",
+      providerId: "mock",
+    });
   });
 });

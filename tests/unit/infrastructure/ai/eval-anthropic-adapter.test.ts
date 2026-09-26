@@ -142,4 +142,24 @@ describe("createEvalAnthropicAiProviderAdapter", () => {
     expect(parameters?.properties.periodKind?.enum).not.toContain("current");
     expect(parameters?.allOf).toBeUndefined();
   });
+
+  it("maps a structural refusal onto the certified refusal status", async () => {
+    const adapter = createEvalAnthropicAiProviderAdapter({
+      baseUrl: "https://example.test/v1",
+      apiKey: "eval-only",
+      modelId: "claude-haiku-4-5-20251001",
+      fetchImpl: async () =>
+        new Response(
+          JSON.stringify({
+            content: [{ type: "text", text: JSON.stringify({ refusal: "injection" }) }],
+          }),
+          { status: 200 },
+        ),
+    });
+
+    await expect(adapter.complete(request)).resolves.toMatchObject({
+      status: "refusal",
+      refusalClass: "injection",
+    });
+  });
 });

@@ -5,6 +5,7 @@ import type {
   AiProviderAdapter,
   AiToolCall,
 } from "@/application/ai/ai-provider-port";
+import { mapAdapterTextOutcome } from "@/application/ai/normalize-adapter-refusal";
 import { providerArgumentSchema } from "@/application/ai/provider-period-schema";
 
 export type EvalAnthropicProviderOptions = {
@@ -104,13 +105,11 @@ export function createEvalAnthropicAiProviderAdapter(
           .join("\n")
           .trim();
 
-        return {
-          status: "message",
-          message: text,
-          usage,
+        return mapAdapterTextOutcome(text, {
           providerId,
           modelId: options.modelId,
-        };
+          usage,
+        });
       } catch (error) {
         if (isRecord(error) && error.name === "AbortError") {
           return { status: "timeout", providerId, modelId: options.modelId };

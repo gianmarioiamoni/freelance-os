@@ -16,7 +16,8 @@ export function createListContractAllocationsTool(
 ): AiReadTool {
   return {
     name: "list_contract_allocations",
-    description: "Derived allocation, remaining minutes, and status for workspace contracts.",
+    description:
+      "Owns derived allocation, remaining minutes, and status for workspace contracts. Not a commercial contract entity list and not a utilization report.",
     readOnly: true,
     argumentKeys: ["clientId", "clientName", "contractId"],
     async execute(context, args) {

@@ -15,7 +15,8 @@ import {
 export function createListClientsTool(services: AiAnalyticsServices): AiReadTool {
   return {
     name: "list_clients",
-    description: "Workspace clients as company name and status only.",
+    description:
+      "Returns workspace client entities as company name and status only. Entity list, not analytics. Does not report invoices, payments, collections, unpaid clients, or revenue. status is ACTIVE or ARCHIVED only.",
     readOnly: true,
     argumentKeys: ["status"],
     async execute(context, args) {
@@ -46,7 +47,8 @@ export function createGetClientTool(services: AiAnalyticsServices): AiReadTool {
 export function createListContractsTool(services: AiAnalyticsServices): AiReadTool {
   return {
     name: "list_contracts",
-    description: "Commercial contract fields. paymentTermsNote is omitted.",
+    description:
+      "Returns commercial contract entities. paymentTermsNote is omitted. Semantic discriminator: entity list, not analytics. Does not return utilization, allocation attention, Accrued, Expected, or Forecast. Not a substitute for get_contract_report.",
     readOnly: true,
     argumentKeys: ["clientId", "clientName"],
     async execute(context, args) {

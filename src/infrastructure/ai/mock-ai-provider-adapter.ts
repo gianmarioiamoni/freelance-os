@@ -5,12 +5,18 @@ import type {
   AiProviderAdapter,
   AiToolCall,
 } from "@/application/ai/ai-provider-port";
+import type { AiRefusalClass } from "@/application/ai/ai-types";
+import {
+  mapAdapterTextOutcome,
+  normalizeRefusalCandidate,
+} from "@/application/ai/normalize-adapter-refusal";
 
 export type MockAiScript =
   | { type: "unavailable" }
   | { type: "timeout" }
   | { type: "error"; code?: string }
   | { type: "tool_calls"; calls: AiToolCall[] }
+  | { type: "refusal"; refusalClass: AiRefusalClass }
   | { type: "message"; message: string }
   | { type: "sequence"; steps: MockAiScript[] };
 
@@ -44,7 +50,14 @@ function toResult(
   if (script.type === "tool_calls") {
     return { status: "tool_calls", toolCalls: script.calls, providerId, modelId };
   }
-  return { status: "message", message: script.message, providerId, modelId };
+  if (script.type === "refusal") {
+    const normalized = normalizeRefusalCandidate(script.refusalClass);
+    if (normalized.kind !== "refusal") {
+      return { status: "error", code: "malformed_refusal", providerId, modelId };
+    }
+    return { status: "refusal", refusalClass: normalized.refusalClass, providerId, modelId };
+  }
+  return mapAdapterTextOutcome(script.message, { providerId, modelId });
 }
 
 export function createMockAiProviderAdapter(

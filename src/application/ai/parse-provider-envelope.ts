@@ -1,22 +1,13 @@
 // src/application/ai/parse-provider-envelope.ts
 import type { AiRefusalClass } from "@/application/ai/ai-types";
 import type { AiToolCall } from "@/application/ai/ai-provider-port";
+import { normalizeRefusalCandidate } from "@/application/ai/normalize-adapter-refusal";
 
 export type ParsedProviderEnvelope =
   | { kind: "tool_calls"; toolCalls: AiToolCall[] }
   | { kind: "message"; message: string }
   | { kind: "refusal"; refusalClass: AiRefusalClass }
   | { kind: "malformed" };
-
-const REFUSAL_CLASSES = new Set<AiRefusalClass>([
-  "unsupported_capability",
-  "write_forbidden",
-  "ambiguous_entity",
-  "unknown_entity",
-  "invalid_period",
-  "provider_unavailable",
-  "injection",
-]);
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -61,8 +52,12 @@ export function parseProviderEnvelope(message: string): ParsedProviderEnvelope {
     return { kind: "malformed" };
   }
 
-  if (typeof parsed.refusal === "string" && REFUSAL_CLASSES.has(parsed.refusal as AiRefusalClass)) {
-    return { kind: "refusal", refusalClass: parsed.refusal as AiRefusalClass };
+  const refusal = normalizeRefusalCandidate(parsed);
+  if (refusal.kind === "refusal") {
+    return { kind: "refusal", refusalClass: refusal.refusalClass };
+  }
+  if (refusal.kind === "malformed_refusal") {
+    return { kind: "malformed" };
   }
 
   const toolCalls = parseToolCalls(parsed.toolCalls);

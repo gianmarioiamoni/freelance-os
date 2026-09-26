@@ -14,7 +14,7 @@ export function createGetCurrentMonthAnalyticsTool(
   return {
     name: "get_current_month_analytics",
     description:
-      "Current-month hours, Accrued, Expected, Forecast, client allocations, and contract utilizations.",
+      "Broad current-month overview combining hours, Accrued, Expected, Forecast, client allocations, and contract utilizations. Not a substitute for specialized metric tools when the user asks for one specific metric.",
     readOnly: true,
     argumentKeys: [],
     async execute(context) {
