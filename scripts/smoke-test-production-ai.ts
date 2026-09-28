@@ -142,19 +142,7 @@ async function runSmokeTests(): Promise<void> {
         {
           name: "refuse",
           description: "Refuse a request",
-          inputSchema: {
-            type: "object",
-            properties: {
-              refusal: {
-                type: "object",
-                properties: {
-                  refusal: { type: "string" },
-                },
-                required: ["refusal"],
-              },
-            },
-            required: ["refusal"],
-          },
+          argumentKeys: ["refusal"],
         },
       ],
       timeoutMs: 8000,
