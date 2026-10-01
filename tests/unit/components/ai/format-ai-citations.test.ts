@@ -5,6 +5,8 @@ import {
   citationIdentity,
   citationPeriodLabel,
   displayFactValue,
+  formatFactForDisplay,
+  formatMetricLabel,
 } from "@/components/ai/format-ai-citations";
 
 describe("AI citation display", () => {
@@ -16,6 +18,40 @@ describe("AI citation display", () => {
       displayFactValue({ metric: "hours", value: 120, unit: "minutes" }),
     ).toBe("120 minutes");
     expect(displayFactValue({ metric: "forecast", value: null })).toBe("Not available");
+  });
+
+  it("formats minutes as hours for user display", () => {
+    expect(
+      formatFactForDisplay({ metric: "hours", value: 120, unit: "minutes" }),
+    ).toBe("2h");
+    expect(
+      formatFactForDisplay({ metric: "billableHours", value: 90, unit: "minutes" }),
+    ).toBe("2h");
+    expect(
+      formatFactForDisplay({ metric: "hours", value: 0, unit: "minutes" }),
+    ).toBe("0h");
+  });
+
+  it("formats currency values without modification", () => {
+    expect(
+      formatFactForDisplay({ metric: "accrued", value: 160, currency: "EUR" }),
+    ).toBe("160 EUR");
+    expect(
+      formatFactForDisplay({ metric: "expected", value: 200.5, currency: "USD" }),
+    ).toBe("200.5 USD");
+  });
+
+  it("formats null as not available", () => {
+    expect(formatFactForDisplay({ metric: "forecast", value: null })).toBe("Not available");
+  });
+
+  it("translates metric names to human-readable labels", () => {
+    expect(formatMetricLabel("hours")).toBe("Hours worked");
+    expect(formatMetricLabel("billableHours")).toBe("Billable hours");
+    expect(formatMetricLabel("accrued")).toBe("Accrued revenue");
+    expect(formatMetricLabel("expected")).toBe("Expected revenue");
+    expect(formatMetricLabel("forecast")).toBe("Forecast");
+    expect(formatMetricLabel("unknownMetric")).toBe("unknownMetric");
   });
 
   it("uses E02 labels and periods only", () => {

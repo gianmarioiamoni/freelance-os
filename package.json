@@ -21,6 +21,8 @@
     "db:migrate": "prisma migrate dev",
     "db:migrate:deploy": "prisma migrate deploy",
     "db:reset": "prisma migrate reset",
+    "db:reset-local": "tsx scripts/reset-local-database.ts",
+    "db:reset-data": "tsx scripts/reset-database-data.ts",
     "db:seed": "prisma db seed"
   },
   "pnpm": {

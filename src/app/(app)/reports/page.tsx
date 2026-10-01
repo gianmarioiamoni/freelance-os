@@ -80,7 +80,15 @@ export default async function ReportsPage({
           <ReportCsvExportLink period={periodParam} filter={entityFilter} />
         </header>
 
-        <AnalyticsAskBox surface="reports" />
+        <section
+          aria-labelledby="ai-analytics-heading"
+          className="rounded-lg border-2 border-primary/20 bg-primary/5 p-6"
+        >
+          <h2 id="ai-analytics-heading" className="sr-only">
+            AI Analytics Assistant
+          </h2>
+          <AnalyticsAskBox surface="reports" />
+        </section>
 
         <PeriodSelector current={periodParam} filter={entityFilter} />
         <ReportEntityFilters
@@ -138,7 +146,15 @@ export default async function ReportsPage({
         <header className="grid gap-1">
           <h1>Reports</h1>
         </header>
-        <AnalyticsAskBox surface="reports" />
+        <section
+          aria-labelledby="ai-analytics-heading"
+          className="rounded-lg border-2 border-primary/20 bg-primary/5 p-6"
+        >
+          <h2 id="ai-analytics-heading" className="sr-only">
+            AI Analytics Assistant
+          </h2>
+          <AnalyticsAskBox surface="reports" />
+        </section>
         <PeriodSelector current={periodParam} filter={entityFilter} />
         <ErrorState
           title="Unable to load report"

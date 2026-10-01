@@ -2,9 +2,8 @@
 import type { AiAskResult } from "@/application/ai/ai-types";
 import { aiOutcomeCopy } from "@/components/ai/ai-outcome-copy";
 import {
-  citationIdentity,
-  citationPeriodLabel,
-  displayFactValue,
+  formatFactForDisplay,
+  formatMetricLabel,
 } from "@/components/ai/format-ai-citations";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -22,39 +21,22 @@ export function AiOutcomePanel({
   const copy = aiOutcomeCopy(result);
 
   if (result.outcome === "success") {
+    const visibleFacts = result.facts.filter(
+      (fact) => fact.value !== 0 && fact.value !== null,
+    );
+
     return (
       <div className="grid gap-3" role="status" aria-label="AI answer">
         <p>{result.text}</p>
-        {result.facts.length > 0 ? (
+        {visibleFacts.length > 0 ? (
           <ul className="grid gap-1 text-sm">
-            {result.facts.map((fact, index) => (
+            {visibleFacts.map((fact, index) => (
               <li key={`${fact.metric}-${index}`}>
-                {fact.label ? `${fact.metric} (${fact.label})` : fact.metric}:{" "}
-                {displayFactValue(fact)}
+                {formatMetricLabel(fact.metric)}
+                {fact.label ? ` (${fact.label})` : ""}: {formatFactForDisplay(fact)}
               </li>
             ))}
           </ul>
-        ) : null}
-        {result.citations.length > 0 ? (
-          <section aria-labelledby="ai-citations-heading" className="grid gap-1">
-            <h3 id="ai-citations-heading" className="text-sm font-medium">
-              Sources
-            </h3>
-            <ul className="grid gap-1 text-sm text-muted-foreground">
-              {result.citations.map((citation, index) => {
-                const identity = citationIdentity(citation);
-                const period = citationPeriodLabel(citation);
-                return (
-                  <li key={`${citation.tool}-${citation.metric}-${index}`}>
-                    {citation.metric}
-                    {identity ? ` · ${identity}` : ""}
-                    {period ? ` · ${period}` : ""}
-                    {`: ${displayFactValue(citation)}`}
-                  </li>
-                );
-              })}
-            </ul>
-          </section>
         ) : null}
       </div>
     );

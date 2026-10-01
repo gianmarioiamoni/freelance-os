@@ -1,5 +1,4 @@
 // src/components/dashboard/Dashboard.tsx
-import { AnalyticsAskBox } from "@/components/ai/AnalyticsAskBox";
 import { MonthlyAnalytics } from "@/components/dashboard/MonthlyAnalytics";
 import { ClientAllocation } from "@/components/dashboard/ClientAllocation";
 import { ContractUtilization } from "@/components/dashboard/ContractUtilization";
@@ -29,7 +28,6 @@ export function Dashboard({
         title={`Dashboard - ${periodDisplay}`}
         description="Track your work analytics and contract utilization"
       />
-      <AnalyticsAskBox surface="dashboard" />
 
       {hasTimeEntries ? (
         <div className="grid gap-6 lg:grid-cols-3">

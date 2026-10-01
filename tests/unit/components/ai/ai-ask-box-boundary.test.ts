@@ -35,7 +35,8 @@ describe("AI ask-box client boundary", () => {
     const panel = source("src/components/ai/AiOutcomePanel.tsx");
     expect(panel).toContain("result.text");
     expect(panel).toContain("result.facts");
-    expect(panel).toContain("result.citations");
     expect(panel).not.toMatch(/providerMessage|rawProse|adapter\.message/);
+    expect(panel).toContain("formatFactForDisplay");
+    expect(panel).toContain("formatMetricLabel");
   });
 });
