@@ -486,7 +486,7 @@ describe("AnalyticsService", () => {
           validTo: null, // ongoing
           isOngoing: true,
           consumedMinutes: 2400,
-          contractedMinutes: null, // unlimited — no capacity denominator
+          contractedMinutes: null, // unlimited - no capacity denominator
           utilizationPercentage: null,
           isOutOfValidity: false,
         },
@@ -588,7 +588,7 @@ describe("AnalyticsService", () => {
     });
 
     it("should return dash for null percentage", () => {
-      expect(AnalyticsService.formatPercentage(null)).toBe("—");
+      expect(AnalyticsService.formatPercentage(null)).toBe("-");
     });
 
     it("should format zero percentage", () => {

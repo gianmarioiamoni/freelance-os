@@ -61,11 +61,11 @@ describe("ContractUtilization display logic (BR-105-016, F-105-014)", () => {
   it("ongoing + finite capacity: shows BOTH ongoing label AND capacity bar (F-105-014 regression guard)", () => {
     const util: Partial<ContractUtilization> = {
       isOngoing: true,        // validTo === null
-      contractedMinutes: 4800, // finite capacity — MUST NOT be hidden
+      contractedMinutes: 4800, // finite capacity - MUST NOT be hidden
     };
     // Ongoing label is shown (validity status).
     expect(shouldShowOngoingLabel(util as ContractUtilization)).toBe(true);
-    // Capacity bar is ALSO shown — ongoing does NOT suppress finite capacity.
+    // Capacity bar is ALSO shown - ongoing does NOT suppress finite capacity.
     expect(hasFiniteCapacity(util as ContractUtilization)).toBe(true);
   });
 
@@ -73,7 +73,7 @@ describe("ContractUtilization display logic (BR-105-016, F-105-014)", () => {
   it("ongoing + null capacity: shows ongoing label, hides capacity bar", () => {
     const util: Partial<ContractUtilization> = {
       isOngoing: true,
-      contractedMinutes: null, // unlimited — no capacity denominator
+      contractedMinutes: null, // unlimited - no capacity denominator
     };
     expect(shouldShowOngoingLabel(util as ContractUtilization)).toBe(true);
     expect(hasFiniteCapacity(util as ContractUtilization)).toBe(false);

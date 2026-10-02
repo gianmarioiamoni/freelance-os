@@ -3,18 +3,18 @@
 // P105-06: Reporting E2E evidence suite.
 //
 // Covers:
-//   SI-105-006  — unauthenticated /reports → sign-in; no workspace → onboarding;
+//   SI-105-006  - unauthenticated /reports → sign-in; no workspace → onboarding;
 //                 those redirects are not swallowed by a page-level catch.
-//   Reports surface — navigation entry, period selection, tabular sections.
-//   Accessibility   — native table semantics, headings, full-text client names,
+//   Reports surface - navigation entry, period selection, tabular sections.
+//   Accessibility   - native table semantics, headings, full-text client names,
 //                     keyboard reachability. Assertions can fail (no F-104-010 patterns).
-//   Responsive      — 375 / 768 / 1024 / 1440 px viewports.
-//   Empty-state     — zero-activity period renders EmptyState, not a blank page.
-//   Error recovery  — navigating away and back restores the surface.
-//   Period selector — switching periods updates the URL and heading.
-//   Custom period   — UX-004 GET form, validation, aria-current, 390×844.
-//   Zero denominator— unlimited contract renders "—" (no invented percentage).
-//   Out-of-validity — indicator visible with a textual alternative.
+//   Responsive      - 375 / 768 / 1024 / 1440 px viewports.
+//   Empty-state     - zero-activity period renders EmptyState, not a blank page.
+//   Error recovery  - navigating away and back restores the surface.
+//   Period selector - switching periods updates the URL and heading.
+//   Custom period   - UX-004 GET form, validation, aria-current, 390×844.
+//   Zero denominator- unlimited contract renders "-" (no invented percentage).
+//   Out-of-validity - indicator visible with a textual alternative.
 //   No monetary figures anywhere (BR-105-011 / PD-105-001).
 
 import { test, expect, type Page } from "@playwright/test";
@@ -58,10 +58,10 @@ async function applyCustomRange(
 }
 
 // ---------------------------------------------------------------------------
-// SI-105-006 — redirect invariants
+// SI-105-006 - redirect invariants
 // ---------------------------------------------------------------------------
 
-test.describe("SI-105-006 — access control redirects", () => {
+test.describe("SI-105-006 - access control redirects", () => {
   test("unauthenticated access to /reports redirects to sign-in", async ({
     page,
   }) => {
@@ -69,7 +69,7 @@ test.describe("SI-105-006 — access control redirects", () => {
     await page.goto("/reports");
     // Must not stay on /reports; must land on the sign-in page.
     await expect(page).toHaveURL(/\/sign-in/);
-    // The redirect must not have been swallowed — the sign-in form is visible.
+    // The redirect must not have been swallowed - the sign-in form is visible.
     await expect(
       page.getByRole("heading", { name: /sign in/i }),
     ).toBeVisible();
@@ -169,7 +169,7 @@ test.describe("period selector", () => {
 });
 
 // ---------------------------------------------------------------------------
-// Custom period selector — UX-004
+// Custom period selector - UX-004
 // ---------------------------------------------------------------------------
 
 test.describe("custom period selector", () => {
@@ -209,7 +209,7 @@ test.describe("custom period selector", () => {
       "aria-current",
     );
     await expect(
-      page.getByText("Operational reporting — 2020-01-01 — 2020-01-31"),
+      page.getByText("Operational reporting - 2020-01-01 - 2020-01-31"),
     ).toBeVisible();
     await expect(page.getByText(/no hours recorded for this period/i)).toBeVisible();
 
@@ -218,7 +218,7 @@ test.describe("custom period selector", () => {
     await waitForReportsPage(page);
     expectCustomPeriodSearch(page, includedDay, includedDay);
     await expect(
-      page.getByText(`Operational reporting — ${includedDay} — ${includedDay}`),
+      page.getByText(`Operational reporting - ${includedDay} - ${includedDay}`),
     ).toBeVisible();
     await expect(
       page.getByRole("cell", { name: /Custom Period Client/ }).first(),
@@ -243,7 +243,7 @@ test.describe("custom period selector", () => {
       "true",
     );
     await expect(
-      page.getByText("Operational reporting — 2026-03-15 — 2026-03-15"),
+      page.getByText("Operational reporting - 2026-03-15 - 2026-03-15"),
     ).toBeVisible();
   });
 
@@ -373,7 +373,7 @@ test.describe("custom period selector", () => {
       "aria-current",
     );
     await expect(
-      page.getByText("Operational reporting — 2026-09-01 — 2026-09-18"),
+      page.getByText("Operational reporting - 2026-09-01 - 2026-09-18"),
     ).toBeVisible();
     await expect(page.getByLabel("Start date")).toHaveValue("2026-09-01");
     await expect(page.getByLabel("End date")).toHaveValue("2026-09-18");
@@ -444,7 +444,7 @@ test.describe("empty-state rendering", () => {
 });
 
 // ---------------------------------------------------------------------------
-// Tabular report sections — data rendering
+// Tabular report sections - data rendering
 // ---------------------------------------------------------------------------
 
 test.describe("tabular report sections", () => {
@@ -476,7 +476,7 @@ test.describe("tabular report sections", () => {
     await waitForReportsPage(page);
 
     // Hours by Client: the table caption is a <caption> element inside the table.
-    // The page also has a sr-only h2 with the same text — use the caption role.
+    // The page also has a sr-only h2 with the same text - use the caption role.
     // Scope to the first <table> in main to avoid the sr-only h2.
     const main = page.getByRole("main");
     await expect(
@@ -492,10 +492,10 @@ test.describe("tabular report sections", () => {
       main.locator("caption").filter({ hasText: "Contract Report" }),
     ).toBeVisible();
 
-    // Annual Overview table caption — label format "Annual Overview — YYYY".
+    // Annual Overview table caption - label format "Annual Overview - YYYY".
     const { year: currentYear } = getTodayInTimezone("Europe/Rome");
     await expect(
-      main.locator("caption").filter({ hasText: `Annual Overview — ${currentYear}` }),
+      main.locator("caption").filter({ hasText: `Annual Overview - ${currentYear}` }),
     ).toBeVisible();
 
     // No monetary figures may appear (BR-105-011 / PD-105-001).
@@ -503,7 +503,7 @@ test.describe("tabular report sections", () => {
     expect(bodyText).not.toMatch(/\b(€|EUR|USD|\$)\s*\d/);
   });
 
-  test("unlimited contract shows 'Unlimited' in capacity column and '—' for utilization (no invented percentage)", async ({
+  test("unlimited contract shows 'Unlimited' in capacity column and '-' for utilization (no invented percentage)", async ({
     page,
   }) => {
     const email = uniqueE2EEmail("reports-unlimited");
@@ -595,7 +595,7 @@ test.describe("tabular report sections", () => {
 });
 
 // ---------------------------------------------------------------------------
-// Accessibility — sound assertions (no F-104-010 patterns)
+// Accessibility - sound assertions (no F-104-010 patterns)
 // ---------------------------------------------------------------------------
 
 test.describe("accessibility", () => {
@@ -688,7 +688,7 @@ test.describe("accessibility", () => {
     ).toBeVisible();
     const { year: currentYear } = getTodayInTimezone("Europe/Rome");
     await expect(
-      main.locator("caption").filter({ hasText: `Annual Overview — ${currentYear}` }),
+      main.locator("caption").filter({ hasText: `Annual Overview - ${currentYear}` }),
     ).toBeVisible();
   });
 });
@@ -730,7 +730,7 @@ test.describe("responsive layout", () => {
 });
 
 // ---------------------------------------------------------------------------
-// Error recovery — navigate away and back
+// Error recovery - navigate away and back
 // ---------------------------------------------------------------------------
 
 test.describe("entity filters", () => {
@@ -800,7 +800,7 @@ test.describe("entity filters", () => {
     const { year: currentYear } = getTodayInTimezone("Europe/Rome");
     await expect(
       page.getByRole("main").locator("caption").filter({
-        hasText: `Annual Overview — ${currentYear}`,
+        hasText: `Annual Overview - ${currentYear}`,
       }),
     ).toBeVisible();
   });

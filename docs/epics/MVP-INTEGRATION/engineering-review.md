@@ -31,7 +31,7 @@ This review covers the cross-domain integration layer of the MVP, spanning:
 | Evidence type | Result | Source |
 |---|---|---|
 | Release-gate E2E (focused) | 1/1 PASS (3 runs, 3/3) | `tests/e2e/mvp-integration-journey.spec.ts` |
-| Full E2E suite | 54 passed / 4 failed | `tests/e2e/` — see §10 |
+| Full E2E suite | 54 passed / 4 failed | `tests/e2e/` - see §10 |
 | Unit tests | 392 passed / 0 failed (39 files) | `npm run test` (vitest) |
 | Integration tests | 223 passed / 1 failed (36 files) | `npm run test:integration` |
 | Git working tree | Clean | `git status --short` |
@@ -133,7 +133,7 @@ The fix replaces the previous race condition (`window.location.assign` or premat
 
 **Release-gate auth journeys:** 3/3 PASS (within `mvp-integration-journey.spec.ts`).
 
-**FINDING-P04-001 STATUS: CLOSED** — fix confirmed in repository, validated by release-gate E2E.
+**FINDING-P04-001 STATUS: CLOSED** - fix confirmed in repository, validated by release-gate E2E.
 
 ### Residual auth.spec.ts failure
 
@@ -141,7 +141,7 @@ The standalone `auth.spec.ts` test "should register, stay authenticated, and sig
 
 - The test registers a new user → lands on `/onboarding` (no workspace created yet) → clicks "Sign out".
 - The test asserts `toHaveURL(/\/sign-in$/)` with a 5s timeout.
-- The failure is `received: "http://localhost:3000/onboarding"` — the navigation has not completed within the timeout window.
+- The failure is `received: "http://localhost:3000/onboarding"` - the navigation has not completed within the timeout window.
 - Root cause: `router.refresh()` followed by `router.push()` is asynchronous; in the onboarding context (no full workspace), the RSC tree refresh takes slightly longer, and the Playwright assertion fires before navigation settles.
 - The release-gate journey (signed in user with a workspace) passes consistently. The onboarding-state sign-out path is a different code path and takes longer.
 - **Classification:** TEST DEFECT (missing `await page.waitForURL(...)` before assertion). Not an application defect.
@@ -165,7 +165,7 @@ All repository queries are scoped to `workspaceId` sourced from `WorkspaceContex
 **Integration test coverage (verified green):**
 
 - `notification-unread-count.test.ts`: workspace isolation + user isolation (5 tests, all pass)
-- `analytics-isolation.test.ts`: 6/7 pass (1 pre-existing failure unrelated to isolation — see §11)
+- `analytics-isolation.test.ts`: 6/7 pass (1 pre-existing failure unrelated to isolation - see §11)
 - `time-entry-action-revalidation.test.ts`: 5 tests, all pass
 
 **E2E evidence:** The release-gate journey operates within a single workspace and verifies all domain objects are scoped to that workspace (client, contract, time entries, alerts, notifications).
@@ -193,9 +193,9 @@ TimeEntry mutation
 
 At 100% utilization, both `CONTRACT_WARNING` (80% threshold) and `CONTRACT_EXCEEDED` (100% threshold) are evaluated. Since neither has been triggered before in the journey, both create Alert + Notification records.
 
-**Epic plan consistency:** Step 18 of the E2E plan states "Assert **at least one** notification is present" — this is consistent with 2 notifications being produced. No discrepancy.
+**Epic plan consistency:** Step 18 of the E2E plan states "Assert **at least one** notification is present" - this is consistent with 2 notifications being produced. No discrepancy.
 
-**FINDING-P04-002 STATUS: NOT A DOCUMENTATION DISCREPANCY** — the epic plan uses "at least one" which correctly covers the 2-notification scenario. No correction needed.
+**FINDING-P04-002 STATUS: NOT A DOCUMENTATION DISCREPANCY** - the epic plan uses "at least one" which correctly covers the 2-notification scenario. No correction needed.
 
 ### Alert semantics verified
 
@@ -277,15 +277,15 @@ All 22 assertions pass. Cross-domain propagation verified end-to-end.
 | `mvp-integration-journey.spec.ts` | 1 | 1 | 0 |
 | `auth.spec.ts` | 7 | 6 | 1 (TEST DEFECT) |
 | `time-tracking.spec.ts` | 2 (full) | 0 | 2 (PRE-EXISTING TEST DEFECT) |
-| Other E2E suites | 44 | 47 | 1 (auth pw-reset — see below) |
+| Other E2E suites | 44 | 47 | 1 (auth pw-reset - see below) |
 
-**auth.spec.ts password-reset failure:** "should recover a password from the email/password flow" — this test depends on email delivery infrastructure in the test environment. Not exercised by the release-gate journey. Classification requires further investigation; tentatively: **TEST INFRASTRUCTURE** (email delivery in test environment).
+**auth.spec.ts password-reset failure:** "should recover a password from the email/password flow" - this test depends on email delivery infrastructure in the test environment. Not exercised by the release-gate journey. Classification requires further investigation; tentatively: **TEST INFRASTRUCTURE** (email delivery in test environment).
 
 ---
 
 ## 11. Findings
 
-### FINDING-P04-001 — SignOutButton navigation race
+### FINDING-P04-001 - SignOutButton navigation race
 
 | Field | Value |
 |---|---|
@@ -294,26 +294,26 @@ All 22 assertions pass. Cross-domain propagation verified end-to-end.
 | **Status** | CLOSED |
 | **Evidence** | `SignOutButton.tsx` line 16-17: `router.refresh()` → `router.push("/sign-in")`. Release-gate auth: 3/3 PASS. |
 | **Impact** | Race condition eliminated. Playwright-observable navigation. |
-| **Recommendation** | None — fix confirmed. |
+| **Recommendation** | None - fix confirmed. |
 | **Next phase** | No action required. |
 
 ---
 
-### FINDING-P04-002 — Dual notification at 100% utilization
+### FINDING-P04-002 - Dual notification at 100% utilization
 
 | Field | Value |
 |---|---|
 | **ID** | FINDING-P04-002 |
 | **Severity** | NON-BLOCKING |
 | **Status** | ACCEPTED (by design) |
-| **Evidence** | `AlertService` evaluates `CONTRACT_WARNING` (≥80%) and `CONTRACT_EXCEEDED` (=100%) independently. At 100%, both fire. Epic plan step 18 states "at least one notification" — consistent with 2. |
+| **Evidence** | `AlertService` evaluates `CONTRACT_WARNING` (≥80%) and `CONTRACT_EXCEEDED` (=100%) independently. At 100%, both fire. Epic plan step 18 states "at least one notification" - consistent with 2. |
 | **Impact** | None. AlertService semantics are correct. |
 | **Recommendation** | No change to `AlertService`. Epic plan wording is accurate. |
 | **Next phase** | No action required. |
 
 ---
 
-### FINDING-P04-003 — `time-tracking.spec.ts` hardcoded past dates
+### FINDING-P04-003 - `time-tracking.spec.ts` hardcoded past dates
 
 | Field | Value |
 |---|---|
@@ -327,7 +327,7 @@ All 22 assertions pass. Cross-domain propagation verified end-to-end.
 
 ---
 
-### FINDING-INT-001 — `analytics-isolation.test.ts` future date UTC normalization
+### FINDING-INT-001 - `analytics-isolation.test.ts` future date UTC normalization
 
 | Field | Value |
 |---|---|
@@ -341,21 +341,21 @@ All 22 assertions pass. Cross-domain propagation verified end-to-end.
 
 ---
 
-### FINDING-INT-002 — `auth.spec.ts` sign-out test timing in onboarding context
+### FINDING-INT-002 - `auth.spec.ts` sign-out test timing in onboarding context
 
 | Field | Value |
 |---|---|
 | **ID** | FINDING-INT-002 |
 | **Severity** | NON-BLOCKING |
 | **Status** | OPEN |
-| **Evidence** | `auth.spec.ts:59` — `expect(page).toHaveURL(/\/sign-in$/)` fails (received: `/onboarding`). Sign-out from onboarding context takes longer than the 5s Playwright default timeout. Release-gate journey (full workspace context) passes consistently. |
+| **Evidence** | `auth.spec.ts:59` - `expect(page).toHaveURL(/\/sign-in$/)` fails (received: `/onboarding`). Sign-out from onboarding context takes longer than the 5s Playwright default timeout. Release-gate journey (full workspace context) passes consistently. |
 | **Impact** | 1 E2E test failing in isolation. Application sign-out behavior is correct. |
 | **Recommendation** | Add `await page.waitForURL(/\/sign-in$/, { timeout: 10000 })` before the assertion. |
 | **Next phase** | QA / Production Certification. |
 
 ---
 
-### FINDING-INT-003 — `auth.spec.ts` password-reset test (infrastructure dependency)
+### FINDING-INT-003 - `auth.spec.ts` password-reset test (infrastructure dependency)
 
 | Field | Value |
 |---|---|
@@ -373,22 +373,22 @@ All 22 assertions pass. Cross-domain propagation verified end-to-end.
 
 | Question | Answer |
 |---|---|
-| 1. Integration loop complete and functioning? | **YES** — full chain verified by 22-step release-gate E2E (3/3 runs). |
-| 2. Workspace isolation verified? | **YES** — server-trusted context throughout; integration tests confirm isolation; no cross-workspace leakage identified. |
-| 3. Data propagation verified? | **YES** — all 9 propagation chains pass in release-gate E2E. |
-| 4. Caching/revalidation coherent? | **YES** — 4-path revalidation sequence (layout, root, reports, alerts) in correct order after each mutation. |
-| 5. Alert → Notification verified? | **YES** — dual alert (WARNING + EXCEEDED) at 100% produces notifications visible on `/alerts`. |
-| 6. Notification → badge verified? | **YES** — unread badge appears on Alerts nav item; count matches DB. |
-| 7. Mark-as-read → badge clear verified? | **YES** — badge absent after mark-as-read + reload. |
-| 8. Authentication lifecycle verified? | **YES** — sign-in, sign-out, session persistence all verified. FINDING-P04-001 fix confirmed. |
-| 9. Unexplained E2E failures? | No — all 4 failures classified (2 pre-existing test defects, 2 open non-blocking test issues). |
+| 1. Integration loop complete and functioning? | **YES** - full chain verified by 22-step release-gate E2E (3/3 runs). |
+| 2. Workspace isolation verified? | **YES** - server-trusted context throughout; integration tests confirm isolation; no cross-workspace leakage identified. |
+| 3. Data propagation verified? | **YES** - all 9 propagation chains pass in release-gate E2E. |
+| 4. Caching/revalidation coherent? | **YES** - 4-path revalidation sequence (layout, root, reports, alerts) in correct order after each mutation. |
+| 5. Alert → Notification verified? | **YES** - dual alert (WARNING + EXCEEDED) at 100% produces notifications visible on `/alerts`. |
+| 6. Notification → badge verified? | **YES** - unread badge appears on Alerts nav item; count matches DB. |
+| 7. Mark-as-read → badge clear verified? | **YES** - badge absent after mark-as-read + reload. |
+| 8. Authentication lifecycle verified? | **YES** - sign-in, sign-out, session persistence all verified. FINDING-P04-001 fix confirmed. |
+| 9. Unexplained E2E failures? | No - all 4 failures classified (2 pre-existing test defects, 2 open non-blocking test issues). |
 | 10. Blocking findings? | **NONE** |
 | 11. MVP Integration Epic ready for next phase? | **YES** |
 
 **Note on suite completeness:** The release-gate focused journey is green (3/3). The full E2E suite has 4 failures, none of which indicate application or integration defects. The distinction is:
 
-- **Release-gate:** 1/1 PASS — certifies the MVP integration loop.
-- **Full suite:** 54/58 PASS — 4 failures are test-side defects (hardcoded dates, timing, email infra), not application regressions.
+- **Release-gate:** 1/1 PASS - certifies the MVP integration loop.
+- **Full suite:** 54/58 PASS - 4 failures are test-side defects (hardcoded dates, timing, email infra), not application regressions.
 
 ---
 
@@ -404,7 +404,7 @@ The MVP integration loop is complete and verified. All 22 release-gate assertion
 
 | ID | Severity | Status | Type |
 |---|---|---|---|
-| FINDING-P04-001 | — | **CLOSED** | APPLICATION DEFECT (fixed) |
+| FINDING-P04-001 | - | **CLOSED** | APPLICATION DEFECT (fixed) |
 | FINDING-P04-002 | NON-BLOCKING | ACCEPTED | BY DESIGN |
 | FINDING-P04-003 | NON-BLOCKING | PRE-EXISTING | TEST DEFECT |
 | FINDING-INT-001 | NON-BLOCKING | PRE-EXISTING | TEST DEFECT |
@@ -434,7 +434,7 @@ This review verdict is accepted as the final Engineering Review for the Epic:
 - FINDING-INT-002 and FINDING-INT-003 remain **OPEN** (non-blocking) and are deferred to QA / Production Certification
 - FINDING-P04-003 and FINDING-INT-001 remain **PRE-EXISTING** (non-blocking) and are deferred to QA / Production Certification
 
-Next roadmap phase at closure: **QA — MVP QA Gate** (`MASTER_PLAN.md` §31).
+Next roadmap phase at closure: **QA - MVP QA Gate** (`MASTER_PLAN.md` §31).
 
 ---
 
@@ -452,9 +452,9 @@ This review's historical verdict is unchanged. QA revalidated findings as follow
 | FINDING-INT-001 | PRE-EXISTING | OPEN / CONFIRMED | TEST DEFECT under America/Los_Angeles |
 | FINDING-INT-002 | OPEN | OPEN / NOT REPRODUCED | TEST DEFECT |
 | FINDING-INT-003 | OPEN | OPEN / NOT REPRODUCED | TEST INFRASTRUCTURE |
-| FINDING-QA-001 | — | OPEN | TEST DEFECT / FLAKY (release-gate 5/6) |
-| FINDING-QA-002 | — | OPEN | APPLICATION DEFECT (`getDateRangePeriod`) |
-| F-104-007 | — | PRE-EXISTING | Dashboard `NEXT_REDIRECT` logs |
+| FINDING-QA-001 | - | OPEN | TEST DEFECT / FLAKY (release-gate 5/6) |
+| FINDING-QA-002 | - | OPEN | APPLICATION DEFECT (`getDateRangePeriod`) |
+| F-104-007 | - | PRE-EXISTING | Dashboard `NEXT_REDIRECT` logs |
 
 QA verdict: **PASS WITH FINDINGS**. Blocking findings: **NONE**. Production readiness: **NO**.
 Release-gate at QA: 5 pass / 1 flaky failure; focused PASS; isolated 3/3 PASS.

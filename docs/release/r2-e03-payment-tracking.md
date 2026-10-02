@@ -1,9 +1,9 @@
-# R2-E03 — Payment Tracking & Reconciliation — Epic Plan
+# R2-E03 - Payment Tracking & Reconciliation - Epic Plan
 
-**Epic:** R2-E03 — Payment Tracking & Reconciliation  
-**Release:** Release 2 — Revenue Operations  
+**Epic:** R2-E03 - Payment Tracking & Reconciliation  
+**Release:** Release 2 - Revenue Operations  
 **MASTER_PLAN identifier:** R2-E03 (`MASTER_PLAN.md` §19)  
-**Status:** CERTIFIED — P-E03-00…P-E03-07 COMPLETE. QA PASS WITH FINDINGS. Release Validation PASS WITH FINDINGS (Gate B). F-E03-001…005 ACCEPTED.  
+**Status:** CERTIFIED - P-E03-00…P-E03-07 COMPLETE. QA PASS WITH FINDINGS. Release Validation PASS WITH FINDINGS (Gate B). F-E03-001…005 ACCEPTED.  
 **Certification date:** 2026-09-23  
 **Certification commit:** this P-E03-07 commit  
 **Release migration:** `prisma migrate deploy`  
@@ -16,11 +16,11 @@
 P-E03-00  PLANNING / VOID POLICY CLOSURE           COMPLETE
 P-E03-01  PERSISTENCE / DOMAIN FOUNDATION          COMPLETE
 P-E03-02  PAYMENT APPLICATION SERVICE              COMPLETE
-P-E03-03  PAYMENT ALERTS                           COMPLETE — ER APPROVED WITH FINDINGS
-P-E03-04  CONTRACT-SCOPED PAYMENT UI               COMPLETE — ER APPROVED WITH FINDINGS
-P-E03-05  QA + DOCUMENTATION SYNCHRONIZATION       COMPLETE — PASS WITH FINDINGS
-P-E03-06  RELEASE VALIDATION                       COMPLETE — PASS WITH FINDINGS / GATE B
-P-E03-07  CERTIFICATION                            COMPLETE — CERTIFIED
+P-E03-03  PAYMENT ALERTS                           COMPLETE - ER APPROVED WITH FINDINGS
+P-E03-04  CONTRACT-SCOPED PAYMENT UI               COMPLETE - ER APPROVED WITH FINDINGS
+P-E03-05  QA + DOCUMENTATION SYNCHRONIZATION       COMPLETE - PASS WITH FINDINGS
+P-E03-06  RELEASE VALIDATION                       COMPLETE - PASS WITH FINDINGS / GATE B
+P-E03-07  CERTIFICATION                            COMPLETE - CERTIFIED
 
 R2-E03: CERTIFIED
 R2-E02: COMPLETE WITH NON-BLOCKING FINDING
@@ -43,7 +43,7 @@ P-E03-00 remains the planning close. Later authorized phases implemented
 
 | Residual | Closure |
 | --- | --- |
-| E03-D-VOID-PAYMENTS | **Option A — Freeze writes on VOID.** Existing Payment rows may remain. No create / update / delete on a VOID Invoice. Payments stay readable as history. VOID is excluded from active paidAmount / outstanding / overdue lists / payment alerts. No cascade-delete. No restore. |
+| E03-D-VOID-PAYMENTS | **Option A - Freeze writes on VOID.** Existing Payment rows may remain. No create / update / delete on a VOID Invoice. Payments stay readable as history. VOID is excluded from active paidAmount / outstanding / overdue lists / payment alerts. No cascade-delete. No restore. |
 
 No Product Owner question remains that blocked this planning close.
 Deferred technical items below stay open. They must not be assumed in
@@ -71,7 +71,7 @@ Contract terms / currency” Payment wording.
 ## 2. Epic definition
 
 Track expected versus actual payments operationally and surface simple
-deterministic discrepancies — without an accounting subsystem.
+deterministic discrepancies - without an accounting subsystem.
 
 Know whether an Invoice is UNPAID, PARTIAL, PAID, MISMATCH, and/or
 overdue, from editable Payment events.
@@ -213,7 +213,7 @@ recalculate derived status without rewriting Payment rows.
 
 ---
 
-## 7. VOID semantics — E03-D-VOID-PAYMENTS
+## 7. VOID semantics - E03-D-VOID-PAYMENTS
 
 | Field | Value |
 | --- | --- |
@@ -221,7 +221,7 @@ recalculate derived status without rewriting Payment rows.
 | Historical ID | R2-OD-007 residual payment-row tail; residual #4 |
 | Status | **DECIDED / CLOSED** by P-E03-00 |
 | Owner | Product Owner |
-| Decision | **Option A — Freeze writes on VOID** |
+| Decision | **Option A - Freeze writes on VOID** |
 
 ### Closed rule
 
@@ -360,8 +360,8 @@ by this plan. Exact action names are not decided here.
 
 Implemented:
 
-- `20260922220000_add_payment_tracking` — `Payment` table
-- `20260923010000_add_payment_alerts` — `PAYMENT_*` `AlertType` values, nullable `Alert.invoiceId`, composite Invoice FK, `CHECK` that `PAYMENT_*` requires `invoiceId`
+- `20260922220000_add_payment_tracking` - `Payment` table
+- `20260923010000_add_payment_alerts` - `PAYMENT_*` `AlertType` values, nullable `Alert.invoiceId`, composite Invoice FK, `CHECK` that `PAYMENT_*` requires `invoiceId`
 
 Invoice / TimeEntry / Accrued schema unchanged. No backfill. No persisted
 `paidAmount` / `amountStatus` / overdue.
@@ -374,7 +374,7 @@ Invoice / TimeEntry / Accrued schema unchanged. No backfill. No persisted
 
 None. `E03-D-VOID-PAYMENTS` is CLOSED.
 
-### CAN BE DEFERRED — remain OPEN
+### CAN BE DEFERRED - remain OPEN
 
 None for P-E03-03. Persistence naming leftovers from P-E03-00 were closed
 by P-E03-01 / P-E03-02.
@@ -389,7 +389,7 @@ by P-E03-01 / P-E03-02.
 | R2-OD-010 | ACTIVE events editable / deletable; no ledger |
 | R2-OD-011 / D7 / E02-D01 / E02-D07 | No FX; Invoice snapshot; Payment matches Invoice |
 | E02-D02 | VOID one-way; payments may remain; exclude active aggregates |
-| E03-D-VOID-PAYMENTS | Option A — freeze writes on VOID |
+| E03-D-VOID-PAYMENTS | Option A - freeze writes on VOID |
 | E03-D-PAYMENT-DATE-FUTURE | Future `paymentDate` allowed; not an alert input |
 | E03-D-ALERT-TRIGGER | T3 on-write. No scheduler. Calendar overdue gap accepted. VOID resolve is in-transaction |
 | E03-D-ALERT-PREDICATES | R2-OD-009 at Invoice level. No per-Payment-row alerts |
@@ -408,7 +408,7 @@ by P-E03-01 / P-E03-02.
 Methodology: one phase, one objective, one commit. No implementation
 commit is created by this close.
 
-### P-E03-00 — Planning / VOID policy closure
+### P-E03-00 - Planning / VOID policy closure
 
 | | |
 | --- | --- |
@@ -422,7 +422,7 @@ commit is created by this close.
 | Commit boundary | Documentation only |
 | Status | **COMPLETE** with this commit |
 
-### P-E03-01 — Persistence / domain foundation
+### P-E03-01 - Persistence / domain foundation
 
 | | |
 | --- | --- |
@@ -431,14 +431,14 @@ commit is created by this close.
 | Status | **COMPLETE** |
 | Risks | Starting before authorization; inventing Prisma names / FX / persisted status |
 
-### P-E03-02 — Payment application service
+### P-E03-02 - Payment application service
 
 | | |
 | --- | --- |
 | Objective | Payment writes + derived Invoice paidAmount / status / overdue |
 | Status | **COMPLETE** |
 
-### P-E03-03 — Payment alerts
+### P-E03-03 - Payment alerts
 
 | | |
 | --- | --- |
@@ -449,41 +449,41 @@ commit is created by this close.
 | Dedup key | `{pp\|po\|pm}:{workspaceId}:{invoiceId}` plus timestamp suffix on re-trigger |
 | Non-scope | UI; scheduler; P-E03-04 |
 
-### P-E03-04 — Contract-scoped payment UI
+### P-E03-04 - Contract-scoped payment UI
 
 | | |
 | --- | --- |
 | Objective | Invoice-centric Payment list + create / update / delete |
 | Dependencies | P-E03-03 |
-| Status | **COMPLETE** — ER APPROVED WITH FINDINGS |
+| Status | **COMPLETE** - ER APPROVED WITH FINDINGS |
 | Non-scope | Epic-level engineering review; epic closure |
 
-### P-E03-05 — QA + Documentation Synchronization
+### P-E03-05 - QA + Documentation Synchronization
 
 | | |
 | --- | --- |
 | Objective | Validate complete E03 behavior and synchronize documentation |
 | Dependencies | P-E03-04 |
-| Status | **COMPLETE** — PASS WITH FINDINGS |
+| Status | **COMPLETE** - PASS WITH FINDINGS |
 | Non-scope | New product behavior; epic certification; P-E03-06 / P-E03-07 |
 
-### P-E03-06 — Release validation
+### P-E03-06 - Release validation
 
 | | |
 | --- | --- |
 | Objective | Production-path release validation before certification |
 | Dependencies | P-E03-05 |
-| Status | **COMPLETE** — PASS WITH FINDINGS / Release Gate B |
+| Status | **COMPLETE** - PASS WITH FINDINGS / Release Gate B |
 | Commit | None. Validation-only phase. |
 | Non-scope | Application change; certification |
 
-### P-E03-07 — Certification
+### P-E03-07 - Certification
 
 | | |
 | --- | --- |
 | Objective | Certify R2-E03 Payment Tracking |
 | Dependencies | P-E03-06 |
-| Status | **COMPLETE** — CERTIFIED |
+| Status | **COMPLETE** - CERTIFIED |
 | Non-scope | Application change; Prisma change; R2-E04 |
 
 ---
@@ -527,9 +527,9 @@ plus timestamp suffix on re-trigger.
 
 T3 triggers (no scheduler):
 
-- Payment create / update / delete — best-effort after commit
-- Invoice `amount` / `invoiceDate` update — best-effort after commit
-- Invoice VOID — resolve active `PAYMENT_*` in the same transaction
+- Payment create / update / delete - best-effort after commit
+- Invoice `amount` / `invoiceDate` update - best-effort after commit
+- Invoice VOID - resolve active `PAYMENT_*` in the same transaction
 - Invoice reference-only update does not evaluate payment alerts
 
 UI is Invoice-centric under
@@ -583,15 +583,15 @@ product decision. E03 is not certified.
 | --- | --- |
 | `pnpm exec prisma validate` | PASS |
 | `pnpm exec prisma generate` | PASS |
-| `pnpm test:db:migrate` | PASS — no pending migrations on `freelanceos_test` |
-| Focused E03/E01/E02 unit | PASS — 213 / 213 |
-| Focused E03/E01/E02 integration | PASS — 150 / 150 |
-| E2E `invoice-payments.spec.ts` | PASS — 1 / 1 |
-| E2E `contract-invoices.spec.ts` | PASS — 1 / 1 |
-| E2E `alerts.spec.ts` | PASS — 6 / 6 |
-| E2E `reports.spec.ts` | PASS — 22 / 22 |
-| E2E `dashboard.spec.ts` | PASS — 5 / 5 |
-| E2E `contracts.spec.ts` (isolated) | PASS — 1 / 1 |
+| `pnpm test:db:migrate` | PASS - no pending migrations on `freelanceos_test` |
+| Focused E03/E01/E02 unit | PASS - 213 / 213 |
+| Focused E03/E01/E02 integration | PASS - 150 / 150 |
+| E2E `invoice-payments.spec.ts` | PASS - 1 / 1 |
+| E2E `contract-invoices.spec.ts` | PASS - 1 / 1 |
+| E2E `alerts.spec.ts` | PASS - 6 / 6 |
+| E2E `reports.spec.ts` | PASS - 22 / 22 |
+| E2E `dashboard.spec.ts` | PASS - 5 / 5 |
+| E2E `contracts.spec.ts` (isolated) | PASS - 1 / 1 |
 | `pnpm typecheck` | PASS |
 | `pnpm lint` | PASS |
 | `pnpm build` | PASS |
@@ -624,7 +624,7 @@ Cheap coverage added for P-E03-04 review gaps:
 
 **PASS WITH FINDINGS**
 
-Release classification: **B — READY WITH EXPLICIT FINDINGS**
+Release classification: **B - READY WITH EXPLICIT FINDINGS**
 
 No blocker. Migration path deterministic. `prisma migrate deploy` is
 sufficient. Local `freelance_os` pending `20260923010000_add_payment_alerts`

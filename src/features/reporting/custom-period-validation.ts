@@ -7,7 +7,7 @@ export type CustomPeriodFieldErrors = {
 
 /**
  * Validates Custom Range form fields as ISO calendar-date strings (YYYY-MM-DD).
- * Compares dates lexicographically — no Date / timezone conversion.
+ * Compares dates lexicographically - no Date / timezone conversion.
  */
 export function validateCustomPeriodFields(
   start: string,

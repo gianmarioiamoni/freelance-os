@@ -1,4 +1,4 @@
-# Phase 2: AI Analytics UX & Information Architecture — Analysis
+# Phase 2: AI Analytics UX & Information Architecture - Analysis
 
 **Status:** Analysis complete  
 **Date:** 2026-10-02
@@ -20,35 +20,35 @@
 ## 2. Exact Components Involved
 
 ### Core UI Components
-1. **`AnalyticsAskBox.tsx`** — Container, question input, submit handler
+1. **`AnalyticsAskBox.tsx`** - Container, question input, submit handler
    - Accepts `surface: "dashboard" | "reports"`
    - Manages question state and submission
    - Renders GuidedPromptList and AiOutcomePanel
    
-2. **`AiOutcomePanel.tsx`** — Answer display
+2. **`AiOutcomePanel.tsx`** - Answer display
    - Shows `result.text` (provider prose)
    - Shows `result.facts[]` with raw metric names
    - Shows `result.citations[]` with "Sources" heading
    - Displays raw values: "120 minutes", "160 EUR"
    
-3. **`GuidedPromptList.tsx`** — Guided prompt chips
+3. **`GuidedPromptList.tsx`** - Guided prompt chips
    - No changes required
 
-4. **`format-ai-citations.ts`** — Helper utilities
-   - `displayFactValue()` — returns raw value + unit/currency
-   - `citationIdentity()` — extracts label
-   - `citationPeriodLabel()` — formats period
+4. **`format-ai-citations.ts`** - Helper utilities
+   - `displayFactValue()` - returns raw value + unit/currency
+   - `citationIdentity()` - extracts label
+   - `citationPeriodLabel()` - formats period
 
 ### Application Layer
-5. **`assemble-grounded-answer.ts`** — Facts construction
+5. **`assemble-grounded-answer.ts`** - Facts construction
    - Assembles structured facts from tool DTOs
    - Preserves minutes, raw currency values
    - No human-readable formatting
 
-6. **`ai-types.ts`** — Type definitions
-   - `AiGroundedFact` — metric, value, currency, unit, label
-   - `AiCitation` — tool, metric, value, period, labels
-   - `AiAskResult` — outcome, text, facts, citations
+6. **`ai-types.ts`** - Type definitions
+   - `AiGroundedFact` - metric, value, currency, unit, label
+   - `AiCitation` - tool, metric, value, period, labels
+   - `AiAskResult` - outcome, text, facts, citations
 
 ## 3. Current Answer Data Flow
 
@@ -105,8 +105,8 @@ accrued · ACME: 160 EUR
 - Avoid duplicate product concepts
 
 **Impact:**
-- Dashboard.tsx — 1 line removal
-- E2E test — update dashboard test expectations
+- Dashboard.tsx - 1 line removal
+- E2E test - update dashboard test expectations
 - No contract/provider changes
 
 ### B. Visual Separation in Reports

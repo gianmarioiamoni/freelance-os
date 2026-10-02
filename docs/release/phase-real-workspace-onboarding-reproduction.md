@@ -82,7 +82,7 @@ FreelanceOS Local Database Reset Utility
 
 Target Database: localhost/freelance_os
 
-DRY RUN MODE — No data will be deleted
+DRY RUN MODE - No data will be deleted
 
 Current row counts:
   Workspace            0

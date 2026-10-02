@@ -986,7 +986,7 @@ completion gate.
 The next Epic is:
 
 ``` text
-EPIC-002 — Database & Persistence
+EPIC-002 - Database & Persistence
 ```
 
 Its objective will be to implement the storage architecture defined in:

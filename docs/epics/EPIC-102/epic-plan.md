@@ -1,13 +1,13 @@
-# EPIC-102 — Contracts
+# EPIC-102 - Contracts
 
 ## 1. Epic Identity
 
 **Epic:** EPIC-102  
-**Release:** Release 1 — MVP  
-**MASTER_PLAN identifier:** R1-E02 — Contract Management  
+**Release:** Release 1 - MVP  
+**MASTER_PLAN identifier:** R1-E02 - Contract Management  
 **Objective:** Contracts  
-**Status:** COMPLETE — PASS WITH FINDINGS  
-**Depends on:** EPIC-002 — Database & Persistence; EPIC-003 — Authentication; EPIC-004 — Workspace; EPIC-005 — Testing & CI Foundation; EPIC-006 — UI Foundation; EPIC-101 — Clients  
+**Status:** COMPLETE - PASS WITH FINDINGS  
+**Depends on:** EPIC-002 - Database & Persistence; EPIC-003 - Authentication; EPIC-004 - Workspace; EPIC-005 - Testing & CI Foundation; EPIC-006 - UI Foundation; EPIC-101 - Clients  
 **Next Epic:** Time Tracking (`MASTER_PLAN.md` §13 R1-E03)  
 **Canonical sources:** `MASTER_PLAN.md` §12 R1-E02; `docs/product-vision.md` F-030–F-033; `docs/domain-model.md` §3.4 / §4 / §7 / BR-002 / BR-003 / BR-006; `docs/storage.md` §7 / §13 / §31 / §32; `docs/architecture.md` §5.4 / §6 / §24; `docs/testing-strategy.md` §2.5 / §6
 
@@ -85,10 +85,10 @@ From `MASTER_PLAN.md` R1-E02, this Epic establishes:
 
 Product outcomes from `docs/product-vision.md`:
 
-- **F-030** — create a contract with client, validity dates, billing model, rate, monthly contracted hours, and payment terms
-- **F-031** — billing models `HOURLY` and `DAILY` only
-- **F-032** — a client can have multiple contracts over time
-- **F-033** — the system can identify the contract valid on a given date; full TimeEntry recording remains R1-E03
+- **F-030** - create a contract with client, validity dates, billing model, rate, monthly contracted hours, and payment terms
+- **F-031** - billing models `HOURLY` and `DAILY` only
+- **F-032** - a client can have multiple contracts over time
+- **F-033** - the system can identify the contract valid on a given date; full TimeEntry recording remains R1-E03
 
 `Client` is customer identity. `Contract` is commercial conditions over a validity interval. This Epic must not merge them.
 
@@ -102,12 +102,12 @@ This Epic does **not** grant production readiness.
 
 | Dependency | Status | Role for this Epic |
 | --- | --- | --- |
-| EPIC-002 | Complete — PASS WITH FINDINGS | `Contract` model, `[validFrom, validTo)`, exclusion constraint, `ContractRepository`, overlap tests |
-| EPIC-003 | Complete — PASS WITH FINDINGS | Better Auth session; protected `(app)` boundary |
-| EPIC-004 | Complete — PASS WITH FINDINGS | `WorkspaceContext`, `getCurrentWorkspaceContext()`, membership isolation, workspace currency/timezone |
-| EPIC-005 | Complete — PASS | Vitest, isolated PostgreSQL, Playwright, CI gates |
-| EPIC-006 | Complete — PASS | AppShell, Field/Input/Label/Card/Alert, page/state primitives, `/contracts` placeholder |
-| EPIC-101 | Complete — PASS | Workspace-scoped clients; create/list/detail/edit/archive; `/clients` product surface |
+| EPIC-002 | Complete - PASS WITH FINDINGS | `Contract` model, `[validFrom, validTo)`, exclusion constraint, `ContractRepository`, overlap tests |
+| EPIC-003 | Complete - PASS WITH FINDINGS | Better Auth session; protected `(app)` boundary |
+| EPIC-004 | Complete - PASS WITH FINDINGS | `WorkspaceContext`, `getCurrentWorkspaceContext()`, membership isolation, workspace currency/timezone |
+| EPIC-005 | Complete - PASS | Vitest, isolated PostgreSQL, Playwright, CI gates |
+| EPIC-006 | Complete - PASS | AppShell, Field/Input/Label/Card/Alert, page/state primitives, `/contracts` placeholder |
+| EPIC-101 | Complete - PASS | Workspace-scoped clients; create/list/detail/edit/archive; `/clients` product surface |
 | `getCurrentWorkspaceContext()` | Implemented | Trusted workspace id for every contract operation |
 | `getServerAuthSession()` | Implemented | Trusted user id for Server Actions |
 | `ClientRepository` | Implemented | Client existence, status, and ownership checks |
@@ -123,7 +123,7 @@ Do not add a new authorization API. Do not add a client-side workspace store.
 
 Inspected: `MASTER_PLAN.md`, `docs/product-vision.md`, `docs/domain-model.md`, `docs/architecture.md`, `docs/storage.md`, `docs/testing-strategy.md`, EPIC-101 plan and engineering review, EPIC-002 / EPIC-004 / EPIC-005 / EPIC-006 reviews, `prisma/schema.prisma`, contract exclusion migration, `ContractRepository`, client application/UI patterns, existing tests, `README.md`, `CHANGELOG.md`.
 
-### 5.1 Already implemented — do not rebuild
+### 5.1 Already implemented - do not rebuild
 
 **Persistence**
 
@@ -447,7 +447,7 @@ No Prisma schema change. No migration. No `db push`.
 | --- | --- |
 | New tables | None |
 | New columns | None |
-| New enums | None — `BillingModel` already exists |
+| New enums | None - `BillingModel` already exists |
 | New indexes | None |
 | Overlap | Existing `Contract_client_validity_no_overlap`; do not recreate |
 | Rate CHECK | Existing `Contract_rate_positive`; do not recreate |
@@ -597,7 +597,7 @@ Do not add `/contracts?status=`. That pattern is Client-specific.
 | Surface | Change |
 | --- | --- |
 | `/clients/[clientId]` | add contract history for that client; link to create when the client is ACTIVE |
-| `/clients` list | unchanged — do not add an active-contract column in this Epic |
+| `/clients` list | unchanged - do not add an active-contract column in this Epic |
 
 F-021 “active contract and current-period hours” remains incomplete. Hours belong to R1-E03. The active-contract list column is deferred to avoid redesigning the EPIC-101 client list. Client-detail history satisfies F-032 and the contract-history part of F-022.
 
@@ -798,7 +798,7 @@ Do not E2E every optional field or every validation message.
 
 Preserve:
 
-- `tests/e2e/app-shell.spec.ts` — `h1` “Clients” on `/clients`; list `h1` “Contracts” if that route is later asserted
+- `tests/e2e/app-shell.spec.ts` - `h1` “Clients” on `/clients`; list `h1` “Contracts” if that route is later asserted
 - `tests/e2e/onboarding.spec.ts`
 - `tests/e2e/auth.spec.ts`
 - existing client journey
@@ -855,10 +855,10 @@ Four phases. One objective each. One commit each. New Cursor chat per phase.
 Persistence already exists, so there is no schema-foundation phase.
 
 ```text
-Phase 1 — Contract application services and repository completion
-Phase 2 — Authenticated contract UI
-Phase 3 — Isolation, integration, and E2E validation
-Phase 4 — Documentation and Engineering Review
+Phase 1 - Contract application services and repository completion
+Phase 2 - Authenticated contract UI
+Phase 3 - Isolation, integration, and E2E validation
+Phase 4 - Documentation and Engineering Review
 ```
 
 Phase IDs: P102-01 … P102-04.
@@ -869,7 +869,7 @@ No phase may start the next phase’s work.
 
 ## 21. Phase Details and Acceptance Criteria
 
-### Phase 1 — Contract application services and repository completion
+### Phase 1 - Contract application services and repository completion
 
 **Phase ID:** P102-01  
 **Cursor chat:** NEW CHAT  
@@ -949,7 +949,7 @@ Phase id, files changed, tests run (counts only), whether UI was touched (must b
 
 ---
 
-### Phase 2 — Authenticated contract UI
+### Phase 2 - Authenticated contract UI
 
 **Phase ID:** P102-02  
 **Cursor chat:** NEW CHAT  
@@ -1032,7 +1032,7 @@ Routes added, browser flows verified, leftover placeholder risk, confirmation th
 
 ---
 
-### Phase 3 — Isolation, integration, and E2E validation
+### Phase 3 - Isolation, integration, and E2E validation
 
 **Phase ID:** P102-03  
 **Cursor chat:** NEW CHAT  
@@ -1107,7 +1107,7 @@ Test counts (unit / integration / e2e), failures if any, confirmation that CI co
 
 ---
 
-### Phase 4 — Documentation and Engineering Review
+### Phase 4 - Documentation and Engineering Review
 
 **Phase ID:** P102-04  
 **Cursor chat:** NEW CHAT  
@@ -1123,12 +1123,12 @@ Synchronize affected documentation with implemented reality and produce the Engi
 
 Create `docs/epics/EPIC-102/engineering-review.md` and update only documents that this Epic actually changed:
 
-- `MASTER_PLAN.md` — current phase, R1-E02 status, next work R1-E03
-- `docs/architecture.md` — contracts module implemented; `/contracts` product surface
-- `docs/testing-strategy.md` — contract unit/integration/E2E evidence
-- `docs/storage.md` — only if repository operations/docs now mismatch reality
-- `docs/domain-model.md` — only if implemented defaults must be recorded without closing OBDs
-- `README.md` / `CHANGELOG.md` — status / unreleased notes
+- `MASTER_PLAN.md` - current phase, R1-E02 status, next work R1-E03
+- `docs/architecture.md` - contracts module implemented; `/contracts` product surface
+- `docs/testing-strategy.md` - contract unit/integration/E2E evidence
+- `docs/storage.md` - only if repository operations/docs now mismatch reality
+- `docs/domain-model.md` - only if implemented defaults must be recorded without closing OBDs
+- `README.md` / `CHANGELOG.md` - status / unreleased notes
 - this plan’s status block
 
 **Non-goals**
@@ -1286,18 +1286,18 @@ Preserve all MASTER_PLAN OBDs. This Epic must not resolve them.
 
 | ID | Decision | Affects EPIC-102? | Blocks EPIC-102? |
 | --- | --- | --- | --- |
-| OBD-001 | Daily-rate semantics / partial days | Yes — `DAILY` is stored, not calculated | No |
-| OBD-002 | Monetary rounding | Yes — rate stored as `NUMERIC(19,4)`; no rounding policy | No |
+| OBD-001 | Daily-rate semantics / partial days | Yes - `DAILY` is stored, not calculated | No |
+| OBD-002 | Monetary rounding | Yes - rate stored as `NUMERIC(19,4)`; no rounding policy | No |
 | OBD-003 | Midnight-crossing entries | No | No |
 | OBD-004 | Holiday model | No | No |
 | OBD-005 | Vacation/absence model | No | No |
 | OBD-006 | Capacity warning threshold | No | No |
 | OBD-007 | Post-closure edits/deletes | No | No |
-| OBD-008 | Audit requirements | Yes — no audit log | No |
-| OBD-009 | Workspace roles | Yes — any member may manage contracts | No |
-| OBD-010 | Payment-term catalog | Yes — use existing days + note fields | No |
-| OBD-011 | Multi-currency | Yes — store ISO-4217; default workspace currency; no conversion | No |
-| OBD-012 | Contract-hour rollover/expiry | Yes — store minutes only; no utilization | No |
+| OBD-008 | Audit requirements | Yes - no audit log | No |
+| OBD-009 | Workspace roles | Yes - any member may manage contracts | No |
+| OBD-010 | Payment-term catalog | Yes - use existing days + note fields | No |
+| OBD-011 | Multi-currency | Yes - store ISO-4217; default workspace currency; no conversion | No |
+| OBD-012 | Contract-hour rollover/expiry | Yes - store minutes only; no utilization | No |
 
 ### Proposed new / applied OBDs
 
@@ -1383,7 +1383,7 @@ P102-03 Isolation, integration, and E2E validation
         ↓
 P102-04 Documentation and Engineering Review
         ↓
-R1-E03 — Time Tracking
+R1-E03 - Time Tracking
 ```
 
 Each implementation phase: new Cursor chat, one commit, no later-phase work.
@@ -1446,7 +1446,7 @@ Known source discrepancies:
 
 This planning document is complete when:
 
-- [x] Epic identity is EPIC-102 — Contracts (R1-E02)
+- [x] Epic identity is EPIC-102 - Contracts (R1-E02)
 - [x] Status is planning-complete, implementation not started
 - [x] Objective matches MASTER_PLAN Contract Management
 - [x] Dependencies include completed Foundation Epics and EPIC-101

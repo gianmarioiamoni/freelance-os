@@ -133,7 +133,7 @@ export function periodHref(
 
 /**
  * Serializes the current report period plus optional entity filters.
- * Delegates to `periodHref` — not a second query-param system.
+ * Delegates to `periodHref` - not a second query-param system.
  */
 export function periodHrefFromState(
   period: ReportPeriodParam,
@@ -147,7 +147,7 @@ export function periodHrefFromState(
 
 /**
  * CSV download href for the current report view-state.
- * Reuses `periodHrefFromState` — same query params, export path only.
+ * Reuses `periodHrefFromState` - same query params, export path only.
  */
 export function reportExportHrefFromState(
   period: ReportPeriodParam,

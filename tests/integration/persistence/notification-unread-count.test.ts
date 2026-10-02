@@ -78,7 +78,7 @@ describe("countUnreadNotificationsForUser", () => {
       body: "body",
     });
 
-    // graphA should see count 0 — the notification belongs to graphB
+    // graphA should see count 0 - the notification belongs to graphB
     const count = await repositories.notifications.countUnreadNotificationsForUser(
       graphA.workspaceId,
       graphA.userId,

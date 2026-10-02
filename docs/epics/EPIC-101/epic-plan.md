@@ -1,13 +1,13 @@
-# EPIC-101 — Clients
+# EPIC-101 - Clients
 
 ## 1. Epic Identity
 
 **Epic:** EPIC-101  
-**Release:** Release 1 — MVP  
-**MASTER_PLAN identifier:** R1-E01 — Client Management  
+**Release:** Release 1 - MVP  
+**MASTER_PLAN identifier:** R1-E01 - Client Management  
 **Objective:** Clients  
-**Status:** COMPLETE — PASS  
-**Depends on:** EPIC-002 — Database & Persistence; EPIC-003 — Authentication; EPIC-004 — Workspace; EPIC-005 — Testing & CI Foundation; EPIC-006 — UI Foundation  
+**Status:** COMPLETE - PASS  
+**Depends on:** EPIC-002 - Database & Persistence; EPIC-003 - Authentication; EPIC-004 - Workspace; EPIC-005 - Testing & CI Foundation; EPIC-006 - UI Foundation  
 **Next Epic:** Contract Management (`MASTER_PLAN.md` §12 R1-E02)  
 **Canonical sources:** `MASTER_PLAN.md` §11 R1-E01; `docs/product-vision.md` F-020–F-024; `docs/domain-model.md` §3.3 / §4.1 / BR-005; `docs/storage.md` §6 / §19
 
@@ -74,11 +74,11 @@ From `MASTER_PLAN.md` R1-E01, this Epic establishes:
 
 Product outcomes from `docs/product-vision.md`:
 
-- **F-020** — create client master data
-- **F-021** — client list, limited to fields this Epic can truthfully show
-- **F-022** — client detail, limited to master data this Epic owns
-- **F-023** — edit client master data
-- **F-024** — archive rather than delete
+- **F-020** - create client master data
+- **F-021** - client list, limited to fields this Epic can truthfully show
+- **F-022** - client detail, limited to master data this Epic owns
+- **F-023** - edit client master data
+- **F-024** - archive rather than delete
 
 `Client` is customer identity. `Contract` is commercial conditions over time. This Epic must not merge them.
 
@@ -92,11 +92,11 @@ This Epic does **not** grant production readiness.
 
 | Dependency | Status | Role for this Epic |
 | --- | --- | --- |
-| EPIC-002 | Complete — PASS WITH FINDINGS | `Client` model, indexes, `ClientRepository`, isolation tests |
-| EPIC-003 | Complete — PASS WITH FINDINGS | Better Auth session; protected `(app)` boundary |
-| EPIC-004 | Complete — PASS WITH FINDINGS | `WorkspaceContext`, `getCurrentWorkspaceContext()`, membership isolation |
-| EPIC-005 | Complete — PASS | Vitest, isolated PostgreSQL, Playwright, CI gates |
-| EPIC-006 | Complete — PASS | AppShell, Field/Input/Label/Card/Alert, page/state primitives, `/clients` placeholder |
+| EPIC-002 | Complete - PASS WITH FINDINGS | `Client` model, indexes, `ClientRepository`, isolation tests |
+| EPIC-003 | Complete - PASS WITH FINDINGS | Better Auth session; protected `(app)` boundary |
+| EPIC-004 | Complete - PASS WITH FINDINGS | `WorkspaceContext`, `getCurrentWorkspaceContext()`, membership isolation |
+| EPIC-005 | Complete - PASS | Vitest, isolated PostgreSQL, Playwright, CI gates |
+| EPIC-006 | Complete - PASS | AppShell, Field/Input/Label/Card/Alert, page/state primitives, `/clients` placeholder |
 | `getCurrentWorkspaceContext()` | Implemented | Trusted workspace id for every client operation |
 | `getServerAuthSession()` | Implemented | Trusted user id for Server Actions |
 | `ClientRepository` | Implemented except `updateClient` | Persistence port; Phase 1 adds update |
@@ -110,7 +110,7 @@ Do not add a new authorization API. Do not add a client-side workspace store.
 
 Inspected: `MASTER_PLAN.md`, `docs/product-vision.md`, `docs/domain-model.md`, `docs/architecture.md`, `docs/storage.md`, `docs/testing-strategy.md`, EPIC-006 plan and engineering review, `prisma/schema.prisma`, existing workspace/auth/UI/persistence code, existing tests, `README.md`, `CHANGELOG.md`.
 
-### 5.1 Already implemented — do not rebuild
+### 5.1 Already implemented - do not rebuild
 
 **Persistence**
 
@@ -270,8 +270,8 @@ No Prisma schema change. No migration. No `db push`.
 | --- | --- |
 | New tables | None |
 | New columns | None |
-| New enums | None — `ClientStatus` exists |
-| New indexes | None — `(workspaceId, vatNumber)` stays a later candidate (`docs/storage.md`) |
+| New enums | None - `ClientStatus` exists |
+| New indexes | None - `(workspaceId, vatNumber)` stays a later candidate (`docs/storage.md`) |
 | Uniqueness | None added |
 | `updateClient` | Application/repository only; updates existing nullable/required columns |
 | Delete | Not added |
@@ -519,8 +519,8 @@ Do not E2E every optional field or every validation message.
 
 Preserve:
 
-- `tests/e2e/app-shell.spec.ts` — `h1` “Clients” on `/clients`
-- `tests/e2e/onboarding.spec.ts` — `/clients` auth/onboarding redirects
+- `tests/e2e/app-shell.spec.ts` - `h1` “Clients” on `/clients`
+- `tests/e2e/onboarding.spec.ts` - `/clients` auth/onboarding redirects
 - `tests/e2e/auth.spec.ts`
 
 Do not add `/workspace-unavailable` E2E (G-004). Do not switch Playwright to `next start`. Do not add axe/jsdom/RTL.
@@ -578,10 +578,10 @@ Four phases. One objective each. One commit each. New Cursor chat per phase.
 Persistence already exists, so there is no schema-foundation phase.
 
 ```text
-Phase 1 — Client application services and repository completion
-Phase 2 — Authenticated client UI
-Phase 3 — Isolation, integration, and E2E validation
-Phase 4 — Documentation and Engineering Review
+Phase 1 - Client application services and repository completion
+Phase 2 - Authenticated client UI
+Phase 3 - Isolation, integration, and E2E validation
+Phase 4 - Documentation and Engineering Review
 ```
 
 Phase IDs: P101-01 … P101-04.
@@ -592,7 +592,7 @@ No phase may start the next phase’s work.
 
 ## 21. Phase Details and Acceptance Criteria
 
-### Phase 1 — Client application services and repository completion
+### Phase 1 - Client application services and repository completion
 
 **Phase ID:** P101-01  
 **Cursor chat:** NEW CHAT  
@@ -683,7 +683,7 @@ Phase id, files changed, tests run (counts only), whether UI was touched (must b
 
 ---
 
-### Phase 2 — Authenticated client UI
+### Phase 2 - Authenticated client UI
 
 **Phase ID:** P101-02  
 **Cursor chat:** NEW CHAT  
@@ -767,7 +767,7 @@ Routes added, browser flows verified, leftover placeholder risk, confirmation th
 
 ---
 
-### Phase 3 — Isolation, integration, and E2E validation
+### Phase 3 - Isolation, integration, and E2E validation
 
 **Phase ID:** P101-03  
 **Cursor chat:** NEW CHAT  
@@ -842,7 +842,7 @@ Test counts (unit / integration / e2e), failures if any, confirmation that CI co
 
 ---
 
-### Phase 4 — Documentation and Engineering Review
+### Phase 4 - Documentation and Engineering Review
 
 **Phase ID:** P101-04  
 **Cursor chat:** NEW CHAT  
@@ -857,12 +857,12 @@ Synchronize documents with implemented client management and record the Engineer
 
 Update only what this Epic changed or left stale:
 
-- `MASTER_PLAN.md` — EPIC-101 status; next work R1-E02 Contracts; MVP implementation started; no production-readiness claim
-- `docs/architecture.md` — `src/features/clients` exists; `/clients` is a product surface
-- `docs/testing-strategy.md` — client application/E2E additions; no MVP completeness claim
-- `docs/storage.md` — only if repository behavior needs a factual note; no fake schema change
+- `MASTER_PLAN.md` - EPIC-101 status; next work R1-E02 Contracts; MVP implementation started; no production-readiness claim
+- `docs/architecture.md` - `src/features/clients` exists; `/clients` is a product surface
+- `docs/testing-strategy.md` - client application/E2E additions; no MVP completeness claim
+- `docs/storage.md` - only if repository behavior needs a factual note; no fake schema change
 - `README.md` / `CHANGELOG.md` as needed
-- `docs/epics/EPIC-101/engineering-review.md` — create here, not earlier
+- `docs/epics/EPIC-101/engineering-review.md` - create here, not earlier
 - this plan’s status block → implementation complete after review
 
 #### Files / areas likely affected
@@ -1028,8 +1028,8 @@ Preserve all MASTER_PLAN OBDs. This Epic must not resolve them.
 | OBD-005 | Vacation/absence model | No | No |
 | OBD-006 | Capacity warning threshold | No | No |
 | OBD-007 | Post-closure edits/deletes | No | No |
-| OBD-008 | Audit requirements | Yes — no audit log | No |
-| OBD-009 | Workspace roles | Yes — any member may manage clients | No |
+| OBD-008 | Audit requirements | Yes - no audit log | No |
+| OBD-009 | Workspace roles | Yes - any member may manage clients | No |
 | OBD-010 | Payment-term catalog | No | No |
 | OBD-011 | Multi-currency | No | No |
 | OBD-012 | Contract-hour rollover/expiry | No | No |
@@ -1123,7 +1123,7 @@ P101-03 Isolation, integration, and E2E validation
         ↓
 P101-04 Documentation and Engineering Review
         ↓
-R1-E02 — Contract Management
+R1-E02 - Contract Management
 ```
 
 Each implementation phase: new Cursor chat, one commit, no later-phase work.
@@ -1179,7 +1179,7 @@ Known source discrepancy:
 
 This planning document is complete when:
 
-- [x] Epic identity is EPIC-101 — Clients (R1-E01)
+- [x] Epic identity is EPIC-101 - Clients (R1-E01)
 - [x] Status is planning-complete, implementation not started
 - [x] Objective matches MASTER_PLAN Client Management
 - [x] Dependencies are the completed Foundation Epics

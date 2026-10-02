@@ -1,4 +1,4 @@
-# FreelanceOS — MVP UX Gate Report
+# FreelanceOS - MVP UX Gate Report
 
 **Document:** `docs/ux/ux-review.md`  
 **Gate:** `MASTER_PLAN.md` §33  
@@ -7,9 +7,9 @@
 **Host clock:** Europe/Rome (CEST, UTC+2)  
 **Verdict:** PASS WITH FINDINGS  
 **Blocking findings:** NONE  
-**Release readiness:** NO — Production Validation / Certification remain required  
+**Release readiness:** NO - Production Validation / Certification remain required  
 **Next lifecycle phase:** Production Validation (`MASTER_PLAN.md` §34)  
-**UX Polish:** COMPLETE (2026-09-18) — see §18
+**UX Polish:** COMPLETE (2026-09-18) - see §18
 
 ------------------------------------------------------------------------
 
@@ -50,10 +50,10 @@ Required by this gate’s execution brief (not by an explicit §33 checklist). P
 
 | Method | Result |
 |---|---|
-| Playwright a11y / shell / reports / alerts | **33/33 PASS** — `dashboard-accessibility.spec.ts`, `app-shell.spec.ts`, `reports.spec.ts`, `alerts.spec.ts` (`CI=true`, 1 worker) |
+| Playwright a11y / shell / reports / alerts | **33/33 PASS** - `dashboard-accessibility.spec.ts`, `app-shell.spec.ts`, `reports.spec.ts`, `alerts.spec.ts` (`CI=true`, 1 worker) |
 | Manual desktop (~default) | **PASS WITH FINDINGS** |
 | Manual mobile (`390×844`) | **PASS WITH FINDINGS** |
-| axe-core | **N/A** — not in repository (F-104-010 / testing-strategy §34) |
+| axe-core | **N/A** - not in repository (F-104-010 / testing-strategy §34) |
 
 F-104-007 `NEXT_REDIRECT` logs were observed during Playwright (pre-existing). Redirects still succeeded.
 
@@ -169,7 +169,7 @@ Copy-previous-entry remains deferred. UX Polish must not add it (`MASTER_PLAN.md
 
 ## 12. New UX findings
 
-### FINDING-UX-001 — Dashboard empty copy ignores existing clients
+### FINDING-UX-001 - Dashboard empty copy ignores existing clients
 
 | Field | Value |
 |---|---|
@@ -178,14 +178,14 @@ Copy-previous-entry remains deferred. UX Polish must not add it (`MASTER_PLAN.md
 | **Status** | CLOSED |
 | **Classification** | APPLICATION / UX |
 | **Dimension** | Empty states / clarity |
-| **Route** | `/` — `Dashboard.tsx` |
+| **Route** | `/` - `Dashboard.tsx` |
 | **Expected** | Empty month copy should match workspace state and offer a next action |
 | **Observed** | After creating “UX Gate Client”, dashboard still said “Start by creating your first client and logging some work from the Time Tracking page.” No CTA. |
 | **User impact** | Misleading instruction after onboarding step 1 |
 | **Blocking** | No |
-| **Next phase** | CLOSED in UX Polish — empty copy depends on whether active clients exist; CTA to New client or Log time |
+| **Next phase** | CLOSED in UX Polish - empty copy depends on whether active clients exist; CTA to New client or Log time |
 
-### FINDING-UX-002 — Settings is a nav dead end
+### FINDING-UX-002 - Settings is a nav dead end
 
 | Field | Value |
 |---|---|
@@ -194,14 +194,14 @@ Copy-previous-entry remains deferred. UX Polish must not add it (`MASTER_PLAN.md
 | **Status** | CLOSED |
 | **Classification** | PRE-EXISTING (EPIC-006 placeholder) |
 | **Dimension** | Trust / discoverability |
-| **Route** | `/settings` — `PlaceholderPage` |
+| **Route** | `/settings` - `PlaceholderPage` |
 | **Expected** | Nav destinations are product surfaces or omitted |
 | **Observed** | “Settings is not implemented yet.” |
 | **User impact** | Looks unfinished |
 | **Blocking** | No |
-| **Next phase** | CLOSED in UX Polish — read-only Settings surface; no settings administration or timezone mutation |
+| **Next phase** | CLOSED in UX Polish - read-only Settings surface; no settings administration or timezone mutation |
 
-### FINDING-UX-003 — Alerts vs Notifications terminology
+### FINDING-UX-003 - Alerts vs Notifications terminology
 
 | Field | Value |
 |---|---|
@@ -215,9 +215,9 @@ Copy-previous-entry remains deferred. UX Polish must not add it (`MASTER_PLAN.md
 | **Observed** | Nav Alerts; page Notifications; description “notifications for contract alerts” |
 | **User impact** | Mild confusion |
 | **Blocking** | No |
-| **Next phase** | CLOSED in UX Polish — page title aligned to nav/route `Alerts`; domain Notification/Alert types unchanged |
+| **Next phase** | CLOSED in UX Polish - page title aligned to nav/route `Alerts`; domain Notification/Alert types unchanged |
 
-### FINDING-UX-004 — Custom report period is not selectable in the UI
+### FINDING-UX-004 - Custom report period is not selectable in the UI
 
 | Field | Value |
 |---|---|
@@ -226,14 +226,14 @@ Copy-previous-entry remains deferred. UX Polish must not add it (`MASTER_PLAN.md
 | **Status** | OPEN |
 | **Classification** | UX / discoverability |
 | **Dimension** | Date / period |
-| **Route** | `/reports` — `PeriodSelector.tsx` |
+| **Route** | `/reports` - `PeriodSelector.tsx` |
 | **Expected** | If custom ranges exist, users can choose them and see them as current |
 | **Observed** | Pills: Today / This Week / This Month / This Year only. Custom URL works; no pill is `aria-current`. |
 | **User impact** | Custom range undiscoverable; FINDING-QA-002 mostly hidden from UI users |
 | **Blocking** | No |
-| **Next phase** | Remains OPEN — custom period UI would be new functionality and would expose FINDING-QA-002 |
+| **Next phase** | Remains OPEN - custom period UI would be new functionality and would expose FINDING-QA-002 |
 
-### FINDING-UX-005 — Mobile unread badge not on the menu trigger
+### FINDING-UX-005 - Mobile unread badge not on the menu trigger
 
 | Field | Value |
 |---|---|
@@ -247,9 +247,9 @@ Copy-previous-entry remains deferred. UX Polish must not add it (`MASTER_PLAN.md
 | **Observed** | Hamburger `aria-label="Open navigation"` has no badge; count is inside the sheet / desktop sidebar |
 | **User impact** | Mobile users miss unread alerts until they open nav |
 | **Blocking** | No |
-| **Next phase** | CLOSED in UX Polish — unread count on hamburger `aria-label` and visible badge |
+| **Next phase** | CLOSED in UX Polish - unread count on hamburger `aria-label` and visible badge |
 
-### FINDING-UX-006 — Duration control hint and labelling mismatch
+### FINDING-UX-006 - Duration control hint and labelling mismatch
 
 | Field | Value |
 |---|---|
@@ -258,14 +258,14 @@ Copy-previous-entry remains deferred. UX Polish must not add it (`MASTER_PLAN.md
 | **Status** | CLOSED |
 | **Classification** | UX / accessibility |
 | **Dimension** | Interaction / a11y |
-| **Route** | `/time-tracking/new` — `DurationInput.tsx` |
+| **Route** | `/time-tracking/new` - `DurationInput.tsx` |
 | **Expected** | Hint matches the control; one accessible name per input; unique ids |
 | **Observed** | Hint “hours:minutes (e.g., 2:30)” vs Hours + Minutes boxes. `Field` clones `id` onto the wrapper while Hours also uses `durationHours`. Minutes unlabeled. |
 | **User impact** | Confusing entry; weaker AT mapping |
 | **Blocking** | No |
-| **Next phase** | CLOSED in UX Polish — fieldset with Hours/Minutes labels, unique ids, matching hint |
+| **Next phase** | CLOSED in UX Polish - fieldset with Hours/Minutes labels, unique ids, matching hint |
 
-### FINDING-UX-007 — Billing model label casing
+### FINDING-UX-007 - Billing model label casing
 
 | Field | Value |
 |---|---|
@@ -279,9 +279,9 @@ Copy-previous-entry remains deferred. UX Polish must not add it (`MASTER_PLAN.md
 | **Observed** | Enum dumped in lists/selectors |
 | **User impact** | Looks unfinished |
 | **Blocking** | No |
-| **Next phase** | CLOSED in UX Polish — `formatBillingModel` on time-entry list, selector, and edit summary |
+| **Next phase** | CLOSED in UX Polish - `formatBillingModel` on time-entry list, selector, and edit summary |
 
-### FINDING-UX-008 — Several empty states have no next action
+### FINDING-UX-008 - Several empty states have no next action
 
 | Field | Value |
 |---|---|
@@ -295,9 +295,9 @@ Copy-previous-entry remains deferred. UX Polish must not add it (`MASTER_PLAN.md
 | **Observed** | Clients/contracts put New * above* empty; dashboard/reports describe only |
 | **User impact** | Extra navigation guesswork |
 | **Blocking** | No |
-| **Next phase** | CLOSED in UX Polish — EmptyState action slot; dashboard and report empties offer next steps |
+| **Next phase** | CLOSED in UX Polish - EmptyState action slot; dashboard and report empties offer next steps |
 
-### FINDING-UX-009 — Archived contracts unlabeled on dashboard / contract report
+### FINDING-UX-009 - Archived contracts unlabeled on dashboard / contract report
 
 | Field | Value |
 |---|---|
@@ -311,7 +311,7 @@ Copy-previous-entry remains deferred. UX Polish must not add it (`MASTER_PLAN.md
 | **Observed** | “Northwind Contracts” 0h/40h with no Archived badge (Hours by Client does label archived when present) |
 | **User impact** | May look like an active contract |
 | **Blocking** | No |
-| **Next phase** | CLOSED in UX Polish — Archived badge on dashboard Contract Utilization and Contract Report |
+| **Next phase** | CLOSED in UX Polish - Archived badge on dashboard Contract Utilization and Contract Report |
 
 ------------------------------------------------------------------------
 
@@ -334,7 +334,7 @@ NONE.
 | FINDING-UX-007 | CLOSED | UX / terminology | UX Polish |
 | FINDING-UX-008 | CLOSED | UX | UX Polish |
 | FINDING-UX-009 | CLOSED | UX | UX Polish |
-| FINDING-P04-002 | ACCEPTED | BY DESIGN | — |
+| FINDING-P04-002 | ACCEPTED | BY DESIGN | - |
 | FINDING-INT-001 | OPEN | TEST DEFECT | later test hardening |
 | FINDING-INT-002 | OPEN | TEST DEFECT | later test hardening |
 | FINDING-INT-003 | OPEN | TEST INFRASTRUCTURE | later |
@@ -347,7 +347,7 @@ NONE.
 
 ## 15. Recommended next lifecycle phase
 
-**Production Validation** — `MASTER_PLAN.md` §34.
+**Production Validation** - `MASTER_PLAN.md` §34.
 
 UX Polish is complete. FINDING-UX-004 remains OPEN. FINDING-QA-002 remains OPEN. Do not start Production Certification in the Validation chat.
 

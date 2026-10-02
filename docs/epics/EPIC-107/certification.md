@@ -1,9 +1,9 @@
 # EPIC-107 Certification
 
-**Epic:** EPIC-107 — Public Landing  
+**Epic:** EPIC-107 - Public Landing  
 **Phase:** Certification  
-**Release:** Release 1 — MVP  
-**MASTER_PLAN identifier:** R1-E07 — Public Landing  
+**Release:** Release 1 - MVP  
+**MASTER_PLAN identifier:** R1-E07 - Public Landing  
 **Date:** 2026-09-18  
 **HEAD certified against:** `3df8fc63d1da9c7d0c435af3876ab97938241932`  
 **HEAD short:** `3df8fc6 docs(landing): validate EPIC-107 in production`  
@@ -206,13 +206,13 @@ Findings stay OPEN. This table is disposition for certification only; it does no
 
 | ID | Current status | Evidence | Severity | §37 class vs release gate | Disposition |
 | --- | --- | --- | --- | --- | --- |
-| FINDING-QA-001 | OPEN / TEST DEFECT / FLAKY | QA 1/6 flake; P107-05 66/66 did not reproduce | Low | Not a broken user workflow (QA: Blocking No) | **may remain open** — not a §37 Release Blocker |
-| FINDING-QA-002 | OPEN / APPLICATION DEFECT | Custom-range process TZ west of UTC; default periods OK | Medium | QA Blocking No; UI custom picker absent (UX-004) | **may remain open** — not reclassified as Release Blocker; default report periods use workspace TZ |
-| FINDING-INT-001 | OPEN / TEST DEFECT / CONFIRMED | LA TZ integration failures; host TZ 224/224 | — | Test defect | **may remain open** |
-| FINDING-INT-002 | OPEN / NOT REPRODUCED | Sign-out PASS in P107-05 and P107-06 | — | Residual test concern | **may remain open**; not enough evidence to close |
-| FINDING-INT-003 | OPEN / NOT REPRODUCED | E2E recovery PASS; production token completion not runnable | — | Residual; production mailer absent | **may remain open**; not enough evidence to close. Production mailer is a §34 environment/auth completeness issue (see §12), not a new finding |
-| FINDING-UX-004 | OPEN | PeriodSelector has no custom UI | — | UX Polish left OPEN (new functionality) | **may remain open** — Known Limitation relative to custom-period UI |
-| F-104-007 | OPEN / PRE-EXISTING | Reconfirmed P107-05 and P107-06 logs; redirects still succeed | Medium | Prior gates: NON-BLOCKING; user not blocked | **may remain open** — Operational Warning |
+| FINDING-QA-001 | OPEN / TEST DEFECT / FLAKY | QA 1/6 flake; P107-05 66/66 did not reproduce | Low | Not a broken user workflow (QA: Blocking No) | **may remain open** - not a §37 Release Blocker |
+| FINDING-QA-002 | OPEN / APPLICATION DEFECT | Custom-range process TZ west of UTC; default periods OK | Medium | QA Blocking No; UI custom picker absent (UX-004) | **may remain open** - not reclassified as Release Blocker; default report periods use workspace TZ |
+| FINDING-INT-001 | OPEN / TEST DEFECT / CONFIRMED | LA TZ integration failures; host TZ 224/224 | - | Test defect | **may remain open** |
+| FINDING-INT-002 | OPEN / NOT REPRODUCED | Sign-out PASS in P107-05 and P107-06 | - | Residual test concern | **may remain open**; not enough evidence to close |
+| FINDING-INT-003 | OPEN / NOT REPRODUCED | E2E recovery PASS; production token completion not runnable | - | Residual; production mailer absent | **may remain open**; not enough evidence to close. Production mailer is a §34 environment/auth completeness issue (see §12), not a new finding |
+| FINDING-UX-004 | OPEN | PeriodSelector has no custom UI | - | UX Polish left OPEN (new functionality) | **may remain open** - Known Limitation relative to custom-period UI |
+| F-104-007 | OPEN / PRE-EXISTING | Reconfirmed P107-05 and P107-06 logs; redirects still succeed | Medium | Prior gates: NON-BLOCKING; user not blocked | **may remain open** - Operational Warning |
 | F-104-010 | OPEN | Unsound a11y assertions | Medium | Prior: non-blocking | **may remain open** |
 | F-104-011 | OPEN | `dt`/`dd` without `dl` | Low | Prior: non-blocking | **may remain open** |
 | F-104-012 | OPEN | Truncation / heading markup debt | Low | Prior: non-blocking | **may remain open** |
@@ -250,17 +250,17 @@ This is documentation drift after P107-04, not an application defect. It does no
 | §31 QA | Does it work correctly? | `docs/qa/qa-report.md` | PASS WITH FINDINGS | None recorded | Met as QA gate |
 | §32 Documentation | Canonical docs synchronized | P107-04 sync; later headers stale | PASS historically; **status headers stale** | None (§37) | Incomplete as of HEAD for phase labels |
 | §33 UX | Professional product? | `docs/ux/ux-review.md` + Polish §18 | PASS WITH FINDINGS | None | Met as UX gate |
-| §34 production build | Production build of the candidate | P107-05 / P107-06 `pnpm build` | PASS | — | Met |
-| §34 deployment configuration | Deploy config for what will be deployed | No hosted deploy; no deploy manifest verified | **NOT VERIFIED** | — | **Unmet** |
-| §34 database migration | Migrations on the deployed build | Historical `migrate` in QA/README; not a §34 pass on a release deploy | **NOT VERIFIED** as §34 | — | **Unmet** |
+| §34 production build | Production build of the candidate | P107-05 / P107-06 `pnpm build` | PASS | - | Met |
+| §34 deployment configuration | Deploy config for what will be deployed | No hosted deploy; no deploy manifest verified | **NOT VERIFIED** | - | **Unmet** |
+| §34 database migration | Migrations on the deployed build | Historical `migrate` in QA/README; not a §34 pass on a release deploy | **NOT VERIFIED** as §34 | - | **Unmet** |
 | §34 authentication | Auth on the deployed build | P107-06 sign-in/up/out PASS; reset completion and Google NOT VERIFIED | **PASS WITH FINDINGS** / incomplete vs full §34 | None new | **Unmet as full §34 item** |
-| §34 complete MVP workflow | End-to-end MVP on the candidate | P107-06 scoped to landing/routing | **NOT VERIFIED** | — | **Unmet** |
+| §34 complete MVP workflow | End-to-end MVP on the candidate | P107-06 scoped to landing/routing | **NOT VERIFIED** | - | **Unmet** |
 | §34 critical E2E regression | E2E on the candidate | 66/66 on `pnpm dev` (P107-05); not on `next start` | **NOT VERIFIED** on production server | FINDING-QA-001 still OPEN | **Unmet as §34** |
 | §34 reports | Reports on candidate | Not in P107-06 | **NOT VERIFIED** | QA-002 remains OPEN | **Unmet** |
-| §34 alerts | Alerts on candidate | Not in P107-06 | **NOT VERIFIED** | — | **Unmet** |
-| §34 notifications | Notifications on candidate | Not in P107-06 | **NOT VERIFIED** | — | **Unmet** |
-| §34 security baseline | Security baseline of deployable build | EPIC-107 paths PASS; not a full-app baseline | **PARTIAL** | — | **Unmet as full §34 item** |
-| §34 environment variables | Production env complete | Local `.env`; no production mailer; Google unset | **PARTIAL** | — | **Unmet as full §34 item** |
+| §34 alerts | Alerts on candidate | Not in P107-06 | **NOT VERIFIED** | - | **Unmet** |
+| §34 notifications | Notifications on candidate | Not in P107-06 | **NOT VERIFIED** | - | **Unmet** |
+| §34 security baseline | Security baseline of deployable build | EPIC-107 paths PASS; not a full-app baseline | **PARTIAL** | - | **Unmet as full §34 item** |
+| §34 environment variables | Production env complete | Local `.env`; no production mailer; Google unset | **PARTIAL** | - | **Unmet as full §34 item** |
 | §34 no release-blocking defects | No §37 Release Blockers | QA/UX/P107-05/P107-06: blocking NONE | PASS (no confirmed blocker) | None | Met as finding class; does **not** complete §34 |
 | §34 gate outcome | READY FOR RELEASE or RELEASE BLOCKED | P107-06: §34 NOT COMPLETE | **RELEASE BLOCKED** | Gate incomplete | **Not passed** |
 | §35 certification | After successful §34; PO approval | §34 not passed; Product Owner approval absent | **NOT GRANTED** | Prerequisite missing | **Not passed** |
@@ -294,7 +294,7 @@ This is not a statement that EPIC-107 failed its own ACs. EPIC-107 review and pr
 | EPIC-107 implementation complete? | **YES** |
 | EPIC-107 Engineering Review | **PASS WITH FINDINGS** (`docs/epics/EPIC-107/engineering-review.md`) |
 | EPIC-107 production-like validation | **PASS WITH FINDINGS** (`docs/epics/EPIC-107/production-validation.md`) |
-| EPIC-107 §35 “certified for release”? | **NO** — MASTER_PLAN certifies the **build/release**, not a separate epic certificate |
+| EPIC-107 §35 “certified for release”? | **NO** - MASTER_PLAN certifies the **build/release**, not a separate epic certificate |
 | Overall MVP production readiness | **NO** |
 | Release status (§36) | **RELEASE BLOCKED** |
 
@@ -310,7 +310,7 @@ Required by documented gates before `READY FOR RELEASE`:
 4. Produce a §35 record that includes **Product Owner approval** after §34 succeeds.
 5. Synchronize stale phase-status headers listed in §8 (documentation only; not an application fix).
 
-Not required as certification blockers (may remain OPEN per §7): QA-001, QA-002, INT-001, INT-002, INT-003, UX-004, F-104-007, F-104-010, F-104-011, F-104-012 — unless a future §34 run produces new §37 Release Blocker evidence.
+Not required as certification blockers (may remain OPEN per §7): QA-001, QA-002, INT-001, INT-002, INT-003, UX-004, F-104-007, F-104-010, F-104-011, F-104-012 - unless a future §34 run produces new §37 Release Blocker evidence.
 
 ---
 

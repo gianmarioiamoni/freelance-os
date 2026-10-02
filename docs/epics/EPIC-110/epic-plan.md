@@ -1,8 +1,8 @@
-# EPIC-110 — R1 Release Consolidation & Freeze
+# EPIC-110 - R1 Release Consolidation & Freeze
 
 **Epic:** EPIC-110
 **Release:** R1 consolidation (post EPIC-108 / EPIC-109)
-**Status:** CLOSED — R1 FROZEN (`docs/release/r1-freeze.md`)
+**Status:** CLOSED - R1 FROZEN (`docs/release/r1-freeze.md`)
 **HEAD:** `c6712224e8d093b6f64cb46a17823a20de356a31`
 
 ```text
@@ -57,8 +57,8 @@ Consolidate the **current certified R1** for freeze.
 | Last commit | `docs(epic-109): close calendar-date hardening` |
 | R1 | GRANTED (`docs/release/production-certification.md`) |
 | Candidate recorded at §35 | `2b58af4` |
-| EPIC-108 | CLOSED — ER PASS WITH FINDINGS |
-| EPIC-109 | CLOSED — ER PASS |
+| EPIC-108 | CLOSED - ER PASS WITH FINDINGS |
+| EPIC-109 | CLOSED - ER PASS |
 | `src/` TODO/FIXME | none |
 
 Do not reset, revert, or rewrite history.
@@ -87,7 +87,7 @@ Dispositions: **FIX NOW** | **VERIFY** | **ACCEPT** | **DEFER** | **HISTORICAL**
 
 | ID | Title | Origin | Category | Current existence | R1 relevance | Disposition |
 |---|---|---|---|---|---|---|
-| F-103-002 | Archived-client entries omitted from time-tracking lists | EPIC-103 | APPLICATION | `loadClientsAndContracts()` ACTIVE-only join still drops archived clients from daily/weekly UI; edit still loads | Yes — R1 rule “existing entries remain readable” fails in presentation | **FIX NOW** |
+| F-103-002 | Archived-client entries omitted from time-tracking lists | EPIC-103 | APPLICATION | `loadClientsAndContracts()` ACTIVE-only join still drops archived clients from daily/weekly UI; edit still loads | Yes - R1 rule “existing entries remain readable” fails in presentation | **FIX NOW** |
 | F-103-003 | Contract select may stay stale after client/date change | EPIC-103 | UX | Uncontrolled `defaultValue`; never verified | Integrity OK (server rejects). UX only | **VERIFY** |
 | F-103-005 | Unused TimeEntry error classes | EPIC-103 | ARCHITECTURE | Dead exports; isolation is fail-closed not-found | None | **ACCEPT** |
 | F-103-006 | Invalid `?date=` falls back to today | EPIC-103 | APPLICATION | `parseDate` still silent fallback | No data-integrity impact; accepted for MVP | **ACCEPT** |
@@ -108,7 +108,7 @@ Dispositions: **FIX NOW** | **VERIFY** | **ACCEPT** | **DEFER** | **HISTORICAL**
 | F-104-P-001 | Query performance unevidenced | EPIC-104 | ARCHITECTURE | **Measured**; threshold OPEN (PD-105-008) | Not a blocker | **ACCEPT** |
 | F-104-P-002 | Timezone complexity | EPIC-104 | HISTORICAL | Subsumed by F-104-005 / P105-03 | Register stale OPEN | **HISTORICAL** + P110-04 register |
 | F-105-008 | Test comment arithmetic nit | EPIC-105 | TEST | Comment only | None | **ACCEPT** |
-| F-105-013 | Annual overview `getFullYear()` vs workspace TZ | EPIC-105 | APPLICATION | **Still in `src/app/(app)/reports/page.tsx`** (`now.getFullYear()`). EPIC-109 tests aligned; **app not changed** | Yes — contradicts `Workspace.timezone` on year boundary west of UTC | **FIX NOW** |
+| F-105-013 | Annual overview `getFullYear()` vs workspace TZ | EPIC-105 | APPLICATION | **Still in `src/app/(app)/reports/page.tsx`** (`now.getFullYear()`). EPIC-109 tests aligned; **app not changed** | Yes - contradicts `Workspace.timezone` on year boundary west of UTC | **FIX NOW** |
 
 ### Inherited / product / OBD (not all in §38 table)
 
@@ -122,25 +122,25 @@ Dispositions: **FIX NOW** | **VERIFY** | **ACCEPT** | **DEFER** | **HISTORICAL**
 | F-004-001 | Concurrent first-workspace race | INFRASTRUCTURE | **ACCEPT** |
 | EPIC-003 F-001 | Google/email implicit linking / unverified email | PRODUCT | **DEFER** |
 | EPIC-003 F-002 | Google consent not in CI | INFRASTRUCTURE | **ACCEPT** |
-| EPIC-003 F-003 | No password-reset provider | HISTORICAL | **HISTORICAL** — Gmail SMTP is production mailer; do not reopen |
+| EPIC-003 F-003 | No password-reset provider | HISTORICAL | **HISTORICAL** - Gmail SMTP is production mailer; do not reopen |
 | F-103-004 | PD numbering divergence | DOCUMENTATION | **HISTORICAL** |
 | OBD-001, OBD-002, OBD-011 | Daily-rate / rounding / multi-currency | PRODUCT | **DEFER** (revenue excluded PD-105-001) |
 | OBD-003 | Midnight-crossing entries | PRODUCT | **ACCEPT** (`workDate` date-only) |
 | OBD-004, OBD-005 | Holiday / absence | PRODUCT | **DEFER** |
-| OBD-006 | Capacity warning threshold | PRODUCT | **ACCEPT** for freeze — alerts exist; dashboard 80% cue is not OBD-006 policy |
+| OBD-006 | Capacity warning threshold | PRODUCT | **ACCEPT** for freeze - alerts exist; dashboard 80% cue is not OBD-006 policy |
 | OBD-007, OBD-008 | Post-closure edits; audit | PRODUCT | **DEFER** (R2; TD-001/TD-002) |
 | OBD-010 | Payment-term catalog | PRODUCT | **DEFER** |
-| OBD-012 | Rollover / expiry | PRODUCT | **DEFER** — R1 is pro-rata, no rollover |
-| PD-105-008 | Performance threshold | PRODUCT | **ACCEPT** — baseline recorded, no gate |
+| OBD-012 | Rollover / expiry | PRODUCT | **DEFER** - R1 is pro-rata, no rollover |
+| PD-105-008 | Performance threshold | PRODUCT | **ACCEPT** - baseline recorded, no gate |
 | TD-001…TD-007 | Audit, closure, roles, FX, forecasting, e-invoicing, AI | PRODUCT | **DEFER** |
-| F-053 | Current alerts (product vision) | PRODUCT | **HISTORICAL** — delivered by EPIC-106 |
-| F-060 / F-061 / F-062 / F-072 | Billable amount / daily rate / revenue | PRODUCT | **DEFER** — not R1 contract |
-| F-070 | Period selection (product vision) | PRODUCT | **HISTORICAL** — delivered (presets + custom) |
+| F-053 | Current alerts (product vision) | PRODUCT | **HISTORICAL** - delivered by EPIC-106 |
+| F-060 / F-061 / F-062 / F-072 | Billable amount / daily rate / revenue | PRODUCT | **DEFER** - not R1 contract |
+| F-070 | Period selection (product vision) | PRODUCT | **HISTORICAL** - delivered (presets + custom) |
 | Calendar view / copy previous | UX deferred | PRODUCT | **DEFER** |
 | CSV / PDF / invoice lifecycle | Billing | PRODUCT | **DEFER** |
 | P109-05 LA `updatedAt` 223/224 | Same-ms `updatedAt` in time-tracking integration | TEST | **VERIFY** then **ACCEPT** if flake; out of EPIC-109 scope |
 
-### CLOSED — do not reopen
+### CLOSED - do not reopen
 
 EPIC-108 streams A/E/B/D/C; EPIC-109 calendar-date; F-004; list in Current Certified State.
 
@@ -249,10 +249,10 @@ Not declared met in P110-00. Declared met in P110-08.
 
 ## Risks / Open Questions
 
-1. **F-103-002 size** — presentation join change may touch list/edit empty states. If PO classifies it ACCEPT for freeze, drop from P110-02.
-2. **F-105-013** — one-line; do not expand into a timezone redesign.
-3. **Stale debt Open labels** — closing register rows in P110-04 is documentation, not silent code claims. Cite EPIC-105/108/109 evidence.
-4. **P110-06** — hosted production may have drifted from `2b58af4`. Drift is VERIFY, not a rewrite of §35.
+1. **F-103-002 size** - presentation join change may touch list/edit empty states. If PO classifies it ACCEPT for freeze, drop from P110-02.
+2. **F-105-013** - one-line; do not expand into a timezone redesign.
+3. **Stale debt Open labels** - closing register rows in P110-04 is documentation, not silent code claims. Cite EPIC-105/108/109 evidence.
+4. **P110-06** - hosted production may have drifted from `2b58af4`. Drift is VERIFY, not a rewrite of §35.
 5. Do not treat product-vision F-060…F-062 as R1 defects.
 
 ---
@@ -268,7 +268,7 @@ Billing, invoices, CSV/PDF, calendar UI, copy-previous, roles, Google linking, r
 | Area | Conclusion |
 |---|---|
 | Calendar/date | EPIC-109 UTC today + workspace reporting TZ. F-105-013 CLOSED (P110-02) |
-| Auth | Certified email/password, reset, Google, sign-out, protected routes — no reopen |
+| Auth | Certified email/password, reset, Google, sign-out, protected routes - no reopen |
 | Isolation | Fail-closed not-found; F-103-005 unused classes are not a bypass |
 | Reporting | Custom + presets certified EPIC-108; annual year uses Workspace.timezone |
 | Alerts | R1 in-app alerts shipped; capacity email expansion deferred |
@@ -349,7 +349,7 @@ P110-06C (first re-validation) confirmed production SHA `e51309b` / deploy `6558
 
 Production re-validation of `c6712224e8d093b6f64cb46a17823a20de356a31`. GitHub Production `6558481150`. URL `https://freelance-os-timeplan.vercel.app`. HEAD = `origin/main` = candidate.
 
-Outcome: **PASS**. Production-verified critical workflow: PASS. F-110-P06-002 CLOSED TECHNICAL — production-verified. New findings: NONE.
+Outcome: **PASS**. Production-verified critical workflow: PASS. F-110-P06-002 CLOSED TECHNICAL - production-verified. New findings: NONE.
 
 Known non-blocking evidence gaps (not PASS): archived-client production data not available; alerts mark-read not exercised (no unread notification); Google OAuth completion not manually completed; password-reset completion not manually completed.
 

@@ -1,12 +1,12 @@
-# EPIC-107 — Public Landing
+# EPIC-107 - Public Landing
 
 **Epic:** EPIC-107  
-**Release:** Release 1 — MVP  
-**MASTER_PLAN identifier:** R1-E07 — Public Landing (`MASTER_PLAN.md` §17A)  
-**Status:** IMPLEMENTATION COMPLETE — Engineering Review PASS WITH FINDINGS (P107-05); production-like validation PASS WITH FINDINGS (P107-06); epic certification RELEASE BLOCKED; MASTER_PLAN §34 EXECUTED — READY FOR RELEASE  
+**Release:** Release 1 - MVP  
+**MASTER_PLAN identifier:** R1-E07 - Public Landing (`MASTER_PLAN.md` §17A)  
+**Status:** IMPLEMENTATION COMPLETE - Engineering Review PASS WITH FINDINGS (P107-05); production-like validation PASS WITH FINDINGS (P107-06); epic certification RELEASE BLOCKED; MASTER_PLAN §34 EXECUTED - READY FOR RELEASE  
 **Dependencies:** EPIC-003, EPIC-004, EPIC-006, EPIC-104, MVP-INTEGRATION, UX Polish  
 **Previous:** UX Polish COMPLETE (`791c879`)  
-**Next after this Epic:** Production Certification (`MASTER_PLAN.md` §35) — GRANTED (`docs/release/production-certification.md`). §34 evidence: `docs/release/production-validation.md` (READY FOR RELEASE)
+**Next after this Epic:** Production Certification (`MASTER_PLAN.md` §35) - GRANTED (`docs/release/production-certification.md`). §34 evidence: `docs/release/production-validation.md` (READY FOR RELEASE)
 
 ```text
 PLANNING:              COMPLETE
@@ -14,10 +14,10 @@ PRODUCT DECISIONS:     RESOLVED (PD-LANDING-001 … PD-LANDING-006)
 BLOCKING DECISIONS:    NONE
 IMPLEMENTATION:        COMPLETE (P107-01 … P107-03)
 DOCUMENTATION:         COMPLETE (P107-04)
-ENGINEERING REVIEW:    COMPLETE — PASS WITH FINDINGS (P107-05)
-PRODUCTION-LIKE:       COMPLETE — PASS WITH FINDINGS (P107-06)
-EPIC CERTIFICATION:    COMPLETE — RELEASE BLOCKED
-MVP §34:               EXECUTED — READY FOR RELEASE
+ENGINEERING REVIEW:    COMPLETE - PASS WITH FINDINGS (P107-05)
+PRODUCTION-LIKE:       COMPLETE - PASS WITH FINDINGS (P107-06)
+EPIC CERTIFICATION:    COMPLETE - RELEASE BLOCKED
+MVP §34:               EXECUTED - READY FOR RELEASE
 PRODUCTION CERTIFICATION (§35): GRANTED
 ```
 
@@ -397,7 +397,7 @@ Do not combine planning and implementation. Do not start Production Validation i
 - Revert P107 commits in reverse order.
 - Restoring `(app)/page.tsx` at `/` and `DEFAULT_AUTHENTICATED_PATH = "/"` returns prior routing.
 - No schema/migration. Rollback is git-only.
-- After P107-02, a partial revert that removes `(public)/page.tsx` without restoring `(app)/page.tsx` 404s `/` — revert both together.
+- After P107-02, a partial revert that removes `(public)/page.tsx` without restoring `(app)/page.tsx` 404s `/` - revert both together.
 
 ---
 
@@ -419,7 +419,7 @@ Do not combine planning and implementation. Do not start Production Validation i
 ## 24. Production Validation
 
 This Epic’s own production-like validation is recorded in
-`docs/epics/EPIC-107/production-validation.md` (P107-06 — PASS WITH FINDINGS;
+`docs/epics/EPIC-107/production-validation.md` (P107-06 - PASS WITH FINDINGS;
 full MASTER_PLAN §34 was **not** completed by that phase).
 
 MASTER_PLAN §34 was later executed on candidate `a0ad65f` and revalidated

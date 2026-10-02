@@ -4,7 +4,7 @@
 **Document:** `MASTER_PLAN.md`\
 **Product:** FreelanceOS\
 **Canonical format:** Markdown\
-**Current phase:** EPIC-110 CLOSED. R1 FROZEN / GRANTED (`docs/release/r1-freeze.md`). Historical R1 candidate `c6712224e8d093b6f64cb46a17823a20de356a31` / deployment `6558481150`. Actionable R1 findings = 0. Historical §34 / §35 snapshots unchanged. R2 Revenue Operations is PRODUCTION-RELEASED (`docs/release/r2-release.md`) — verdict RELEASED WITH FINDINGS. Certified application `670e7505857649efe62775d7e12d47e60c747080`. Deployed git SHA `a0707e1da3392cadcdf5ae6356913da220b531bb`. GitHub Production `6672213732` at `https://freelance-os-timeplan.vercel.app`. Official sequence: R1 → R2 → R2.1 → R3 (Deferred) → R4. R2.1 PRODUCTION-CERTIFIED (`docs/release/r2.1-certification.md`). Production provider Null. Live AI NOT ENABLED. Do not start model/provider integration. Do not start R3.
+**Current phase:** EPIC-110 CLOSED. R1 FROZEN / GRANTED (`docs/release/r1-freeze.md`). Historical R1 candidate `c6712224e8d093b6f64cb46a17823a20de356a31` / deployment `6558481150`. Actionable R1 findings = 0. Historical §34 / §35 snapshots unchanged. R2 Revenue Operations is PRODUCTION-RELEASED (`docs/release/r2-release.md`) - verdict RELEASED WITH FINDINGS. Certified application `670e7505857649efe62775d7e12d47e60c747080`. Deployed git SHA `a0707e1da3392cadcdf5ae6356913da220b531bb`. GitHub Production `6672213732` at `https://freelance-os-timeplan.vercel.app`. Official sequence: R1 → R2 → R2.1 → R3 (Deferred) → R4. R2.1 PRODUCTION-CERTIFIED (`docs/release/r2.1-certification.md`). Production provider Null. Live AI NOT ENABLED. Do not start model/provider integration. Do not start R3.
 
 ------------------------------------------------------------------------
 
@@ -137,9 +137,9 @@ context is recovered from repository documentation.
 ``` text
 STATUS: UX Polish COMPLETE; EPIC-107 Public Landing COMPLETE through P107-06 and epic certification; MASTER_PLAN §34 READY FOR RELEASE; §35 GRANTED; EPIC-108 COMPLETE (ER PASS WITH FINDINGS); EPIC-109 COMPLETE (ER PASS); EPIC-110 CLOSED (P110-00 PASS; P110-01 PASS; P110-02 PASS; P110-03 SKIPPED BY DESIGN; P110-04 PASS; P110-05 PASS; P110-06 / P110-06C intermediate findings resolved or superseded; P110-06D PASS; P110-06C FINAL PASS; P110-07 PASS; P110-08 FREEZE). Actionable R1 findings = 0. R1 FROZEN. R2 Decision Workshop complete for in-scope decisions. R2 planning baseline recorded. R2-E01 Revenue Visibility COMPLETE / RELEASE-READY (P-E01-00…P-E01-07). R2-E02 Invoice Tracking COMPLETE WITH NON-BLOCKING FINDING (P-E02-00…P-E02-07). R2-E03 Payment Tracking CERTIFIED (P-E03-00…P-E03-07). R2-E04 Forecasting & Contract Time Allocation CERTIFIED (P-E04-00…P-E04-07). R2-E05 Advanced Reporting & Export CERTIFIED (P-E05-00…P-E05-06). R2 Release QA PASS WITH FINDINGS. R2 UX Validation PASS WITH FINDINGS. R2 Production Validation PASS WITH FINDINGS. R2 CERTIFIED (`docs/release/r2-certification.md`). R2 RELEASED WITH FINDINGS (`docs/release/r2-release.md`). R2 is PRODUCTION-RELEASED.
 NEXT: R2.1 PRODUCTION-CERTIFIED. Do not start model/provider integration. R3 is deferred. Do not start R3.
-Production Validation (§34): EXECUTED — READY FOR RELEASE — docs/release/production-validation.md
-Production Certification (§35): GRANTED — docs/release/production-certification.md
-R1 Freeze: FROZEN — docs/release/r1-freeze.md
+Production Validation (§34): EXECUTED - READY FOR RELEASE - docs/release/production-validation.md
+Production Certification (§35): GRANTED - docs/release/production-certification.md
+R1 Freeze: FROZEN - docs/release/r1-freeze.md
 R2 Decision Pack: docs/release/r2-decision-pack.md
 R2 Architecture Delta: docs/release/r2-architecture-delta.md
 R2 Epic Map: docs/release/r2-epic-map.md
@@ -149,8 +149,8 @@ R2-E02 plan: docs/release/r2-e02-invoice-tracking.md
 R2-E03 plan: docs/release/r2-e03-payment-tracking.md
 R2-E04 plan: docs/release/r2-e04-forecasting-allocation.md
 R2-E05 plan: docs/release/r2-e05-advanced-reporting-export.md
-R2 Certification: CERTIFIED — docs/release/r2-certification.md
-R2 Release: RELEASED WITH FINDINGS — docs/release/r2-release.md
+R2 Certification: CERTIFIED - docs/release/r2-certification.md
+R2 Release: RELEASED WITH FINDINGS - docs/release/r2-release.md
 Release gate resolution: docs/release/release-gate-resolution.md
 Production readiness: RELEASE GRANTED
 ```
@@ -179,21 +179,21 @@ docs/
 Application implementation: STARTED
 Foundation implementation: EPIC-001 COMPLETE; EPIC-002 COMPLETE; EPIC-003 COMPLETE; EPIC-004 COMPLETE; EPIC-005 COMPLETE; EPIC-006 COMPLETE
 MVP implementation: EPIC-101 COMPLETE; EPIC-102 COMPLETE; EPIC-103 COMPLETE; EPIC-104 COMPLETE; EPIC-105 COMPLETE; EPIC-106 COMPLETE
-MVP integration: COMPLETE / CLOSED — see docs/epics/MVP-INTEGRATION/engineering-review.md
-MVP QA Gate: PASS WITH FINDINGS — see docs/qa/qa-report.md
-Documentation Gate: COMPLETE — MASTER_PLAN.md §32
-Production deployment: HOSTED — Vercel + Neon + Google OAuth + Gmail SMTP (current freeze candidate `c6712224`; deployment `6558481150`; docs/release/r1-freeze.md). Historical §35 grant remains `2b58af4`. Historical §34 rows are not rewritten.
-Authentication: IMPLEMENTED — see docs/epics/EPIC-003/engineering-review.md
-Workspace / authorization: IMPLEMENTED — see docs/epics/EPIC-004/engineering-review.md
-Testing / CI foundation: IMPLEMENTED — see docs/epics/EPIC-005/engineering-review.md
-UI foundation: IMPLEMENTED — see docs/epics/EPIC-006/engineering-review.md
-Client management: IMPLEMENTED — see docs/epics/EPIC-101/engineering-review.md
-Contract management: IMPLEMENTED — see docs/epics/EPIC-102/engineering-review.md
-Time tracking: IMPLEMENTED — see docs/epics/EPIC-103/engineering-review.md
-Analytics / dashboard: IMPLEMENTED — see docs/epics/EPIC-104/engineering-review.md
-Reporting: IMPLEMENTED — see docs/epics/EPIC-105/engineering-review.md
-Alerts & notifications: IMPLEMENTED — see docs/epics/EPIC-106/engineering-review.md
-Public landing: IMPLEMENTED — P107-05 PASS WITH FINDINGS; P107-06 PASS WITH FINDINGS; epic certification RELEASE BLOCKED — see docs/epics/EPIC-107/
+MVP integration: COMPLETE / CLOSED - see docs/epics/MVP-INTEGRATION/engineering-review.md
+MVP QA Gate: PASS WITH FINDINGS - see docs/qa/qa-report.md
+Documentation Gate: COMPLETE - MASTER_PLAN.md §32
+Production deployment: HOSTED - Vercel + Neon + Google OAuth + Gmail SMTP (current freeze candidate `c6712224`; deployment `6558481150`; docs/release/r1-freeze.md). Historical §35 grant remains `2b58af4`. Historical §34 rows are not rewritten.
+Authentication: IMPLEMENTED - see docs/epics/EPIC-003/engineering-review.md
+Workspace / authorization: IMPLEMENTED - see docs/epics/EPIC-004/engineering-review.md
+Testing / CI foundation: IMPLEMENTED - see docs/epics/EPIC-005/engineering-review.md
+UI foundation: IMPLEMENTED - see docs/epics/EPIC-006/engineering-review.md
+Client management: IMPLEMENTED - see docs/epics/EPIC-101/engineering-review.md
+Contract management: IMPLEMENTED - see docs/epics/EPIC-102/engineering-review.md
+Time tracking: IMPLEMENTED - see docs/epics/EPIC-103/engineering-review.md
+Analytics / dashboard: IMPLEMENTED - see docs/epics/EPIC-104/engineering-review.md
+Reporting: IMPLEMENTED - see docs/epics/EPIC-105/engineering-review.md
+Alerts & notifications: IMPLEMENTED - see docs/epics/EPIC-106/engineering-review.md
+Public landing: IMPLEMENTED - P107-05 PASS WITH FINDINGS; P107-06 PASS WITH FINDINGS; epic certification RELEASE BLOCKED - see docs/epics/EPIC-107/
 ```
 
 EPIC-104 completed the shared analytics layer and the authenticated
@@ -213,7 +213,7 @@ Production readiness: NO
 Tests: 216 unit / 148 integration / 37 E2E (suite totals, reported separately)
 Gates: lint PASS; typecheck PASS; build PASS
 
-EPIC-105 — Reporting
+EPIC-105 - Reporting
 Commits: 134800f (P105-01) · 756649d (P105-02) · 428f6e4 + 6822600 (P105-03)
          e1a1a42 (P105-04 initial) · caf6f96 (P105-04 corrective) · 59d28fa (P105-05)
          8faed35 (P105-06)
@@ -230,23 +230,23 @@ Environmental exceptions: two inherited F-104-006 clock-sensitive E2E failures
                           Both fail only when the test runner's local clock
                           crosses midnight while the server runs UTC.
 
-EPIC-106 — Alerts & Notifications
+EPIC-106 - Alerts & Notifications
 Commits: 6daf2cd (P106-02) · 012f6da (P106-03) · 95eaede (P106-04) · 72d9f1d (P106-05)
          069cb2c (P106-06) · 13a48a0 (P106-07) · 47f82ec (P106-08) · b421e60 (P106-09)
-Verdict: COMPLETE — Engineering Review PASS
+Verdict: COMPLETE - Engineering Review PASS
 Engineering status: COMPLETE
 Blocking findings: NONE (F-106-P07-001 CLOSED)
 Production readiness: NO
 Tests: 379 unit / 219 integration / 57 E2E (suite totals, reported separately)
 Gates: lint PASS; typecheck PASS; build PASS
 
-MVP Integration — Cross-domain certification
+MVP Integration - Cross-domain certification
 Commits: 35d1764 (P-INT-01) · d4e420c (P-INT-02) · 74d6968 (P-INT-03) · ad944a2 (P-INT-04)
          9541779 (P-INT-05)
-Verdict: COMPLETE / CLOSED — Engineering Review PASS WITH FINDINGS
+Verdict: COMPLETE / CLOSED - Engineering Review PASS WITH FINDINGS
 Engineering status: COMPLETE
 Blocking findings: NONE
-Release gate: 3/3 PASS — 22-step authenticated MVP integration journey; 22/22 assertions PASS
+Release gate: 3/3 PASS - 22-step authenticated MVP integration journey; 22/22 assertions PASS
 Production readiness: NO
 Tests: 392 unit / 223 integration (1 pre-existing FINDING-INT-001) / 58 E2E (54 passed / 4 failed, all classified non-application defects)
 Gates: lint PASS; typecheck PASS; build PASS
@@ -254,7 +254,7 @@ Open findings deferred to QA / Production Certification: FINDING-INT-002, FINDIN
 Accepted / pre-existing: FINDING-P04-002 ACCEPTED; FINDING-P04-003 PRE-EXISTING; FINDING-INT-001 PRE-EXISTING
 Closed: FINDING-P04-001
 
-MVP QA Gate — §31
+MVP QA Gate - §31
 Evidence: docs/qa/qa-report.md
 HEAD at QA: c872a83
 Verdict: PASS WITH FINDINGS
@@ -285,19 +285,19 @@ Focused release-gate: PASS
 Isolated release-gate: 3/3 PASS after the burst failure
 Core journeys: ALL PASS
 Timezone current periods: PASS
-Custom date range: APPLICATION DEFECT — FINDING-QA-002 (OPEN / NON-BLOCKING)
+Custom date range: APPLICATION DEFECT - FINDING-QA-002 (OPEN / NON-BLOCKING)
 
-Documentation Gate — §32
+Documentation Gate - §32
 Status: COMPLETE
 
-UX Gate — §33
+UX Gate - §33
 Status: COMPLETE
 Verdict: PASS WITH FINDINGS
 Evidence: `docs/ux/ux-review.md`
 Blocking findings: NONE
 Next: §34 READY FOR RELEASE; §35 GRANTED (D-005 PROVIDED)
 
-UX Polish — after §33
+UX Polish - after §33
 Status: COMPLETE
 Evidence: `docs/ux/ux-review.md` §18
 Closed: FINDING-UX-001, UX-002, UX-003, UX-005, UX-006, UX-007, UX-008, UX-009
@@ -307,38 +307,38 @@ Findings after QA / UX Polish (current):
 FINDING-P04-001 CLOSED
 FINDING-P04-002 ACCEPTED / BY DESIGN
 FINDING-P04-003 CLOSED
-FINDING-INT-001 CLOSED — EPIC-108 Stream A / ER-108-A PASS
-FINDING-INT-002 CLOSED — EPIC-108 Stream B / ER-108-B PASS
-FINDING-INT-003 CLOSED — EPIC-108 Stream B / ER-108-B PASS
-FINDING-QA-001 CLOSED — EPIC-108 Stream B / ER-108-B PASS
-FINDING-QA-002 CLOSED — EPIC-108 Stream A / ER-108-A PASS
-FINDING-108-001 CLOSED — EPIC-108 Stream A / ER-108-A PASS
-F-104-007 CLOSED — EPIC-108 Stream E / ER-108-E PASS
+FINDING-INT-001 CLOSED - EPIC-108 Stream A / ER-108-A PASS
+FINDING-INT-002 CLOSED - EPIC-108 Stream B / ER-108-B PASS
+FINDING-INT-003 CLOSED - EPIC-108 Stream B / ER-108-B PASS
+FINDING-QA-001 CLOSED - EPIC-108 Stream B / ER-108-B PASS
+FINDING-QA-002 CLOSED - EPIC-108 Stream A / ER-108-A PASS
+FINDING-108-001 CLOSED - EPIC-108 Stream A / ER-108-A PASS
+F-104-007 CLOSED - EPIC-108 Stream E / ER-108-E PASS
 FINDING-UX-001 CLOSED
 FINDING-UX-002 CLOSED
 FINDING-UX-003 CLOSED
-FINDING-UX-004 CLOSED — EPIC-108 Stream C / C05 verification PASS
+FINDING-UX-004 CLOSED - EPIC-108 Stream C / C05 verification PASS
 FINDING-UX-005 CLOSED
 FINDING-UX-006 CLOSED
 FINDING-UX-007 CLOSED
 FINDING-UX-008 CLOSED
 FINDING-UX-009 CLOSED
-F-105-013 CLOSED — EPIC-110 / P110-02
-F-103-002 CLOSED — EPIC-110 / P110-02
-F-104-001 CLOSED — EPIC-105 / P105-02
-F-104-002 CLOSED — EPIC-105 / P105-02
-F-104-003 CLOSED — EPIC-105 / P105-04
-F-104-004 CLOSED — EPIC-105 / P105-04
-F-104-005 CLOSED — EPIC-105 / P105-03
-F-104-013 CLOSED — EPIC-105 / P105-03
-F-104-014 CLOSED — EPIC-105 / P105-02
-F-104-015 CLOSED — EPIC-105 / PD-105-010
-F-104-017 CLOSED — EPIC-105 / P105-04
-F-104-P-002 CLOSED — subsumed by F-104-005 / P105-03
-F-103-003 ACCEPTED R1 LIMITATION — EPIC-110 / P110-01
-P109-05 LA updatedAt CLOSED / NOT REPRODUCED — EPIC-110 / P110-01
-FINDING-110-P06-001 CLOSED TECHNICAL — EPIC-110 / P110-06C
-F-110-P06-002 CLOSED TECHNICAL / production-verified — EPIC-110 / P110-06C FINAL
+F-105-013 CLOSED - EPIC-110 / P110-02
+F-103-002 CLOSED - EPIC-110 / P110-02
+F-104-001 CLOSED - EPIC-105 / P105-02
+F-104-002 CLOSED - EPIC-105 / P105-02
+F-104-003 CLOSED - EPIC-105 / P105-04
+F-104-004 CLOSED - EPIC-105 / P105-04
+F-104-005 CLOSED - EPIC-105 / P105-03
+F-104-013 CLOSED - EPIC-105 / P105-03
+F-104-014 CLOSED - EPIC-105 / P105-02
+F-104-015 CLOSED - EPIC-105 / PD-105-010
+F-104-017 CLOSED - EPIC-105 / P105-04
+F-104-P-002 CLOSED - subsumed by F-104-005 / P105-03
+F-103-003 ACCEPTED R1 LIMITATION - EPIC-110 / P110-01
+P109-05 LA updatedAt CLOSED / NOT REPRODUCED - EPIC-110 / P110-01
+FINDING-110-P06-001 CLOSED TECHNICAL - EPIC-110 / P110-06C
+F-110-P06-002 CLOSED TECHNICAL / production-verified - EPIC-110 / P110-06C FINAL
 ```
 
 Present after EPIC-104:
@@ -350,7 +350,7 @@ Present after EPIC-104:
     aggregation and grouping over `TimeEntry`
 -   analytics domain types and period utilities in
     `src/lib/analytics-periods.ts`
--   the authenticated dashboard at `/` — a React Server Component that
+-   the authenticated dashboard at `/` - a React Server Component that
     replaced the EPIC-006 structural placeholder; no `/dashboard`
     route existed at EPIC-104 close. EPIC-107 later moved the dashboard
     to `/dashboard` and made `/` the public landing.
@@ -364,7 +364,7 @@ Present after EPIC-104:
     amount calculated anywhere in the analytics layer
 -   weekly aggregation, timezone-aware period boundaries, loading
     skeletons, a custom date-range UI, and a measured performance
-    baseline are **not** implemented — see F-104-013, F-104-005,
+    baseline are **not** implemented - see F-104-013, F-104-005,
     F-104-008, Epic-plan §5, and F-104-009
 
 Present after EPIC-103:
@@ -596,20 +596,20 @@ authorization.
 # 8. Release Roadmap
 
 ``` text
-Release 0 — Foundation
+Release 0 - Foundation
         ↓
-Release 1 — MVP
+Release 1 - MVP
         ↓
-Release 2 — Revenue Operations
+Release 2 - Revenue Operations
         ↓
-Release 2.1 — AI above R2
+Release 2.1 - AI above R2
         ↓
-Release 3 — Integrations (Deferred)
+Release 3 - Integrations (Deferred)
         ↓
-Release 4 — AI
+Release 4 - AI
 ```
 
-Historical name “Release 2 — Billing & Intelligence” is superseded.
+Historical name “Release 2 - Billing & Intelligence” is superseded.
 Canonical R2 decisions: `docs/release/r2-decision-pack.md`.
 Canonical R2.1 plan: `docs/release/r2.1-ai-plan.md`.
 Discovery record: `docs/release/r2.1-ai-discovery.md`.
@@ -781,7 +781,7 @@ Register
 
 ### Status
 
-IMPLEMENTED — engineering complete (PASS). Review:
+IMPLEMENTED - engineering complete (PASS). Review:
 `docs/epics/EPIC-101/engineering-review.md`. Contract management is
 implemented in R1-E02.
 
@@ -817,7 +817,7 @@ authorization.
 
 ### Status
 
-IMPLEMENTED — engineering complete (PASS WITH FINDINGS). Review:
+IMPLEMENTED - engineering complete (PASS WITH FINDINGS). Review:
 `docs/epics/EPIC-102/engineering-review.md`. Time tracking is not
 included. Production readiness is not claimed.
 
@@ -858,7 +858,7 @@ validity remains correct.
 
 ### Status
 
-IMPLEMENTED — engineering complete (PASS WITH FINDINGS). Review:
+IMPLEMENTED - engineering complete (PASS WITH FINDINGS). Review:
 `docs/epics/EPIC-103/engineering-review.md`. Calendar view and
 copy-previous-entry are deferred; copy-previous-entry remains
 conditional on UX Review. No billing, rate calculation, or forecasting
@@ -881,8 +881,8 @@ Make daily work registration fast enough for normal use.
 -   billable/non-billable
 -   daily view
 -   weekly timesheet
--   calendar view — deferred, not implemented
--   copy previous entry if retained after UX review — deferred, UX
+-   calendar view - deferred, not implemented
+-   copy previous entry if retained after UX review - deferred, UX
     Review has not occurred
 
 ## Dependencies
@@ -902,7 +902,7 @@ A normal workday entry should be recordable in less than one minute.
 
 ### Status
 
-IMPLEMENTED — engineering complete (PASS WITH FINDINGS). Review:
+IMPLEMENTED - engineering complete (PASS WITH FINDINGS). Review:
 `docs/epics/EPIC-104/engineering-review.md`. Blocking findings: none.
 Production readiness is not claimed. EPIC-104 delivered the dashboard
 as the authenticated default route `/`. EPIC-107 moved it to
@@ -929,7 +929,7 @@ Approved and delivered scope:
 -   contract utilization
 -   shared analytics services
 
-### Scope reconciliation — revenue and alerts
+### Scope reconciliation - revenue and alerts
 
 This section previously listed `estimated revenue` and
 `current alerts` in R1-E04 scope. The approved EPIC-104 plan declared
@@ -974,7 +974,7 @@ and must not reproduce the duplicated arithmetic.
 
 ## Status
 
-IMPLEMENTED — engineering complete (COMPLETE WITH DOCUMENTED ENVIRONMENTAL GATE EXCEPTION).
+IMPLEMENTED - engineering complete (COMPLETE WITH DOCUMENTED ENVIRONMENTAL GATE EXCEPTION).
 Engineering Review pending (P105-08). Blocking findings: none.
 Production readiness is not claimed.
 
@@ -995,7 +995,7 @@ Approved and delivered scope:
 -   contract report
 -   annual overview
 
-### Scope reconciliation — revenue by client
+### Scope reconciliation - revenue by client
 
 This section previously listed `revenue by client` in R1-E05 scope.
 The approved EPIC-105 plan declared it an **explicit non-goal**:
@@ -1061,17 +1061,17 @@ R0-E04 Workspace
 
 # 17. MVP Integration Epic
 
-**Status:** COMPLETE / CLOSED — Engineering Review PASS WITH FINDINGS  
+**Status:** COMPLETE / CLOSED - Engineering Review PASS WITH FINDINGS  
 **Plan:** `docs/epics/MVP-INTEGRATION/epic-plan.md`  
 **Review:** `docs/epics/MVP-INTEGRATION/engineering-review.md`  
-**QA:** PASS WITH FINDINGS — `docs/qa/qa-report.md`  
+**QA:** PASS WITH FINDINGS - `docs/qa/qa-report.md`  
 **Documentation Gate:** COMPLETE (§32)  
 **Blocking findings:** NONE  
 **Production readiness:** NO  
 **Release gate (integration):** PASSED (3/3; 22-step authenticated journey; 22/22 assertions)  
 **Release gate (QA):** 5 pass / 1 flaky failure (FINDING-QA-001); focused PASS; isolated 3/3 PASS  
-**UX Gate:** COMPLETE — PASS WITH FINDINGS (`docs/ux/ux-review.md`). Blocking findings: NONE.  
-**UX Polish:** COMPLETE — `docs/ux/ux-review.md` §18.  
+**UX Gate:** COMPLETE - PASS WITH FINDINGS (`docs/ux/ux-review.md`). Blocking findings: NONE.  
+**UX Polish:** COMPLETE - `docs/ux/ux-review.md` §18.  
 **Next:** D-001–D-005 complete. MASTER_PLAN §34 READY FOR RELEASE. §35 GRANTED (`docs/release/production-certification.md`). Production readiness: RELEASE GRANTED.
 
 After individual MVP Epics are complete, perform an explicit integration
@@ -1111,15 +1111,15 @@ It is the integration and validation step required before release gates.
 
 # 17A. R1-E07 --- Public Landing
 
-**Status:** IMPLEMENTATION COMPLETE — Engineering Review PASS WITH FINDINGS (P107-05); production-like validation PASS WITH FINDINGS (P107-06); epic certification RELEASE BLOCKED  
+**Status:** IMPLEMENTATION COMPLETE - Engineering Review PASS WITH FINDINGS (P107-05); production-like validation PASS WITH FINDINGS (P107-06); epic certification RELEASE BLOCKED  
 **Plan:** `docs/epics/EPIC-107/epic-plan.md`  
 **Identifier:** EPIC-107 / R1-E07  
 **HEAD at planning:** `791c879`  
 **HEAD at P107-03:** `2ee06fb`  
-**Engineering Review:** COMPLETE — PASS WITH FINDINGS (P107-05)  
-**Epic production-like validation:** COMPLETE — PASS WITH FINDINGS (P107-06)  
-**MASTER_PLAN §34:** EXECUTED — READY FOR RELEASE — `docs/release/production-validation.md`. Hosted blockers CLOSED.  
-**MASTER_PLAN §35:** GRANTED — `docs/release/production-certification.md`. D-005 PROVIDED.  
+**Engineering Review:** COMPLETE - PASS WITH FINDINGS (P107-05)  
+**Epic production-like validation:** COMPLETE - PASS WITH FINDINGS (P107-06)  
+**MASTER_PLAN §34:** EXECUTED - READY FOR RELEASE - `docs/release/production-validation.md`. Hosted blockers CLOSED.  
+**MASTER_PLAN §35:** GRANTED - `docs/release/production-certification.md`. D-005 PROVIDED.  
 **Production readiness:** RELEASE GRANTED
 
 At planning: unauthenticated `/` redirected to `/sign-in`. There was no public landing and no `/dashboard` route. The authenticated dashboard lived at `/`.
@@ -1150,12 +1150,12 @@ UX Polish COMPLETE
 The following are explicitly outside Release 1:
 
 -   electronic invoicing / SDI
--   full invoice lifecycle (R2 replaces this with Invoice Tracking only — D2)
--   payment management (R1 non-goal; R2 adds operational Payment Tracking — D5)
+-   full invoice lifecycle (R2 replaces this with Invoice Tracking only - D2)
+-   payment management (R1 non-goal; R2 adds operational Payment Tracking - D5)
 -   accounting
 -   expense management
 -   tax management
--   profitability / cost accounting (owned by PIVA Balance; never FreelanceOS — D3)
+-   profitability / cost accounting (owned by PIVA Balance; never FreelanceOS - D3)
 -   advanced team management
 -   native mobile applications
 -   calendar integrations
@@ -1211,7 +1211,7 @@ fiscality / accounting. Integration with PIVA Balance is not R2.
 
 ## In R2
 
--   Revenue visibility — Accrued, Expected, Forecast (D4)
+-   Revenue visibility - Accrued, Expected, Forecast (D4)
 -   Invoice Tracking only (D2)
 -   Payment Tracking and simple discrepancies (D5, D6, R2-OD-009)
 -   Forecasting and optional Contract Time Allocation (R2-OD-013)
@@ -1296,11 +1296,11 @@ unfiltered. Residual findings retained. No schema migration.
 
 The previous “Billing & Intelligence” candidates were:
 
--   R2-E01 Invoice Lifecycle — **withdrawn** (D2)
--   R2-E02 Payment Tracking — retained as current R2-E03, narrowed
--   R2-E03 Forecasting & Capacity — retained as current R2-E04, reduced
--   R2-E04 Advanced Reporting & Export — retained as current R2-E05
--   R2-E05 Commercial Intelligence — **withdrawn** (D3)
+-   R2-E01 Invoice Lifecycle - **withdrawn** (D2)
+-   R2-E02 Payment Tracking - retained as current R2-E03, narrowed
+-   R2-E03 Forecasting & Capacity - retained as current R2-E04, reduced
+-   R2-E04 Advanced Reporting & Export - retained as current R2-E05
+-   R2-E05 Commercial Intelligence - **withdrawn** (D3)
 
 Do not plan or implement from the historical list.
 
@@ -1646,7 +1646,7 @@ isolated.
 18. Documentation synchronization
 19. UX Review
 20. UX Polish
-21. Public Landing (EPIC-107 / R1-E07) — inserted after UX Polish; required before Production Validation
+21. Public Landing (EPIC-107 / R1-E07) - inserted after UX Polish; required before Production Validation
 22. Production Validation
 23. Production Certification
 24. Release
@@ -1702,20 +1702,20 @@ This is the methodology's defined purpose for Engineering Review.
 
 QA must verify:
 
--   [x] critical workflows — PASS
--   [x] regressions — PASS
--   [x] edge cases — PASS WITH FINDINGS
--   [x] authorization — PASS
--   [x] workspace isolation — PASS
--   [x] contract validity — PASS
--   [ ] billing calculations — N/A (MVP has no billing/revenue; utilization/capacity verified)
--   [x] utilization — PASS
--   [x] alerts — PASS
--   [x] reporting — PASS WITH FINDINGS (FINDING-QA-002)
--   [x] authentication — PASS
--   [x] stability — PASS WITH FINDINGS (FINDING-QA-001)
--   [x] performance smoke checks — PASS
--   [x] error states — PASS
+-   [x] critical workflows - PASS
+-   [x] regressions - PASS
+-   [x] edge cases - PASS WITH FINDINGS
+-   [x] authorization - PASS
+-   [x] workspace isolation - PASS
+-   [x] contract validity - PASS
+-   [ ] billing calculations - N/A (MVP has no billing/revenue; utilization/capacity verified)
+-   [x] utilization - PASS
+-   [x] alerts - PASS
+-   [x] reporting - PASS WITH FINDINGS (FINDING-QA-002)
+-   [x] authentication - PASS
+-   [x] stability - PASS WITH FINDINGS (FINDING-QA-001)
+-   [x] performance smoke checks - PASS
+-   [x] error states - PASS
 
 Evidence: `docs/qa/qa-report.md`. Verdict: **PASS WITH FINDINGS**.
 Blocking findings: **NONE**. Production readiness: **NO**.
@@ -1788,24 +1788,24 @@ FINDING-QA-002 remains OPEN.
 
 # 34. Production Validation Gate
 
-**Status:** LAST EXECUTED — **READY FOR RELEASE**. Evidence: `docs/release/production-validation.md`. Candidate: `2b58af4` (2026-09-19 hosted production + Gmail SMTP). Hosted Vercel, Neon, production Google, and Gmail SMTP password-reset completion verified. F-004 CLOSED. §35 GRANTED after D-005.
+**Status:** LAST EXECUTED - **READY FOR RELEASE**. Evidence: `docs/release/production-validation.md`. Candidate: `2b58af4` (2026-09-19 hosted production + Gmail SMTP). Hosted Vercel, Neon, production Google, and Gmail SMTP password-reset completion verified. F-004 CLOSED. §35 GRANTED after D-005.
 
 Validate the exact build that will be deployed.
 
 Minimum:
 
--   [x] production build — PASS (`2b58af4` / prior release-line build)
--   [x] deployment configuration — Vercel Production operational (`https://freelance-os-timeplan.vercel.app`); hosted deployment CLOSED
--   [x] database migration — PASS hosted (Neon; `migrate deploy` on Vercel) and locally
--   [x] authentication — PASS (email/password; Google production E2E; Gmail SMTP reset completion)
--   [x] complete MVP workflow — PASS on `pnpm start` (PV34F); hosted auth/recovery verified
--   [x] critical E2E regression — F-004 CLOSED. Isolated `next start` 68/68. Canonical CI remains `pnpm dev`.
--   [x] reports — PASS
--   [x] alerts — PASS
--   [x] notifications — PASS
--   [x] security baseline — PASS on exercised paths
--   [x] environment variables — production Google + SMTP names set on Vercel (values not recorded)
--   [x] no release-blocking defects — no new §37 Release Blocker; historical findings remain OPEN; §34 outcome READY FOR RELEASE. §35 GRANTED.
+-   [x] production build - PASS (`2b58af4` / prior release-line build)
+-   [x] deployment configuration - Vercel Production operational (`https://freelance-os-timeplan.vercel.app`); hosted deployment CLOSED
+-   [x] database migration - PASS hosted (Neon; `migrate deploy` on Vercel) and locally
+-   [x] authentication - PASS (email/password; Google production E2E; Gmail SMTP reset completion)
+-   [x] complete MVP workflow - PASS on `pnpm start` (PV34F); hosted auth/recovery verified
+-   [x] critical E2E regression - F-004 CLOSED. Isolated `next start` 68/68. Canonical CI remains `pnpm dev`.
+-   [x] reports - PASS
+-   [x] alerts - PASS
+-   [x] notifications - PASS
+-   [x] security baseline - PASS on exercised paths
+-   [x] environment variables - production Google + SMTP names set on Vercel (values not recorded)
+-   [x] no release-blocking defects - no new §37 Release Blocker; historical findings remain OPEN; §34 outcome READY FOR RELEASE. §35 GRANTED.
 
 The methodology requires Production Validation to validate exactly what
 will be deployed and concludes with either:
@@ -1826,7 +1826,7 @@ RELEASE BLOCKED
 
 # 35. Production Certification
 
-**Status:** **GRANTED**. Evidence: `docs/release/production-certification.md`. D-005 PROVIDED — Product Owner approved production release. Validated build: `2b58af4`. Date: 2026-09-19.
+**Status:** **GRANTED**. Evidence: `docs/release/production-certification.md`. D-005 PROVIDED - Product Owner approved production release. Validated build: `2b58af4`. Date: 2026-09-19.
 
 Certification is a formal approval step after successful production
 validation.
@@ -1962,8 +1962,8 @@ non-blocking; F-104-000 is RESOLVED and is not listed:
   F-104-015     Locale-dependent period formatting and assertion              Low        CLOSED (EPIC-105 / PD-105-010)
   F-104-016     Analytics error path untested                                 Low        Accepted
   F-104-017     PD-104-003 period end diverges from the decision text         Low        CLOSED (EPIC-105 / P105-04)
-  F-104-P-001   Analytics query performance — unevidenced                     Low        Accepted (measured; PD-105-008)
-  F-104-P-002   Timezone complexity — confirmed by F-104-005                  Medium     CLOSED (subsumed by F-104-005 / P105-03)
+  F-104-P-001   Analytics query performance - unevidenced                     Low        Accepted (measured; PD-105-008)
+  F-104-P-002   Timezone complexity - confirmed by F-104-005                  Medium     CLOSED (subsumed by F-104-005 / P105-03)
 
 **F-104-006 is CLOSED (EPIC-109 / ER-109).** Axis 1 (hardcoded September
 2026 vs current-month analytics) was remediated by P105-01. Axis 2
@@ -2007,10 +2007,10 @@ reopen F-104-007. FINDING-QA-001 was a test flake and is CLOSED
   ID               Area                                                          Severity   Status
   ---------------- ------------------------------------------------------------- ---------- ------------
   FINDING-QA-002   `getDateRangePeriod` custom-range process-TZ shift west of UTC Medium     CLOSED (EPIC-108 Stream A / ER-108-A)
-  FINDING-INT-001  Analytics isolation futureDate fixture under LA TZ             —          CLOSED (EPIC-108 Stream A / ER-108-A)
+  FINDING-INT-001  Analytics isolation futureDate fixture under LA TZ             -          CLOSED (EPIC-108 Stream A / ER-108-A)
   FINDING-108-001  `isDateInPeriod` local getters on UTC-midnight calendar dates  Low        CLOSED (EPIC-108 Stream A / ER-108-A)
-  FINDING-INT-002  `auth.spec.ts` sign-out missing `waitForURL`                   —          CLOSED (EPIC-108 Stream B / ER-108-B)
-  FINDING-INT-003  Password-reset email delivery residual                        —          CLOSED (EPIC-108 Stream B / ER-108-B)
+  FINDING-INT-002  `auth.spec.ts` sign-out missing `waitForURL`                   -          CLOSED (EPIC-108 Stream B / ER-108-B)
+  FINDING-INT-003  Password-reset email delivery residual                        -          CLOSED (EPIC-108 Stream B / ER-108-B)
   FINDING-QA-001   Flaky release-gate sign-up (`/onboarding` vs `/sign-in`)       Low        CLOSED (EPIC-108 Stream B / ER-108-B)
 
 Do not use "technical debt" as a label for unimplemented planned
@@ -2169,20 +2169,20 @@ artifacts. fileciteturn1file6L2024-L2108
 # 43. Proposed Epic Naming
 
 ``` text
-EPIC-001 — Foundation / Repository
-EPIC-002 — Database & Persistence
-EPIC-003 — Authentication
-EPIC-004 — Workspace
-EPIC-005 — Testing & CI
-EPIC-006 — UI Foundation
+EPIC-001 - Foundation / Repository
+EPIC-002 - Database & Persistence
+EPIC-003 - Authentication
+EPIC-004 - Workspace
+EPIC-005 - Testing & CI
+EPIC-006 - UI Foundation
 
-EPIC-101 — Clients
-EPIC-102 — Contracts
-EPIC-103 — Time Tracking
-EPIC-104 — Analytics & Dashboard
-EPIC-105 — Reporting
-EPIC-106 — Alerts & Notifications
-EPIC-107 — Public Landing
+EPIC-101 - Clients
+EPIC-102 - Contracts
+EPIC-103 - Time Tracking
+EPIC-104 - Analytics & Dashboard
+EPIC-105 - Reporting
+EPIC-106 - Alerts & Notifications
+EPIC-107 - Public Landing
 ```
 
 Release 2+ identifiers will be assigned when those releases enter active
@@ -2195,7 +2195,7 @@ planning.
 The first implementation Epic should be:
 
 ``` text
-EPIC-001 — Foundation / Repository
+EPIC-001 - Foundation / Repository
 ```
 
 Its objective is to create the smallest clean application skeleton from
@@ -2283,16 +2283,16 @@ No feature expansion.
 After EPIC-001 is validated:
 
 ``` text
-EPIC-002 — Database & Persistence
+EPIC-002 - Database & Persistence
 ```
 
 Then:
 
 ``` text
-EPIC-003 — Authentication
-EPIC-004 — Workspace
-EPIC-005 — Testing & CI
-EPIC-006 — UI Foundation
+EPIC-003 - Authentication
+EPIC-004 - Workspace
+EPIC-005 - Testing & CI
+EPIC-006 - UI Foundation
 ```
 
 The exact parallelization will be determined during each Epic plan.
@@ -2337,7 +2337,7 @@ Next actions:
 23. R2.1 PRODUCTION-CERTIFIED (`docs/release/r2.1-certification.md`). Provider Null. Live AI NOT ENABLED
 24. R2.1 provider eval recorded (`docs/release/r2.1-ai-provider-evaluation.md`). R21-OD-001 remains a PO decision. Production stays Null. Do not start R3
 25. Do not rewrite historical §34 / §35 rows
-26. R21-OD-001 CLOSED — criteria revised. Frozen §8.5 v2 in `docs/release/r2.1-ai-provider-evaluation.md` §24. B1 NOT AUTHORIZED. Production stays Null. Do not start R3
+26. R21-OD-001 CLOSED - criteria revised. Frozen §8.5 v2 in `docs/release/r2.1-ai-provider-evaluation.md` §24. B1 NOT AUTHORIZED. Production stays Null. Do not start R3
 27. §8.5 v2 provider eligibility reassessment (`docs/release/r2.1-ai-provider-evaluation.md` §25). A1 and A2 both NOT ELIGIBLE. Provider selection UNRESOLVED / DEFERRED. B1 NOT AUTHORIZED. Production stays Null. Do not start R3
 ```
 
@@ -2541,7 +2541,7 @@ next:
     - OBD-004 / OBD-005 / OBD-007 / OBD-009 / OBD-010 / OBD-012
     - OBD-011 (direction and mutation CLOSED; Invoice currency snapshot residual)
     - PDF out of core R2 (CSV CLOSED by P-E05-00 / R2-OD-012)
-    - invoice lifecycle (superseded by Invoice Tracking — D2)
+    - invoice lifecycle (superseded by Invoice Tracking - D2)
     - calendar
     - copy-previous
     - EPIC-003 F-001

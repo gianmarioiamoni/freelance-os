@@ -1,4 +1,4 @@
-# MVP Production Validation — §34
+# MVP Production Validation - §34
 
 **Gate:** `MASTER_PLAN.md` §34  
 **Date:** 2026-09-19 (hosted production + Gmail SMTP revalidation)  
@@ -12,7 +12,7 @@ VALIDATION EXECUTION:     COMPLETE
 §34 / §36 GATE OUTCOME:   READY FOR RELEASE
 BLOCKING FINDINGS (§37):  NONE newly confirmed as Release Blocker
 PRODUCTION READINESS:     RELEASE GRANTED
-§35 CERTIFICATION:        GRANTED — docs/release/production-certification.md
+§35 CERTIFICATION:        GRANTED - docs/release/production-certification.md
 PRODUCT OWNER APPROVAL:   D-005 PROVIDED
 ```
 
@@ -45,7 +45,7 @@ Secrets were inspected only as present/absent. No secret values are recorded.
 | Gate | Requirement | Current Evidence | Result | Blocking? |
 | --- | --- | --- | --- | --- |
 | Production build | Exact candidate builds | SMTP transport commit `2b58af4`. Targeted email tests 24/24. typecheck/lint PASS. Prior `pnpm build` PASS on the release line. | **PASS** | No |
-| Deployment configuration | Exact hosted build | Vercel Production operational. GitHub/Vercel workflow. Prisma `generate` + `migrate deploy` during deploy. | **PASS** — hosted deployment **CLOSED** | No |
+| Deployment configuration | Exact hosted build | Vercel Production operational. GitHub/Vercel workflow. Prisma `generate` + `migrate deploy` during deploy. | **PASS** - hosted deployment **CLOSED** | No |
 | Database migration | Migrations applied | Hosted Neon PostgreSQL operational. Migrations applied during Vercel deploy. Local chain unchanged. | **PASS** | No |
 | Authentication | Email/password + offered Google + recovery | Google production credentials and origin configured. Callback `/api/auth/callback/google`. Google login verified end-to-end in production. Password reset completed in production (request → delivered mail → link → new password → old password rejected). | **PASS** | No |
 | Complete MVP workflow | Previously PASS locally | Local `pnpm start` PV34F workflow remains recorded. Hosted auth + recovery now verified. | **PASS** | No |
@@ -185,21 +185,21 @@ Callback URI if Google were configured: `${BETTER_AUTH_URL}/api/auth/callback/go
 
 ## Final authentication
 
-### Email / password — PASS
+### Email / password - PASS
 
 - Register `pv34f-20260918@example.com` / `PV34F User` → `/onboarding`
 - Workspace `PV34F Workspace` (Europe/Rome, EUR) → `/dashboard`
 - Sign-out → `/` (heading FreelanceOS; public landing)
 - Sign-in same account → `/dashboard`
 
-### Password reset — request PASS; completion NOT VERIFIED
+### Password reset - request PASS; completion NOT VERIFIED
 
 - `GET /forgot-password` available
 - Request for `pv34f-20260918@example.com` → generic acknowledgement
 - Server: `Password reset email was not delivered: Resend is not configured (RESEND_API_KEY and AUTH_EMAIL_FROM).`
 - No delivered link. Token completion **not executed**. FINDING-INT-003 remains OPEN / NOT REPRODUCED.
 
-### Google — offered; production unready
+### Google - offered; production unready
 
 - “Continue with Google” on `/sign-in` and `/sign-up`
 - Click: alert `Google sign-in is unavailable.`
@@ -247,7 +247,7 @@ Command: `pnpm build` then `CI=true pnpm test:e2e:start` (`pnpm start` + `AUTH_E
 | **This §34 fresh run** | **67 passed / 1 failed / 68** |
 | Isolated rerun of the failed test | **PASS** |
 
-Failed test this run: `tests/e2e/reports.spec.ts` `default period is 'This Month' and switching periods updates the URL` — click `Today`; URL stayed `http://localhost:3000/reports` (no `period=today`). Same class as D-004 residual Next.js production `<Link>` + same-path search params. Not F-004. Not treated as a new §37 Release Blocker. Tests were not changed to hide it.
+Failed test this run: `tests/e2e/reports.spec.ts` `default period is 'This Month' and switching periods updates the URL` - click `Today`; URL stayed `http://localhost:3000/reports` (no `period=today`). Same class as D-004 residual Next.js production `<Link>` + same-path search params. Not F-004. Not treated as a new §37 Release Blocker. Tests were not changed to hide it.
 
 F-004 (Better Auth production rate-limit auth burst): **RESOLVED**.
 
@@ -294,9 +294,9 @@ Historical (`f5592b3`, 2026-09-18). Superseded by Current §34 (`2b58af4`, 2026-
 
 Only items that still prevent `READY FOR RELEASE` on `f5592b3`:
 
-1. **Hosted Vercel deployment** (D-001) — EXTERNAL ACCESS REQUIRED. No URL, project, or deploy result.
-2. **Production Google credentials** (D-002) — `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` UNSET; callback unverified.
-3. **Resend production send + password-reset completion** (D-003) — `RESEND_API_KEY` / `AUTH_EMAIL_FROM` / verified domain UNSET; completion NOT VERIFIED.
+1. **Hosted Vercel deployment** (D-001) - EXTERNAL ACCESS REQUIRED. No URL, project, or deploy result.
+2. **Production Google credentials** (D-002) - `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` UNSET; callback unverified.
+3. **Resend production send + password-reset completion** (D-003) - `RESEND_API_KEY` / `AUTH_EMAIL_FROM` / verified domain UNSET; completion NOT VERIFIED.
 
 Product Owner approval is **NOT PROVIDED**. It is a **§35** field, not a §34 implementation item. It remains required before certification. It is **not** fabricated here.
 
@@ -360,14 +360,14 @@ The logo micro-change is regression evidence only. It is not a new release gate 
 | Full MVP workflow | PASS on `pnpm start` | **PASS** (revalidated on this runtime; PV34 data + new PV34R auth) |
 | Reports / Alerts / Notifications | PASS (2h / 100%; WARNING + EXCEEDED; 2 unread then) | **PASS** (same PV34 2h / 100%; both alert types listed; now marked read) |
 | `next start` E2E | 43 passed / 23 failed (66 tests) | 43 passed / 25 failed (68 tests; 2 tests added by the logo change) |
-| F-004 | reconfirmed | **reconfirmed** — register stuck on `/sign-up` after burst; tests not modified |
+| F-004 | reconfirmed | **reconfirmed** - register stuck on `/sign-up` after burst; tests not modified |
 | Auth email/password | PASS | **PASS** (sign-up, first workspace, sign-in, sign-out) |
 | Password-reset completion | NOT VERIFIED | **NOT VERIFIED** (request 200; production mailer absent) |
-| Google | offered; credentials unset | **unchanged** — UI offers; click → `Google sign-in is unavailable.` |
+| Google | offered; credentials unset | **unchanged** - UI offers; click → `Google sign-in is unavailable.` |
 | Logo navigation | N/A (plain `<p>`) | **PASS** desktop + mobile → `/dashboard`; public wordmark stays `/` |
 | Dashboard authorization | anonymous `/dashboard` → `/sign-in` | **PASS** HTTP 307 `/sign-in` (query `workspaceId` does not bypass) |
-| Workspace isolation | PASS on exercised paths | **PASS** — `/dashboard?workspaceId=<foreign>` stayed on PV34 Workspace |
-| F-104-007 | reconfirmed | **reconfirmed** — log only; navigation succeeded |
+| Workspace isolation | PASS on exercised paths | **PASS** - `/dashboard?workspaceId=<foreign>` stayed on PV34 Workspace |
+| F-104-007 | reconfirmed | **reconfirmed** - log only; navigation succeeded |
 | §34 / §36 outcome | RELEASE BLOCKED | **RELEASE BLOCKED** |
 | Product Owner approval | NOT PROVIDED | **NOT PROVIDED** |
 
@@ -384,7 +384,7 @@ Remaining mandatory gaps before `READY FOR RELEASE`: hosted deploy if production
 | Commit SHA | `81a22dd507ae3d320fba64ead71ab2871a50e833` |
 | HEAD short | `81a22dd feat(ui): link authenticated logo to dashboard` |
 | Branch | `main` |
-| Build | `pnpm build` — PASS (Next.js 15.5.25 Turbopack). `/` and `/dashboard` dynamic (`ƒ`). Build-time `DYNAMIC_SERVER_USAGE` for `/dashboard` (`headers()`), unchanged. |
+| Build | `pnpm build` - PASS (Next.js 15.5.25 Turbopack). `/` and `/dashboard` dynamic (`ƒ`). Build-time `DYNAMIC_SERVER_USAGE` for `/dashboard` (`headers()`), unchanged. |
 | Runtime | `pnpm start` (`next start`, `NODE_ENV=production`) at `http://localhost:3000` |
 | Environment classification | Local production-like. Not a hosted production deployment. |
 | Deployment target | None. No `vercel.json`, Dockerfile, Fly, Render, or other deploy manifest. CI (`.github/workflows/quality.yml`) builds and tests; it does not deploy. |
@@ -405,11 +405,11 @@ Extracted from `MASTER_PLAN.md` §34. No extra requirements.
 | §34 Gate | Previous status | Current evidence | Required action | Current status | Blocking? |
 | --- | --- | --- | --- | --- | --- |
 | Production build | PASS | `pnpm build` on `81a22dd` | Rebuild candidate | **PASS** | No |
-| Deployment configuration | RECORDED — local `pnpm start`; hosted absent | No new deploy manifest | Record exact deployable artifact; do not invent hosting | **RECORDED** — local only | Gap for a hosted release; not an application defect. Architecture defers exact deployment. |
+| Deployment configuration | RECORDED - local `pnpm start`; hosted absent | No new deploy manifest | Record exact deployable artifact; do not invent hosting | **RECORDED** - local only | Gap for a hosted release; not an application defect. Architecture defers exact deployment. |
 | Database migration | PASS | `prisma migrate status` on `freelance_os`: 5 migrations, up to date. `pnpm test:db:migrate`: no pending | Reconfirm | **PASS** | No |
 | Authentication | PASS WITH FINDINGS | Sign-up → `/onboarding` → workspace → `/dashboard`; sign-out → `/`; sign-in → `/dashboard`; reset request 200 + production “no provider” warn; Google unavailable | Do not invent mailer or OAuth credentials | **PASS WITH FINDINGS** | Env gaps (mailer, Google) remain |
 | Complete MVP workflow | PASS | Revalidated on `pnpm start`: Auth → Workspace → Client (PV34) → Contract → TimeEntry → Dashboard → Reports → Alerts → Notifications | Revalidate candidate / affected paths | **PASS** | No |
-| Critical E2E regression | FAIL on `next start` (F-004) | Official CI contract remains `pnpm dev`. Additional uncommitted `webServer.command: pnpm start` run: 43 passed / 25 failed (68 tests) | Do not modify tests or weaken rate limits | **FAIL** on `next start` — F-004 | Infrastructure; not a new application defect |
+| Critical E2E regression | FAIL on `next start` (F-004) | Official CI contract remains `pnpm dev`. Additional uncommitted `webServer.command: pnpm start` run: 43 passed / 25 failed (68 tests) | Do not modify tests or weaken rate limits | **FAIL** on `next start` - F-004 | Infrastructure; not a new application defect |
 | Reports | PASS | This Month: PV34 Client 2h / 2h 100%; Contract Report 2h / 2h 100%; Annual Overview Sep 2h | Revalidate | **PASS** | No |
 | Alerts | PASS | WARNING + EXCEEDED still listed for PV34 Client 100% | Revalidate | **PASS** | No |
 | Notifications | PASS | Both notifications listed (now marked read from the prior session) | Revalidate | **PASS** | No |
@@ -468,14 +468,14 @@ Prior PV34 session (`PV34 Workspace` / `PV34 User`) was reused for workflow/repo
 - Anonymous `GET /forgot-password` → HTTP 200
 - Existing-user request for `pv34r-20260918@example.com` → generic acknowledgement
 - Production log: `Password reset email was not delivered: no production email provider is configured.`
-- Token completion **not executed** — no provider, no delivered URL. FINDING-INT-003 remains OPEN / NOT REPRODUCED.
+- Token completion **not executed** - no provider, no delivered URL. FINDING-INT-003 remains OPEN / NOT REPRODUCED.
 
 ### Google
 
 - UI offers “Continue with Google” on `/sign-in` (and `/sign-up`)
 - Click: alert `Google sign-in is unavailable.`
 - Server: `ERROR [Better Auth]: Provider not found … provider: 'google'`
-- Consent/callback **NOT VERIFIED** — credentials absent; none were invented
+- Consent/callback **NOT VERIFIED** - credentials absent; none were invented
 
 ---
 
@@ -525,10 +525,10 @@ Failed tests concentrated on `registerAndCreateFirstWorkspace` (`/sign-up` did n
 
 | Classification | Applies |
 | --- | --- |
-| Application defect | No — same journeys passed earlier in the run and in the manual `pnpm start` workflow |
-| Test defect | No — tests were not changed to hide failures |
-| Environment defect | No — isolated test DB and test mailer were set as designed |
-| Infrastructure / configuration defect | **Yes — F-004** (`docs/epics/EPIC-003/engineering-review.md`: `next start` enables Better Auth production rate limits that collide across auth journeys on one IP; Blocking: No for that epic) |
+| Application defect | No - same journeys passed earlier in the run and in the manual `pnpm start` workflow |
+| Test defect | No - tests were not changed to hide failures |
+| Environment defect | No - isolated test DB and test mailer were set as designed |
+| Infrastructure / configuration defect | **Yes - F-004** (`docs/epics/EPIC-003/engineering-review.md`: `next start` enables Better Auth production rate limits that collide across auth journeys on one IP; Blocking: No for that epic) |
 
 Auth spec unauthenticated `getByText("FreelanceOS", { exact: true })` strict-mode duplicate is consistent with an unexpected post-redirect document during the same burst; it is not treated as a new product defect.
 
@@ -604,7 +604,7 @@ Reason: candidate `81a22dd` was built, migrated, and exercised through the MVP w
 
 ---
 
-# Appendix — Previous §34 execution (`a0ad65f`)
+# Appendix - Previous §34 execution (`a0ad65f`)
 
 The following sections are the original 2026-09-18 validation of `a0ad65f`. They are retained as historical evidence and are not rewritten.
 
@@ -636,7 +636,7 @@ MASTER_PLAN §34 concludes only with `READY FOR RELEASE` or `RELEASE BLOCKED`. T
 | Commit SHA | `a0ad65f55e147e8abdbd2539a0f73110d2b7cc85` |
 | HEAD short | `a0ad65f docs(landing): certify EPIC-107` |
 | Branch | `main` |
-| Build | `pnpm build` — PASS (Next.js 15.5.25 Turbopack). `/` and `/dashboard` dynamic (`ƒ`). Build-time `DYNAMIC_SERVER_USAGE` for `/dashboard` (`headers()`), already documented. |
+| Build | `pnpm build` - PASS (Next.js 15.5.25 Turbopack). `/` and `/dashboard` dynamic (`ƒ`). Build-time `DYNAMIC_SERVER_USAGE` for `/dashboard` (`headers()`), already documented. |
 | Runtime | `pnpm start` (`next start`, `NODE_ENV=production`) at `http://localhost:3000` |
 | Environment classification | Local production-like. Not a hosted production deployment. |
 | Deployment target | None. No `vercel.json`, Dockerfile, Fly, Render, or other deploy manifest in the repository. No hosted URL. |
@@ -655,11 +655,11 @@ Extracted from `MASTER_PLAN.md` §34. Certification items are mapped, not substi
 | Gate | Requirement | Evidence | Result | Blocking? |
 | --- | --- | --- | --- | --- |
 | Production build | Production build of the candidate | `pnpm build` on `a0ad65f` | **PASS** | No |
-| Deployment configuration | Config for the build that will be deployed | Recorded: local `pnpm start`; no hosted manifest/URL. Architecture §35 still defers exact hosting. | **RECORDED** — hosted target absent | Gap for a cloud release; not an application defect |
+| Deployment configuration | Config for the build that will be deployed | Recorded: local `pnpm start`; no hosted manifest/URL. Architecture §35 still defers exact hosting. | **RECORDED** - hosted target absent | Gap for a cloud release; not an application defect |
 | Database migration | Migrations on the candidate | `prisma migrate status` on `freelance_os`: 5 migrations, schema up to date. `pnpm test:db:migrate` on `freelanceos_test`: no pending. Procedure: `pnpm db:migrate:deploy` | **PASS** | No |
-| Authentication | Auth on the deployed build | Sign-up → onboarding → dashboard; Google button offered, click → `Google sign-in is unavailable.`; password-reset request 200 + production “no provider” warn; token completion not executable | **PASS WITH FINDINGS** | Env gaps (mailer, Google) — see §12 |
+| Authentication | Auth on the deployed build | Sign-up → onboarding → dashboard; Google button offered, click → `Google sign-in is unavailable.`; password-reset request 200 + production “no provider” warn; token completion not executable | **PASS WITH FINDINGS** | Env gaps (mailer, Google) - see §12 |
 | Complete MVP workflow | Auth → Workspace → Client → Contract → TimeEntry → Analytics → Dashboard → Alerts → Notifications → Reports | Browser on `pnpm start` against `freelance_os` | **PASS** | No |
-| Critical E2E regression | E2E of the candidate | Canonical CI contract remains `pnpm dev` (F-004). This gate also ran Playwright against `next start`: 43 passed / 23 failed | **FAIL** on `next start` — classified F-004 | Infrastructure, not a new application defect |
+| Critical E2E regression | E2E of the candidate | Canonical CI contract remains `pnpm dev` (F-004). This gate also ran Playwright against `next start`: 43 passed / 23 failed | **FAIL** on `next start` - classified F-004 | Infrastructure, not a new application defect |
 | Reports | Reports on the candidate | `/reports` This Month: Hours by Client PV34 Client 2h/2h 100%; Contract Report 2h/2h 100%; Annual Overview Sep 2h | **PASS** | No |
 | Alerts | Alerts on the candidate | TimeEntry at 100% capacity → `alertsCreated=2` | **PASS** | No |
 | Notifications | Notifications on the candidate | `/alerts`: 2 unread (WARNING + EXCEEDED); badge `Alerts2` | **PASS** | No |
@@ -732,14 +732,14 @@ Browser on `pnpm start`:
 - Anonymous `GET /forgot-password` → HTTP 200
 - `POST /api/auth/request-password-reset` → HTTP 200 generic acknowledgement (`status: true`)
 - Production log: `Password reset email was not delivered: no production email provider is configured.`
-- Token completion **not executed** — no provider, no delivered URL. FINDING-INT-003 remains OPEN / NOT REPRODUCED.
+- Token completion **not executed** - no provider, no delivered URL. FINDING-INT-003 remains OPEN / NOT REPRODUCED.
 
 ### Google
 
 - UI offers “Continue with Google” on `/sign-up` (and equivalently `/sign-in`)
 - Click on this candidate: alert `Google sign-in is unavailable.`
 - Server: `ERROR [Better Auth]: Provider not found. Make sure to add the provider in your auth config { provider: 'google' }`
-- Consent/callback **NOT VERIFIED** — credentials absent; none were invented
+- Consent/callback **NOT VERIFIED** - credentials absent; none were invented
 - Google is part of the product surface and of the product vision; it is **not configured** on this candidate
 
 ---
@@ -792,10 +792,10 @@ Failed tests all broke at `registerAndCreateFirstWorkspace` (`/sign-up` did not 
 
 | Classification | Applies |
 | --- | --- |
-| Application defect | No — same journeys passed earlier in the run and in the manual `pnpm start` workflow |
-| Test defect | No — tests were not changed |
-| Environment defect | No — isolated test DB and test mailer were set as designed |
-| Infrastructure / configuration defect | **Yes — F-004** |
+| Application defect | No - same journeys passed earlier in the run and in the manual `pnpm start` workflow |
+| Test defect | No - tests were not changed |
+| Environment defect | No - isolated test DB and test mailer were set as designed |
+| Infrastructure / configuration defect | **Yes - F-004** |
 
 The temporary start-config was not committed. CI contract tests still lock `playwright.config.ts` to `pnpm dev`.
 

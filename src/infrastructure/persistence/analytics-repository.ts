@@ -548,7 +548,7 @@ async function getContractUtilizations(
   filter?: AnalyticsFilter,
 ): Promise<ContractUtilization[]> {
   // 1. Contracts with validity overlap with the period (validTo is exclusive).
-  //    For ongoing contracts (validTo === null), treat as infinitely valid — OR filter applied.
+  //    For ongoing contracts (validTo === null), treat as infinitely valid - OR filter applied.
   const validityOverlapContracts = await db.contract.findMany({
     where: {
       workspaceId,
@@ -564,7 +564,7 @@ async function getContractUtilizations(
     },
   });
 
-  // 2. Contracts with in-period consumption (may not overlap validity — historical data).
+  // 2. Contracts with in-period consumption (may not overlap validity - historical data).
   const contractConsumption = await db.timeEntry.groupBy({
     by: ["contractId"],
     where: {
@@ -609,7 +609,7 @@ async function getContractUtilizations(
   }
 
   // 4. For each contract with in-period consumption, detect whether any time entry
-  //    falls outside [validFrom, validTo) — the definition of out-of-validity (BR-105-018).
+  //    falls outside [validFrom, validTo) - the definition of out-of-validity (BR-105-018).
   //    We check by querying the count of entries outside validity for each contract.
   //
   //    Strategy: for each contract that has consumption in the period, check whether

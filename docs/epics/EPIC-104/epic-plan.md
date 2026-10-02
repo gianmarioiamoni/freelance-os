@@ -1,9 +1,9 @@
-# EPIC-104 — Analytics & Dashboard
+# EPIC-104 - Analytics & Dashboard
 
 **Epic:** EPIC-104  
-**Release:** Release 1 — MVP  
-**MASTER_PLAN identifier:** R1-E04 — Analytics & Dashboard  
-**Status:** IMPLEMENTED — ENGINEERING COMPLETE (PASS WITH FINDINGS)  
+**Release:** Release 1 - MVP  
+**MASTER_PLAN identifier:** R1-E04 - Analytics & Dashboard  
+**Status:** IMPLEMENTED - ENGINEERING COMPLETE (PASS WITH FINDINGS)  
 **Dependencies:** EPIC-002, EPIC-003, EPIC-004, EPIC-005, EPIC-006, EPIC-101, EPIC-102, EPIC-103  
 **Previous Epic:** EPIC-103 Time Tracking  
 **Next Epic:** R1-E05 Reporting (`MASTER_PLAN.md` §15)  
@@ -152,9 +152,9 @@ The analytics layer must become the authoritative source for all numerical facts
 - **Billable Percentage**: billableMinutes / totalMinutes (handle zero denominator)
 
 ### Client Analytics  
-- **Client Hours**: GROUP BY clientId, SUM(durationMinutes) — includes archived Clients per PD-104-001
-- **Client Billable Hours**: GROUP BY clientId, SUM(durationMinutes WHERE billable = true) — includes archived Clients
-- **Client Percentage**: clientMinutes / totalMinutes for period — archived Client status presented explicitly
+- **Client Hours**: GROUP BY clientId, SUM(durationMinutes) - includes archived Clients per PD-104-001
+- **Client Billable Hours**: GROUP BY clientId, SUM(durationMinutes WHERE billable = true) - includes archived Clients
+- **Client Percentage**: clientMinutes / totalMinutes for period - archived Client status presented explicitly
 
 ### Contract Analytics
 - **Contract Utilization**: ALL tracked TimeEntry minutes (billable + non-billable) per PD-104-002
@@ -515,23 +515,23 @@ const today = startOfDay(zonedTimeToUtc(now, workspaceTimezone));
 
 ## 20. Resolved Product Decisions
 
-### PD-104-001: Archived Client Time in Analytics — RESOLVED: INCLUDE
+### PD-104-001: Archived Client Time in Analytics - RESOLVED: INCLUDE
 **Decision**: Analytics MUST include TimeEntries associated with archived Clients when those TimeEntries fall within the selected analytics date range.
 **Rationale**: Archiving a client must not retroactively remove historical tracked time from analytics; TimeEntry history remains meaningful; current Client status must not alter historical totals.
 **Implementation**: For Client breakdowns, archived Clients remain visible when they have qualifying TimeEntries, with their archived status presented explicitly where relevant.
 **Acknowledgment**: This decision explicitly addresses EPIC-103 F-103-002.
 
-### PD-104-002: Contract Utilization Calculation Basis — RESOLVED: ALL TIME
+### PD-104-002: Contract Utilization Calculation Basis - RESOLVED: ALL TIME
 **Decision**: Where Contract utilization is applicable and a valid contractual capacity denominator exists, numerator = ALL tracked TimeEntry minutes; both billable and non-billable time are included.
 **Rationale**: Utilization measures total contract consumption; billable time remains a separate metric; do NOT equate utilization with billable percentage.
 **Exclusions**: Do NOT introduce revenue calculation, invoice calculation, payment calculation, profitability, forecasting, or rate-based billing calculations.
 
-### PD-104-003: Dashboard Default Date Range — RESOLVED: CURRENT MONTH
+### PD-104-003: Dashboard Default Date Range - RESOLVED: CURRENT MONTH
 **Decision**: Default dashboard period spans first day of the current calendar month through today.
 **Rationale**: Aligns with business reporting conventions; provides meaningful period context; maintains consistency with Time Tracking date semantics.
 **Implementation**: Use workspace timezone for boundaries; future TimeEntries remain permitted when user explicitly selects a future period.
 
-### PD-104-004: Unlimited Contract Display Format — RESOLVED: ONGOING
+### PD-104-004: Unlimited Contract Display Format - RESOLVED: ONGOING
 **Decision**: For Contracts where validTo is null, display "validFrom → Ongoing". For finite Contracts, display "validFrom → validTo".
 **Rationale**: This is presentation only and does not change existing Contract validity semantics (finite: validFrom <= workDate < validTo; open-ended: workDate >= validFrom).
 **Implementation**: Contract utilization section shows consumed hours with "→ Ongoing" indicator rather than percentage calculation.
@@ -833,12 +833,12 @@ Tested: Integration and E2E coverage for analytics accuracy
 
 **Planning Status**: COMPLETE  
 **Implementation Status**: COMPLETE (P104-01, P104-02, P104-03)  
-**Engineering Review**: PASS WITH FINDINGS — `docs/epics/EPIC-104/engineering-review.md`  
-**Blocking Findings**: NONE — F-104-000 RESOLVED  
-**Open Findings**: F-104-001 … F-104-017, F-104-P-001, F-104-P-002 — all non-blocking  
+**Engineering Review**: PASS WITH FINDINGS - `docs/epics/EPIC-104/engineering-review.md`  
+**Blocking Findings**: NONE - F-104-000 RESOLVED  
+**Open Findings**: F-104-001 … F-104-017, F-104-P-001, F-104-P-002 - all non-blocking  
 **Product Decisions**: PD-104-001 implemented; PD-104-002 implemented; PD-104-003 partial (F-104-017 open); PD-104-004 divergent (F-104-003 open, awaiting Product Owner)  
 **Inherited Findings**: documented, none resolved by this Epic  
-**Architecture Compliance**: PASS WITH FINDINGS — shared-calculation requirement violated (F-104-002)  
+**Architecture Compliance**: PASS WITH FINDINGS - shared-calculation requirement violated (F-104-002)  
 **Production Readiness**: NO
 
 **Next Action**: Proceed to Phase 1 implementation with resolved product decisions.

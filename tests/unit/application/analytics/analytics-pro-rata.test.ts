@@ -10,7 +10,7 @@ import type { AnalyticsPeriod } from "@/domain/analytics-types";
  *   overlapDays = max(0, min(periodEnd, contractInclusiveEnd) − max(periodStart, validFrom) + 1)
  *   proRataMinutes = monthlyContractedMinutes × (overlapDays / periodDays)
  *
- * Boundary convention: [validFrom, validTo) — validTo is exclusive.
+ * Boundary convention: [validFrom, validTo) - validTo is exclusive.
  * Ongoing contracts (validTo === null) are treated as infinitely valid.
  * No rollover, carry-over, or expiry semantics (OBD-012 open).
  */
@@ -26,7 +26,7 @@ describe("AnalyticsService.calculateProRataCapacity (BR-105-017)", () => {
   // Null capacity → null result (no denominator invented)
   // ------------------------------------------------------------------
 
-  it("returns null when monthlyContractedMinutes is null (unlimited — BR-105-016)", () => {
+  it("returns null when monthlyContractedMinutes is null (unlimited - BR-105-016)", () => {
     const period: AnalyticsPeriod = { startDate: d("2026-09-01"), endDate: d("2026-09-30") };
     const result = AnalyticsService.calculateProRataCapacity(
       null,
@@ -58,7 +58,7 @@ describe("AnalyticsService.calculateProRataCapacity (BR-105-017)", () => {
     const result = AnalyticsService.calculateProRataCapacity(
       MONTHLY_MINUTES,
       d("2026-01-01"),
-      d("2027-01-01"), // exclusive end — contract covers through 2026-12-31
+      d("2027-01-01"), // exclusive end - contract covers through 2026-12-31
       period,
     );
     // 30 overlap / 30 period = 1.0 × 4800 = 4800
@@ -123,7 +123,7 @@ describe("AnalyticsService.calculateProRataCapacity (BR-105-017)", () => {
   });
 
   // ------------------------------------------------------------------
-  // Partial overlap — contract starts inside the period
+  // Partial overlap - contract starts inside the period
   // ------------------------------------------------------------------
 
   it("pro-rates when contract starts in the middle of the period (start-side overlap)", () => {
@@ -141,7 +141,7 @@ describe("AnalyticsService.calculateProRataCapacity (BR-105-017)", () => {
   });
 
   // ------------------------------------------------------------------
-  // Partial overlap — contract ends inside the period
+  // Partial overlap - contract ends inside the period
   // ------------------------------------------------------------------
 
   it("pro-rates when contract ends in the middle of the period (end-side overlap)", () => {
@@ -159,10 +159,10 @@ describe("AnalyticsService.calculateProRataCapacity (BR-105-017)", () => {
   });
 
   // ------------------------------------------------------------------
-  // Ongoing contract (validTo === null) — BR-105-016 / BR-105-017
+  // Ongoing contract (validTo === null) - BR-105-016 / BR-105-017
   // ------------------------------------------------------------------
 
-  it("ongoing contract (validTo null) with finite capacity — pro-rates to full period", () => {
+  it("ongoing contract (validTo null) with finite capacity - pro-rates to full period", () => {
     // validTo null → contract extends through the entire period and beyond.
     const period: AnalyticsPeriod = { startDate: d("2026-09-01"), endDate: d("2026-09-30") };
     const result = AnalyticsService.calculateProRataCapacity(
@@ -175,7 +175,7 @@ describe("AnalyticsService.calculateProRataCapacity (BR-105-017)", () => {
     expect(result).toBe(4800);
   });
 
-  it("ongoing contract starting in the middle of the period — partial overlap", () => {
+  it("ongoing contract starting in the middle of the period - partial overlap", () => {
     // Contract starts Sep 16 and is ongoing. Period Sep 1–30.
     const period: AnalyticsPeriod = { startDate: d("2026-09-01"), endDate: d("2026-09-30") };
     const result = AnalyticsService.calculateProRataCapacity(
@@ -200,7 +200,7 @@ describe("AnalyticsService.calculateProRataCapacity (BR-105-017)", () => {
   });
 
   // ------------------------------------------------------------------
-  // No overlap — period entirely outside contract validity
+  // No overlap - period entirely outside contract validity
   // ------------------------------------------------------------------
 
   it("returns 0 when the period is entirely after the contract validity", () => {
@@ -278,14 +278,14 @@ describe("AnalyticsService.calculateProRataCapacity (BR-105-017)", () => {
   // Exact boundary: validTo on the same day as period start (exclusive = no overlap)
   // ------------------------------------------------------------------
 
-  it("returns 0 when validTo equals period startDate (exclusive boundary — no overlap)", () => {
+  it("returns 0 when validTo equals period startDate (exclusive boundary - no overlap)", () => {
     // Contract [2026-01-01, 2026-09-01) → last inclusive day is Aug 31.
     // Period: Sep 1–30. No overlap.
     const period: AnalyticsPeriod = { startDate: d("2026-09-01"), endDate: d("2026-09-30") };
     const result = AnalyticsService.calculateProRataCapacity(
       MONTHLY_MINUTES,
       d("2026-01-01"),
-      d("2026-09-01"), // exclusive — contract ends Aug 31 inclusive
+      d("2026-09-01"), // exclusive - contract ends Aug 31 inclusive
       period,
     );
     expect(result).toBe(0);
@@ -307,7 +307,7 @@ describe("AnalyticsService.calculateProRataCapacity (BR-105-017)", () => {
   // OBD-012 guard: no rollover or expiry semantics applied
   // ------------------------------------------------------------------
 
-  it("does not apply rollover — capacity for the next month is independent", () => {
+  it("does not apply rollover - capacity for the next month is independent", () => {
     // Two consecutive periods. The calculation for Sep must not carry over to Oct.
     const sepPeriod: AnalyticsPeriod = { startDate: d("2026-09-01"), endDate: d("2026-09-30") };
     const octPeriod: AnalyticsPeriod = { startDate: d("2026-10-01"), endDate: d("2026-10-31") };
@@ -322,7 +322,7 @@ describe("AnalyticsService.calculateProRataCapacity (BR-105-017)", () => {
     // Each period yields its own pro-rata: 4800. No carry-over between them.
     expect(sepResult).toBe(4800);
     expect(octResult).toBe(4800);
-    // The sum is NOT double the monthly limit — it's each period's own pro-rata.
+    // The sum is NOT double the monthly limit - it's each period's own pro-rata.
     // (This assertion documents that we do not accumulate across periods.)
     expect(sepResult! + octResult!).toBe(9600); // two independent months
   });

@@ -5,7 +5,7 @@ export function formatPublishedAmounts(
   amounts: readonly AccruedAmount[],
 ): string {
   if (amounts.length === 0) {
-    return "—";
+    return "-";
   }
 
   return amounts.map((row) => `${row.published} ${row.currency}`).join(", ");

@@ -1,7 +1,7 @@
-# EPIC-002 — Engineering Review
+# EPIC-002 - Engineering Review
 
-**Epic:** EPIC-002 — Database & Persistence  
-**Release:** Release 0 — Foundation  
+**Epic:** EPIC-002 - Database & Persistence  
+**Release:** Release 0 - Foundation  
 **Reviewed commits:**
 
 ```text
@@ -62,7 +62,7 @@ Inspected implementation:
 | Isolated PostgreSQL test DB, migration-only setup | Yes | Yes | Yes |
 | CI PostgreSQL 17 + migrate + integration + unit + lint + typecheck + build | Yes | Yes | Yes |
 | Authentication tables / Better Auth | Out of scope | Not present | Yes |
-| Separate ADR files | Candidates in `docs/storage.md` §36 | Not created | Accepted — decisions already canonical in storage docs |
+| Separate ADR files | Candidates in `docs/storage.md` §36 | Not created | Accepted - decisions already canonical in storage docs |
 
 ---
 

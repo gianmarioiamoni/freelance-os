@@ -8,7 +8,7 @@
 
 ## Executive Summary
 
-### Finding 1: "Test 1" Client Issue — FALSE ALARM
+### Finding 1: "Test 1" Client Issue - FALSE ALARM
 
 **Root Cause:** The "Test 1" client is NOT a data integrity issue. It originates from:
 - Manual execution of `pnpm db:seed` AFTER the reset
@@ -19,7 +19,7 @@
 - Reset scripts correctly delete ALL Client records
 - No application bootstrap/startup logic creates Clients
 - No test fixtures execute during normal operation
-- Seed script (`prisma/seed.ts`) creates 3 clients: "Northwind Labs", "Contoso Workshop", "Archived Transit Co" — NOT "Test 1"
+- Seed script (`prisma/seed.ts`) creates 3 clients: "Northwind Labs", "Contoso Workshop", "Archived Transit Co" - NOT "Test 1"
 
 **Conclusion:** The reset scripts are **CORRECT**. No code changes required.
 
@@ -28,7 +28,7 @@
 2. Present from seed data that wasn't reset
 3. Created by a test run that wasn't isolated
 
-### Finding 2: "Test WS" Workspace Issue — FALSE ALARM
+### Finding 2: "Test WS" Workspace Issue - FALSE ALARM
 
 **Root Cause:** No hardcoded "Test WS" workspace exists in the codebase.
 
@@ -86,7 +86,7 @@ await tx.$executeRaw`DELETE FROM "user"`;
 - Production detection + warnings
 - Confirmation delays (3s local, 5s+5s remote)
 
-**Verdict:** ✓ CORRECT — All Client and Workspace records are deleted
+**Verdict:** ✓ CORRECT - All Client and Workspace records are deleted
 
 #### Script: `scripts/reset-local-database.ts`
 
@@ -96,7 +96,7 @@ await tx.$executeRaw`DELETE FROM "user"`;
 
 **Additional Safety:** Production environment detection with keyword blocking
 
-**Verdict:** ✓ CORRECT — Identical deletion logic
+**Verdict:** ✓ CORRECT - Identical deletion logic
 
 ---
 
@@ -122,7 +122,7 @@ await tx.$executeRaw`DELETE FROM "user"`;
 - NOT triggered by `db:migrate`
 - NOT triggered by reset scripts
 
-**Verdict:** ✓ CORRECT — Creates test data only when explicitly requested
+**Verdict:** ✓ CORRECT - Creates test data only when explicitly requested
 
 ---
 
@@ -141,7 +141,7 @@ await tx.$executeRaw`DELETE FROM "user"`;
 
 **Validation:** User MUST provide all three values to submit
 
-**Verdict:** ✓ CORRECT — No hidden defaults
+**Verdict:** ✓ CORRECT - No hidden defaults
 
 #### Action: `createFirstWorkspaceAction`
 
@@ -155,7 +155,7 @@ await tx.$executeRaw`DELETE FROM "user"`;
 
 **No Defaults Applied:** Workspace name comes directly from `formData.get("name")`
 
-**Verdict:** ✓ CORRECT — User input is respected
+**Verdict:** ✓ CORRECT - User input is respected
 
 #### Service: `createFirstWorkspace`
 
@@ -172,7 +172,7 @@ const workspace = await repositories.workspaces.createWorkspace({
 });
 ```
 
-**Verdict:** ✓ CORRECT — No hardcoded names
+**Verdict:** ✓ CORRECT - No hardcoded names
 
 ---
 
@@ -202,18 +202,18 @@ await db.client.create({
 3. E2E test helpers (isolated by test database)
 4. Manual `db:seed` execution
 
-**Verdict:** ✓ CORRECT — No automatic Client creation
+**Verdict:** ✓ CORRECT - No automatic Client creation
 
 ---
 
 ### 5. Application Startup Review
 
 **Checked:**
-- `src/app/layout.tsx` — No bootstrap logic
-- `src/infrastructure/auth/auth.ts` — Better Auth configuration only
-- Better Auth callbacks — No workspace/client creation
-- Middleware/Proxy — No data creation
-- `postinstall` script — Only runs `prisma generate`
+- `src/app/layout.tsx` - No bootstrap logic
+- `src/infrastructure/auth/auth.ts` - Better Auth configuration only
+- Better Auth callbacks - No workspace/client creation
+- Middleware/Proxy - No data creation
+- `postinstall` script - Only runs `prisma generate`
 
 **Verdict:** ✓ NO AUTOMATIC DATA CREATION on application startup
 
@@ -224,23 +224,23 @@ await db.client.create({
 ### Issue 1: "Test 1" Client After Reset
 
 **Possible Explanations:**
-1. **Seed was run after reset** — User executed `pnpm db:seed` after `pnpm db:reset-data`
-2. **Reset was not executed** — User believed reset occurred but it didn't
-3. **Wrong database** — Reset targeted a different `DATABASE_URL` than the application uses
-4. **Manual creation** — "Test 1" was created via UI after reset
-5. **Test interference** — E2E or integration tests ran against the wrong database
+1. **Seed was run after reset** - User executed `pnpm db:seed` after `pnpm db:reset-data`
+2. **Reset was not executed** - User believed reset occurred but it didn't
+3. **Wrong database** - Reset targeted a different `DATABASE_URL` than the application uses
+4. **Manual creation** - "Test 1" was created via UI after reset
+5. **Test interference** - E2E or integration tests ran against the wrong database
 
-**NOT a code issue** — Reset scripts are correct
+**NOT a code issue** - Reset scripts are correct
 
 ### Issue 2: "Test WS" Workspace
 
 **Possible Explanations:**
-1. **User misremembered** — Workspace was named something else
-2. **Seed workspace confused** — "Seed Workspace" was mistaken for "Test WS"
-3. **Manual creation** — User typed "Test WS" during onboarding
-4. **Test interference** — Test data leaked into development database
+1. **User misremembered** - Workspace was named something else
+2. **Seed workspace confused** - "Seed Workspace" was mistaken for "Test WS"
+3. **Manual creation** - User typed "Test WS" during onboarding
+4. **Test interference** - Test data leaked into development database
 
-**NOT a code issue** — Onboarding flow requires explicit user input
+**NOT a code issue** - Onboarding flow requires explicit user input
 
 ---
 
@@ -253,8 +253,8 @@ SELECT COUNT(*) FROM "Workspace";  -- Result: 0
 ```
 
 ### Grep Results
-- Search: `"Test WS"` — NO MATCHES
-- Search: `"Test 1"` — NO MATCHES (only in documentation examples)
+- Search: `"Test WS"` - NO MATCHES
+- Search: `"Test 1"` - NO MATCHES (only in documentation examples)
 
 ---
 

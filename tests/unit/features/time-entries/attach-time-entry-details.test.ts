@@ -73,7 +73,7 @@ function timeEntryRecord(overrides: Partial<TimeEntryRecord> = {}): TimeEntryRec
   };
 }
 
-describe("attachTimeEntryDetails — F-103-002", () => {
+describe("attachTimeEntryDetails - F-103-002", () => {
   it("keeps an active-client TimeEntry visible", () => {
     const client = clientRecord();
     const contract = contractRecord();
@@ -116,7 +116,7 @@ describe("attachTimeEntryDetails — F-103-002", () => {
   });
 });
 
-describe("clientsSelectableForCreate — F-103-002", () => {
+describe("clientsSelectableForCreate - F-103-002", () => {
   it("excludes archived clients from new TimeEntry selection", () => {
     const active = clientRecord({ id: "client-active" });
     const archived = clientRecord({ id: "client-archived", status: "ARCHIVED" });

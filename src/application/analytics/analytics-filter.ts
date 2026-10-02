@@ -2,7 +2,7 @@
 import type { AnalyticsFilter } from "@/domain/analytics-types";
 
 /**
- * Treats empty/whitespace IDs as unset. Does not validate UUID format —
+ * Treats empty/whitespace IDs as unset. Does not validate UUID format -
  * URL parsing owns that convention; application IDs may be test doubles.
  */
 export function normalizeAnalyticsFilter(

@@ -1,8 +1,8 @@
-# EPIC-103 — Engineering Review
+# EPIC-103 - Engineering Review
 
-**Epic:** EPIC-103 — Time Tracking  
-**Release:** Release 1 — MVP  
-**MASTER_PLAN identifier:** R1-E03 — Time Tracking  
+**Epic:** EPIC-103 - Time Tracking  
+**Release:** Release 1 - MVP  
+**MASTER_PLAN identifier:** R1-E03 - Time Tracking  
 **Reviewed commits:**
 
 ```text
@@ -53,18 +53,18 @@ Verified against `MASTER_PLAN.md` §13 R1-E03, `docs/epics/EPIC-103/epic-plan.md
 | Area | Planned | Implemented | Verified |
 | --- | --- | --- | --- |
 | Workspace-scoped TimeEntry create | Yes | Yes | Yes |
-| Read — single entry | Yes | Yes | Yes |
-| Read — daily list | Yes | Yes | Yes |
-| Read — weekly timesheet | Yes | Yes | Yes |
-| Update — mutable fields only | Yes | Yes | Yes |
-| Delete — hard delete | Yes | Yes | Yes |
+| Read - single entry | Yes | Yes | Yes |
+| Read - daily list | Yes | Yes | Yes |
+| Read - weekly timesheet | Yes | Yes | Yes |
+| Update - mutable fields only | Yes | Yes | Yes |
+| Delete - hard delete | Yes | Yes | Yes |
 | Client-first selection | Yes | Yes | Yes |
 | Contract selection restricted to the client | Yes | Yes | Yes |
 | Contract validity `[validFrom, validTo)` at create | Yes | Yes | Yes |
 | Open-ended contract (`validTo = null`) | Yes | Yes | Yes |
 | Archived-client create rejection | Yes | Yes | Yes |
 | Archived-client existing-entry read/edit (application layer) | Yes | Yes | Yes |
-| Archived-client existing-entry visibility in daily/weekly lists | Yes | No — F-103-002 | Yes |
+| Archived-client existing-entry visibility in daily/weekly lists | Yes | No - F-103-002 | Yes |
 | `workDate` immutable after creation | Yes | Yes | Yes |
 | `clientId` immutable after creation | Yes | Yes | Yes |
 | `contractId` immutable after creation | Yes | Yes | Yes |
@@ -166,9 +166,9 @@ Immutable-field rule, as finalized and as implemented:
 
 | Field | Create | Update | Enforcement |
 | --- | --- | --- | --- |
-| `workDate` | Accepted | Rejected — immutable | Excluded from `UpdateTimeEntryInput`; `updateTimeEntry` never forwards it; repository `data` block cannot set it |
-| `clientId` | Accepted and validated | Rejected — immutable | Excluded from `UpdateTimeEntryInput`; edit UI renders read-only text |
-| `contractId` | Accepted and validated | Rejected — immutable | Excluded from `UpdateTimeEntryInput`; edit UI renders read-only text |
+| `workDate` | Accepted | Rejected - immutable | Excluded from `UpdateTimeEntryInput`; `updateTimeEntry` never forwards it; repository `data` block cannot set it |
+| `clientId` | Accepted and validated | Rejected - immutable | Excluded from `UpdateTimeEntryInput`; edit UI renders read-only text |
+| `contractId` | Accepted and validated | Rejected - immutable | Excluded from `UpdateTimeEntryInput`; edit UI renders read-only text |
 | `durationMinutes` | Accepted | Permitted | `validateUpdateTimeEntryInput` → `validateDuration` |
 | `description` | Accepted, optional | Permitted, nullable | `validateUpdateTimeEntryInput` |
 | `billable` | Accepted | Permitted | `validateUpdateTimeEntryInput` |
@@ -193,15 +193,15 @@ Billable: stored flag only. `contractId` remains required for `billable = false`
 
 ## 6. Product Decisions
 
-**Verdict:** PASS — all four decisions are reflected accurately in the implementation.
+**Verdict:** PASS - all four decisions are reflected accurately in the implementation.
 
 The Epic plan numbers six product decisions (`PD-103-001` … `PD-103-006`). Phase handoff notes refer to a four-decision short list with different numbers. Both refer to the same decisions. The Epic plan numbering is canonical; the mapping is recorded here and in the Epic plan to prevent divergence (F-103-004).
 
 | Decision | Epic-plan ID | Short-list ID | Implemented behavior | Evidence |
 | --- | --- | --- | --- | --- |
 | Hard delete in MVP | PD-103-001 | PD-103-001 | `deleteTimeEntry` performs `db.timeEntry.delete` scoped by `{ id, workspaceId }`. No `archivedAt`, no status field, no migration. | integration delete lifecycle; E2E delete |
-| `workDate` immutable | PD-103-002 | — | Excluded from `UpdateTimeEntryInput`; edit UI read-only | unit + integration immutability tests; E2E edit form |
-| `clientId` / `contractId` immutable | PD-103-003 | — | Excluded from `UpdateTimeEntryInput`; edit UI read-only | unit + integration immutability tests; E2E edit form |
+| `workDate` immutable | PD-103-002 | - | Excluded from `UpdateTimeEntryInput`; edit UI read-only | unit + integration immutability tests; E2E edit form |
+| `clientId` / `contractId` immutable | PD-103-003 | - | Excluded from `UpdateTimeEntryInput`; edit UI read-only | unit + integration immutability tests; E2E edit form |
 | Future TimeEntry dates permitted | PD-103-004 | PD-103-002 | No upper date bound in `validateTimeEntryInput`; only contract validity applies | integration create with future date |
 | Duplicate entries permitted | PD-103-005 | PD-103-003 | No uniqueness rule at application or database level for `(contract, date)` | integration duplicate create |
 | Client-first selection | PD-103-006 | PD-103-004 | `ClientContractSelector` holds client state, disables the contract `select` until a client is chosen, and filters contracts by client and work-date validity | E2E client-first selection |
@@ -220,7 +220,7 @@ What Time Tracking preserves:
 - integer-minute duration storage without floating-point drift
 - `userId` and `workspaceId` are server-resolved and never accepted from the client
 
-What Time Tracking still cannot guarantee — **P102-F-001, OPEN:**
+What Time Tracking still cannot guarantee - **P102-F-001, OPEN:**
 
 `TimeEntry` stores `contractId` and no snapshot of rate, billing model, currency, monthly hours, or payment terms. Editing those Contract fields still changes the commercial record that existing entries would later be read against. EPIC-103 did not add snapshots, versioning, or a revision table, and did not lock commercial edits. The temporary proposed-OBD-016 default is unchanged.
 
@@ -246,7 +246,7 @@ NO prisma db push
 | --- | --- |
 | `listTimeEntriesForPeriod` | `findMany` scoped by `workspaceId` with `workDate` between `startDate` and `endDate` inclusive, ordered `workDate` asc then `createdAt` asc |
 | `updateTimeEntry` | `update` scoped by `{ id, workspaceId }`; `data` is built by conditional spread so only supplied mutable fields are written |
-| `deleteTimeEntry` | `delete` scoped by `{ id, workspaceId }` — hard delete |
+| `deleteTimeEntry` | `delete` scoped by `{ id, workspaceId }` - hard delete |
 
 Confirmed:
 
@@ -325,7 +325,7 @@ An unparseable `?date=` value silently falls back to today rather than surfacing
 
 ## 12. Accessibility Baseline
 
-**Verdict:** PASS — baseline only
+**Verdict:** PASS - baseline only
 
 This is not WCAG certification.
 
@@ -351,8 +351,8 @@ Unit tests, lint, typecheck, and build were rerun for this review. Integration a
 
 | Phase | Unit | Integration | E2E | Notes |
 | --- | --- | --- | --- | --- |
-| P103-01 | PASS | — | — | application services, validation, repository completion |
-| P103-02 | PASS | — | — | UI and Server Actions; no test expansion |
+| P103-01 | PASS | - | - | application services, validation, repository completion |
+| P103-02 | PASS | - | - | UI and Server Actions; no test expansion |
 | P103-03 | 164 / 26 files | 119 / 23 files | 21 / 1 worker | lifecycle, isolation, E2E journey; F-103-001 found and fixed |
 | P103-04 | 164 | 119 (cited) | 21 (cited) | this review; integration and E2E not rerun |
 
@@ -374,7 +374,7 @@ Time Tracking coverage added by this Epic:
 - integration (`tests/integration/time-tracking.test.ts`, `tests/integration/time-tracking-security.test.ts`): full create / read / list / update / delete lifecycle against PostgreSQL; hard-delete confirmation; daily and period queries; duplicate and future-date acceptance; archived-client read and edit permitted, create rejected; cross-workspace denial on every operation; foreign client / contract / entry identifiers failing closed; identifier substitution
 - Playwright (`tests/e2e/time-tracking.spec.ts`, 6 tests): authenticated journey from sign-in through client and HOURLY-contract fixture setup, create, daily-view verification, edit, delete; contract metadata is presentation-only; weekly view and per-day quick-add use the normal creation path; browser-level workspace isolation; unknown entry identifiers resolve to not-found; edit-form immutability constraints
 
-E2E fixture corrections applied in P103-03 — test-side only, distinct from F-103-001:
+E2E fixture corrections applied in P103-03 - test-side only, distinct from F-103-001:
 
 - contract creation fixtures now select Billing model `HOURLY` explicitly instead of relying on a default
 - waits are deterministic URL and locator state assertions; no arbitrary timeouts or retry loops
@@ -439,18 +439,18 @@ Two Epic-plan statements were stale relative to the finalized decisions and are 
 
 ## 16. Findings
 
-### F-103-001 — `redirect()` inside `try`/`catch` returned a false error after a successful mutation
+### F-103-001 - `redirect()` inside `try`/`catch` returned a false error after a successful mutation
 
 - **Severity:** High
-- **Blocking:** No — resolved before phase closure
+- **Blocking:** No - resolved before phase closure
 - **Status:** RESOLVED in P103-03 (`2e67759`)
 - **Type:** Application defect, not a test defect
-- **Description:** `createTimeEntryAction`, `updateTimeEntryAction`, and `deleteTimeEntryAction` each called `redirect()` from inside a `try` block whose `catch` mapped unrecognized errors to a generic user-facing failure. Next.js implements `redirect()` by throwing a `NEXT_REDIRECT` control-flow error. The `catch` therefore intercepted the redirect signal and returned `Unable to create the time entry.` / `Unable to update the time entry.` — or rethrew on delete — even though the database write had already succeeded. The user saw an error for an operation that had committed, and the post-save navigation never happened.
+- **Description:** `createTimeEntryAction`, `updateTimeEntryAction`, and `deleteTimeEntryAction` each called `redirect()` from inside a `try` block whose `catch` mapped unrecognized errors to a generic user-facing failure. Next.js implements `redirect()` by throwing a `NEXT_REDIRECT` control-flow error. The `catch` therefore intercepted the redirect signal and returned `Unable to create the time entry.` / `Unable to update the time entry.` - or rethrew on delete - even though the database write had already succeeded. The user saw an error for an operation that had committed, and the post-save navigation never happened.
 - **Detection:** Surfaced by the Playwright journey only after the E2E contract fixture was corrected to select `HOURLY` explicitly. Before that correction the failure was masked by an earlier fixture failure.
 - **Corrective implementation:** `redirect()` was moved out of the `try` block in all three Server Actions, so it executes only on the success path and its thrown signal is never caught. The create and update actions redirect to `/time-tracking?date=${values.workDate}`; the delete action redirects to `/time-tracking` with the `?date=` suffix when a work date is supplied. Each site carries an explanatory comment. Error mapping for genuine domain errors is unchanged.
 - **Follow-up:** No other Server Action in the repository calls `redirect()` inside `try`/`catch`. No repository-wide lint rule enforces this; the constraint is currently documented only in `docs/architecture.md`.
 
-### F-103-002 — daily and weekly lists omit entries belonging to archived clients
+### F-103-002 - daily and weekly lists omit entries belonging to archived clients
 
 - **Severity:** Medium
 - **Blocking:** No
@@ -459,7 +459,7 @@ Two Epic-plan statements were stale relative to the finalized decisions and are 
 - **Impact:** The archived-client rule "existing entries remain readable and editable" holds at the application and persistence layers (integration-proven) but is not fully honored by the presentation layer. Historical work performed for a since-archived client is not visible in the Time Tracking surface.
 - **Mitigation:** Not fixed in this Epic. EPIC-103 is documentation-only in Phase 4 and no code change was made. Relevant to the proposed OBD-015 decision and to R1-E04 analytics, which must not inherit the same ACTIVE-only join.
 
-### F-103-003 — contract selection may go stale after changing client or work date
+### F-103-003 - contract selection may go stale after changing client or work date
 
 - **Severity:** Low
 - **Blocking:** No
@@ -467,7 +467,7 @@ Two Epic-plan statements were stale relative to the finalized decisions and are 
 - **Description:** The contract `select` is uncontrolled (`defaultValue={selectedContractId}`) while its option list is recomputed from the selected client and the work date. Whether a previously chosen contract is cleared when the client or work date changes has not been verified. A stale selection would be rejected server-side by `validateContractForTimeEntry`, so this is a UX correctness question, not an integrity risk.
 - **Mitigation:** Recorded as a non-blocking follow-up. No code change and no scope addition in this Epic.
 
-### F-103-004 — product-decision numbering divergence
+### F-103-004 - product-decision numbering divergence
 
 - **Severity:** Low
 - **Blocking:** No
@@ -475,7 +475,7 @@ Two Epic-plan statements were stale relative to the finalized decisions and are 
 - **Description:** The Epic plan numbers six product decisions while phase handoff notes use a four-item short list with conflicting numbers for future dates, duplicates, and client-first selection. Both describe the same accepted decisions.
 - **Mitigation:** The mapping table in §6 of this review is the reconciliation, and the Epic plan now cross-references it. Epic-plan numbering is canonical.
 
-### F-103-005 — declared but unused TimeEntry domain errors
+### F-103-005 - declared but unused TimeEntry domain errors
 
 - **Severity:** Low
 - **Blocking:** No
@@ -483,7 +483,7 @@ Two Epic-plan statements were stale relative to the finalized decisions and are 
 - **Description:** `WorkspaceAccessDeniedError` and `ForeignResourceAccessError` in `src/domain/time-entry-errors.ts` are exported but never thrown or handled. Isolation is enforced by fail-closed not-found behavior instead, which is the correct pattern. The unused classes suggest an authorization path that does not exist.
 - **Mitigation:** No functional impact. Removal is a cleanup item for a later Epic.
 
-### F-103-006 — invalid `?date=` silently falls back to today
+### F-103-006 - invalid `?date=` silently falls back to today
 
 - **Severity:** Low
 - **Blocking:** No
@@ -491,14 +491,14 @@ Two Epic-plan statements were stale relative to the finalized decisions and are 
 - **Description:** `parseDate` in `/time-tracking/page.tsx` returns the current date for a missing or unparseable value. A mistyped or stale link shows today's entries without indicating that the requested date was ignored.
 - **Mitigation:** Accepted for MVP. No data-integrity impact.
 
-### F-103-P-001 — TimeEntry edit and delete are not audited (carried forward from planning)
+### F-103-P-001 - TimeEntry edit and delete are not audited (carried forward from planning)
 
 - **Severity:** Low
 - **Blocking:** No
 - **Status:** Open, confirmed by implementation
 - **Description:** No audit trail exists for TimeEntry mutation or hard deletion. A deleted entry leaves no record. Directly dependent on OBD-008.
 
-### F-103-P-002 — contract selection performance with large datasets (carried forward from planning)
+### F-103-P-002 - contract selection performance with large datasets (carried forward from planning)
 
 - **Severity:** Low
 - **Blocking:** No
@@ -578,7 +578,7 @@ These are not closed by this review. No closure is claimed without evidence.
 
 - **Severity:** Low
 - **Blocking:** No
-- **Status:** Open / formalized — `pnpm dev` + 1 CI worker
+- **Status:** Open / formalized - `pnpm dev` + 1 CI worker
 - **Description:** Playwright CI uses `pnpm dev` with one worker. Locked by EPIC-005.
 
 ### G-002 / G-004 / G-006
@@ -603,13 +603,13 @@ Do not close any OBD. Do not promote proposed OBDs.
 | OBD-005 | Vacation/absence model | No | not modeled |
 | OBD-006 | Capacity warning threshold | No | no alerts or thresholds |
 | OBD-007 | Post-closure edits/deletes | No | no period closure; edits and hard deletes are unrestricted in time |
-| OBD-008 | Audit requirements | No | no audit trail — F-103-P-001 |
+| OBD-008 | Audit requirements | No | no audit trail - F-103-P-001 |
 | OBD-009 | Workspace roles | No | any member may manage time entries |
 | OBD-010 | Payment-term catalog | No | not read by Time Tracking |
 | OBD-011 | Multi-currency | No | contract currency is displayed as stored; no conversion |
 | OBD-012 | Contract-hour rollover/expiry | No | minutes stored; no utilization or rollover |
-| — | Google/email identity linking | No | EPIC-003 F-001 |
-| — | Production email provider | No | EPIC-003 F-003 |
+| - | Google/email identity linking | No | EPIC-003 F-001 |
+| - | Production email provider | No | EPIC-003 F-003 |
 
 Proposed, not accepted, not written into `MASTER_PLAN.md`:
 
@@ -618,7 +618,7 @@ Proposed, not accepted, not written into `MASTER_PLAN.md`:
 | OBD-013 | Duplicate company name / VAT / tax code policy | unchanged from EPIC-101 |
 | OBD-014 | VAT / tax-identifier country, format, requiredness | unchanged from EPIC-101 |
 | OBD-015 | Archived-client editability, unarchive, and selectability | create rejected; existing entries readable and editable at the application layer but not listed in the UI views (F-103-002); archived clients excluded from create selectors |
-| OBD-016 | Whether commercial fields may change after TimeEntries exist | edits still allowed; no snapshot — P102-F-001 |
+| OBD-016 | Whether commercial fields may change after TimeEntries exist | edits still allowed; no snapshot - P102-F-001 |
 
 Those defaults are temporary. They do not close the decisions.
 
@@ -628,7 +628,7 @@ Those defaults are temporary. They do not close the decisions.
 
 Out of scope and not started:
 
-- R1-E04 — Analytics & Dashboard
+- R1-E04 - Analytics & Dashboard
 - billing calculation, invoicing, revenue estimation, utilization, forecasting
 - reporting and export
 - calendar view and copy-previous-entry (conditional on UX Review)
@@ -687,14 +687,14 @@ PASS WITH FINDINGS
 | Domain correctness | PASS |
 | Product decisions (PD-103-001 … PD-103-006) | PASS |
 | Immutable-field rule | PASS |
-| Contract validity / archived-client rules | PASS at application layer; PASS WITH FINDINGS at UI layer — F-103-002 |
-| Historical correctness | PASS WITH FINDINGS — P102-F-001 open |
+| Contract validity / archived-client rules | PASS at application layer; PASS WITH FINDINGS at UI layer - F-103-002 |
+| Historical correctness | PASS WITH FINDINGS - P102-F-001 open |
 | Persistence / no schema drift | PASS |
 | Workspace isolation | PASS |
 | Authorization | PASS |
 | UI architecture | PASS |
 | Validation / states | PASS |
-| Accessibility baseline | PASS — not WCAG certification |
+| Accessibility baseline | PASS - not WCAG certification |
 | Tests | PASS |
 | CI | PASS |
 | Security | PASS |

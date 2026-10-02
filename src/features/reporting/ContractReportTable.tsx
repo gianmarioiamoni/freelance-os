@@ -121,7 +121,7 @@ export function ContractReportTable({
                 <td className="text-right py-2 pr-4 tabular-nums">{consumed}</td>
                 <td className="text-right py-2 pr-4 tabular-nums">{capacity}</td>
                 <td className="text-right py-2 pr-4 tabular-nums">
-                  {u.contractedMinutes !== null ? utilization : "—"}
+                  {u.contractedMinutes !== null ? utilization : "-"}
                 </td>
                 <td className="text-right py-2 pr-4 tabular-nums">
                   {allocation.allocatedLabel}
@@ -155,7 +155,7 @@ function AllocationStatusCell({
   tone: "default" | "warning" | "error" | null;
 }): JSX.Element {
   if (label === null || tone === null) {
-    return <span>—</span>;
+    return <span>-</span>;
   }
 
   const className =

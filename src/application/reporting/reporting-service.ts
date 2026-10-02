@@ -88,13 +88,13 @@ export type AnnualOverviewReport = {
  * - Accept a validated period request and resolve it into an `AnalyticsPeriod`
  *   using `Workspace.timezone` (BR-105-014).
  * - Propagate optional workspace-scoped Client/Contract filters.
- * - Orchestrate shared analytics calls — AnalyticsService owns ALL arithmetic.
+ * - Orchestrate shared analytics calls - AnalyticsService owns ALL arithmetic.
  * - Fail closed for invalid input (BR-105-010).
  *
  * Non-goals:
  * - No percentage, average, capacity, or utilization arithmetic here.
- * - No pro-rata formula here — it lives in AnalyticsService.
- * - No Accrued / Expected / Forecast / allocation formula here — AnalyticsService is the owner.
+ * - No pro-rata formula here - it lives in AnalyticsService.
+ * - No Accrued / Expected / Forecast / allocation formula here - AnalyticsService is the owner.
  * - No rollover or expiry semantics (OBD-012 open).
  * - No FX or mixed-currency total.
  */

@@ -84,7 +84,7 @@ describe("time-entry alert trigger (P106-03)", () => {
       const context = await createWorkspaceContext("create-unlimited");
       const { client, contract } = await setupClientAndContract(context, null);
 
-      // 1440 is max allowed (24h) — well above any threshold for unlimited contract
+      // 1440 is max allowed (24h) - well above any threshold for unlimited contract
       await createTimeEntry(
         context,
         { clientId: client.id, contractId: contract.id, workDate: date("2026-09-01"), durationMinutes: 1440, billable: true },
@@ -114,7 +114,7 @@ describe("time-entry alert trigger (P106-03)", () => {
       // 10h = 600 min contracted; warning at 80% = 480 min
       const { client, contract } = await setupClientAndContract(context, 10);
 
-      // Log 500 minutes (83%) — above 80% threshold
+      // Log 500 minutes (83%) - above 80% threshold
       await createTimeEntry(
         context,
         { clientId: client.id, contractId: contract.id, workDate: date("2026-09-01"), durationMinutes: 500, billable: true },
@@ -184,7 +184,7 @@ describe("time-entry alert trigger (P106-03)", () => {
       // 10h = 600 min contracted; warning at 80% = 480 min
       const { client, contract } = await setupClientAndContract(context, 10);
 
-      // Log 510 minutes (85%) — above threshold
+      // Log 510 minutes (85%) - above threshold
       const entry = await createTimeEntry(
         context,
         { clientId: client.id, contractId: contract.id, workDate: date("2026-09-01"), durationMinutes: 510, billable: true },
@@ -202,7 +202,7 @@ describe("time-entry alert trigger (P106-03)", () => {
         analytics: repositories.analytics,
       });
 
-      // Update to 300 minutes (50%) — below threshold
+      // Update to 300 minutes (50%) - below threshold
       await updateTimeEntry(
         context,
         entry.id,
@@ -224,7 +224,7 @@ describe("time-entry alert trigger (P106-03)", () => {
       // Check that alert was resolved via alertService directly
       const alertService = makeAlertService();
       const evalResult = await alertService.evaluateContractAlerts(context);
-      // Already resolved — evaluating again should show no changes
+      // Already resolved - evaluating again should show no changes
       expect(evalResult.alertsCreated).toBe(0);
     });
 
@@ -232,7 +232,7 @@ describe("time-entry alert trigger (P106-03)", () => {
       const context = await createWorkspaceContext("update-create");
       const { client, contract } = await setupClientAndContract(context, 10);
 
-      // Log 300 minutes (50%) — below threshold
+      // Log 300 minutes (50%) - below threshold
       const entry = await createTimeEntry(
         context,
         { clientId: client.id, contractId: contract.id, workDate: date("2026-09-01"), durationMinutes: 300, billable: true },
@@ -241,7 +241,7 @@ describe("time-entry alert trigger (P106-03)", () => {
         repositories.timeEntries,
       );
 
-      // First evaluation — no alert
+      // First evaluation - no alert
       await triggerAlertEvaluation(context, {
         alerts: repositories.alerts,
         notifications: repositories.notifications,
@@ -256,7 +256,7 @@ describe("time-entry alert trigger (P106-03)", () => {
       );
       expect(notifsAfterFirst).toHaveLength(0);
 
-      // Update to 510 minutes (85%) — above threshold
+      // Update to 510 minutes (85%) - above threshold
       await updateTimeEntry(
         context,
         entry.id,
@@ -286,7 +286,7 @@ describe("time-entry alert trigger (P106-03)", () => {
       const context = await createWorkspaceContext("delete-resolve");
       const { client, contract } = await setupClientAndContract(context, 10);
 
-      // Log 510 minutes (85%) — above threshold
+      // Log 510 minutes (85%) - above threshold
       const entry = await createTimeEntry(
         context,
         { clientId: client.id, contractId: contract.id, workDate: date("2026-09-01"), durationMinutes: 510, billable: true },

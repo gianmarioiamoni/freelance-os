@@ -1,13 +1,13 @@
-# EPIC-002 — Database & Persistence
+# EPIC-002 - Database & Persistence
 
 ## 1. Epic Identity
 
 **Epic:** EPIC-002  
-**Release:** Release 0 — Foundation  
+**Release:** Release 0 - Foundation  
 **Objective:** Database & Persistence Foundation  
 **Status:** Complete (Phase 5 certified)  
-**Depends on:** EPIC-001 — Foundation / Repository  
-**Next Epic:** EPIC-003 — Authentication
+**Depends on:** EPIC-001 - Foundation / Repository  
+**Next Epic:** EPIC-003 - Authentication
 
 ---
 
@@ -748,12 +748,12 @@ Authentication and authorization remain future concerns, but the persistence fou
 
 Evaluate the following ADRs from `docs/storage.md`:
 
-- ADR-001 — Workspace-scoped persistence
-- ADR-002 — Explicit contract reference on TimeEntry
-- ADR-003 — Contract validity interval semantics
-- ADR-004 — Money representation
-- ADR-005 — Duration representation
-- ADR-006 — Authentication ownership
+- ADR-001 - Workspace-scoped persistence
+- ADR-002 - Explicit contract reference on TimeEntry
+- ADR-003 - Contract validity interval semantics
+- ADR-004 - Money representation
+- ADR-005 - Duration representation
+- ADR-006 - Authentication ownership
 
 Create ADR documents only where the decision is sufficiently architectural to warrant permanent recording.
 
@@ -786,7 +786,7 @@ Technical choices may preserve flexibility for these decisions, but do not turn 
 
 # 27. Epic Phases
 
-## Phase 1 — Prisma & Database Bootstrap
+## Phase 1 - Prisma & Database Bootstrap
 
 ### Objective
 
@@ -823,7 +823,7 @@ Complete. Persistence mechanism and migration pipeline are in place. Application
 
 ---
 
-## Phase 2 — Core Persistence Schema
+## Phase 2 - Core Persistence Schema
 
 ### Objective
 
@@ -875,7 +875,7 @@ Contract overlap exclusion, repositories, and seed remain Phase 3.
 
 ---
 
-## Phase 3 — Constraints, Repositories & Seed
+## Phase 3 - Constraints, Repositories & Seed
 
 ### Objective
 
@@ -914,7 +914,7 @@ development seed are in place.
 
 ---
 
-## Phase 4 — Integration Testing & CI Database Gate
+## Phase 4 - Integration Testing & CI Database Gate
 
 ### Objective
 
@@ -954,7 +954,7 @@ persistence integration tests, and the CI PostgreSQL gate are in place.
 
 ---
 
-## Phase 5 — Documentation & Storage Engineering Review
+## Phase 5 - Documentation & Storage Engineering Review
 
 ### Objective
 
@@ -1172,7 +1172,7 @@ PASS
 
 # 33. Risks
 
-### R-001 — Workspace isolation defects
+### R-001 - Workspace isolation defects
 
 Impact: severe.
 
@@ -1183,7 +1183,7 @@ Mitigation:
 - repository scoping;
 - integration tests.
 
-### R-002 — Temporal contract overlap
+### R-002 - Temporal contract overlap
 
 Impact: severe.
 
@@ -1193,7 +1193,7 @@ Mitigation:
 - database-level constraint;
 - explicit tests.
 
-### R-003 — Historical billing corruption
+### R-003 - Historical billing corruption
 
 Impact: high.
 
@@ -1203,7 +1203,7 @@ Mitigation:
 - foreign-key integrity;
 - historical correctness tests.
 
-### R-004 — Floating-point money/duration errors
+### R-004 - Floating-point money/duration errors
 
 Impact: high.
 
@@ -1213,7 +1213,7 @@ Mitigation:
 - NUMERIC/Decimal;
 - precision tests.
 
-### R-005 — Prisma leakage into domain
+### R-005 - Prisma leakage into domain
 
 Impact: medium/high.
 
@@ -1223,7 +1223,7 @@ Mitigation:
 - architecture review;
 - import checks.
 
-### R-006 — Migration drift
+### R-006 - Migration drift
 
 Impact: high.
 
@@ -1234,7 +1234,7 @@ Mitigation:
 - clean-database verification;
 - CI migration execution.
 
-### R-007 — Overengineering persistence
+### R-007 - Overengineering persistence
 
 Impact: medium.
 
@@ -1282,7 +1282,7 @@ The Epic must not proceed to EPIC-003 if critical persistence invariants cannot 
 
 After EPIC-002 certification:
 
-**EPIC-003 — Authentication**
+**EPIC-003 - Authentication**
 
 EPIC-003 will introduce:
 

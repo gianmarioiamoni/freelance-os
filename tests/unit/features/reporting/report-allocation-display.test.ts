@@ -15,9 +15,9 @@ const base: ContractAllocation = {
 describe("reportAllocationDisplay", () => {
   it("shows em dashes and no status when allocation is absent", () => {
     expect(reportAllocationDisplay(undefined)).toEqual({
-      allocatedLabel: "—",
-      consumedLabel: "—",
-      remainingLabel: "—",
+      allocatedLabel: "-",
+      consumedLabel: "-",
+      remainingLabel: "-",
       statusLabel: null,
       statusTone: null,
     });
@@ -32,9 +32,9 @@ describe("reportAllocationDisplay", () => {
         allocationStatus: null,
       }),
     ).toEqual({
-      allocatedLabel: "—",
-      consumedLabel: "—",
-      remainingLabel: "—",
+      allocatedLabel: "-",
+      consumedLabel: "-",
+      remainingLabel: "-",
       statusLabel: null,
       statusTone: null,
     });

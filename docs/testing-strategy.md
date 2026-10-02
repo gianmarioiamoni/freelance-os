@@ -1,6 +1,6 @@
 # FreelanceOS --- Testing Strategy
 
-**Status:** Testing and CI foundation implemented — EPIC-005 complete; UI test baseline added by EPIC-006; client coverage added by EPIC-101; contract coverage added by EPIC-102; time-tracking coverage added by EPIC-103; analytics and dashboard coverage added by EPIC-104; reporting coverage added by EPIC-105; alert evaluation and notification center coverage added by EPIC-106; MVP Integration COMPLETE / CLOSED — release-gate cross-domain journey certified; MVP QA Gate PASS WITH FINDINGS; Documentation Gate COMPLETE; UX Gate PASS WITH FINDINGS; UX Polish COMPLETE (`docs/ux/ux-review.md` §18); EPIC-107 public-root and dashboard-routing E2E added (P107-03: targeted 26/26 PASS, broader 40/40 PASS); P107-05 E2E 66/66 PASS against `pnpm dev`; §34 Playwright against `next start` without E2E isolation 43 passed / 25 failed of 68 (historical F-004); D-004 isolates E2E `pnpm start` via `AUTH_E2E_RUNTIME` (63/5/68 then 68/68); F-004 auth burst RESOLVED; production readiness NO\
+**Status:** Testing and CI foundation implemented - EPIC-005 complete; UI test baseline added by EPIC-006; client coverage added by EPIC-101; contract coverage added by EPIC-102; time-tracking coverage added by EPIC-103; analytics and dashboard coverage added by EPIC-104; reporting coverage added by EPIC-105; alert evaluation and notification center coverage added by EPIC-106; MVP Integration COMPLETE / CLOSED - release-gate cross-domain journey certified; MVP QA Gate PASS WITH FINDINGS; Documentation Gate COMPLETE; UX Gate PASS WITH FINDINGS; UX Polish COMPLETE (`docs/ux/ux-review.md` §18); EPIC-107 public-root and dashboard-routing E2E added (P107-03: targeted 26/26 PASS, broader 40/40 PASS); P107-05 E2E 66/66 PASS against `pnpm dev`; §34 Playwright against `next start` without E2E isolation 43 passed / 25 failed of 68 (historical F-004); D-004 isolates E2E `pnpm start` via `AUTH_E2E_RUNTIME` (63/5/68 then 68/68); F-004 auth burst RESOLVED; production readiness NO\
 **Document:** `docs/testing-strategy.md`\
 **Scope:** Release 0 Foundation + Release 1 MVP\
 **Canonical format:** Markdown
@@ -117,11 +117,11 @@ EPIC-104 adds analytics and dashboard coverage. The EPIC-005 isolated
 E2E / CI contract is unchanged. Review:
 `docs/epics/EPIC-104/engineering-review.md`.
 
-Current suite totals — **three separate suites, never combined**:
+Current suite totals - **three separate suites, never combined**:
 
 ``` text
-Unit          392   pnpm test                            (vitest) — 392/392 PASS
-Integration   224   pnpm test:integration                (224/224 PASS on host TZ and TZ=America/Los_Angeles — EPIC-108 Stream A; FINDING-INT-001 CLOSED)
+Unit          392   pnpm test                            (vitest) - 392/392 PASS
+Integration   224   pnpm test:integration                (224/224 PASS on host TZ and TZ=America/Los_Angeles - EPIC-108 Stream A; FINDING-INT-001 CLOSED)
 E2E            58   CI=true pnpm test:e2e --workers=1     (58/58 PASS)
 ```
 
@@ -137,14 +137,14 @@ unit suite alone.
 
 Added by EPIC-104:
 
-- unit — `tests/unit/application/analytics/analytics-service.test.ts`
+- unit - `tests/unit/application/analytics/analytics-service.test.ts`
   and `tests/unit/lib/analytics-periods.test.ts`, covering the
   calculation statics and the period utilities;
-- integration — `tests/integration/analytics/analytics-isolation.test.ts`,
+- integration - `tests/integration/analytics/analytics-isolation.test.ts`,
   `tests/integration/analytics/analytics-workspace-isolation.test.ts`,
   `tests/integration/analytics/analytics-product-decisions.test.ts`,
   and `tests/integration/dashboard/dashboard-page.test.ts`;
-- E2E — `tests/e2e/dashboard.spec.ts`,
+- E2E - `tests/e2e/dashboard.spec.ts`,
   `tests/e2e/dashboard-accessibility.spec.ts`, and the shared fixture
   helper `tests/e2e/helpers/analytics-fixtures.ts`.
 
@@ -155,7 +155,7 @@ non-billable split, client allocation, contract utilization, and the
 Workspace-isolation coverage is six integration scenarios, including
 identical client names across two workspaces, and proves that no
 foreign-workspace row reaches analytics. The malformed-workspace test
-pins the fail-closed contract — a non-UUID identifier rejects with
+pins the fail-closed contract - a non-UUID identifier rejects with
 `InvalidPersistenceStateError` / `INVALID_PERSISTENCE_STATE`, while a
 well-formed unknown identifier legitimately returns empty analytics.
 
@@ -263,7 +263,7 @@ Accepted limitations that remain:
 - EPIC-003 F-004: E2E isolation exists (`AUTH_E2E_RUNTIME` on
   `pnpm test:e2e:start`). Production Better Auth rate limits are unchanged.
   Vercel ignores the marker. Canonical CI remains `pnpm dev`. After isolation,
-  `next start` was 63 passed / 5 failed of 68 — remaining failures were not
+  `next start` was 63 passed / 5 failed of 68 - remaining failures were not
   the auth-burst pattern and were resolved separately (68/68 on
   `CI=true pnpm test:e2e:start`). F-004 (production rate-limit auth burst) is
   RESOLVED. Historical unisolated `next start` results remain
@@ -864,7 +864,7 @@ creation must be prevented.
 
 Reports are derived from source data.
 
-### Scope reconciliation — estimated revenue
+### Scope reconciliation - estimated revenue
 
 This section previously listed `estimated revenue` as a test concern.
 PD-105-001 explicitly excludes revenue from EPIC-105. No revenue,
@@ -902,17 +902,17 @@ error recovery. Suite totals at EPIC-105 closure: 331 unit /
 
 ### Implemented by EPIC-106
 
-EPIC-106 adds alert evaluation, deduplication, resolution, and notification center coverage. All suites remain separate; totals at EPIC-106 P106-05 closure: 379 unit / 219 integration / 57 E2E (56 pass / 1 pre-existing flaky — F-106-P05-001).
+EPIC-106 adds alert evaluation, deduplication, resolution, and notification center coverage. All suites remain separate; totals at EPIC-106 P106-05 closure: 379 unit / 219 integration / 57 E2E (56 pass / 1 pre-existing flaky - F-106-P05-001).
 
 Added by EPIC-106:
 
-- unit — `tests/unit/application/alerts/alert-service.test.ts` (AR-001/AR-002 evaluation, deduplication, resolution, re-trigger, membership guard, null-capacity suppression) and `tests/unit/application/alerts/alert-dedup-key.test.ts` (deterministic key construction per alert type); `tests/unit/time-entries/trigger-alert-evaluation.test.ts` (non-blocking trigger, error isolation);
-- integration — `tests/integration/alerts/time-entry-alert-trigger.test.ts` (TimeEntry create/update/delete → alert evaluated against real DB), `tests/integration/alerts/notification-center.test.ts` (mark-as-read, workspace isolation, ownership check), `tests/integration/alerts/alert-service-integration.test.ts` (full evaluation lifecycle: threshold, deduplication, resolution, re-trigger, workspace isolation, null-capacity contract);
-- E2E — `tests/e2e/alerts.spec.ts`: 6 tests covering create TimeEntries to threshold → notification visible in `/alerts` → mark-as-read → UI reflects state; empty state; workspace isolation.
+- unit - `tests/unit/application/alerts/alert-service.test.ts` (AR-001/AR-002 evaluation, deduplication, resolution, re-trigger, membership guard, null-capacity suppression) and `tests/unit/application/alerts/alert-dedup-key.test.ts` (deterministic key construction per alert type); `tests/unit/time-entries/trigger-alert-evaluation.test.ts` (non-blocking trigger, error isolation);
+- integration - `tests/integration/alerts/time-entry-alert-trigger.test.ts` (TimeEntry create/update/delete → alert evaluated against real DB), `tests/integration/alerts/notification-center.test.ts` (mark-as-read, workspace isolation, ownership check), `tests/integration/alerts/alert-service-integration.test.ts` (full evaluation lifecycle: threshold, deduplication, resolution, re-trigger, workspace isolation, null-capacity contract);
+- E2E - `tests/e2e/alerts.spec.ts`: 6 tests covering create TimeEntries to threshold → notification visible in `/alerts` → mark-as-read → UI reflects state; empty state; workspace isolation.
 
 Alert evaluation coverage proves AR-001 fires at `>= contractWarningPercent`, AR-002 fires at `>= 100%`, null `contractedMinutes` suppresses alert, active alert is not duplicated, resolved condition resolves alert, re-trigger creates new alert. Workspace isolation (two workspaces, no cross-alert) is integration-proven.
 
-F-106-P05-001: `auth.spec.ts` — "should register, stay authenticated, and sign out" — 1 E2E failure. Classified PRE-EXISTING / FLAKY. Reproduced at commit `95eaede` (pre-P106-05). Not a P106 regression.
+F-106-P05-001: `auth.spec.ts` - "should register, stay authenticated, and sign out" - 1 E2E failure. Classified PRE-EXISTING / FLAKY. Reproduced at commit `95eaede` (pre-P106-05). Not a P106 regression.
 
 ### Implemented by MVP Integration
 
@@ -920,9 +920,9 @@ MVP Integration added the cross-domain release-gate journey and nav-badge / reva
 
 Added by MVP Integration:
 
-- unit — `tests/unit/features/time-entries/time-entry-action-revalidation.test.ts`; `tests/unit/lib/navigation-badge.test.ts`
-- integration — `tests/integration/persistence/notification-unread-count.test.ts`
-- E2E — `tests/e2e/mvp-integration-journey.spec.ts` (`@release-gate`): Auth → Workspace → Client → Contract → TimeEntry → Dashboard → Reports → Alerts → mark-as-read → badge clear
+- unit - `tests/unit/features/time-entries/time-entry-action-revalidation.test.ts`; `tests/unit/lib/navigation-badge.test.ts`
+- integration - `tests/integration/persistence/notification-unread-count.test.ts`
+- E2E - `tests/e2e/mvp-integration-journey.spec.ts` (`@release-gate`): Auth → Workspace → Client → Contract → TimeEntry → Dashboard → Reports → Alerts → mark-as-read → badge clear
 
 Classified suite exceptions at MVP Integration closure (historical; not closed here):
 
@@ -943,7 +943,7 @@ Evidence: `docs/qa/qa-report.md`. Verdict: PASS WITH FINDINGS. Blocking findings
 |---|---|---|---|
 | FINDING-P04-001 | CLOSED | APPLICATION DEFECT (fixed) | Sign-out 2/2 PASS |
 | FINDING-P04-002 | ACCEPTED / BY DESIGN | BY DESIGN | 100% may emit WARNING + EXCEEDED |
-| FINDING-P04-003 | CLOSED | — | Hardcoded `"9/17/2026"` absent at QA HEAD |
+| FINDING-P04-003 | CLOSED | - | Hardcoded `"9/17/2026"` absent at QA HEAD |
 | FINDING-INT-001 | OPEN / CONFIRMED | TEST DEFECT | Reproduced under `America/Los_Angeles` |
 | FINDING-INT-002 | OPEN / NOT REPRODUCED | TEST DEFECT | Sign-out 2/2 PASS; no `waitForURL` residual |
 | FINDING-INT-003 | OPEN / NOT REPRODUCED | TEST INFRASTRUCTURE | Password reset 2/2 PASS with test email delivery |
@@ -1018,10 +1018,10 @@ EPIC-107 added public-root and dashboard-routing coverage. It does not close inh
 
 Added / updated by P107-03 (`2ee06fb`):
 
-- E2E — `tests/e2e/landing.spec.ts` (public `/`, CTAs, authenticated `/` → `/dashboard`, 390px, skip link / single `h1`, capability disclosure)
-- E2E — `tests/e2e/auth.spec.ts` (protected `/dashboard` → `/sign-in`; sign-out → `/`; workspace sign-in → `/dashboard`; reset-password success → `/sign-in`)
-- E2E — `tests/e2e/onboarding.spec.ts` (no-workspace `/` → `/onboarding`; unauthenticated `/` remains landing; `/?workspaceId=…` does not grant access)
-- E2E — `tests/e2e/dashboard.spec.ts` and `tests/e2e/app-shell.spec.ts` (`/dashboard` AppShell, Dashboard `href="/dashboard"`, sign-out → landing)
+- E2E - `tests/e2e/landing.spec.ts` (public `/`, CTAs, authenticated `/` → `/dashboard`, 390px, skip link / single `h1`, capability disclosure)
+- E2E - `tests/e2e/auth.spec.ts` (protected `/dashboard` → `/sign-in`; sign-out → `/`; workspace sign-in → `/dashboard`; reset-password success → `/sign-in`)
+- E2E - `tests/e2e/onboarding.spec.ts` (no-workspace `/` → `/onboarding`; unauthenticated `/` remains landing; `/?workspaceId=…` does not grant access)
+- E2E - `tests/e2e/dashboard.spec.ts` and `tests/e2e/app-shell.spec.ts` (`/dashboard` AppShell, Dashboard `href="/dashboard"`, sign-out → landing)
 
 P107-03 evidence:
 
@@ -1526,8 +1526,8 @@ billable hours           verified (EPIC-104)
 non-billable hours       verified (EPIC-104)
 client allocation        verified (EPIC-104)
 contract utilization     verified (EPIC-104)
-estimated revenue        not implemented — deferred
-alerts                   implemented — EPIC-106 (CONTRACT_WARNING, CONTRACT_EXCEEDED)
+estimated revenue        not implemented - deferred
+alerts                   implemented - EPIC-106 (CONTRACT_WARNING, CONTRACT_EXCEEDED)
 ```
 
 Dashboard values must agree with report calculations.

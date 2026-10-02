@@ -37,7 +37,7 @@ type ReportsPageProps = {
 export default async function ReportsPage({
   searchParams,
 }: ReportsPageProps): Promise<JSX.Element> {
-  // Authorization and workspace resolution — outside any try block (P105-05 criterion).
+  // Authorization and workspace resolution - outside any try block (P105-05 criterion).
   const context = await getCurrentWorkspaceContext();
   const params = await searchParams;
   const periodParam = parseReportPeriodParam(params);
@@ -67,7 +67,7 @@ export default async function ReportsPage({
 
     const periodLabel =
       periodParam.kind === "custom"
-        ? `${periodParam.start} — ${periodParam.end}`
+        ? `${periodParam.start} - ${periodParam.end}`
         : PERIOD_LABELS[periodParam.kind];
 
     return (
@@ -75,7 +75,7 @@ export default async function ReportsPage({
         <header className="grid gap-1">
           <h1>Reports</h1>
           <p className="text-muted-foreground">
-            Operational reporting — {periodLabel}
+            Operational reporting - {periodLabel}
           </p>
           <ReportCsvExportLink period={periodParam} filter={entityFilter} />
         </header>

@@ -1,7 +1,7 @@
-# EPIC-006 — Engineering Review
+# EPIC-006 - Engineering Review
 
-**Epic:** EPIC-006 — UI Foundation  
-**Release:** Release 0 — Foundation  
+**Epic:** EPIC-006 - UI Foundation  
+**Release:** Release 0 - Foundation  
 **Reviewed commits:**
 
 ```text
@@ -151,7 +151,7 @@ Final data flow is display-only.
 
 ## 6. Accessibility Review
 
-**Verdict:** PASS — baseline only
+**Verdict:** PASS - baseline only
 
 This is an accessibility baseline, not WCAG certification.
 
@@ -278,7 +278,7 @@ Inherited findings remain open and are not closed by this review.
 
 - **Severity:** Low
 - **Blocking:** No
-- **Status:** Open / formalized — `pnpm dev` + 1 CI worker
+- **Status:** Open / formalized - `pnpm dev` + 1 CI worker
 - **Description:** Playwright CI uses `pnpm dev` with one worker because `next start` rate limits collide across auth journeys. EPIC-005 locked this contract. It is not a new defect.
 
 ### G-004
@@ -324,12 +324,12 @@ Do not close any OBD.
 | OBD-006 | Capacity warning threshold | No |
 | OBD-007 | Post-closure edits/deletes | No |
 | OBD-008 | Audit requirements | No |
-| OBD-009 | Workspace roles | No — role is not displayed or interpreted |
+| OBD-009 | Workspace roles | No - role is not displayed or interpreted |
 | OBD-010 | Payment-term catalog | No |
 | OBD-011 | Multi-currency | No |
 | OBD-012 | Contract-hour rollover/expiry | No |
-| — | Google/email identity linking | No — EPIC-003 F-001 |
-| — | Production email provider | No — EPIC-003 F-003 |
+| - | Google/email identity linking | No - EPIC-003 F-001 |
+| - | Production email provider | No - EPIC-003 F-003 |
 
 No additional product decision was discovered that required a new OBD identifier.
 
@@ -339,7 +339,7 @@ No additional product decision was discovered that required a new OBD identifier
 
 Out of scope and not started:
 
-- EPIC-101 — Clients;
+- EPIC-101 - Clients;
 - contracts, time tracking, analytics, alerts, notifications;
 - workspace switcher or multi-workspace administration;
 - invitations;
@@ -394,7 +394,7 @@ PASS
 | UI foundation | PASS |
 | Workspace / account identity | PASS |
 | Authorization / security | PASS |
-| Accessibility baseline | PASS — not WCAG certification |
+| Accessibility baseline | PASS - not WCAG certification |
 | Tests | PASS |
 | CI | PASS |
 | Documentation | PASS |

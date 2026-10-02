@@ -1,4 +1,4 @@
-# Secrets — keep the committed example readable
+# Secrets - keep the committed example readable
 .env
 .env.*
 !.env.example

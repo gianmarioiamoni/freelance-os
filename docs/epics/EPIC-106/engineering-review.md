@@ -4,13 +4,13 @@
 **Reviewer:** Engineering Review Agent  
 **Date:** 2026-09-17  
 **Review Basis:** Commits 6daf2cd → 47f82ec (P106-02 through P106-08)  
-**Prior Review:** P106-07 — Verdict: PASS WITH FINDINGS (F-106-P07-001 OPEN)
+**Prior Review:** P106-07 - Verdict: PASS WITH FINDINGS (F-106-P07-001 OPEN)
 
 ---
 
 ## 1. Scope
 
-EPIC-106 — Alerts & Notifications (MVP scope):
+EPIC-106 - Alerts & Notifications (MVP scope):
 
 - `CONTRACT_WARNING` and `CONTRACT_EXCEEDED` alert rules
 - Alert lifecycle: create / deduplicate / resolve / re-trigger
@@ -69,7 +69,7 @@ Out of scope (explicitly deferred/excluded):
 | `pnpm lint` | ✅ PASS | 0 errors, 6 pre-existing warnings |
 | `pnpm typecheck` | ✅ PASS | 0 errors |
 | `pnpm build` | ✅ PASS | production build clean |
-| `pnpm test` (P106-09 closure) | ✅ PASS | 384/384 — no regressions |
+| `pnpm test` (P106-09 closure) | ✅ PASS | 384/384 - no regressions |
 
 ---
 
@@ -78,7 +78,7 @@ Out of scope (explicitly deferred/excluded):
 ### Verified
 
 - **AlertService** (`src/application/alerts/alert-service.ts`) is the sole owner of alert evaluation semantics.
-- **AnalyticsService** remains the single source of utilization calculation; `AlertService` delegates via `getContractUtilizations()` — no duplication.
+- **AnalyticsService** remains the single source of utilization calculation; `AlertService` delegates via `getContractUtilizations()` - no duplication.
 - Repository interfaces are the persistence boundary; `AlertService` uses injected `AlertRepository` / `NotificationRepository` / `WorkspaceMemberRepository` / `WorkspaceSettingsRepository`.
 - No direct Prisma client access from `AlertService` or feature modules.
 - `triggerAlertEvaluation` (`src/features/time-entries/trigger-alert-evaluation.ts`) wires evaluation into actions without embedding business logic.
@@ -86,7 +86,7 @@ Out of scope (explicitly deferred/excluded):
 - Dependency direction: `feature actions → triggerAlertEvaluation → AlertService → AnalyticsService + repositories`. Clean.
 - No circular dependencies detected.
 - No hidden global mutable state.
-- `load-notifications.ts` accesses the notification repository directly (not via `AlertService`). Authorization is provided by `getCurrentWorkspaceContext()` which enforces workspace membership via `resolveWorkspaceContext` — the resolved context is workspace-scoped. This is a deliberate RSC loader pattern consistent with the rest of the codebase.
+- `load-notifications.ts` accesses the notification repository directly (not via `AlertService`). Authorization is provided by `getCurrentWorkspaceContext()` which enforces workspace membership via `resolveWorkspaceContext` - the resolved context is workspace-scoped. This is a deliberate RSC loader pattern consistent with the rest of the codebase.
 - `mark-notification-read-action.ts` performs explicit `userId === context.userId` ownership check before any mutation.
 
 **Verdict: Architecture is sound.**
@@ -111,12 +111,12 @@ Out of scope (explicitly deferred/excluded):
 - Default: `80` (constant `DEFAULT_CONTRACT_WARNING_PERCENT`).
 - Override: `WorkspaceSettings.contractWarningPercent`; null settings fall back to default.
 - Threshold source verified against settings repository call in `evaluateContractAlerts`.
-- `CONTRACT_EXCEEDED` threshold hardcoded to `100` — correct, not configurable.
+- `CONTRACT_EXCEEDED` threshold hardcoded to `100` - correct, not configurable.
 
 ### Rounding
 
 - `utilizationPercentage` is compared as a float (`>= threshold`).
-- Notification body uses `Math.round(utilizationPercentage)` for display only — does not affect threshold logic.
+- Notification body uses `Math.round(utilizationPercentage)` for display only - does not affect threshold logic.
 
 **Verdict: Alert semantics match specifications exactly.**
 
@@ -129,14 +129,14 @@ Out of scope (explicitly deferred/excluded):
 | Event | Outcome |
 |---|---|
 | Condition first fires | Alert created, notification created |
-| Condition fires again (active alert) | Deduplicated — no new alert/notification |
+| Condition fires again (active alert) | Deduplicated - no new alert/notification |
 | Condition drops below threshold | Active alert resolved |
-| No active alert and condition already false | `none` — no resolution attempted |
-| Already-resolved alert; condition drops | `none` — not re-resolved |
+| No active alert and condition already false | `none` - no resolution attempted |
+| Already-resolved alert; condition drops | `none` - not re-resolved |
 | Mark-as-read | Alert remains active (independence confirmed by unit + integration tests) |
 | Resolved alert; condition re-fires | Re-trigger: new alert with timestamp-suffix key, new notification |
 
-### Finding: Lifecycle Gap — Re-triggered Alert Not Resolvable
+### Finding: Lifecycle Gap - Re-triggered Alert Not Resolvable
 
 See **F-106-P07-001** in Section 13.
 
@@ -164,7 +164,7 @@ Timestamp suffix ensures uniqueness across re-trigger occurrences.
 
 ### Database Constraints
 
-- `@@unique([workspaceId, deduplicationKey])` on `Alert` model — enforced at DB level.
+- `@@unique([workspaceId, deduplicationKey])` on `Alert` model - enforced at DB level.
 - Unique constraint race handled: `UniqueConstraintViolationError` caught and treated as idempotent deduplicated outcome.
 
 ### Scope Analysis
@@ -176,7 +176,7 @@ Timestamp suffix ensures uniqueness across re-trigger occurrences.
 ### Concurrency Safety
 
 - Race condition between two concurrent evaluations handled via unique constraint catch.
-- No optimistic locking needed — idempotency via DB constraint is sufficient for the single-evaluation path.
+- No optimistic locking needed - idempotency via DB constraint is sufficient for the single-evaluation path.
 
 **Verdict: Deduplication is reliable and concurrency-safe under the current evaluation model.**
 
@@ -194,14 +194,14 @@ Timestamp suffix ensures uniqueness across re-trigger occurrences.
 
 ### Delete Path
 
-The evaluation for delete does not need `contractId` directly — `evaluateContractAlerts` fetches all utilizations for the workspace in the current period from `AnalyticsService`, which queries the database for current state. The deleted entry is already absent from the DB before evaluation. This is correct.
+The evaluation for delete does not need `contractId` directly - `evaluateContractAlerts` fetches all utilizations for the workspace in the current period from `AnalyticsService`, which queries the database for current state. The deleted entry is already absent from the DB before evaluation. This is correct.
 
 ### Best-Effort Semantics
 
 - `triggerAlertEvaluation` wraps `alertService.evaluateContractAlerts` in a try/catch.
 - Errors are logged via `console.error` with workspace context.
 - The TimeEntry mutation is never rolled back due to alert evaluation failure.
-- `redirect()` calls are made outside the try block in all three actions — Next.js NEXT_REDIRECT errors cannot be caught by the alert evaluation handler.
+- `redirect()` calls are made outside the try block in all three actions - Next.js NEXT_REDIRECT errors cannot be caught by the alert evaluation handler.
 
 ### Logging Quality
 
@@ -233,7 +233,7 @@ The evaluation for delete does not need `contractId` directly — `evaluateContr
 ### Database Schema
 
 - `Alert.workspaceId` + `@@unique([workspaceId, deduplicationKey])` enforce cross-workspace isolation at the DB level.
-- `Notification` has a foreign key to `WorkspaceMember(workspaceId, userId)` — structural isolation enforced by schema.
+- `Notification` has a foreign key to `WorkspaceMember(workspaceId, userId)` - structural isolation enforced by schema.
 
 ### E2E Evidence
 
@@ -247,10 +247,10 @@ The evaluation for delete does not need `contractId` directly — `evaluateContr
 
 ### RSC/Client Split
 
-- `/alerts/page.tsx` — RSC, server-only. Loads data via `loadNotificationsForCurrentUser()`.
-- `NotificationList.tsx` — RSC, renders list and unread count.
-- `NotificationCard.tsx` — client component (`"use client"`) for `useActionState` / form interaction.
-- `mark-notification-read-action.ts` — Server Action (`"use server"`), full authorization.
+- `/alerts/page.tsx` - RSC, server-only. Loads data via `loadNotificationsForCurrentUser()`.
+- `NotificationList.tsx` - RSC, renders list and unread count.
+- `NotificationCard.tsx` - client component (`"use client"`) for `useActionState` / form interaction.
+- `mark-notification-read-action.ts` - Server Action (`"use server"`), full authorization.
 
 Split is correct: minimal client surface, no business logic leakage to client.
 
@@ -277,7 +277,7 @@ Split is correct: minimal client surface, no business logic leakage to client.
 
 ### Accepted Finding: F-106-P04-001
 
-The notification list is unbounded (no pagination). The repository query returns all notifications for the user. This was accepted as NON-BLOCKING for MVP. Implementation matches the documented acceptance — no pagination has been added.
+The notification list is unbounded (no pagination). The repository query returns all notifications for the user. This was accepted as NON-BLOCKING for MVP. Implementation matches the documented acceptance - no pagination has been added.
 
 ### Empty State
 
@@ -354,7 +354,7 @@ Alert-specific integration tests cover:
 
 ### Test Coverage Assessment
 
-**Gap identified (see F-106-P07-001):** No test covers "resolve after re-trigger" — i.e., the scenario where a re-triggered alert (with timestamp-suffixed key) subsequently needs to be resolved when the condition drops below threshold. This is a test coverage gap correlated with a lifecycle correctness gap.
+**Gap identified (see F-106-P07-001):** No test covers "resolve after re-trigger" - i.e., the scenario where a re-triggered alert (with timestamp-suffixed key) subsequently needs to be resolved when the condition drops below threshold. This is a test coverage gap correlated with a lifecycle correctness gap.
 
 All other paths are covered with both unit and integration evidence.
 
@@ -372,7 +372,7 @@ All other paths are covered with both unit and integration evidence.
 
 ### Known Flaky Failure: F-106-P05-001
 
-**`auth.spec.ts` — "should register, stay authenticated, and sign out"**
+**`auth.spec.ts` - "should register, stay authenticated, and sign out"**
 
 Classification was documented as PRE-EXISTING / FLAKY / NON-P106 REGRESSION in P106-05.
 
@@ -400,8 +400,8 @@ No other regressions detected across all quality gates.
 | `docs/testing-strategy.md` | EPIC-106 test gates recorded |
 | `README.md` | EPIC-106 feature noted |
 | `CHANGELOG.md` | EPIC-106 entries present |
-| `MASTER_PLAN.md` | Pre-existing unstaged modifications — not P106 owned, not inspected for discrepancies |
-| `docs/epics/EPIC-105/epic-plan.md` | Pre-existing unstaged modification — not P106 owned |
+| `MASTER_PLAN.md` | Pre-existing unstaged modifications - not P106 owned, not inspected for discrepancies |
+| `docs/epics/EPIC-105/epic-plan.md` | Pre-existing unstaged modification - not P106 owned |
 
 ### Observations
 
@@ -414,7 +414,7 @@ No other regressions detected across all quality gates.
 
 ## 13. Findings
 
-### F-106-P07-001 — Re-triggered Alert Lifecycle Gap: Resolution After Re-trigger Is Ineffective
+### F-106-P07-001 - Re-triggered Alert Lifecycle Gap: Resolution After Re-trigger Is Ineffective
 
 | Field | Value |
 |---|---|
@@ -422,7 +422,7 @@ No other regressions detected across all quality gates.
 | **Severity** | NON-BLOCKING |
 | **Status** | **CLOSED** |
 | **Component** | `AlertService.resolveIfActive` / `AlertRepository` |
-| **Fixed in** | P106-08 — commit `fix(alerts): resolve re-triggered alerts correctly` |
+| **Fixed in** | P106-08 - commit `fix(alerts): resolve re-triggered alerts correctly` |
 
 **Root cause:**
 
@@ -433,10 +433,10 @@ No other regressions detected across all quality gates.
 Added `findActiveAlertByContractAndType(workspaceId, contractId, type, periodStart)` to `AlertRepository` (interface + Prisma implementation). This method queries by semantic identity (`workspaceId`, `contractId`, `type`, `periodStart`, `resolvedAt IS NULL`), independent of the deduplication key. `resolveIfActive` now uses this semantic lookup instead of the dedup-key lookup. Deduplication key remains unchanged; unique constraint is not modified.
 
 **Files modified:**
-- `src/domain/repositories.ts` — added `findActiveAlertByContractAndType` to `AlertRepository` type
-- `src/infrastructure/persistence/alert-repository.ts` — implemented via `db.alert.findFirst` with semantic filter
-- `src/application/alerts/alert-service.ts` — `resolveIfActive` rewritten to use semantic lookup
-- `tests/unit/application/alerts/alert-service.test.ts` — added F-106-P07-001 test suite (5 new cases); updated resolution mocks
+- `src/domain/repositories.ts` - added `findActiveAlertByContractAndType` to `AlertRepository` type
+- `src/infrastructure/persistence/alert-repository.ts` - implemented via `db.alert.findFirst` with semantic filter
+- `src/application/alerts/alert-service.ts` - `resolveIfActive` rewritten to use semantic lookup
+- `tests/unit/application/alerts/alert-service.test.ts` - added F-106-P07-001 test suite (5 new cases); updated resolution mocks
 
 **Test evidence:**
 
@@ -444,13 +444,13 @@ Added `findActiveAlertByContractAndType(workspaceId, contractId, type, periodSta
 - Re-triggered alert (timestamp-suffixed key) is correctly resolved when condition drops.
 - No new alert or notification created during resolution.
 - Workspace isolation preserved.
-- `pnpm test` — 384/384 passed. `pnpm typecheck` — clean. `pnpm build` — clean.
+- `pnpm test` - 384/384 passed. `pnpm typecheck` - clean. `pnpm build` - clean.
 
-**Owner:** P106-08 — CLOSED.
+**Owner:** P106-08 - CLOSED.
 
 ---
 
-### F-106-P04-001 — Unbounded Notification List (Pre-existing Accepted Finding)
+### F-106-P04-001 - Unbounded Notification List (Pre-existing Accepted Finding)
 
 | Field | Value |
 |---|---|
@@ -464,7 +464,7 @@ Added `findActiveAlertByContractAndType(workspaceId, contractId, type, periodSta
 
 ---
 
-### F-106-P05-001 — Auth E2E Flaky Test (Pre-existing)
+### F-106-P05-001 - Auth E2E Flaky Test (Pre-existing)
 
 | Field | Value |
 |---|---|
@@ -484,7 +484,7 @@ Added `findActiveAlertByContractAndType(workspaceId, contractId, type, periodSta
 |---|---|
 | 1. Are alert semantics deterministic? | **YES.** Threshold evaluation is deterministic: `utilization >= threshold` with exact float comparison. Null utilization correctly produces no alert. |
 | 2. Is workspace isolation enforced? | **YES.** Enforced at repository (WHERE workspaceId), service (membership guard), action (ownership check), and schema (FK to WorkspaceMember) levels. E2E isolation test passes. |
-| 3. Is deduplication reliable? | **YES for the primary path.** DB-level unique constraint `[workspaceId, deduplicationKey]` is the authoritative enforcement. Race condition handled via idempotency. One gap (F-106-P07-001): re-triggered alerts cannot be resolved — NON-BLOCKING. |
+| 3. Is deduplication reliable? | **YES for the primary path.** DB-level unique constraint `[workspaceId, deduplicationKey]` is the authoritative enforcement. Race condition handled via idempotency. One gap (F-106-P07-001): re-triggered alerts cannot be resolved - NON-BLOCKING. |
 | 4. Is ON-WRITE evaluation correctly wired? | **YES.** All three mutation paths (create, update, delete) trigger evaluation post-commit with best-effort semantics. |
 | 5. Can notification state be safely persisted? | **YES.** Notification FK to WorkspaceMember ensures structural integrity. Mark-as-read is idempotent and ownership-gated. |
 | 6. Are known failures understood? | **YES.** F-106-P05-001 (auth flaky) is pre-existing and unrelated to P106. F-106-P07-001 is a secondary lifecycle gap with no data corruption risk. |
@@ -496,7 +496,7 @@ Added `findActiveAlertByContractAndType(workspaceId, contractId, type, periodSta
 ## 15. Final Verdict
 
 ```
-PASS — ENGINEERING REVIEW CLOSED
+PASS - ENGINEERING REVIEW CLOSED
 ```
 
 **Rationale (P106-09 closure):**
@@ -505,9 +505,9 @@ F-106-P07-001 is confirmed **CLOSED** as of commit `47f82ec`. The semantic looku
 
 All findings are resolved or accepted:
 
-- **F-106-P07-001** — **CLOSED** (P106-08 / commit `47f82ec`): Re-triggered alert resolution corrected. Semantic lookup independent of deduplication key. 5 targeted unit tests added. 384/384 pass.
-- **F-106-P04-001** — **ACCEPTED (MVP)**: Unbounded notification list. No change; acceptance stands.
-- **F-106-P05-001** — **ACCEPTED (PRE-EXISTING)**: Auth E2E flaky test. Unrelated to EPIC-106 scope.
+- **F-106-P07-001** - **CLOSED** (P106-08 / commit `47f82ec`): Re-triggered alert resolution corrected. Semantic lookup independent of deduplication key. 5 targeted unit tests added. 384/384 pass.
+- **F-106-P04-001** - **ACCEPTED (MVP)**: Unbounded notification list. No change; acceptance stands.
+- **F-106-P05-001** - **ACCEPTED (PRE-EXISTING)**: Auth E2E flaky test. Unrelated to EPIC-106 scope.
 
 No blocking correctness, security, authorization, data-integrity, or architecture issues. EPIC-106 is technically complete and ready for formal Epic Closure (P106-10).
 
@@ -518,8 +518,8 @@ No blocking correctness, security, authorization, data-integrity, or architectur
 | Area | Status |
 |---|---|
 | Alert creation | ✅ Unchanged |
-| Alert deduplication | ✅ Unchanged — unique constraint + base-key lookup intact |
-| Re-trigger | ✅ Unchanged — timestamp-suffixed key creation preserved |
+| Alert deduplication | ✅ Unchanged - unique constraint + base-key lookup intact |
+| Re-trigger | ✅ Unchanged - timestamp-suffixed key creation preserved |
 | CONTRACT_WARNING semantics | ✅ Unchanged |
 | CONTRACT_EXCEEDED semantics | ✅ Unchanged |
 | `>= 100` dual-alert behavior | ✅ Unchanged |
@@ -527,7 +527,7 @@ No blocking correctness, security, authorization, data-integrity, or architectur
 | Mark-as-read | ✅ Unchanged |
 | Workspace isolation | ✅ Unchanged |
 | ON-WRITE trigger | ✅ Unchanged |
-| Repository abstraction | ✅ Extended (additive only — `findActiveAlertByContractAndType`) |
+| Repository abstraction | ✅ Extended (additive only - `findActiveAlertByContractAndType`) |
 
 No regressions detected across all 384 unit tests.
 

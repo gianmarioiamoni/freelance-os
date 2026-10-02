@@ -25,10 +25,10 @@ afterEach(() => {
 });
 
 // ---------------------------------------------------------------------------
-// getTodayInTimezone — foundation for all period constructors
+// getTodayInTimezone - foundation for all period constructors
 // ---------------------------------------------------------------------------
 
-describe("getTodayInTimezone — BR-105-014", () => {
+describe("getTodayInTimezone - BR-105-014", () => {
   it("returns the workspace-local calendar date, not the server UTC date", () => {
     // 2026-09-16 01:30 UTC → still Sep 15 in America/New_York (UTC-4 in summer)
     const now = new Date("2026-09-16T01:30:00.000Z");
@@ -90,7 +90,7 @@ describe("getTodayInTimezone — BR-105-014", () => {
 // getTodayPeriod
 // ---------------------------------------------------------------------------
 
-describe("getTodayPeriod — BR-105-014/015", () => {
+describe("getTodayPeriod - BR-105-014/015", () => {
   it("returns a single-day period for workspace-local today", () => {
     const now = new Date("2026-09-16T10:00:00.000Z");
     const period = getTodayPeriod("Europe/Rome", now);
@@ -112,10 +112,10 @@ describe("getTodayPeriod — BR-105-014/015", () => {
 });
 
 // ---------------------------------------------------------------------------
-// getCurrentWeekPeriod — BR-105-014/015, PD-105-009 (Monday start)
+// getCurrentWeekPeriod - BR-105-014/015, PD-105-009 (Monday start)
 // ---------------------------------------------------------------------------
 
-describe("getCurrentWeekPeriod — Monday start, ends today", () => {
+describe("getCurrentWeekPeriod - Monday start, ends today", () => {
   it("Wednesday: week starts on Monday and ends on Wednesday (workspace-local)", () => {
     // 2026-09-16 is a Wednesday; workspace = Europe/Rome (UTC+2 CEST)
     const now = new Date("2026-09-16T10:00:00.000Z"); // 12:00 Rome → Wednesday Sep 16
@@ -166,10 +166,10 @@ describe("getCurrentWeekPeriod — Monday start, ends today", () => {
 });
 
 // ---------------------------------------------------------------------------
-// getCurrentMonthPeriod — BR-105-014/015
+// getCurrentMonthPeriod - BR-105-014/015
 // ---------------------------------------------------------------------------
 
-describe("getCurrentMonthPeriod — first-of-month → today", () => {
+describe("getCurrentMonthPeriod - first-of-month → today", () => {
   it("mid-month: period is first-of-month → today", () => {
     const now = new Date("2026-09-16T10:00:00.000Z");
     const period = getCurrentMonthPeriod("Europe/Rome", now);
@@ -217,10 +217,10 @@ describe("getCurrentMonthPeriod — first-of-month → today", () => {
 });
 
 // ---------------------------------------------------------------------------
-// getCurrentYearPeriod — BR-105-014/015
+// getCurrentYearPeriod - BR-105-014/015
 // ---------------------------------------------------------------------------
 
-describe("getCurrentYearPeriod — Jan 1 → today", () => {
+describe("getCurrentYearPeriod - Jan 1 → today", () => {
   it("mid-year: period is Jan 1 → today", () => {
     const now = new Date("2026-09-16T10:00:00.000Z");
     const period = getCurrentYearPeriod("UTC", now);
@@ -258,10 +258,10 @@ describe("getCurrentYearPeriod — Jan 1 → today", () => {
 });
 
 // ---------------------------------------------------------------------------
-// Historical periods — BR-105-015: natural end unchanged
+// Historical periods - BR-105-015: natural end unchanged
 // ---------------------------------------------------------------------------
 
-describe("getMonthPeriod — historical periods retain natural end", () => {
+describe("getMonthPeriod - historical periods retain natural end", () => {
   it("historical month: full calendar month regardless of today", () => {
     const period = getMonthPeriod(2026, 8); // August 2026
 

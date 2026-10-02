@@ -17,7 +17,7 @@ Do not treat remaining items as implementation defaults. E05 residuals are CLOSE
 | Status | Meaning |
 | --- | --- |
 | APPROVED | Product Owner decided. Recorded in the decision pack |
-| APPROVED — persistence dependency | Product semantics approved; current persistence does not yet contain the required field |
+| APPROVED - persistence dependency | Product semantics approved; current persistence does not yet contain the required field |
 | DIRECTION APPROVED / residual OPEN | Direction closed; a planning or implementation question remains |
 | OUT OF R2 | Explicitly not in R2. Historical OBD may remain open for a later release |
 
@@ -61,7 +61,7 @@ Items 1 and 2 are CLOSED by P-E04-00. Items 5, 9, 10, and 11 are CLOSED by P-E05
 | Field | Value |
 | --- | --- |
 | Historical ID | R2-OD-007 residual |
-| Decision | VOID is one-way soft-delete. Default lists exclude VOID. Get-by-id remains. Optional voided filter on the Contract invoice list. No restore in R2. No distinct physical-delete state. VOID is excluded from Accrued / Expected and from active payment aggregates. E03-D-VOID-PAYMENTS is CLOSED: Option A — freeze writes on VOID. Existing Payments may remain and stay readable. No create / update / delete on VOID. No cascade-delete. |
+| Decision | VOID is one-way soft-delete. Default lists exclude VOID. Get-by-id remains. Optional voided filter on the Contract invoice list. No restore in R2. No distinct physical-delete state. VOID is excluded from Accrued / Expected and from active payment aggregates. E03-D-VOID-PAYMENTS is CLOSED: Option A - freeze writes on VOID. Existing Payments may remain and stay readable. No create / update / delete on VOID. No cascade-delete. |
 | Status | APPROVED / CLOSED. VOID list / restore implemented by R2-E02 (`docs/release/r2-e02-invoice-tracking.md` E02-D02). Payment-row interaction closed by R2-E03 P-E03-00 (`docs/release/r2-e03-payment-tracking.md`) |
 | Needed by | R2-E02 (closed). E03 payment-list residual CLOSED |
 
@@ -84,7 +84,7 @@ Items 1 and 2 are CLOSED by P-E04-00. Items 5, 9, 10, and 11 are CLOSED by P-E05
 | Field | Value |
 | --- | --- |
 | ID | E05-D-REPORT-SCOPE |
-| Decision | Option A — extend existing `/reports`. Publish already-loaded Expected and Contract Allocation. No Invoice/Payment report axis. No workspace indexes. No new dedicated tables |
+| Decision | Option A - extend existing `/reports`. Publish already-loaded Expected and Contract Allocation. No Invoice/Payment report axis. No workspace indexes. No new dedicated tables |
 | Status | APPROVED / CLOSED by P-E05-00 |
 | Needed by | R2-E05 |
 | Plan | `docs/release/r2-e05-advanced-reporting-export.md` §17 |
@@ -94,7 +94,7 @@ Items 1 and 2 are CLOSED by P-E04-00. Items 5, 9, 10, and 11 are CLOSED by P-E05
 | Field | Value |
 | --- | --- |
 | ID | E05-D-TEMPORAL-MODEL |
-| Decision | Option D — Invoice/Payment are not periodized in E05. Existing report temporal semantics remain authoritative |
+| Decision | Option D - Invoice/Payment are not periodized in E05. Existing report temporal semantics remain authoritative |
 | Status | APPROVED / CLOSED by P-E05-00 |
 | Needed by | R2-E05 |
 | Plan | `docs/release/r2-e05-advanced-reporting-export.md` §17 |
@@ -104,7 +104,7 @@ Items 1 and 2 are CLOSED by P-E04-00. Items 5, 9, 10, and 11 are CLOSED by P-E05
 | Field | Value |
 | --- | --- |
 | ID | E05-D-REPORT-FILTERS |
-| Decision | Option B — Period + Client + Contract. No Currency / VOID / amountStatus / overdue |
+| Decision | Option B - Period + Client + Contract. No Currency / VOID / amountStatus / overdue |
 | Status | APPROVED / CLOSED by P-E05-00 |
 | Needed by | R2-E05 |
 | Plan | `docs/release/r2-e05-advanced-reporting-export.md` §17 |
@@ -145,12 +145,12 @@ Items 1 and 2 are CLOSED by P-E04-00. Items 5, 9, 10, and 11 are CLOSED by P-E05
 | --- | --- | --- |
 | R2-OD-001 | DAILY accrued: one billable day if at least one TimeEntry exists for that Contract on that calendar date; multiples count once; no work calendar | APPROVED |
 | R2-OD-002 | Published money rounds to nearest integer; do not prematurely round intermediates | APPROVED |
-| R2-OD-003 | Commercial Snapshot semantics for historical Accrued | APPROVED — TimeEntry `snapshotBillingModel` / `snapshotRate` / `snapshotCurrency` |
+| R2-OD-003 | Commercial Snapshot semantics for historical Accrued | APPROVED - TimeEntry `snapshotBillingModel` / `snapshotRate` / `snapshotCurrency` |
 | R2-OD-016 | DAILY same-day conflicting snapshots use weighted-average daily rate | APPROVED / implemented |
 | R2-OD-017 | Existing TimeEntries backfilled from current associated Contract | APPROVED / implemented |
 | R2-OD-004 | Expected Revenue is HOURLY contractual capacity / pro-rata; null if capacity unavailable; DAILY has no Expected Revenue in R2 | APPROVED |
 | R2-OD-006 | 1 Contract → many Invoice; 1 Invoice → 1 Contract; tracking fields only | APPROVED / implemented |
-| R2-OD-007 | Optional reference; required invoiceDate; no competence period; editable; VOID / soft-delete | APPROVED — VOID list / restore closed by E02-D02 / implemented. E03-D-VOID-PAYMENTS CLOSED (Option A freeze writes) |
+| R2-OD-007 | Optional reference; required invoiceDate; no competence period; editable; VOID / soft-delete | APPROVED - VOID list / restore closed by E02-D02 / implemented. E03-D-VOID-PAYMENTS CLOSED (Option A freeze writes) |
 | E03-D-VOID-PAYMENTS | Freeze writes on VOID; existing Payments remain readable; excluded from active aggregates / alerts; no cascade-delete; no restore | APPROVED / CLOSED by P-E03-00 |
 | E03-D-PAYMENT-DATE-FUTURE | Future `paymentDate` allowed; calendar date only; not an alert input | APPROVED / CLOSED by P-E03-03 |
 | E03-D-ALERT-TRIGGER | T3 on-write (Payment C/U/D + Invoice VOID + Invoice amount/`invoiceDate`). No scheduler. Calendar `PAYMENT_OVERDUE` gap accepted. VOID resolve is transactional | APPROVED / CLOSED by P-E03-03 |
@@ -160,9 +160,9 @@ Items 1 and 2 are CLOSED by P-E04-00. Items 5, 9, 10, and 11 are CLOSED by P-E05
 | R2-OD-008 | `paymentTermsDays = null` → no dueDate, no automatic overdue; no default days | APPROVED / implemented |
 | R2-OD-009 | paidAmount sum; UNPAID / PARTIAL / PAID / MISMATCH; PAYMENT_OVERDUE independent | APPROVED |
 | R2-OD-010 | Payment events editable / deletable; status derived; no ledger | APPROVED |
-| R2-OD-011 | Contract currency mutable only before monetary records; then immutable; no FX | APPROVED — Invoice currency snapshot closed by E02-D01 / implemented |
-| R2-OD-005 | Exact linear Forecast arithmetic | APPROVED / CLOSED by P-E04-00 — Accrued / elapsedFraction on the certified current period |
-| R2-OD-013 | Optional Contract `allocatedMinutes`; no workspace capacity alerts | APPROVED / CLOSED — WARNING 80%; EXCEEDED only when consumption `>` allocation |
+| R2-OD-011 | Contract currency mutable only before monetary records; then immutable; no FX | APPROVED - Invoice currency snapshot closed by E02-D01 / implemented |
+| R2-OD-005 | Exact linear Forecast arithmetic | APPROVED / CLOSED by P-E04-00 - Accrued / elapsedFraction on the certified current period |
+| R2-OD-013 | Optional Contract `allocatedMinutes`; no workspace capacity alerts | APPROVED / CLOSED - WARNING 80%; EXCEEDED only when consumption `>` allocation |
 | E04-D-CONSUMPTION-NUMERATOR | All TimeEntry minutes; no billable-only filter | APPROVED / CLOSED by P-E04-00 |
 | E04-D-CONSUMPTION-WINDOW | Contract `[validFrom, validTo)` | APPROVED / CLOSED by P-E04-00 |
 | E04-D-OUT-OF-VALIDITY-CONSUMPTION | Out-of-validity TimeEntries ignored for allocation; records untouched | APPROVED / CLOSED by P-E04-00 |
@@ -180,16 +180,16 @@ Items 1 and 2 are CLOSED by P-E04-00. Items 5, 9, 10, and 11 are CLOSED by P-E05
 
 | Item | Status |
 | --- | --- |
-| D1–D7 | APPROVED — decision pack |
+| D1–D7 | APPROVED - decision pack |
 | OBD-011 direction (no FX, Contract currency, TimeEntry agnostic, per-currency aggregates) | CLOSED by D7 |
 | OBD-011 mutation after money records | CLOSED by R2-OD-011 |
-| OBD-007 / OBD-008 in R2 | OUT OF R2 — remain historically open for a later release |
-| OBD-010 catalog | DEFERRED — days field is enough for D5 |
-| Excel export | Not a decision — out of R2 |
-| Invoice Lifecycle / generation / fiscal PDF | Out of scope — D2 / R2-OD-012 |
-| Profitability / PIVA Balance integration | Out of scope — D3 |
-| Workspace capacity alerts | Out of scope — R2-OD-013 |
-| Installment engine, grace %, risk, AI forecast | Out of scope — D5 / D6 / D4 |
+| OBD-007 / OBD-008 in R2 | OUT OF R2 - remain historically open for a later release |
+| OBD-010 catalog | DEFERRED - days field is enough for D5 |
+| Excel export | Not a decision - out of R2 |
+| Invoice Lifecycle / generation / fiscal PDF | Out of scope - D2 / R2-OD-012 |
+| Profitability / PIVA Balance integration | Out of scope - D3 |
+| Workspace capacity alerts | Out of scope - R2-OD-013 |
+| Installment engine, grace %, risk, AI forecast | Out of scope - D5 / D6 / D4 |
 | Calendar view / calendar integration | Not R2 |
 
 ---

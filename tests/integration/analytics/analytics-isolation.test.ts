@@ -214,7 +214,7 @@ describe("Analytics Workspace Isolation", () => {
     // The contract appears via in-period consumption (BR-105-018 relevance union).
     // F-105-P-009: consumption retained, percentage null, isOutOfValidity true.
     expect(result.contractUtilizations).toHaveLength(1);
-    expect(result.contractUtilizations[0].consumedMinutes).toBe(480); // 5h + 3h = 8h — ALL time
+    expect(result.contractUtilizations[0].consumedMinutes).toBe(480); // 5h + 3h = 8h - ALL time
     expect(result.contractUtilizations[0].contractedMinutes).toBe(0); // no overlap → 0 pro-rata
     expect(result.contractUtilizations[0].utilizationPercentage).toBeNull(); // null: zero denominator
     // BR-105-016: isOngoing ≡ validTo === null. This contract has validTo: 2026-07-01 → false.
@@ -254,7 +254,7 @@ describe("Analytics Workspace Isolation", () => {
     // Verify unlimited contract handling per PD-104-004 / BR-105-016.
     // The default fixture contract has monthlyContractedMinutes: null (unlimited)
     // and validTo: date("2026-07-01") (finite). Period 2026-09-01 is outside validity.
-    // contractedMinutes = null (unlimited — no denominator invented, BR-105-017).
+    // contractedMinutes = null (unlimited - no denominator invented, BR-105-017).
     // BR-105-016: isOngoing ≡ validTo === null → false (finite validTo).
     expect(result.contractUtilizations).toHaveLength(1);
     expect(result.contractUtilizations[0].consumedMinutes).toBe(480);

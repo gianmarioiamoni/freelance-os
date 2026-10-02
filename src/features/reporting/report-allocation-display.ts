@@ -19,9 +19,9 @@ export function reportAllocationDisplay(
 ): ReportAllocationDisplay {
   if (allocation === undefined || allocation.allocatedMinutes === null) {
     return {
-      allocatedLabel: "—",
-      consumedLabel: "—",
-      remainingLabel: "—",
+      allocatedLabel: "-",
+      consumedLabel: "-",
+      remainingLabel: "-",
       statusLabel: null,
       statusTone: null,
     };
@@ -32,7 +32,7 @@ export function reportAllocationDisplay(
     consumedLabel: AnalyticsService.formatDuration(allocation.consumedMinutes),
     remainingLabel:
       allocation.remainingMinutes === null
-        ? "—"
+        ? "-"
         : AnalyticsService.formatDuration(allocation.remainingMinutes),
     statusLabel: allocationStatusLabel(allocation.allocationStatus),
     statusTone: allocationStatusTone(allocation.allocationStatus),

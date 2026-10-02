@@ -1,9 +1,9 @@
-# EPIC-105 — Reporting
+# EPIC-105 - Reporting
 
 **Epic:** EPIC-105  
-**Release:** Release 1 — MVP  
-**MASTER_PLAN identifier:** R1-E05 — Reporting (`MASTER_PLAN.md` §15)  
-**Status:** IMPLEMENTATION COMPLETE — **COMPLETE WITH DOCUMENTED ENVIRONMENTAL GATE EXCEPTION**  
+**Release:** Release 1 - MVP  
+**MASTER_PLAN identifier:** R1-E05 - Reporting (`MASTER_PLAN.md` §15)  
+**Status:** IMPLEMENTATION COMPLETE - **COMPLETE WITH DOCUMENTED ENVIRONMENTAL GATE EXCEPTION**  
 **Dependencies:** EPIC-002, EPIC-003, EPIC-004, EPIC-005, EPIC-006, EPIC-101, EPIC-102, EPIC-103, EPIC-104  
 **Previous Epic:** EPIC-104 Analytics & Dashboard (`docs/epics/EPIC-104/engineering-review.md`, commit `b387c01`)  
 **Next Epic:** R1-E06 Alerts & Notifications (`MASTER_PLAN.md` §16)  
@@ -13,43 +13,43 @@
 
 ```text
 PLANNING:              COMPLETE
-PRODUCT DECISIONS:     6 BLOCKING — ALL RESOLVED BY THE PRODUCT OWNER
-                       6 NON-BLOCKING — DOCUMENTED DEFAULTS ACCEPTED
+PRODUCT DECISIONS:     6 BLOCKING - ALL RESOLVED BY THE PRODUCT OWNER
+                       6 NON-BLOCKING - DOCUMENTED DEFAULTS ACCEPTED
 BLOCKING DECISIONS:    NONE OUTSTANDING
-IMPLEMENTATION:        COMPLETE — P105-07 DOCUMENTATION SYNCHRONIZATION DONE
-P105-01:               COMPLETE — commit 134800f
-P105-02:               COMPLETE — commit 756649d
-P105-03:               COMPLETE — commits 428f6e4 + 6822600 (corrective)
-P105-04:               COMPLETE — commits e1a1a42 + caf6f96 (corrective)
-P105-05:               COMPLETE — commit 59d28fa
-P105-06:               COMPLETE WITH DOCUMENTED ENVIRONMENTAL GATE EXCEPTION — commit 8faed35
-P105-07:               COMPLETE — documentation synchronization (this commit)
-P105-08:               COMPLETE — see docs/epics/EPIC-105/engineering-review.md
+IMPLEMENTATION:        COMPLETE - P105-07 DOCUMENTATION SYNCHRONIZATION DONE
+P105-01:               COMPLETE - commit 134800f
+P105-02:               COMPLETE - commit 756649d
+P105-03:               COMPLETE - commits 428f6e4 + 6822600 (corrective)
+P105-04:               COMPLETE - commits e1a1a42 + caf6f96 (corrective)
+P105-05:               COMPLETE - commit 59d28fa
+P105-06:               COMPLETE WITH DOCUMENTED ENVIRONMENTAL GATE EXCEPTION - commit 8faed35
+P105-07:               COMPLETE - documentation synchronization (this commit)
+P105-08:               COMPLETE - see docs/epics/EPIC-105/engineering-review.md
 OBD CLOSED:            NONE
-OBD DEPENDENCY:        OBD-012 OPEN — GATES ROLLOVER / EXPIRY SEMANTICS ONLY
-EPIC-104 FINDINGS:     F-104-002 CLOSED — P105-02, shared percentage arithmetic
-                       F-104-003 CLOSED — P105-04, isOngoing ≡ validTo === null (PD-105-004)
-                       F-104-004 CLOSED (reporting surface) — P105-04, relevance-driven list
-                       F-104-005 CLOSED — P105-03, Workspace.timezone is period authority
-                       F-104-013 CLOSED — P105-03, weekly aggregation via getDailyAnalytics
-                       F-104-014 CLOSED — P105-02, service-level membership guard (SI-105-005)
-                       F-104-017 CLOSED — P105-03, period end "through today" canonical (PD-105-002)
-                       F-104-P-001 MEASURED — P105-06, baseline recorded, no threshold (PD-105-008)
+OBD DEPENDENCY:        OBD-012 OPEN - GATES ROLLOVER / EXPIRY SEMANTICS ONLY
+EPIC-104 FINDINGS:     F-104-002 CLOSED - P105-02, shared percentage arithmetic
+                       F-104-003 CLOSED - P105-04, isOngoing ≡ validTo === null (PD-105-004)
+                       F-104-004 CLOSED (reporting surface) - P105-04, relevance-driven list
+                       F-104-005 CLOSED - P105-03, Workspace.timezone is period authority
+                       F-104-013 CLOSED - P105-03, weekly aggregation via getDailyAnalytics
+                       F-104-014 CLOSED - P105-02, service-level membership guard (SI-105-005)
+                       F-104-017 CLOSED - P105-03, period end "through today" canonical (PD-105-002)
+                       F-104-P-001 MEASURED - P105-06, baseline recorded, no threshold (PD-105-008)
                        ALL OTHER EPIC-104 FINDINGS: status unchanged (see §16.1)
-EPIC-105 FINDINGS:     F-105-001 CLOSED — P105-01, corrective test durability pass
-                       F-105-002 CLOSED — verified by final P105-03 Engineering Review
-                       F-105-003 CLOSED — verified by final P105-03 Engineering Review
-                       F-105-004 CLOSED — verified by final P105-03 Engineering Review
-                       F-105-005 CLOSED — verified by final P105-03 Engineering Review
-                       F-105-006 CLOSED — verified by final P105-03 Engineering Review
-                       F-105-007 CLOSED — verified by final P105-03 Engineering Review
-                       F-105-008 OPEN — NON-BLOCKING comment nit (§16.4)
-                       F-105-013 OPEN — latent year/now inconsistency (§16.4); not owned by P105-07
-                       F-105-P-007 MEASURED — concurrent Promise.all, not serial N+1; acceptable at MVP scale
-                       F-104-006 OPEN (inherited) — clock-sensitive E2E and integration failures;
+EPIC-105 FINDINGS:     F-105-001 CLOSED - P105-01, corrective test durability pass
+                       F-105-002 CLOSED - verified by final P105-03 Engineering Review
+                       F-105-003 CLOSED - verified by final P105-03 Engineering Review
+                       F-105-004 CLOSED - verified by final P105-03 Engineering Review
+                       F-105-005 CLOSED - verified by final P105-03 Engineering Review
+                       F-105-006 CLOSED - verified by final P105-03 Engineering Review
+                       F-105-007 CLOSED - verified by final P105-03 Engineering Review
+                       F-105-008 OPEN - NON-BLOCKING comment nit (§16.4)
+                       F-105-013 OPEN - latent year/now inconsistency (§16.4); not owned by P105-07
+                       F-105-P-007 MEASURED - concurrent Promise.all, not serial N+1; acceptable at MVP scale
+                       F-104-006 OPEN (inherited) - clock-sensitive E2E and integration failures;
                                  partially remediated in P105-01; two E2E and one integration failure
                                  remain as documented environmental gate exceptions
-                       PD-105-008 OPEN — no performance threshold established by Product Owner
+                       PD-105-008 OPEN - no performance threshold established by Product Owner
 ```
 
 This plan was produced entirely from the documentation synchronized by
@@ -57,13 +57,13 @@ EPIC-104 and from the code as it exists at commit `b387c01`. It does
 not invent scope and does not resolve, reinterpret, or close any
 EPIC-104 finding or Open Business Decision.
 
-**Revision — Product Decisions applied.** The six blocking decisions
+**Revision - Product Decisions applied.** The six blocking decisions
 PD-105-001 … PD-105-006 were answered by the Product Owner and are
 recorded verbatim in §7 with their consequences. The plan moved from
 `BLOCKED ON PRODUCT DECISIONS` to `READY FOR IMPLEMENTATION`. Three
 EPIC-104 findings acquire a settled semantic target as a result
 (F-104-003, F-104-017, F-104-005) and are reclassified accordingly in
-§16.1 — **none of them is closed by this plan**; each is closed only by
+§16.1 - **none of them is closed by this plan**; each is closed only by
 the phase that implements it, under its own review. No OBD was closed.
 OBD-012 remains open and now has a precise, narrow gate (§8).
 
@@ -113,14 +113,14 @@ Dashboard and reports agree on the same underlying business figures.
 The exit criterion is the defining constraint of this Epic. It is not a
 testing detail: it dictates that Reporting must consume the shared
 analytics capability rather than compute its own figures, and it makes
-`R-005 — Reporting divergence` (`docs/architecture.md` §33) the primary
+`R-005 - Reporting divergence` (`docs/architecture.md` §33) the primary
 risk EPIC-105 exists to mitigate.
 
 ### What "reliable" means here
 
 1. Every published figure is traceable to one shared calculation.
 2. The same period produces the same figure on every surface.
-3. A figure that cannot be computed is absent or `—`, never fabricated.
+3. A figure that cannot be computed is absent or `-`, never fabricated.
 4. Period boundaries are defined, documented, and tested.
 5. No report can read data outside the caller's workspace.
 
@@ -160,11 +160,11 @@ explicit decision**; no item remains decision-gated.
 | `year` | **In scope** | Multi-month periods are already accepted; the denominator is pro-rated per PD-105-005. Current year runs 1 January → today (PD-105-002) |
 | `annual overview` | **In scope** | Pro-rated denominator per PD-105-005, plus the monthly bucketing needed to present a year |
 | `contract report` | **In scope** | All three previously missing semantics are settled: ongoing means `validTo === null` (PD-105-004), capacity is pro-rated (PD-105-005), and the contract list is relevance-driven with out-of-validity time retained and flagged (PD-105-006) |
-| `revenue by client` | **OUT OF SCOPE — decided (PD-105-001)** | EPIC-105 calculates no revenue, monetary amount, estimated revenue, invoicing, or billing amount. `MASTER_PLAN.md` §15 must be corrected and reconciled explicitly in P105-07, the way §14 was. OBD-001, OBD-002, OBD-011, OBD-016 remain **open** and are not closed by the exclusion. Tracked as **F-105-P-001**, resolution recorded, documentation reconciliation pending |
+| `revenue by client` | **OUT OF SCOPE - decided (PD-105-001)** | EPIC-105 calculates no revenue, monetary amount, estimated revenue, invoicing, or billing amount. `MASTER_PLAN.md` §15 must be corrected and reconciled explicitly in P105-07, the way §14 was. OBD-001, OBD-002, OBD-011, OBD-016 remain **open** and are not closed by the exclusion. Tracked as **F-105-P-001**, resolution recorded, documentation reconciliation pending |
 
 ### 3.3 EPIC-105 scope as planned
 
-**Group A — prerequisites owned by EPIC-105** (shared-layer work that
+**Group A - prerequisites owned by EPIC-105** (shared-layer work that
 the exit criterion requires before any report is published):
 
 - decouple the analytics integration suite from the system clock
@@ -176,7 +176,7 @@ the exit criterion requires before any report is published):
 - add a workspace-membership guard inside `AnalyticsService`
   (F-104-014) before a second consumer exists.
 
-**Group B — new shared analytics capability:**
+**Group B - new shared analytics capability:**
 
 - period resolution authoritative on `Workspace.timezone`
   (PD-105-003; F-104-005 / F-104-P-002 become the technical prerequisite
@@ -191,7 +191,7 @@ the exit criterion requires before any report is published):
   (PD-105-004);
 - deterministic, explicit-locale period labelling (F-104-015).
 
-**Group C — reporting capability and surface:**
+**Group C - reporting capability and surface:**
 
 - a thin reporting application capability that resolves and validates
   the requested period and orchestrates shared analytics calls;
@@ -209,7 +209,7 @@ the exit criterion requires before any report is published):
 - loading, zero-activity, and error states with a real recovery path
   (F-104-016 pattern not to be repeated).
 
-**Group D — evidence:**
+**Group D - evidence:**
 
 - separate unit, integration, and E2E suites (§13);
 - a dashboard/report agreement test that directly proves the §15 exit
@@ -221,7 +221,7 @@ the exit criterion requires before any report is published):
 
 ---
 
-## 4. Analytics Foundation — Capability Inventory
+## 4. Analytics Foundation - Capability Inventory
 
 `AnalyticsService` / `AnalyticsRepository` are an **existing capability**.
 EPIC-105 extends them. It must not create a second analytics layer, a
@@ -236,7 +236,7 @@ reporting share calculation services").
 | Capability | Location | Proven by |
 | --- | --- | --- |
 | Monthly analytics (total, billable, non-billable, billable %) | `analytics-repository.ts:16-65` | integration + E2E |
-| Daily analytics with per-client breakdown | `analytics-repository.ts:68-187` | integration (`analytics-isolation.test.ts`) — **no production consumer** |
+| Daily analytics with per-client breakdown | `analytics-repository.ts:68-187` | integration (`analytics-isolation.test.ts`) - **no production consumer** |
 | Client allocation, archived clients included and flagged | `analytics-repository.ts:226-297` | integration + E2E (PD-104-001) |
 | Contract utilization, all tracked time as numerator | `analytics-repository.ts:300-365` | integration (PD-104-002) |
 | Arbitrary-period acceptance | `analytics-service.ts:37-91` | integration |
@@ -250,21 +250,21 @@ reporting share calculation services").
 
 | Requirement | Satisfied by what exists? |
 | --- | --- |
-| Monthly report | YES — reuse `getMonthlyAnalytics` |
-| Hours by client | YES — reuse `getClientAllocations` |
-| Custom date range | PARTIAL — `getDateRangePeriod` exists; no validated input path, no UI, and F-104-017 / F-104-004 become material |
-| Today | PARTIAL — a one-day period is expressible; "today" is not resolvable without PD-105-003 |
-| Week | NO — see §4.3 |
-| Year / annual overview | PARTIAL — the period is expressible; per-month bucketing and a correct utilization denominator are not available |
-| Contract report | PARTIAL — utilization exists; validity filtering, zero-consumption contracts, and ongoing semantics are not settled |
-| Figures identical to the dashboard | NO — F-104-002 and F-104-001 mean the dashboard's numbers do not all come from the shared implementations |
+| Monthly report | YES - reuse `getMonthlyAnalytics` |
+| Hours by client | YES - reuse `getClientAllocations` |
+| Custom date range | PARTIAL - `getDateRangePeriod` exists; no validated input path, no UI, and F-104-017 / F-104-004 become material |
+| Today | PARTIAL - a one-day period is expressible; "today" is not resolvable without PD-105-003 |
+| Week | NO - see §4.3 |
+| Year / annual overview | PARTIAL - the period is expressible; per-month bucketing and a correct utilization denominator are not available |
+| Contract report | PARTIAL - utilization exists; validity filtering, zero-consumption contracts, and ongoing semantics are not settled |
+| Figures identical to the dashboard | NO - F-104-002 and F-104-001 mean the dashboard's numbers do not all come from the shared implementations |
 
 ### 4.3 Missing / requires extension
 
 | Gap | Finding | EPIC-105 treatment |
 | --- | --- | --- |
 | Weekly aggregation | F-104-013 | **In scope.** Derive weekly buckets inside the analytics layer. Preferred option: compose from the already-implemented `getDailyAnalytics` rather than adding new SQL, so no new index or raw query is introduced and the daily path finally gains a production consumer. Alternative (`groupBy` on a week expression) requires new SQL and is not preferred without a measurement that justifies it (`docs/architecture.md` §17) |
-| Timezone-authoritative boundaries | F-104-005, F-104-P-002 | **In scope, target settled.** `Workspace.timezone` is the authority (PD-105-003). This is a real technical prerequisite for every period constructor and is scheduled in P105-03 — not implemented during planning |
+| Timezone-authoritative boundaries | F-104-005, F-104-P-002 | **In scope, target settled.** `Workspace.timezone` is the authority (PD-105-003). This is a real technical prerequisite for every period constructor and is scheduled in P105-03 - not implemented during planning |
 | Period end semantics for a period containing today | F-104-017 | **In scope, target settled.** Any period containing today ends today (PD-105-002). `getCurrentMonthPeriod` changes in P105-03; the affected dashboard integration assertions are updated there, not in P105-01 |
 | Utilization denominator scaled to period length | F-104-004, OBD-012 | **In scope, target settled.** Capacity is pro-rated over the period, accounting for period length and contract-validity overlap (PD-105-005). Null capacity yields a null percentage. **OBD-012 remains open** and gates only the rollover/expiry-dependent portion (§8) |
 | Contract validity `[validFrom, validTo)` filtering; zero-consumption contracts invisible | F-104-004, BR-104-007/008/009 | **In scope, target settled.** The contract list is relevance-driven, so a relevant contract with no tracked time appears as `0h / capacity / 0%`. Out-of-validity time is retained in the contract's historical count and flagged, never silently dropped (PD-105-006) |
@@ -284,7 +284,7 @@ reporting share calculation services").
 - `Intl.DateTimeFormat` with an explicit locale, as already used in
   `src/features/contracts/contract-display.ts`, for deterministic dates.
 - URL search parameters as the only period state, as already used by
-  `/time-tracking` — no client-side state manager.
+  `/time-tracking` - no client-side state manager.
 - `PageHeader` / `PageContent` / `EmptyState` / `ErrorState` from
   EPIC-006 for surface composition.
 
@@ -294,7 +294,7 @@ reporting share calculation services").
 
 | Non-goal | Authority |
 | --- | --- |
-| Revenue, rates, amounts, currency, estimated revenue, invoicing, billing amounts, or any monetary figure | **PD-105-001 — decided, unconditional.** OBD-001 / OBD-002 / OBD-011 / OBD-016 remain open and are not closed by the exclusion |
+| Revenue, rates, amounts, currency, estimated revenue, invoicing, billing amounts, or any monetary figure | **PD-105-001 - decided, unconditional.** OBD-001 / OBD-002 / OBD-011 / OBD-016 remain open and are not closed by the exclusion |
 | Invoicing, billing, payment tracking | Release 2 (`MASTER_PLAN.md` §R2-E02) |
 | Alerts, thresholds, notifications, capacity warnings | R1-E06; OBD-006 open. The 80 percent bar colour in `ContractUtilization.tsx` is a visual cue and must not be reused as a threshold |
 | Forecasting, projections, trends | R2-E03 |
@@ -331,16 +331,16 @@ EPIC-005 Testing & CI            six-gate quality workflow, separate unit/integr
 ### Decision dependencies
 
 **Satisfied.** PD-105-001 … PD-105-006 are resolved and recorded in §7.
-The `MASTER_PLAN.md` §47 precondition — Product Owner clarification on
-F-104-003 and F-104-017 before R1-E05 — is met by PD-105-004 and
+The `MASTER_PLAN.md` §47 precondition - Product Owner clarification on
+F-104-003 and F-104-017 before R1-E05 - is met by PD-105-004 and
 PD-105-002 respectively.
 
 One narrow decision dependency remains and does not block the Epic:
 
 | Dependency | Status | What it gates |
 | --- | --- | --- |
-| OBD-012 — contract-hour rollover / expiry | **Open** | Only the rollover/expiry-dependent portion of capacity. Pro-rata capacity (PD-105-005) is computed with **no** rollover, carry-over, or expiry semantics. If a report is ever required to express carried-over or expired hours, OBD-012 must be resolved first; EPIC-105 must not invent a policy |
-| OBD-002 — monetary rounding | Open | Nothing in EPIC-105, because monetary figures are out of scope (PD-105-001). Must still be respected before any monetary figure is published in a later Epic |
+| OBD-012 - contract-hour rollover / expiry | **Open** | Only the rollover/expiry-dependent portion of capacity. Pro-rata capacity (PD-105-005) is computed with **no** rollover, carry-over, or expiry semantics. If a report is ever required to express carried-over or expired hours, OBD-012 must be resolved first; EPIC-105 must not invent a policy |
+| OBD-002 - monetary rounding | Open | Nothing in EPIC-105, because monetary figures are out of scope (PD-105-001). Must still be respected before any monetary figure is published in a later Epic |
 
 ### Schedule dependency
 
@@ -365,7 +365,7 @@ accepted as implementation defaults and **do not close any OBD**.
 No Product Decision is outstanding. No new Product Decision is
 introduced to replace a resolved one.
 
-### PD-105-001 — Revenue reporting — **RESOLVED**
+### PD-105-001 - Revenue reporting - **RESOLVED**
 
 - **Question:** `MASTER_PLAN.md` §15 lists `revenue by client` in R1-E05
   scope. EPIC-104 declared revenue and all monetary calculation explicit
@@ -385,7 +385,7 @@ introduced to replace a resolved one.
   live contract fields change retroactively when a contract is edited.
   It adds at least two phases.
 - **Dependencies:** OBD-001, OBD-002, OBD-011, OBD-016, P102-F-001.
-- **Decision:** **option 1 — OUT OF SCOPE for EPIC-105.** EPIC-105
+- **Decision:** **option 1 - OUT OF SCOPE for EPIC-105.** EPIC-105
   calculates no revenue, no monetary amount, no estimated revenue, no
   invoicing and no billing amount. The historical `revenue by client`
   reference must be corrected and reconciled explicitly, the way
@@ -397,7 +397,7 @@ introduced to replace a resolved one.
   are explicitly **not** closed by this exclusion.
 - **Status:** RESOLVED.
 
-### PD-105-002 — Canonical period-end semantics — **RESOLVED**
+### PD-105-002 - Canonical period-end semantics - **RESOLVED**
 
 - **Question:** For a period that contains today, does the period end on
   today or on the last day of the period? PD-104-003 says "through
@@ -417,7 +417,7 @@ introduced to replace a resolved one.
   changes. Option 2 changes existing dashboard figures and therefore
   existing integration assertions.
 - **Dependencies:** F-104-017, F-104-001, PD-105-005.
-- **Decision:** **option 2 — a period containing today ends TODAY.**
+- **Decision:** **option 2 - a period containing today ends TODAY.**
 
   ```text
   current month   first day of month → today
@@ -434,11 +434,11 @@ introduced to replace a resolved one.
   `getCurrentMonthPeriod()` must be changed in P105-03, which changes
   the current-month figure the dashboard displays when the month is not
   over, so the affected dashboard and analytics integration assertions
-  are updated in **P105-03** — explicitly not in P105-01, which is a
+  are updated in **P105-03** - explicitly not in P105-01, which is a
   pure test-durability phase. The rule is formalised as BR-105-015.
 - **Status:** RESOLVED.
 
-### PD-105-003 — Timezone authority for period boundaries — **RESOLVED**
+### PD-105-003 - Timezone authority for period boundaries - **RESOLVED**
 
 - **Question:** Which clock defines "today", the start of a week, and
   month/year boundaries: `workspace.timezone` (stored and populated,
@@ -459,7 +459,7 @@ introduced to replace a resolved one.
   `formatPeriodDisplay` render the wrong month at negative UTC offsets.
 - **Dependencies:** F-104-005, F-104-P-002 (confirmed), OBD-003 (closed
   as not-required, not reopened here).
-- **Decision:** **option 1 — `Workspace.timezone` is the authority.** It
+- **Decision:** **option 1 - `Workspace.timezone` is the authority.** It
   governs today, week boundaries, month boundaries, year boundaries, and
   all reporting period construction. The server's local timezone is
   **not** the authority. UTC is **not** the business authority.
@@ -468,13 +468,13 @@ introduced to replace a resolved one.
   an explicit technical requirement rather than a confirmed concern.
   Neither is implemented during planning: the requirement is documented
   here and scheduled in P105-03, which must add period-boundary tests
-  under at least two workspace timezones — tests that exist in no suite
+  under at least two workspace timezones - tests that exist in no suite
   today. The rule is formalised as BR-105-014. UTC remains acceptable as
   a storage and transport representation; it is simply not the authority
   for deciding which calendar day a boundary falls on.
 - **Status:** RESOLVED.
 
-### PD-105-004 — Ongoing-contract semantics — **RESOLVED**
+### PD-105-004 - Ongoing-contract semantics - **RESOLVED**
 
 - **Question:** Is a contract "ongoing" when `validTo` is null
   (PD-104-004 text) or when `monthlyContractedMinutes` is null
@@ -495,7 +495,7 @@ introduced to replace a resolved one.
   (`dashboard-page.test.ts:52-60,137` and
   `analytics-isolation.test.ts:230` assert opposite semantics).
 - **Dependencies:** F-104-003, PD-104-004, PD-105-006.
-- **Decision:** **option 3 — the two concepts are separate and
+- **Decision:** **option 3 - the two concepts are separate and
   independent.**
 
   ```text
@@ -512,15 +512,15 @@ introduced to replace a resolved one.
   property distinct from the capacity state; `isOngoing` is recomputed
   from `validTo`; `AnalyticsService.isOngoingUtilization`, which today
   tests `contractedMinutes === null`, is corrected or replaced. The two
-  integration tests that currently lock the opposite semantics —
+  integration tests that currently lock the opposite semantics -
   `dashboard-page.test.ts:52-60,137` (asserts `isOngoing === false` for
   `validTo: null`) and `analytics-isolation.test.ts:230` (asserts
-  `isOngoing === true` for a contract whose `validTo` is `2026-07-01`) —
+  `isOngoing === true` for a contract whose `validTo` is `2026-07-01`) -
   are corrected in **P105-04**, the phase that implements the semantics,
   and explicitly not in P105-01. The rule is formalised as BR-105-016.
 - **Status:** RESOLVED.
 
-### PD-105-005 — Utilization denominator for non-monthly periods — **RESOLVED**
+### PD-105-005 - Utilization denominator for non-monthly periods - **RESOLVED**
 
 - **Question:** `monthlyContractedMinutes` is a monthly capacity used
   directly as the denominator for any period length. What is the correct
@@ -533,14 +533,14 @@ introduced to replace a resolved one.
      percentage for periods that are not whole months.
   3. Publish utilization **only** for monthly periods; other periods
      show consumed hours without a percentage.
-  4. Sum monthly capacity per covered month with no carry-over — which
+  4. Sum monthly capacity per covered month with no carry-over - which
      is a rollover decision and therefore requires OBD-012.
 - **Technical impact:** Determines whether `year`, `annual overview`,
   `week`, `today`, and `custom period` can display utilization at all.
   Option 1 is the only one that yields a percentage for arbitrary ranges
   and is the only one that requires OBD-012 to be settled first.
 - **Dependencies:** F-104-004, OBD-012, PD-105-002.
-- **Decision:** **option 1 — capacity is PRO-RATED over the reporting
+- **Decision:** **option 1 - capacity is PRO-RATED over the reporting
   period.** The pro-rata capacity accounts for the reporting period's
   length, the overlap between the period and the contract's validity
   interval, and the contract's monthly capacity. It applies uniformly to
@@ -563,7 +563,7 @@ introduced to replace a resolved one.
 - **Status:** RESOLVED, with OBD-012 recorded as a narrow open
   dependency (§6, §8).
 
-### PD-105-006 — Contract validity and zero-consumption contracts — **RESOLVED**
+### PD-105-006 - Contract validity and zero-consumption contracts - **RESOLVED**
 
 - **Question:** Which contracts appear in a contract report for a
   period: only contracts with consumption in the period (current
@@ -589,7 +589,7 @@ introduced to replace a resolved one.
   out-of-validity contract, so the case is not currently reachable
   through the UI.
 - **Dependencies:** F-104-004, BR-104-007/008/009, PD-105-004.
-- **Decision:** **option 3 — relevance-driven list, out-of-validity time
+- **Decision:** **option 3 - relevance-driven list, out-of-validity time
   retained and flagged.**
   1. The contract report includes the contracts **relevant to the
      reporting period**, and must not derive the list exclusively from
@@ -613,13 +613,13 @@ introduced to replace a resolved one.
   report total remains reconcilable with the Time Tracking total for the
   same period, which is directly testable. "Relevant to the period"
   means the contract's `[validFrom, validTo)` interval overlaps the
-  period, **or** the contract has time recorded in the period — the
+  period, **or** the contract has time recorded in the period - the
   union, so neither a zero-consumption relevant contract nor an
   anomalous historical row can disappear. The rule is formalised as
   BR-105-018.
 - **Status:** RESOLVED.
 
-### PD-105-007 — Rounding policy for published percentages — ACCEPTED DEFAULT
+### PD-105-007 - Rounding policy for published percentages - ACCEPTED DEFAULT
 
 - **Question:** What rounding applies to percentages a report publishes?
   `AnalyticsService.formatPercentage` applies `Math.round` at the
@@ -634,9 +634,9 @@ introduced to replace a resolved one.
   is not a blocker: monetary figures are out of scope (PD-105-001), so
   OBD-002 constrains only percentage presentation here and must still be
   respected before any monetary figure is published in a later Epic.
-- **Status:** ACCEPTED DEFAULT — not a blocker.
+- **Status:** ACCEPTED DEFAULT - not a blocker.
 
-### PD-105-008 — Performance threshold and fixture volume — ACCEPTED DEFAULT
+### PD-105-008 - Performance threshold and fixture volume - ACCEPTED DEFAULT
 
 - **Question:** Is there an approved query-time or page-load threshold
   for reporting, and at what data volume?
@@ -645,9 +645,9 @@ introduced to replace a resolved one.
 - **Default (accepted):** measure and record a baseline at a declared
   fixture volume; do **not** introduce a pass/fail gate on an invented
   number. A threshold is introduced only if a real need appears.
-- **Status:** ACCEPTED DEFAULT — not a blocker.
+- **Status:** ACCEPTED DEFAULT - not a blocker.
 
-### PD-105-009 — Week definition — ACCEPTED DEFAULT
+### PD-105-009 - Week definition - ACCEPTED DEFAULT
 
 - **Question:** Does a reporting week start on Monday, and is it an
   ISO-8601 week?
@@ -659,10 +659,10 @@ introduced to replace a resolved one.
   the shared period utilities and resolves it against
   `Workspace.timezone` per PD-105-003, rather than duplicating it
   (**F-105-P-003**). The current week ends today per PD-105-002.
-- **Status:** ACCEPTED DEFAULT — the convention is already defined, so
+- **Status:** ACCEPTED DEFAULT - the convention is already defined, so
   it is not a blocker.
 
-### PD-105-010 — Presentation format and locale — ACCEPTED DEFAULT
+### PD-105-010 - Presentation format and locale - ACCEPTED DEFAULT
 
 - **Question:** Are reports tabular, and which locale formats report
   date ranges?
@@ -673,9 +673,9 @@ introduced to replace a resolved one.
   markup; dates formatted through `Intl.DateTimeFormat` with an explicit
   locale, following the `src/features/contracts/contract-display.ts`
   precedent. No charting dependency.
-- **Status:** ACCEPTED DEFAULT — not a blocker.
+- **Status:** ACCEPTED DEFAULT - not a blocker.
 
-### PD-105-011 — Zero-activity period presentation — ACCEPTED DEFAULT
+### PD-105-011 - Zero-activity period presentation - ACCEPTED DEFAULT
 
 - **Question:** What does a report show for a period with no tracked
   time, and does a client with no time in the period appear as a zero
@@ -686,24 +686,24 @@ introduced to replace a resolved one.
   EPIC-006 `EmptyState`; clients with no time in the period are omitted
   from hours by client, mirroring the delivered allocation behaviour.
   Contract rows follow PD-105-006, so a relevant contract with no
-  consumption **does** appear at `0h / capacity / 0%` — the contract
+  consumption **does** appear at `0h / capacity / 0%` - the contract
   report and hours-by-client deliberately differ here.
-- **Status:** ACCEPTED DEFAULT — not a blocker.
+- **Status:** ACCEPTED DEFAULT - not a blocker.
 
-### PD-105-012 — Export — ACCEPTED DEFAULT
+### PD-105-012 - Export - ACCEPTED DEFAULT
 
 - **Question:** Does EPIC-105 include any export?
 - **Impact:** CSV and PDF are R2-E04 scope and are absent from the §15
   baseline.
 - **Default (accepted):** no export in EPIC-105; recorded as a non-goal
   (§5). CSV and PDF are R2-E04 scope.
-- **Status:** ACCEPTED DEFAULT — not a blocker.
+- **Status:** ACCEPTED DEFAULT - not a blocker.
 
 ### Summary
 
 | ID | Subject | Status | Implemented in |
 | --- | --- | --- | --- |
-| PD-105-001 | Revenue | **RESOLVED — out of scope** | n/a; documentation reconciliation in P105-07 |
+| PD-105-001 | Revenue | **RESOLVED - out of scope** | n/a; documentation reconciliation in P105-07 |
 | PD-105-002 | Period end = today | **RESOLVED** | P105-03 (BR-105-015) |
 | PD-105-003 | `Workspace.timezone` is the authority | **RESOLVED** | P105-03 (BR-105-014) |
 | PD-105-004 | Ongoing ≠ unlimited | **RESOLVED** | P105-04 (BR-105-016) |
@@ -727,14 +727,14 @@ remain proposals and not policy.
 
 | ID | Relevance to EPIC-105 |
 | --- | --- |
-| OBD-012 — contract-hour rollover / expiry | **Relevant, directly, and now precisely scoped.** PD-105-005 pro-rates capacity over the reporting period with **no** rollover, carry-over, or expiry semantics. That is implementable today. OBD-012 gates only behaviour that depends on rollover or expiry — carried-over hours, expired-hour forfeiture, or any capacity that survives its period. EPIC-105 must not invent such a policy, and P105-04 must state in its tests that no rollover is applied. **Not closed** |
-| OBD-002 — monetary rounding | **Relevant, reduced.** Monetary figures are out of scope (PD-105-001), so OBD-002 constrains nothing EPIC-105 publishes except percentage presentation, where the existing `formatPercentage` behaviour is kept (PD-105-007). It must still be resolved before any monetary figure is published in a later Epic. **Not closed** |
-| OBD-001 — daily-rate semantics / partial days | Not required by EPIC-105 because no rate or monetary figure is computed (PD-105-001). **Not closed** |
-| OBD-011 — multi-currency | Not required by EPIC-105 because no monetary figure is computed (PD-105-001). **Not closed** |
-| OBD-009 — workspace roles | **Relevant.** Roles are `OWNER` / `MEMBER` only, so any member sees the whole workspace's reports, including cross-client allocation. EPIC-105 multiplies the surfaces on which that is visible. No role-based filtering is planned; recorded as a privacy note, not resolved (EPIC-002 F-P2-005) |
-| OBD-006 — capacity warning threshold | Deferred to R1-E06. EPIC-105 must not introduce any threshold, colour rule, or warning |
-| OBD-015 — archived-client operations | Related. PD-104-001 already settles archived-client inclusion for analytics; reports inherit it without promoting OBD-015 |
-| OBD-016 — contract commercial-field mutability | Related. Underlies P102-F-001 and therefore the stability of any historical utilization figure a report publishes: pro-rata capacity (PD-105-005) reads live `Contract` fields, so editing capacity or validity retroactively changes a past report. Documented, **not closed** |
+| OBD-012 - contract-hour rollover / expiry | **Relevant, directly, and now precisely scoped.** PD-105-005 pro-rates capacity over the reporting period with **no** rollover, carry-over, or expiry semantics. That is implementable today. OBD-012 gates only behaviour that depends on rollover or expiry - carried-over hours, expired-hour forfeiture, or any capacity that survives its period. EPIC-105 must not invent such a policy, and P105-04 must state in its tests that no rollover is applied. **Not closed** |
+| OBD-002 - monetary rounding | **Relevant, reduced.** Monetary figures are out of scope (PD-105-001), so OBD-002 constrains nothing EPIC-105 publishes except percentage presentation, where the existing `formatPercentage` behaviour is kept (PD-105-007). It must still be resolved before any monetary figure is published in a later Epic. **Not closed** |
+| OBD-001 - daily-rate semantics / partial days | Not required by EPIC-105 because no rate or monetary figure is computed (PD-105-001). **Not closed** |
+| OBD-011 - multi-currency | Not required by EPIC-105 because no monetary figure is computed (PD-105-001). **Not closed** |
+| OBD-009 - workspace roles | **Relevant.** Roles are `OWNER` / `MEMBER` only, so any member sees the whole workspace's reports, including cross-client allocation. EPIC-105 multiplies the surfaces on which that is visible. No role-based filtering is planned; recorded as a privacy note, not resolved (EPIC-002 F-P2-005) |
+| OBD-006 - capacity warning threshold | Deferred to R1-E06. EPIC-105 must not introduce any threshold, colour rule, or warning |
+| OBD-015 - archived-client operations | Related. PD-104-001 already settles archived-client inclusion for analytics; reports inherit it without promoting OBD-015 |
+| OBD-016 - contract commercial-field mutability | Related. Underlies P102-F-001 and therefore the stability of any historical utilization figure a report publishes: pro-rata capacity (PD-105-005) reads live `Contract` fields, so editing capacity or validity retroactively changes a past report. Documented, **not closed** |
 | OBD-003, 004, 005, 007, 008, 010, 013, 014 | Not applicable |
 
 ---
@@ -749,7 +749,7 @@ remain proposals and not policy.
 | BR-105-004 | Time recorded for a client later archived remains counted, and archived clients are labelled | PD-104-001 |
 | BR-105-005 | Contract-utilization numerators use all tracked time; billable percentage and utilization percentage are independent figures | PD-104-002 |
 | BR-105-006 | All durations are integer minutes; no floating-point accumulation | BR-104-010 |
-| BR-105-007 | A zero or absent denominator yields `null` and renders as `—`, never `0%` | BR-104-011/012 |
+| BR-105-007 | A zero or absent denominator yields `null` and renders as `-`, never `0%` | BR-104-011/012 |
 | BR-105-008 | For the same period, a report and the dashboard produce identical figures | `MASTER_PLAN.md` §15 exit criterion |
 | BR-105-009 | Period boundaries are inclusive of both endpoints in the time-entry query (`workDate` `gte` / `lte`), as delivered. Contract validity remains the separate `[validFrom, validTo)` half-open interval. The two semantics must not be conflated | `analytics-repository.ts`, BR-104-007/008/009 |
 | BR-105-010 | An invalid period fails closed: an invalid range raises `AnalyticsError`, a malformed identifier raises `InvalidPersistenceStateError`. Reporting never substitutes an empty result for a rejected input | F-104-000 resolution |
@@ -811,14 +811,14 @@ filtering and does not close OBD-009.
 ### Target shape
 
 ```text
-src/app/(app)/reports/page.tsx            RSC route — replaces PlaceholderPage
+src/app/(app)/reports/page.tsx            RSC route - replaces PlaceholderPage
         │   parse + Zod-validate period search params
         ▼
 src/features/reporting/*                  presentation-only server components
         │
         ▼
 src/application/reporting/reporting-service.ts
-        │   period resolution + orchestration ONLY — no business calculation
+        │   period resolution + orchestration ONLY - no business calculation
         ▼
 src/application/analytics/analytics-service.ts      shared, extended
         │
@@ -843,7 +843,7 @@ Reporting ──▶ a second analytics service or read model
 | --- | --- | --- |
 | `src/application/reporting/reporting-service.ts` | YES, thin | Something must turn a validated request (`today` / `week` / `month` / `year` / `custom`) into an `AnalyticsPeriod` and call the shared service. Putting that in the route file would repeat the `/time-tracking` pattern of business-adjacent logic in a page. It must contain no arithmetic |
 | Timezone-aware period resolver | YES | PD-105-003 / BR-105-014. `Workspace.timezone` must reach period construction, so the resolver takes the workspace timezone as an input rather than reading the process clock. `WorkspaceContext` is the natural carrier; whether it already exposes the timezone or must be extended is an implementation detail of P105-03 |
-| New period constructors in `src/lib/analytics-periods.ts` | YES | `getTodayPeriod`, `getWeekPeriod`, `getYearPeriod`, a corrected `getCurrentMonthPeriod` ending today (BR-105-015), and a deterministic label function — all timezone-resolved. Extends the existing module; no new module |
+| New period constructors in `src/lib/analytics-periods.ts` | YES | `getTodayPeriod`, `getWeekPeriod`, `getYearPeriod`, a corrected `getCurrentMonthPeriod` ending today (BR-105-015), and a deterministic label function - all timezone-resolved. Extends the existing module; no new module |
 | Pro-rata capacity calculation | YES, shared | PD-105-005 / BR-105-017. One deterministic function in the analytics layer, consumed by utilization. Never in a component, never in the reporting layer. It needs the period, the contract's validity interval, and `monthlyContractedMinutes`; it applies no rollover |
 | Weekly aggregation in `AnalyticsService` | YES | F-104-013. Preferred as a composition over the existing `getDailyAnalytics`, avoiding new SQL and giving the daily path a production consumer |
 | Relevance-driven contract query | YES | PD-105-006 / BR-105-018. The contract set must be selected by validity overlap **union** in-period consumption, which the current consumption-derived `groupBy` cannot express alone. This is an additional scoped Prisma query on `Contract`, not a new aggregation source of truth |
@@ -877,7 +877,7 @@ phase. All blocking Product Decisions are resolved, so every phase below
 is implementable; the only remaining gate is OBD-012, which constrains
 P105-04 to a no-rollover pro-rata calculation.
 
-### P105-00 — Product Decision resolution (no code) — **COMPLETE**
+### P105-00 - Product Decision resolution (no code) - **COMPLETE**
 
 - **Objective:** obtain and record answers to PD-105-001 … PD-105-006.
 - **Outcome:** all six answered by the Product Owner and recorded
@@ -885,7 +885,7 @@ P105-04 to a no-rollover pro-rata calculation.
   §3, §4, §5, §6, §8, §9, §11, §12, §14, §16, §17. No decision was
   inferred, no OBD was closed, no new Product Decision was created to
   replace a resolved one.
-- **Residual documentation work — deferred to P105-07:** the
+- **Residual documentation work - deferred to P105-07:** the
   `MASTER_PLAN.md` §15 `revenue by client` reference and the
   `docs/testing-strategy.md` §11 `estimated revenue` reference must be
   reconciled explicitly, the way §14 was. They are not corrected now,
@@ -894,10 +894,10 @@ P105-04 to a no-rollover pro-rata calculation.
   inconsistent.
 - **Tests:** none.
 - **Expected commit:** folded into the plan commit
-  `docs: establish EPIC-105 reporting plan` — no separate commit, since
+  `docs: establish EPIC-105 reporting plan` - no separate commit, since
   the decisions and the plan they change are one document.
 
-### P105-01 — Analytics test durability
+### P105-01 - Analytics test durability
 
 - **Objective:** make the analytics integration evidence independent of
   the system clock (F-104-006).
@@ -925,14 +925,14 @@ P105-04 to a no-rollover pro-rata calculation.
   justified; the diff is minimal.
 - **Tests:** integration only; the unit suite is run to prove no
   regression.
-- **Dependencies:** none — **independent of every Product Decision**.
+- **Dependencies:** none - **independent of every Product Decision**.
   Time-critical: the suite fails from 2026-10-01.
 - **Explicitly not this phase:** P105-01 is test durability only. It
   must not be confused with the timezone-aware period construction of
   P105-03, and it must not pre-implement BR-105-014 or BR-105-015.
 - **Expected commit:** `test(analytics): decouple analytics integration tests from the current month`
 
-### P105-02 — Shared calculation consolidation and service guard
+### P105-02 - Shared calculation consolidation and service guard
 
 - **Objective:** make the shared implementations the only ones, so the
   §15 exit criterion is achievable (F-104-002, F-104-001, F-104-014).
@@ -960,7 +960,7 @@ P105-04 to a no-rollover pro-rata calculation.
 - **Dependencies:** P105-01; PD-105-007 for the rounding boundary.
 - **Expected commit:** `refactor(analytics): consolidate shared analytics calculations`
 
-### P105-03 — Reporting period foundation and weekly aggregation
+### P105-03 - Reporting period foundation and weekly aggregation
 
 - **Objective:** provide every period R1-E05 needs, plus weekly
   aggregation, in the shared layer.
@@ -972,7 +972,7 @@ P105-04 to a no-rollover pro-rata calculation.
     **any period containing today ends today** (BR-105-015), including
     the corrective change to `getCurrentMonthPeriod()`;
   - update the analytics and dashboard assertions that depend on the
-    old end-of-month semantics — this is the phase that owns that
+    old end-of-month semantics - this is the phase that owns that
     change, not P105-01;
   - promote the Monday-week convention out of
     `src/app/(app)/time-tracking/page.tsx` into the shared utilities and
@@ -999,11 +999,11 @@ P105-04 to a no-rollover pro-rata calculation.
   integration for weekly aggregation and for the changed current-period
   semantics against seeded data.
 - **Dependencies:** P105-02. Decisions applied: PD-105-002, PD-105-003,
-  PD-105-009, PD-105-010 — all resolved.
+  PD-105-009, PD-105-010 - all resolved.
 - **Expected commit:** `feat(analytics): add reporting period and weekly aggregation capabilities`
-- **Status:** **COMPLETE** — commits `428f6e4` (initial) + `6822600` (corrective, all F-105-002 through F-105-007 remediated). Final Engineering Review verdict: PASS WITH FINDINGS (F-105-008 non-blocking). Verified gates: Unit 266/266, Integration 165/165, Lint PASS, Typecheck PASS, Build PASS.
+- **Status:** **COMPLETE** - commits `428f6e4` (initial) + `6822600` (corrective, all F-105-002 through F-105-007 remediated). Final Engineering Review verdict: PASS WITH FINDINGS (F-105-008 non-blocking). Verified gates: Unit 266/266, Integration 165/165, Lint PASS, Typecheck PASS, Build PASS.
 
-### P105-04 — Reporting application capability
+### P105-04 - Reporting application capability
 
 - **Objective:** a thin, validated, workspace-scoped reporting query
   layer.
@@ -1030,7 +1030,7 @@ P105-04 to a no-rollover pro-rata calculation.
   rollover or expiry policy (OBD-012 open); revenue (PD-105-001);
   performance tuning.
 - **Acceptance criteria:** the reporting service contains no percentage,
-  average, capacity, or utilization arithmetic — all of it lives in the
+  average, capacity, or utilization arithmetic - all of it lives in the
   shared analytics layer; every method takes `WorkspaceContext` first;
   invalid and reversed ranges and unknown period kinds are rejected;
   pro-rata capacity is asserted for a day, a week, a partial month, a
@@ -1048,12 +1048,12 @@ P105-04 to a no-rollover pro-rata calculation.
   out-of-validity flagging, total reconciliation, and the
   dashboard-agreement assertion.
 - **Dependencies:** P105-03. Decisions applied: PD-105-004, PD-105-005,
-  PD-105-006 — all resolved. **OBD-012 open**: the pro-rata calculation
+  PD-105-006 - all resolved. **OBD-012 open**: the pro-rata calculation
   must apply no rollover or expiry semantics, and the tests must record
   that absence deliberately rather than by omission.
 - **Expected commit:** `feat(reporting): add workspace-scoped reporting queries`
 
-### P105-05 — Reporting surface
+### P105-05 - Reporting surface
 
 - **Objective:** replace the `/reports` placeholder with the real
   reporting surface.
@@ -1071,7 +1071,7 @@ P105-04 to a no-rollover pro-rata calculation.
   survives reload; a zero-activity period renders the empty state; a
   failing analytics call renders an error state with a working recovery
   action; native `table`, `caption`, `th`/`scope`, and native heading
-  elements are used — the `dt`/`dd`-without-`dl` pattern (F-104-011) and
+  elements are used - the `dt`/`dd`-without-`dl` pattern (F-104-011) and
   the ARIA-emulated headings (F-104-012) are not repeated; client names
   are never truncated without a full-text alternative; the
   out-of-validity flag (BR-105-018) is visible and has a textual
@@ -1083,13 +1083,13 @@ P105-04 to a no-rollover pro-rata calculation.
   PD-105-011, PD-105-012.
 - **Expected commit:** `feat(reporting): add reports surface with period selection`
 
-### P105-06 — Evidence: integration, E2E, accessibility, performance baseline
+### P105-06 - Evidence: integration, E2E, accessibility, performance baseline
 
 - **Objective:** produce the evidence the acceptance criteria require.
 - **Scope:** reporting integration suite; `tests/e2e/reports.spec.ts`
   and a reporting accessibility spec written with assertions that can
   fail (the four unsound patterns in F-104-010 must not be reproduced);
-  a performance baseline at a declared fixture volume — the EPIC-104
+  a performance baseline at a declared fixture volume - the EPIC-104
   scalability target of 100 clients, 50 contracts, and 1000 time entries
   is the reference volume, and a year-scale report is the reference
   query.
@@ -1106,7 +1106,7 @@ P105-04 to a no-rollover pro-rata calculation.
 - **Dependencies:** P105-05; PD-105-008.
 - **Expected commit:** `test(reporting): add reporting integration, E2E, and performance evidence`
 
-### P105-07 — Documentation synchronization
+### P105-07 - Documentation synchronization
 
 - **Objective:** record what was actually built.
 - **Scope:** `MASTER_PLAN.md` (§4, §15, §38, §39, §47, §48),
@@ -1137,7 +1137,7 @@ P105-04 to a no-rollover pro-rata calculation.
 - **Dependencies:** P105-06.
 - **Expected commit:** `docs(reporting): synchronize EPIC-105 documentation`
 
-### P105-08 — Engineering Review (no code)
+### P105-08 - Engineering Review (no code)
 
 - **Objective:** produce `docs/epics/EPIC-105/engineering-review.md`.
 - **Scope:** verdict, per-suite evidence, findings, inherited findings,
@@ -1208,44 +1208,44 @@ CI=true pnpm test:e2e --workers=1       E2E         playwright
 
 | Behaviour | Unit | Integration | E2E |
 | --- | --- | --- | --- |
-| Period constructors: first/last date included, adjacent days excluded | ✔ primary | — | — |
-| month→month, December→January, year→year transitions | ✔ primary | — | — |
-| `Workspace.timezone` is the boundary authority (BR-105-014), with the process timezone deliberately different, and two workspace timezones on opposite sides of UTC | ✔ primary | ✔ one end-to-end case | — |
-| A period containing today ends today; a historical period keeps its natural end (BR-105-015) | ✔ primary | ✔ current-month case | — |
-| Future-dated entries excluded from the default current period, included when a future period is selected | — | ✔ primary | — |
-| Week definition and week boundaries (PD-105-009), current week ending today | ✔ primary | — | — |
-| Weekly aggregation equals the sum of its daily rows | ✔ pure composition | ✔ against seeded data | — |
-| Weekly buckets sum to the monthly total for a fully covered month | — | ✔ primary | — |
-| Percentage rules, single shared implementation | ✔ primary | ✔ reachability from the production path | — |
-| Daily average uses the period's real day count | ✔ primary | — | — |
-| Rounding boundary (PD-105-007) | ✔ primary | — | — |
-| Zero denominator → `null` → `—` | ✔ | ✔ | ✔ one rendered case |
-| Zero-activity period → empty state | — | ✔ | ✔ |
-| Archived clients included and labelled | — | ✔ primary | ✔ one journey |
-| Contract utilization numerator = all tracked time | — | ✔ primary | — |
-| Ongoing (`validTo === null`) and unlimited (`monthlyContractedMinutes === null`) as independent properties — all four combinations (BR-105-016) | ✔ predicates | ✔ primary, one test per combination | ✔ labels |
-| Relevant contract with zero consumption renders `0h / capacity / 0%` (BR-105-018) | — | ✔ primary | ✔ one rendered case |
-| Out-of-validity time retained in the historical count and flagged, never dropped (BR-105-018) | — | ✔ primary | ✔ indicator visible with a textual alternative |
-| Contract report total reconciles with the Time Tracking total for the same period | — | ✔ primary | — |
-| Pro-rata capacity for day, week, partial month, full month, year, and partial validity overlap (BR-105-017) | ✔ formula | ✔ primary | — |
-| Null capacity yields a null percentage with no invented capacity | ✔ | ✔ | ✔ renders `—` |
-| No rollover, carry-over, or expiry is applied (OBD-012 open) | ✔ asserted absence | ✔ asserted absence | — |
-| Historical data: edits to client status do not change past figures | — | ✔ primary | — |
-| Workspace isolation, including identically named clients in two workspaces | — | ✔ primary | ✔ one negative case |
-| Service-level membership guard (SI-105-005) | — | ✔ primary | — |
+| Period constructors: first/last date included, adjacent days excluded | ✔ primary | - | - |
+| month→month, December→January, year→year transitions | ✔ primary | - | - |
+| `Workspace.timezone` is the boundary authority (BR-105-014), with the process timezone deliberately different, and two workspace timezones on opposite sides of UTC | ✔ primary | ✔ one end-to-end case | - |
+| A period containing today ends today; a historical period keeps its natural end (BR-105-015) | ✔ primary | ✔ current-month case | - |
+| Future-dated entries excluded from the default current period, included when a future period is selected | - | ✔ primary | - |
+| Week definition and week boundaries (PD-105-009), current week ending today | ✔ primary | - | - |
+| Weekly aggregation equals the sum of its daily rows | ✔ pure composition | ✔ against seeded data | - |
+| Weekly buckets sum to the monthly total for a fully covered month | - | ✔ primary | - |
+| Percentage rules, single shared implementation | ✔ primary | ✔ reachability from the production path | - |
+| Daily average uses the period's real day count | ✔ primary | - | - |
+| Rounding boundary (PD-105-007) | ✔ primary | - | - |
+| Zero denominator → `null` → `-` | ✔ | ✔ | ✔ one rendered case |
+| Zero-activity period → empty state | - | ✔ | ✔ |
+| Archived clients included and labelled | - | ✔ primary | ✔ one journey |
+| Contract utilization numerator = all tracked time | - | ✔ primary | - |
+| Ongoing (`validTo === null`) and unlimited (`monthlyContractedMinutes === null`) as independent properties - all four combinations (BR-105-016) | ✔ predicates | ✔ primary, one test per combination | ✔ labels |
+| Relevant contract with zero consumption renders `0h / capacity / 0%` (BR-105-018) | - | ✔ primary | ✔ one rendered case |
+| Out-of-validity time retained in the historical count and flagged, never dropped (BR-105-018) | - | ✔ primary | ✔ indicator visible with a textual alternative |
+| Contract report total reconciles with the Time Tracking total for the same period | - | ✔ primary | - |
+| Pro-rata capacity for day, week, partial month, full month, year, and partial validity overlap (BR-105-017) | ✔ formula | ✔ primary | - |
+| Null capacity yields a null percentage with no invented capacity | ✔ | ✔ | ✔ renders `-` |
+| No rollover, carry-over, or expiry is applied (OBD-012 open) | ✔ asserted absence | ✔ asserted absence | - |
+| Historical data: edits to client status do not change past figures | - | ✔ primary | - |
+| Workspace isolation, including identically named clients in two workspaces | - | ✔ primary | ✔ one negative case |
+| Service-level membership guard (SI-105-005) | - | ✔ primary | - |
 | Period search-param validation; reversed and malformed ranges | ✔ schema | ✔ service contract | ✔ one rejected input |
-| Fail-closed on malformed workspace identifier | — | ✔ (existing pattern) | — |
-| Unauthenticated `/reports` → sign-in; no workspace → onboarding | — | — | ✔ primary |
-| Redirects not swallowed by a page-level `catch` | — | — | ✔ primary |
-| **Dashboard and reports agree for the same period** | — | ✔ primary, dedicated test | — |
-| Error state and a working recovery action | — | ✔ forced repository failure | ✔ primary |
-| Loading state on the reporting surface | — | — | ✔ |
-| Locale-independent period labels | ✔ primary | — | — |
-| Responsive layout at 375 / 768 / 1024 / 1440 px | — | — | ✔ |
-| Accessibility: native table semantics, native headings, full-text client names, keyboard reachability | ✔ component markup | — | ✔ |
-| Performance baseline at declared fixture volume | — | ✔ measurement | — |
+| Fail-closed on malformed workspace identifier | - | ✔ (existing pattern) | - |
+| Unauthenticated `/reports` → sign-in; no workspace → onboarding | - | - | ✔ primary |
+| Redirects not swallowed by a page-level `catch` | - | - | ✔ primary |
+| **Dashboard and reports agree for the same period** | - | ✔ primary, dedicated test | - |
+| Error state and a working recovery action | - | ✔ forced repository failure | ✔ primary |
+| Loading state on the reporting surface | - | - | ✔ |
+| Locale-independent period labels | ✔ primary | - | - |
+| Responsive layout at 375 / 768 / 1024 / 1440 px | - | - | ✔ |
+| Accessibility: native table semantics, native headings, full-text client names, keyboard reachability | ✔ component markup | - | ✔ |
+| Performance baseline at declared fixture volume | - | ✔ measurement | - |
 
-| No monetary figure appears in any report (BR-105-011) | — | ✔ | ✔ |
+| No monetary figure appears in any report (BR-105-011) | - | ✔ | ✔ |
 
 ### Test-quality constraints
 
@@ -1286,55 +1286,55 @@ and weekly bucketing that composes over daily rows. That justifies a
 | Outcome | F-104-P-001 becomes *measured*. Whether it is closed is the Engineering Review's call, not this plan's |
 
 If the measurement shows the service-layer weekly composition is too
-slow, `docs/architecture.md` §17 permits a dedicated aggregation query —
+slow, `docs/architecture.md` §17 permits a dedicated aggregation query -
 but only then, and only with the measurement as justification.
 
 ---
 
 ## 16. Findings
 
-### 16.1 EPIC-104 findings — classification for EPIC-105
+### 16.1 EPIC-104 findings - classification for EPIC-105
 
 Classification: **A** prerequisite for EPIC-105 · **B** EPIC-105 scope ·
 **C** dependency/risk · **D** deferred · **E** non-applicable.
 
 **No finding is closed by this plan.** Where a Product Decision settles
 the *semantics* a finding was waiting on, the finding's status changes
-from "awaiting clarification" to "target settled, scheduled" — it is
+from "awaiting clarification" to "target settled, scheduled" - it is
 closed only by the phase that implements it, under that phase's review
 and evidence. Classification records impact on the plan.
 
 | Finding | Severity | Class | EPIC-105 treatment |
 | --- | --- | --- | --- |
-| F-104-001 — daily average `/ 30` | Medium | **A + B** | Prerequisite to BR-105-008: if reports compute a correct average while the dashboard divides by 30, the surfaces disagree. Fixed in P105-02 by consuming the already-tested `getPeriodDays`. Interacts with BR-105-015: once a current period ends today, the divisor is the elapsed day count, not the calendar month length |
-| F-104-002 — duplicated percentages; shared statics unreachable | Medium | **A** | **Unchanged architectural constraint of the whole Epic.** Reporting consumes the shared calculations and reproduces no formula — including the new pro-rata capacity calculation (BR-105-017), which must exist exactly once. Consolidation is P105-02 and precedes any published report figure |
-| F-104-003 — `isOngoing` diverges from PD-104-004 | Medium | **A → semantics settled** | **PD-105-004 resolves the semantics: ongoing is `validTo === null`; unlimited (`monthlyContractedMinutes === null`) is a separate concept, and capacity is never a proxy for validity.** The finding stays open until P105-04 implements the separation and corrects the two integration tests that lock the old behaviour. No Product Owner clarification is outstanding |
-| F-104-004 — contract validity and denominator | Medium | **A → target settled** | PD-105-005 settles the denominator (pro-rata over the period, accounting for validity overlap) and PD-105-006 settles the contract list (relevance-driven, out-of-validity time retained and flagged). Implemented in P105-04. OBD-012 still bars any rollover or expiry policy |
-| F-104-005 — workspace timezone unused | Medium | **A → confirmed technical prerequisite** | **PD-105-003 makes this a real prerequisite rather than a deferred improvement: `Workspace.timezone` is the authority for every reporting boundary.** Not resolved during planning; the requirement is documented as BR-105-014 and scheduled in P105-03, which must add the cross-timezone boundary tests that exist in no suite today |
-| F-104-006 — integration tests bound to the current month | High | **A — urgent, decision-independent** | Unchanged by the decisions. Test-durability risk that expires 2026-10-01. Corrected first, in P105-01, because no later phase can close on a red integration gate. P105-01 is pure test durability and must not pre-implement BR-105-014 or BR-105-015 |
-| F-104-007 — page-level `catch` swallows control-flow signals | Medium | **C** | Inherited architectural risk. **Not fixed during planning and not fixed on the dashboard by EPIC-105.** Carried as a forward constraint: `/reports` resolves authorization outside any `try` (§11) |
-| F-104-008 — loading not implemented as specified | Medium | **B (new surfaces) + D (dashboard)** | Reporting does introduce new async surfaces and must define their loading behaviour. Retrofitting dashboard skeletons is deferred |
-| F-104-009 / F-104-P-001 — performance unevidenced | Medium / Low | **C + B** | Reporting adds year-scale aggregation, so a baseline at realistic volume is in scope as a measurement (§15). **F-104-P-001 remains unevidenced until it is measured** and is not closed by assertion. No threshold is introduced (PD-105-008) |
-| F-104-010 — unsound accessibility assertions | Medium | **C** | Constraint, not a fix: new reporting accessibility tests must be able to fail, and the EPIC-104 suite must not be cited as accessibility proof. Repairing those specs is deferred |
-| F-104-011 — `dt`/`dd` without `dl` | Low | **B (new surfaces)** | New reporting surfaces use native table semantics; the invalid pattern is not reproduced. The existing component is not rewritten |
-| F-104-012 — residual accessibility gaps | Low | **B (new surfaces)** | Native headings, no truncation without a full-text alternative, symmetric textual indicators on new surfaces |
-| F-104-013 — weekly aggregation absent; daily unconsumed | Low | **B — confirmed required** | `week` appears in `MASTER_PLAN.md` §15 scope and in `docs/testing-strategy.md` §12, and the Product Owner's period-end decision explicitly names the current week. **Weekly reporting is confirmed in scope for R1-E05.** Delivered in P105-03, composed over the previously unconsumed daily aggregation |
-| F-104-014 — no service-level membership guard | Low | **A/B** | Reporting is the second consumer the finding anticipated. Guard added in P105-02 (SI-105-005). Risk assessed in §10 without being resolved here |
-| F-104-015 — locale-dependent period formatting | Low | **B** | Directly relevant: the non-full-month branch becomes production-reachable as soon as custom ranges exist — and BR-105-015 makes a current month a non-full-month period, so it becomes reachable for the default view too. Explicit-locale formatting in P105-03 |
-| F-104-016 — analytics error path untested | Low | **B** | Reporting must introduce a real error and recovery strategy, exercised by a forced failure |
-| F-104-017 — PD-104-003 period end diverges | Low | **A → resolved semantics** | **PD-105-002 settles it: "through today" is canonical.** The ambiguity between "today" and "end of month" is removed from this plan (BR-105-015). The finding stays open until P105-03 changes `getCurrentMonthPeriod()` and the assertions that depend on the old semantics |
-| F-104-P-002 — timezone complexity, confirmed | Medium | **A → explicit technical requirement** | Promoted by PD-105-003 from a confirmed concern to an explicit technical requirement for period boundaries (BR-105-014), satisfied in P105-03 with cross-timezone tests |
+| F-104-001 - daily average `/ 30` | Medium | **A + B** | Prerequisite to BR-105-008: if reports compute a correct average while the dashboard divides by 30, the surfaces disagree. Fixed in P105-02 by consuming the already-tested `getPeriodDays`. Interacts with BR-105-015: once a current period ends today, the divisor is the elapsed day count, not the calendar month length |
+| F-104-002 - duplicated percentages; shared statics unreachable | Medium | **A** | **Unchanged architectural constraint of the whole Epic.** Reporting consumes the shared calculations and reproduces no formula - including the new pro-rata capacity calculation (BR-105-017), which must exist exactly once. Consolidation is P105-02 and precedes any published report figure |
+| F-104-003 - `isOngoing` diverges from PD-104-004 | Medium | **A → semantics settled** | **PD-105-004 resolves the semantics: ongoing is `validTo === null`; unlimited (`monthlyContractedMinutes === null`) is a separate concept, and capacity is never a proxy for validity.** The finding stays open until P105-04 implements the separation and corrects the two integration tests that lock the old behaviour. No Product Owner clarification is outstanding |
+| F-104-004 - contract validity and denominator | Medium | **A → target settled** | PD-105-005 settles the denominator (pro-rata over the period, accounting for validity overlap) and PD-105-006 settles the contract list (relevance-driven, out-of-validity time retained and flagged). Implemented in P105-04. OBD-012 still bars any rollover or expiry policy |
+| F-104-005 - workspace timezone unused | Medium | **A → confirmed technical prerequisite** | **PD-105-003 makes this a real prerequisite rather than a deferred improvement: `Workspace.timezone` is the authority for every reporting boundary.** Not resolved during planning; the requirement is documented as BR-105-014 and scheduled in P105-03, which must add the cross-timezone boundary tests that exist in no suite today |
+| F-104-006 - integration tests bound to the current month | High | **A - urgent, decision-independent** | Unchanged by the decisions. Test-durability risk that expires 2026-10-01. Corrected first, in P105-01, because no later phase can close on a red integration gate. P105-01 is pure test durability and must not pre-implement BR-105-014 or BR-105-015 |
+| F-104-007 - page-level `catch` swallows control-flow signals | Medium | **C** | Inherited architectural risk. **Not fixed during planning and not fixed on the dashboard by EPIC-105.** Carried as a forward constraint: `/reports` resolves authorization outside any `try` (§11) |
+| F-104-008 - loading not implemented as specified | Medium | **B (new surfaces) + D (dashboard)** | Reporting does introduce new async surfaces and must define their loading behaviour. Retrofitting dashboard skeletons is deferred |
+| F-104-009 / F-104-P-001 - performance unevidenced | Medium / Low | **C + B** | Reporting adds year-scale aggregation, so a baseline at realistic volume is in scope as a measurement (§15). **F-104-P-001 remains unevidenced until it is measured** and is not closed by assertion. No threshold is introduced (PD-105-008) |
+| F-104-010 - unsound accessibility assertions | Medium | **C** | Constraint, not a fix: new reporting accessibility tests must be able to fail, and the EPIC-104 suite must not be cited as accessibility proof. Repairing those specs is deferred |
+| F-104-011 - `dt`/`dd` without `dl` | Low | **B (new surfaces)** | New reporting surfaces use native table semantics; the invalid pattern is not reproduced. The existing component is not rewritten |
+| F-104-012 - residual accessibility gaps | Low | **B (new surfaces)** | Native headings, no truncation without a full-text alternative, symmetric textual indicators on new surfaces |
+| F-104-013 - weekly aggregation absent; daily unconsumed | Low | **B - confirmed required** | `week` appears in `MASTER_PLAN.md` §15 scope and in `docs/testing-strategy.md` §12, and the Product Owner's period-end decision explicitly names the current week. **Weekly reporting is confirmed in scope for R1-E05.** Delivered in P105-03, composed over the previously unconsumed daily aggregation |
+| F-104-014 - no service-level membership guard | Low | **A/B** | Reporting is the second consumer the finding anticipated. Guard added in P105-02 (SI-105-005). Risk assessed in §10 without being resolved here |
+| F-104-015 - locale-dependent period formatting | Low | **B** | Directly relevant: the non-full-month branch becomes production-reachable as soon as custom ranges exist - and BR-105-015 makes a current month a non-full-month period, so it becomes reachable for the default view too. Explicit-locale formatting in P105-03 |
+| F-104-016 - analytics error path untested | Low | **B** | Reporting must introduce a real error and recovery strategy, exercised by a forced failure |
+| F-104-017 - PD-104-003 period end diverges | Low | **A → resolved semantics** | **PD-105-002 settles it: "through today" is canonical.** The ambiguity between "today" and "end of month" is removed from this plan (BR-105-015). The finding stays open until P105-03 changes `getCurrentMonthPeriod()` and the assertions that depend on the old semantics |
+| F-104-P-002 - timezone complexity, confirmed | Medium | **A → explicit technical requirement** | Promoted by PD-105-003 from a confirmed concern to an explicit technical requirement for period boundaries (BR-105-014), satisfied in P105-03 with cross-timezone tests |
 
-### 16.2 Inherited findings — not owned, not closed by EPIC-105
+### 16.2 Inherited findings - not owned, not closed by EPIC-105
 
 | Finding | Origin | Status | Relationship to EPIC-105 |
 | --- | --- | --- | --- |
-| EPIC-003 F-003 — password-reset email provider | EPIC-003 | Open | **Production deployment blocker. Not closed or reinterpreted by EPIC-105** |
-| EPIC-003 F-001 — identity linking | EPIC-003 | Open | Product decision; **not closed by EPIC-105** |
-| P102-F-001 — commercial-terms mutability | EPIC-102 | Open | **Affected.** Utilization denominators, and any revenue figure if PD-105-001 admits one, read live contract fields, so editing a contract retroactively changes historical report figures. Documented, **not resolved**; no snapshots are added |
+| EPIC-003 F-003 - password-reset email provider | EPIC-003 | Open | **Production deployment blocker. Not closed or reinterpreted by EPIC-105** |
+| EPIC-003 F-001 - identity linking | EPIC-003 | Open | Product decision; **not closed by EPIC-105** |
+| P102-F-001 - commercial-terms mutability | EPIC-102 | Open | **Affected.** Utilization denominators, and any revenue figure if PD-105-001 admits one, read live contract fields, so editing a contract retroactively changes historical report figures. Documented, **not resolved**; no snapshots are added |
 | EPIC-003 F-002, F-004 | EPIC-003 | Open | CI/OAuth environment limits; not applicable |
-| F-103-002 — ACTIVE-only client join in time-tracking views | EPIC-103 | Open | Not inherited. Reporting follows PD-104-001 and includes archived clients. The two surfaces differ by design |
-| F-103-001 — `redirect()` inside `catch` | EPIC-103 | Resolved in P103-03 | Pattern recurs as F-104-007; carried as the §11 constraint |
+| F-103-002 - ACTIVE-only client join in time-tracking views | EPIC-103 | Open | Not inherited. Reporting follows PD-104-001 and includes archived clients. The two surfaces differ by design |
+| F-103-001 - `redirect()` inside `catch` | EPIC-103 | Resolved in P103-03 | Pattern recurs as F-104-007; carried as the §11 constraint |
 | F-103-003, F-103-004, F-103-005, F-103-006, F-103-P-001, F-103-P-002 | EPIC-103 | Open | Not applicable to reporting |
 | F-004-001 | EPIC-004 | Open | Reporting creates no workspace |
 | EPIC-002 F-P2-004 | EPIC-002 | Open | `TimeEntry.contractId` is required, so every entry maps to exactly one contract; no unattributed-time case exists in reports |
@@ -1344,10 +1344,10 @@ and evidence. Classification records impact on the plan.
 
 ### 16.3 EPIC-105 planning findings
 
-#### F-105-P-001 — `MASTER_PLAN.md` §15 requires revenue reporting that the project has deliberately deferred
+#### F-105-P-001 - `MASTER_PLAN.md` §15 requires revenue reporting that the project has deliberately deferred
 
 - **Severity:** High (scope integrity)
-- **Status:** **Decision recorded (PD-105-001 — out of scope); documentation reconciliation pending in P105-07**
+- **Status:** **Decision recorded (PD-105-001 - out of scope); documentation reconciliation pending in P105-07**
 - **Description:** §15 lists `revenue by client` in R1-E05 scope. No
   monetary amount is computed anywhere in the codebase; EPIC-104
   declared revenue and all monetary calculation explicit non-goals and
@@ -1356,14 +1356,14 @@ and evidence. Classification records impact on the plan.
 - **Impact:** The Epic's scope cannot be stated without an answer.
   Implementing revenue would silently establish rate, rounding, and
   currency policy; omitting it would silently drop an approved scope
-  item — the exact failure mode §14's reconciliation was written to
+  item - the exact failure mode §14's reconciliation was written to
   prevent.
-- **Recommended resolution / owner:** **Answered — PD-105-001 excludes
+- **Recommended resolution / owner:** **Answered - PD-105-001 excludes
   revenue from EPIC-105.** `MASTER_PLAN.md` §15 is reconciled explicitly
   in P105-07 with a note, not by omission. OBD-001, OBD-002, OBD-011 and
   OBD-016 stay open.
 
-#### F-105-P-002 — three §15 scope items depend on capabilities recorded as absent
+#### F-105-P-002 - three §15 scope items depend on capabilities recorded as absent
 
 - **Severity:** High
 - **Status:** **Sequenced; capability work scheduled**
@@ -1376,17 +1376,17 @@ and evidence. Classification records impact on the plan.
 - **Impact:** A naive reading of §15 would schedule UI work before the
   shared layer can support it, producing report figures that are wrong
   in ways the dashboard currently hides.
-- **Recommended resolution / owner:** Engineering — the P105-03 / P105-04
+- **Recommended resolution / owner:** Engineering - the P105-03 / P105-04
   sequencing. The semantics are settled by PD-105-002, PD-105-003,
   PD-105-005 and PD-105-006; what remains is the capability work
   (timezone-aware construction, weekly aggregation, pro-rata capacity,
   relevance-driven contract selection), which must land before any
   reporting UI consumes it.
 
-#### F-105-P-003 — the week convention lives in a route file and is local-clock based
+#### F-105-P-003 - the week convention lives in a route file and is local-clock based
 
 - **Severity:** Medium
-- **Status:** **CLOSED — resolved in P105-03, verified by final Engineering Review**
+- **Status:** **CLOSED - resolved in P105-03, verified by final Engineering Review**
 - **Description:** `getWeekStart` in `src/app/(app)/time-tracking/page.tsx`
   implemented a Monday-start week from the server's local clock, and
   `loadTimeEntriesForWeek` derived the week end by adding six days. None
@@ -1397,7 +1397,7 @@ and evidence. Classification records impact on the plan.
   UTC-midnight arithmetic (Monday-start, PD-105-009). Time-tracking now
   imports and consumes the shared utility. Commit `6822600`.
 
-#### F-105-P-004 — `docs/testing-strategy.md` §11 still requires revenue reporting tests
+#### F-105-P-004 - `docs/testing-strategy.md` §11 still requires revenue reporting tests
 
 - **Severity:** Low
 - **Status:** Open
@@ -1410,7 +1410,7 @@ and evidence. Classification records impact on the plan.
   is answered, so the reference is removed with an explicit note rather
   than by inventing a requirement.
 
-#### F-105-P-005 — the analytics integration evidence base expires on 2026-10-01
+#### F-105-P-005 - the analytics integration evidence base expires on 2026-10-01
 
 - **Severity:** High (schedule)
 - **Status:** Open
@@ -1419,10 +1419,10 @@ and evidence. Classification records impact on the plan.
 - **Impact:** From that date the integration gate is red, so no EPIC-105
   phase can close on green gates and any new integration evidence is
   unusable until it is fixed.
-- **Recommended resolution / owner:** Engineering — P105-01 runs first
+- **Recommended resolution / owner:** Engineering - P105-01 runs first
   and is independent of every Product Decision.
 
-#### F-105-P-006 — the §15 exit criterion is currently unverifiable
+#### F-105-P-006 - the §15 exit criterion is currently unverifiable
 
 - **Severity:** Medium
 - **Status:** Open
@@ -1434,10 +1434,10 @@ and evidence. Classification records impact on the plan.
 - **Impact:** Without P105-02 the Epic could pass its own tests while
   failing its defining criterion, because both surfaces would be
   compared against whichever implementation each happens to call.
-- **Recommended resolution / owner:** Engineering — P105-02 plus the
+- **Recommended resolution / owner:** Engineering - P105-02 plus the
   dedicated dashboard-agreement integration test in P105-04.
 
-#### F-105-P-007 — no approved performance threshold exists for larger reporting periods
+#### F-105-P-007 - no approved performance threshold exists for larger reporting periods
 
 - **Severity:** Low
 - **Status:** Open, unevidenced
@@ -1450,7 +1450,7 @@ and evidence. Classification records impact on the plan.
 - **Recommended resolution / owner:** Engineering measures and records
   (§15); Product Owner answers PD-105-008 if a gate is wanted.
 
-#### F-105-P-008 — the only analytics-route precedent is the one with the swallowed-signal defect
+#### F-105-P-008 - the only analytics-route precedent is the one with the swallowed-signal defect
 
 - **Severity:** Medium
 - **Status:** Open
@@ -1461,21 +1461,21 @@ and evidence. Classification records impact on the plan.
 - **Impact:** Copying it would make `/reports` authorization redirects
   depend on the same coincidence of layout ordering that currently masks
   the dashboard defect.
-- **Recommended resolution / owner:** Engineering — the §11 constraint
+- **Recommended resolution / owner:** Engineering - the §11 constraint
   and the SI-105-006 E2E test. F-104-007 itself stays open and owned by
   EPIC-104's register.
 
-#### F-105-P-009 — out-of-validity consumption can exceed a zero pro-rata capacity
+#### F-105-P-009 - out-of-validity consumption can exceed a zero pro-rata capacity
 
 - **Severity:** Low
-- **Status:** Open — derived from the resolved decisions, no decision required
+- **Status:** Open - derived from the resolved decisions, no decision required
 - **Description:** PD-105-006 retains time recorded outside a contract's
   validity and flags it, while PD-105-005 derives capacity from the
   overlap between the reporting period and that validity interval. A
   period that lies entirely outside a contract's validity therefore
   yields consumption greater than zero against a pro-rata capacity of
-  zero. The existing rule already covers the arithmetic — a zero or
-  absent denominator yields `null` (BR-105-007) — so the combination
+  zero. The existing rule already covers the arithmetic - a zero or
+  absent denominator yields `null` (BR-105-007) - so the combination
   produces consumed hours with no percentage plus the out-of-validity
   flag. The risk is that an implementer reads the zero denominator as a
   reason to drop the row, which PD-105-006 forbids, or invents a
@@ -1483,7 +1483,7 @@ and evidence. Classification records impact on the plan.
 - **Impact:** Silently dropping such a row would make the contract
   report's total diverge from the Time Tracking total, the exact
   outcome PD-105-006 was decided to prevent.
-- **Recommended resolution / owner:** Engineering — P105-04 asserts this
+- **Recommended resolution / owner:** Engineering - P105-04 asserts this
   specific combination explicitly: consumption retained, percentage
   `null`, out-of-validity flag set, no invented capacity. No Product
   Decision is required; the two decisions already determine the
@@ -1495,51 +1495,51 @@ Findings raised by an implementation phase rather than by planning.
 They follow the EPIC-104 convention: `F-105-NNN` for implementation and
 review findings, `F-105-P-NNN` for planning findings.
 
-#### F-105-002 — missing weekly aggregation (raised by P105-03 Engineering Review)
+#### F-105-002 - missing weekly aggregation (raised by P105-03 Engineering Review)
 
 - **Severity:** Blocking
-- **Status:** **CLOSED — remediated in corrective commit `6822600`, verified by final P105-03 Engineering Review**
+- **Status:** **CLOSED - remediated in corrective commit `6822600`, verified by final P105-03 Engineering Review**
 - **Description:** Initial P105-03 delivery (`428f6e4`) omitted `WeeklyAnalytics`, `ReportingPeriodKind`, and `AnalyticsService.getWeeklyAnalytics`, all of which are explicitly in the approved P105-03 scope.
 - **Resolution:** `WeeklyAnalytics` and `ReportingPeriodKind` added to `src/domain/analytics-types.ts`. `getWeeklyAnalytics` added to `AnalyticsService`, composed from `getDailyAnalytics` with no new SQL. Membership guard and workspace isolation preserved. 10 integration tests added in `tests/integration/analytics/analytics-weekly.test.ts` proving weekly totals equal daily row sums, empty-week semantics, workspace isolation, membership rejection, and invalid-period rejection.
 
-#### F-105-003 — local `getWeekStart` remained in `time-tracking/page.tsx` (raised by P105-03 Engineering Review)
+#### F-105-003 - local `getWeekStart` remained in `time-tracking/page.tsx` (raised by P105-03 Engineering Review)
 
 - **Severity:** Blocking
-- **Status:** **CLOSED — remediated in corrective commit `6822600`, verified by final P105-03 Engineering Review**
+- **Status:** **CLOSED - remediated in corrective commit `6822600`, verified by final P105-03 Engineering Review**
 - **Description:** Initial P105-03 delivery left a local `getWeekStart` implementation using `Date#setDate` (local-clock) in `src/app/(app)/time-tracking/page.tsx`, duplicating the Monday-week convention that should be exclusively in the shared layer.
 - **Resolution:** Local function removed; two call sites now use `getWeekStartFromDate` imported from `@/lib/analytics-periods`. The shared helper uses UTC-midnight arithmetic consistent with the period constructors. Commit `6822600`.
 
-#### F-105-004 — missing integration proof of persisted `Workspace.timezone` (raised by P105-03 Engineering Review)
+#### F-105-004 - missing integration proof of persisted `Workspace.timezone` (raised by P105-03 Engineering Review)
 
 - **Severity:** Blocking
-- **Status:** **CLOSED — remediated in corrective commit `6822600`, verified by final P105-03 Engineering Review**
+- **Status:** **CLOSED - remediated in corrective commit `6822600`, verified by final P105-03 Engineering Review**
 - **Description:** Initial P105-03 delivery had no integration test proving the production chain: persisted `Workspace.timezone` → `resolveWorkspaceContext` → `WorkspaceContext.timezone` → `AnalyticsService` → period boundary.
 - **Resolution:** `tests/integration/analytics/analytics-timezone-propagation.test.ts` added. Clock pinned to `2026-09-16T01:00:00Z` via `vi.useFakeTimers`. Workspace with `timezone: "America/New_York"` persisted via repository; context resolved via the real `resolveWorkspaceContext` call (not manually constructed); period end asserted as `2026-09-15` (workspace-local today); UTC Sep 16 entry excluded. Sanity test confirms UTC workspace sees Sep 16. Commit `6822600`.
 
-#### F-105-005 — duplicate `createRepositories()` in `current-workspace.ts` (raised by P105-03 Engineering Review)
+#### F-105-005 - duplicate `createRepositories()` in `current-workspace.ts` (raised by P105-03 Engineering Review)
 
 - **Severity:** Non-blocking (efficiency)
-- **Status:** **CLOSED — remediated in corrective commit `6822600`, verified by final P105-03 Engineering Review**
+- **Status:** **CLOSED - remediated in corrective commit `6822600`, verified by final P105-03 Engineering Review**
 - **Description:** `src/infrastructure/workspace/current-workspace.ts` called `createRepositories()` twice, creating two Prisma client instances per request.
 - **Resolution:** Single `const repos = createRepositories()` instance used for both `repos.members` and `repos.workspaces`. Commit `6822600`.
 
-#### F-105-006 — optional `workspaces` parameter permitted silent UTC fallback (raised by P105-03 Engineering Review)
+#### F-105-006 - optional `workspaces` parameter permitted silent UTC fallback (raised by P105-03 Engineering Review)
 
 - **Severity:** Non-blocking (design risk)
-- **Status:** **CLOSED — remediated in corrective commit `6822600`, verified by final P105-03 Engineering Review**
+- **Status:** **CLOSED - remediated in corrective commit `6822600`, verified by final P105-03 Engineering Review**
 - **Description:** `requireWorkspaceAccess` accepted `workspaces?: WorkspaceRepository`, making the timezone fallback to `"UTC"` possible on any call site that omitted the argument.
 - **Resolution:** Parameter made required (`workspaces: WorkspaceRepository`). Conditional branch removed; workspace record always fetched. All affected integration and unit test callers updated to pass the repository. No production call site required the optional form. Commit `6822600`.
 
-#### F-105-007 — stale comment in `current-month-dates.ts` (raised by P105-03 Engineering Review)
+#### F-105-007 - stale comment in `current-month-dates.ts` (raised by P105-03 Engineering Review)
 
 - **Severity:** Non-blocking (documentation)
-- **Status:** **CLOSED — remediated in corrective commit `6822600`, verified by final P105-03 Engineering Review**
+- **Status:** **CLOSED - remediated in corrective commit `6822600`, verified by final P105-03 Engineering Review**
 - **Description:** `tests/integration/current-month-dates.ts` contained a comment describing `Workspace.timezone` authority and through-today semantics as future P105-03 work.
 - **Resolution:** Comment updated to describe the delivered P105-03 behavior (BR-105-014, BR-105-015). Commit `6822600`.
 
-#### F-105-001 — pre-existing E2E failure in the time-tracking journey
+#### F-105-001 - pre-existing E2E failure in the time-tracking journey
 
-- **Severity:** Medium — blocks the E2E release gate from P105-05, with
+- **Severity:** Medium - blocks the E2E release gate from P105-05, with
   no production impact established either way
 - **Status:** **OPEN.** Raised during P105-02. Not owned by P105-02, not
   resolved, not closed
@@ -1566,8 +1566,8 @@ review findings, `F-105-P-NNN` for planning findings.
 
   | Commit | Role | Result |
   | --- | --- | --- |
-  | `134800f` | baseline — P105-01, parent of P105-02 | FAIL, ~19.8 s |
-  | `756649d` | HEAD — P105-02 | FAIL, ~20.3 s |
+  | `134800f` | baseline - P105-01, parent of P105-02 | FAIL, ~19.8 s |
+  | `756649d` | HEAD - P105-02 | FAIL, ~20.3 s |
 
   Both runs selected exactly one test, verified with `--list`
   (`Total: 1 test in 1 file`), and failed at the same line, on the same
@@ -1588,22 +1588,22 @@ review findings, `F-105-P-NNN` for planning findings.
   From **P105-05 onward the E2E gate becomes applicable and requires
   exit 0 with 0 failed and 0 skipped**, so this failure must be resolved
   before P105-05 can close.
-- **Recommended resolution / owner:** Engineering — diagnose and resolve
+- **Recommended resolution / owner:** Engineering - diagnose and resolve
   before P105-05 closes; P105-06 owns the consolidated E2E evidence.
   The finding is closed only by the phase that resolves it, under its
   own review, and only once the full suite passes with 0 failed and
   0 skipped.
 
-#### F-105-008 — test-comment arithmetic description imprecise (raised by final P105-03 Engineering Review)
+#### F-105-008 - test-comment arithmetic description imprecise (raised by final P105-03 Engineering Review)
 
 - **Severity:** Non-blocking (documentation/test comment)
-- **Status:** **OPEN — non-blocking**
+- **Status:** **OPEN - non-blocking**
 - **Location:** `tests/integration/analytics/analytics-weekly.test.ts`, assertion comment around `totalMinutes = 1080`
 - **Description:** The comment reads `// 480 + 360 + 240`, collapsing Wednesday's two separate records (300 billable + 60 non-billable = 360) without stating that `360` is the combined total. The assertion `toBe(1080)` is arithmetically correct and the test passes. This is a readability nit only; no semantic defect.
 - **Impact:** None on correctness. A future reader may be momentarily confused by the entry count versus the comment.
-- **Recommended resolution / owner:** Engineering — correct the comment inline during any phase that touches this file, or during P105-07 documentation cleanup. No corrective commit required.
+- **Recommended resolution / owner:** Engineering - correct the comment inline during any phase that touches this file, or during P105-07 documentation cleanup. No corrective commit required.
 
-#### Test-environment note — orphaned Playwright `webServer` on port 3000 (resolved)
+#### Test-environment note - orphaned Playwright `webServer` on port 3000 (resolved)
 
 Not a finding against the repository; recorded so the failure mode is
 recognised rather than rediagnosed.
@@ -1661,7 +1661,7 @@ Counts are reported per suite and never combined into one figure.
    the daily rows and the monthly total.
 8. Archived-client time remains counted and labelled (PD-104-001).
 9. Utilization numerators use all tracked time (PD-104-002).
-10. Zero denominators render `—`; zero-activity periods render the empty
+10. Zero denominators render `-`; zero-activity periods render the empty
     state; no fabricated figure appears anywhere.
 11. Invalid period input fails closed with the established error
     contract; no rejected input is silently converted to an empty
@@ -1702,11 +1702,11 @@ The distinction established by EPIC-104 is preserved.
 
 Outstanding regardless of EPIC-105's outcome:
 
-- **EPIC-003 F-003** — password-reset email provider. Production
+- **EPIC-003 F-003** - password-reset email provider. Production
   deployment blocker. Not owned, addressed, or closed by EPIC-105.
-- **EPIC-003 F-001** — identity linking. Product decision. Not closed by
+- **EPIC-003 F-001** - identity linking. Product decision. Not closed by
   EPIC-105.
-- **P102-F-001** — commercial-terms mutability. Utilization denominators
+- **P102-F-001** - commercial-terms mutability. Utilization denominators
   and any future revenue figure read live contract fields, so historical
   report figures remain retroactively mutable. Documented, not resolved.
   No snapshots are added.
@@ -1729,21 +1729,21 @@ Outstanding regardless of EPIC-105's outcome:
 
 | Check | Status |
 | --- | --- |
-| Scope consistent with `MASTER_PLAN.md` §15 | YES — baseline quoted verbatim and reconciled item by item; `revenue by client` is excluded by an explicit Product Owner decision (PD-105-001) and `MASTER_PLAN.md` §15 is reconciled in P105-07, not dropped silently |
-| Non-goals explicit | YES — §5, each with its authority; revenue is now unconditional |
-| All blocking Product Decisions resolved | YES — PD-105-001 … PD-105-006, recorded verbatim with consequences in §7 |
-| Non-blocking decisions | YES — six accepted defaults, none promoted to a blocker |
+| Scope consistent with `MASTER_PLAN.md` §15 | YES - baseline quoted verbatim and reconciled item by item; `revenue by client` is excluded by an explicit Product Owner decision (PD-105-001) and `MASTER_PLAN.md` §15 is reconciled in P105-07, not dropped silently |
+| Non-goals explicit | YES - §5, each with its authority; revenue is now unconditional |
+| All blocking Product Decisions resolved | YES - PD-105-001 … PD-105-006, recorded verbatim with consequences in §7 |
+| Non-blocking decisions | YES - six accepted defaults, none promoted to a blocker |
 | No new Product Decision created to replace a resolved one | YES |
-| Business Rules reflect the decisions | YES — BR-105-014 … BR-105-018 added, BR-105-011 made absolute |
-| Finding dependencies classified | YES — §16.1, all eighteen EPIC-104 items classified; three reclassified as "semantics settled, scheduled"; **none closed** |
-| Findings not artificially closed | YES — each remains open until the phase that implements it closes it with evidence |
-| Phases implementable | YES — every phase has a settled semantic target; P105-01 may start immediately and is decision-independent |
-| Dependencies explicit | YES — §6, including OBD-012 as a narrow open dependency on rollover/expiry only |
-| Commit plan coherent | YES — §13, one commit per phase, planning folded into one commit |
-| Test strategy concrete | YES — §14, per-behaviour level assignment, per-suite counts, explicit anti-patterns, decision-specific rows |
-| Acceptance criteria coherent | YES — §17, nineteen criteria traceable to the rules and decisions |
-| Security / isolation explicit | YES — §10, SI-105-001 … SI-105-006 with verification levels |
-| Production readiness distinct from engineering completion | YES — §18, inherited blockers untouched |
+| Business Rules reflect the decisions | YES - BR-105-014 … BR-105-018 added, BR-105-011 made absolute |
+| Finding dependencies classified | YES - §16.1, all eighteen EPIC-104 items classified; three reclassified as "semantics settled, scheduled"; **none closed** |
+| Findings not artificially closed | YES - each remains open until the phase that implements it closes it with evidence |
+| Phases implementable | YES - every phase has a settled semantic target; P105-01 may start immediately and is decision-independent |
+| Dependencies explicit | YES - §6, including OBD-012 as a narrow open dependency on rollover/expiry only |
+| Commit plan coherent | YES - §13, one commit per phase, planning folded into one commit |
+| Test strategy concrete | YES - §14, per-behaviour level assignment, per-suite counts, explicit anti-patterns, decision-specific rows |
+| Acceptance criteria coherent | YES - §17, nineteen criteria traceable to the rules and decisions |
+| Security / isolation explicit | YES - §10, SI-105-001 … SI-105-006 with verification levels |
+| Production readiness distinct from engineering completion | YES - §18, inherited blockers untouched |
 | OBDs closed | NONE |
 | Blocking Product Decisions outstanding | **NONE** |
 
@@ -1760,12 +1760,12 @@ integration suite fails from 2026-10-01.
 ## Document Status
 
 ```text
-EPIC-105 — Reporting
+EPIC-105 - Reporting
 PLANNING: COMPLETE
-BLOCKING PRODUCT DECISIONS: NONE — ALL SIX RESOLVED
+BLOCKING PRODUCT DECISIONS: NONE - ALL SIX RESOLVED
 OPEN DEPENDENCY: OBD-012 (rollover / expiry semantics only)
-IMPLEMENTATION: COMPLETE — P105-07 DONE
-ENGINEERING REVIEW: COMPLETE — see docs/epics/EPIC-105/engineering-review.md
+IMPLEMENTATION: COMPLETE - P105-07 DONE
+ENGINEERING REVIEW: COMPLETE - see docs/epics/EPIC-105/engineering-review.md
 ```
 
 Next artifact: the P105-01 commit

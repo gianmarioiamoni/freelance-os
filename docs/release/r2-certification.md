@@ -1,4 +1,4 @@
-# R2 Release Certification — Revenue Operations
+# R2 Release Certification - Revenue Operations
 
 **Gate:** R2 Release Certification  
 **Date:** 2026-09-26  
@@ -33,14 +33,14 @@ R2 remains **NOT PRODUCTION-READY**. Release has **not** occurred. No release ta
 | Criterion | Result |
 | --- | --- |
 | E01–E05 certified | **MET** |
-| Release-level QA completed | **MET** — PASS WITH FINDINGS |
-| UX Validation completed | **MET** — PASS WITH FINDINGS |
-| Production Validation completed | **MET** — PASS WITH FINDINGS |
+| Release-level QA completed | **MET** - PASS WITH FINDINGS |
+| UX Validation completed | **MET** - PASS WITH FINDINGS |
+| Production Validation completed | **MET** - PASS WITH FINDINGS |
 | No BLOCKER | **MET** |
 | No HIGH open | **MET** |
 | No unresolved PO decision blocking R2 | **MET** |
 | Repository clean | **MET** |
-| HEAD identified | **MET** — `670e7505857649efe62775d7e12d47e60c747080` |
+| HEAD identified | **MET** - `670e7505857649efe62775d7e12d47e60c747080` |
 | Certified scope explicit | **MET** |
 | Exclusions explicit | **MET** |
 | Environment limitations explicit | **MET** |
@@ -180,7 +180,7 @@ Production Validation declared: the certified HEAD is operationally eligible to 
 
 Verified: no new R2 regression; no security blocker; no semantic regression E01–E05; no new alert model; no FX; no mixed-currency totals; full integration green; R2-relevant E2E green; typecheck / lint / build green; no release blocker.
 
-Finding: F-R2-QA-001 LOW — documentation hygiene; stale “R2 in planning” headers. No production impact.
+Finding: F-R2-QA-001 LOW - documentation hygiene; stale “R2 in planning” headers. No production impact.
 
 ### UX Validation
 
@@ -206,14 +206,14 @@ Classifications preserved. Not reclassified. Not remediated.
 
 | ID | Severity | Status | Note |
 | --- | --- | --- | --- |
-| F-E02-001 | HIGH | CLOSED | — |
-| F-E02-002 | MEDIUM | CLOSED | — |
+| F-E02-001 | HIGH | CLOSED | - |
+| F-E02-002 | MEDIUM | CLOSED | - |
 | F-E02-004 | LOW | OPEN | pre-existing / test hygiene; non-blocking |
 | F-E03-001…005 | LOW | ACCEPTED | non-blocking |
-| E04 accepted set | — | ACCEPTED | consumption duplication; allocation list efficiency; selected test / E2E gaps; extra workspace load; parallel contracts timeout; stale schema sentence |
+| E04 accepted set | - | ACCEPTED | consumption duplication; allocation list efficiency; selected test / E2E gaps; extra workspace load; parallel contracts timeout; stale schema sentence |
 | F-E05-01-002 | LOW | OPEN residual | non-blocking |
-| F-E05-01-003 | — | ACCEPTED | Annual Overview unfiltered |
-| F-E05-03-001 | — | ACCEPTED | CSV presentation serialization |
+| F-E05-01-003 | - | ACCEPTED | Annual Overview unfiltered |
+| F-E05-03-001 | - | ACCEPTED | CSV presentation serialization |
 | F-R2-QA-001 | LOW | OPEN | documentation hygiene; stale “R2 in planning” headers |
 | F-R2-UX-001 | MEDIUM | OPEN / non-blocking | Alerts generic / no entity link |
 | F-R2-UX-002 | LOW | OPEN / non-blocking | filtered-empty vs first-use empty |

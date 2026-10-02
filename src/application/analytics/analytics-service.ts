@@ -456,7 +456,7 @@ export class AnalyticsService {
    */
   static formatPercentage(percentage: number | null): string {
     if (percentage === null) {
-      return "—";
+      return "-";
     }
     return `${Math.round(percentage)}%`;
   }
@@ -478,12 +478,12 @@ export class AnalyticsService {
    *   overlapDays = max(0, min(periodEnd, contractEffectiveEnd) − max(periodStart, validFrom) + 1)
    *   proRataMinutes = monthlyContractedMinutes × (overlapDays / periodDays)
    *
-   * Boundary convention: [validFrom, validTo) — validTo is exclusive.
+   * Boundary convention: [validFrom, validTo) - validTo is exclusive.
    * When validTo is null the contract is ongoing; its effective end is treated as
    * one day past the period end, so the overlap is always the full period (or
    * whatever portion follows validFrom).
    *
-   * Returns null when monthlyContractedMinutes is null — no denominator is invented.
+   * Returns null when monthlyContractedMinutes is null - no denominator is invented.
    * No rollover, carry-over, or expiry semantics are applied (OBD-012 open).
    *
    * @param monthlyContractedMinutes - Monthly capacity in minutes, or null.
@@ -503,7 +503,7 @@ export class AnalyticsService {
 
     const periodDays = getPeriodDays(period);
 
-    // [validFrom, validTo) — validTo is exclusive, so the last inclusive day is validTo − 1.
+    // [validFrom, validTo) - validTo is exclusive, so the last inclusive day is validTo − 1.
     // When validTo is null the contract never ends; effective inclusive end = periodEnd.
     const contractInclusiveEnd =
       validTo === null

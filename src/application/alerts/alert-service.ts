@@ -34,7 +34,7 @@ import type { InvoiceRepository, PaymentRepository } from "@/domain/repositories
 const DEFAULT_CONTRACT_WARNING_PERCENT = 80;
 
 /**
- * AlertService — application service for alert evaluation, deduplication,
+ * AlertService - application service for alert evaluation, deduplication,
  * resolution, re-trigger, and notification creation.
  *
  * Responsibilities (P106-02):
@@ -45,10 +45,10 @@ const DEFAULT_CONTRACT_WARNING_PERCENT = 80;
  * - Create in-app notifications for workspace member on alert creation.
  *
  * Out of scope for this service:
- * - AR-003, AR-004 (CAPACITY_WARNING / CAPACITY_EXCEEDED) — DEFERRED PD-106-001.
- * - Email, Slack, push delivery — PD-106-002 resolved: in-app only.
- * - TimeEntry trigger wiring — P106-03.
- * - UI — P106-04.
+ * - AR-003, AR-004 (CAPACITY_WARNING / CAPACITY_EXCEEDED) - DEFERRED PD-106-001.
+ * - Email, Slack, push delivery - PD-106-002 resolved: in-app only.
+ * - TimeEntry trigger wiring - P106-03.
+ * - UI - P106-04.
  */
 export class AlertService {
   constructor(
@@ -251,7 +251,7 @@ export class AlertService {
     type: "CONTRACT_WARNING" | "CONTRACT_EXCEEDED",
     threshold: number,
   ): Promise<AlertConditionOutcome> {
-    // BR-104-011: null utilization means unlimited contract — no alert
+    // BR-104-011: null utilization means unlimited contract - no alert
     if (utilization.utilizationPercentage === null) {
       return { action: "none" };
     }
@@ -268,18 +268,18 @@ export class AlertService {
       return this.resolveIfActive(context, utilization.contractId, type, period.startDate);
     }
 
-    // Condition met — find existing alert by base key
+    // Condition met - find existing alert by base key
     const existing = await this.alerts.findAlertByDeduplicationKey(
       context.workspaceId,
       baseKey,
     );
 
     if (existing !== null && existing.resolvedAt === null) {
-      // Active alert exists — deduplicate
+      // Active alert exists - deduplicate
       return { action: "deduplicated" };
     }
 
-    // Either no alert or resolved alert — create new
+    // Either no alert or resolved alert - create new
     const dedupKey =
       existing !== null && existing.resolvedAt !== null
         ? buildRetriggerDedupKey(
@@ -332,7 +332,7 @@ export class AlertService {
   /**
    * Creates an alert and its corresponding in-app notification.
    * Race condition: if a concurrent evaluation already inserted the same key,
-   * UniqueConstraintViolationError is thrown by the repository — treated as
+   * UniqueConstraintViolationError is thrown by the repository - treated as
    * idempotent success (deduplicated at the DB level).
    */
   private async createAlertAndNotify(
@@ -356,7 +356,7 @@ export class AlertService {
       });
     } catch (err) {
       if (err instanceof UniqueConstraintViolationError) {
-        // Concurrent evaluation already created this alert — idempotent success
+        // Concurrent evaluation already created this alert - idempotent success
         return { action: "deduplicated" };
       }
       throw err;

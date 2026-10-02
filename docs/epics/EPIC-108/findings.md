@@ -1,6 +1,6 @@
-# EPIC-108 — Findings Matrix
+# EPIC-108 - Findings Matrix
 
-**Epic:** EPIC-108 — Post-Release Hardening  
+**Epic:** EPIC-108 - Post-Release Hardening  
 **Scope of this record:** Stream A, Stream E, Stream B, Stream D, and Stream C documentation closure  
 **ER-108-A:** PASS  
 **ER-108-E:** PASS  
@@ -9,7 +9,7 @@
 **ER-108-D2:** PASS  
 **ER-108-D3:** PASS  
 **Stream C verification:** PASS  
-**Final ER:** PASS WITH FINDINGS — `docs/epics/EPIC-108/engineering-review.md`  
+**Final ER:** PASS WITH FINDINGS - `docs/epics/EPIC-108/engineering-review.md`  
 **Does not rewrite:** MASTER_PLAN §34 / §35, R1 certification, historical QA / UX / EPIC-107 rows
 
 ---
@@ -31,7 +31,7 @@
 
 ---
 
-## FINDING-QA-002 — `getDateRangePeriod` process-timezone leak
+## FINDING-QA-002 - `getDateRangePeriod` process-timezone leak
 
 | Field | Value |
 |---|---|
@@ -46,7 +46,7 @@
 
 ---
 
-## FINDING-INT-001 — `analytics-isolation.test.ts` future date UTC normalization
+## FINDING-INT-001 - `analytics-isolation.test.ts` future date UTC normalization
 
 | Field | Value |
 |---|---|
@@ -62,7 +62,7 @@
 
 ---
 
-## FINDING-108-001 — `isDateInPeriod` local getters
+## FINDING-108-001 - `isDateInPeriod` local getters
 
 | Field | Value |
 |---|---|
@@ -93,7 +93,7 @@
 
 ---
 
-## F-104-007 — page-level `catch` swallows Next.js `NEXT_REDIRECT`
+## F-104-007 - page-level `catch` swallows Next.js `NEXT_REDIRECT`
 
 | Field | Value |
 |---|---|
@@ -124,7 +124,7 @@ No application or test code was changed for Stream B.
 
 ---
 
-## FINDING-QA-001 — Flaky release-gate registration
+## FINDING-QA-001 - Flaky release-gate registration
 
 | Field | Value |
 |---|---|
@@ -132,13 +132,13 @@ No application or test code was changed for Stream B.
 | **Status** | CLOSED |
 | **Classification** | historical flake not reproduced |
 | **Evidence** | 3/3 isolated release-gate E2E PASS (`CI=true pnpm test:e2e --workers=1 tests/e2e/mvp-integration-journey.spec.ts`) |
-| **Fix** | none — no test/app change |
+| **Fix** | none - no test/app change |
 | **Closure review** | ER-108-B PASS |
 | **Origin** | `docs/qa/qa-report.md` (historical OPEN / FLAKY at QA Gate) |
 
 ---
 
-## FINDING-INT-002 — `auth.spec.ts` sign-out timing
+## FINDING-INT-002 - `auth.spec.ts` sign-out timing
 
 | Field | Value |
 |---|---|
@@ -152,7 +152,7 @@ No application or test code was changed for Stream B.
 
 ---
 
-## FINDING-INT-003 — password-reset E2E
+## FINDING-INT-003 - password-reset E2E
 
 | Field | Value |
 |---|---|
@@ -183,7 +183,7 @@ No application or test code was changed for Stream B.
 
 ---
 
-## F-104-011 — description-list markup without a `dl` ancestor
+## F-104-011 - description-list markup without a `dl` ancestor
 
 | Field | Value |
 |---|---|
@@ -199,7 +199,7 @@ No application or test code was changed for Stream B.
 
 ---
 
-## F-104-012 — residual accessibility-specification gaps
+## F-104-012 - residual accessibility-specification gaps
 
 | Field | Value |
 |---|---|
@@ -217,7 +217,7 @@ No application or test code was changed for Stream B.
 
 ---
 
-## F-104-010 — several accessibility assertions cannot fail
+## F-104-010 - several accessibility assertions cannot fail
 
 | Field | Value |
 |---|---|
@@ -252,7 +252,7 @@ No application or test code was changed for Stream B.
 
 ---
 
-## FINDING-UX-004 — Custom report period is not selectable in the UI
+## FINDING-UX-004 - Custom report period is not selectable in the UI
 
 | Field | Value |
 |---|---|

@@ -98,8 +98,8 @@ async function logEntry(
 // Boundary cases
 // ---------------------------------------------------------------------------
 
-describe("P106-05 — boundary conditions (integration)", () => {
-  describe("Case 1 — below threshold (<80%)", () => {
+describe("P106-05 - boundary conditions (integration)", () => {
+  describe("Case 1 - below threshold (<80%)", () => {
     it("produces no alert and no notification when utilization is below 80%", async () => {
       // 10h = 600 min contracted; 79% ≈ 474 min
       const context = await buildContext("boundary-below");
@@ -121,7 +121,7 @@ describe("P106-05 — boundary conditions (integration)", () => {
     });
   });
 
-  describe("Case 2 — exact warning threshold (=80%)", () => {
+  describe("Case 2 - exact warning threshold (=80%)", () => {
     it("creates CONTRACT_WARNING at exactly 80%", async () => {
       // 10h = 600 min; 80% = 480 min
       const context = await buildContext("boundary-exact80");
@@ -148,7 +148,7 @@ describe("P106-05 — boundary conditions (integration)", () => {
     });
   });
 
-  describe("Case 3 — above warning / below exceeded (80% < u < 100%)", () => {
+  describe("Case 3 - above warning / below exceeded (80% < u < 100%)", () => {
     it("creates only CONTRACT_WARNING (no CONTRACT_EXCEEDED) for 90%", async () => {
       // 10h = 600 min; 90% = 540 min
       const context = await buildContext("boundary-warning-only");
@@ -167,7 +167,7 @@ describe("P106-05 — boundary conditions (integration)", () => {
     });
   });
 
-  describe("Case 4 — exact exceeded boundary (=100%)", () => {
+  describe("Case 4 - exact exceeded boundary (=100%)", () => {
     it("creates both CONTRACT_WARNING and CONTRACT_EXCEEDED at exactly 100%", async () => {
       // 10h = 600 min; 100% = 600 min
       const context = await buildContext("boundary-exact100");
@@ -187,7 +187,7 @@ describe("P106-05 — boundary conditions (integration)", () => {
     });
   });
 
-  describe("Case 5 — above exceeded (>100%)", () => {
+  describe("Case 5 - above exceeded (>100%)", () => {
     it("creates both CONTRACT_WARNING and CONTRACT_EXCEEDED above 100%", async () => {
       // 10h = 600 min; 700 min = 116%
       const context = await buildContext("boundary-above100");
@@ -206,12 +206,12 @@ describe("P106-05 — boundary conditions (integration)", () => {
     });
   });
 
-  describe("Case 6 — unlimited contract (contractedMinutes = null)", () => {
+  describe("Case 6 - unlimited contract (contractedMinutes = null)", () => {
     it("produces no alert for an unlimited contract regardless of minutes logged", async () => {
       const context = await buildContext("boundary-unlimited");
       const { client, contract } = await buildContract(context, null);
 
-      // Log max allowed duration — unlimited contract still produces no alert
+      // Log max allowed duration - unlimited contract still produces no alert
       await logEntry(context, client.id, contract.id, 1440);
 
       const svc = makeAlertService();
@@ -228,10 +228,10 @@ describe("P106-05 — boundary conditions (integration)", () => {
 });
 
 // ---------------------------------------------------------------------------
-// Deduplication — via AlertService integration path
+// Deduplication - via AlertService integration path
 // ---------------------------------------------------------------------------
 
-describe("P106-05 — deduplication (integration)", () => {
+describe("P106-05 - deduplication (integration)", () => {
   it("first evaluation creates alert + notification", async () => {
     const context = await buildContext("dedup-first");
     const { client, contract } = await buildContract(context, 10);
@@ -252,7 +252,7 @@ describe("P106-05 — deduplication (integration)", () => {
     const svc = makeAlertService();
     await svc.evaluateContractAlerts(context); // first
 
-    const secondResult = await svc.evaluateContractAlerts(context); // second — same condition
+    const secondResult = await svc.evaluateContractAlerts(context); // second - same condition
 
     const contractResult = secondResult.contractResults.find(
       (r) => r.contractId === contract.id,
@@ -274,10 +274,10 @@ describe("P106-05 — deduplication (integration)", () => {
 });
 
 // ---------------------------------------------------------------------------
-// Resolution — condition drops below threshold
+// Resolution - condition drops below threshold
 // ---------------------------------------------------------------------------
 
-describe("P106-05 — resolution (integration)", () => {
+describe("P106-05 - resolution (integration)", () => {
   it("resolves active alert when utilization drops below threshold via TimeEntry update", async () => {
     const context = await buildContext("resolve-update");
     const { client, contract } = await buildContract(context, 10);
@@ -303,7 +303,7 @@ describe("P106-05 — resolution (integration)", () => {
     expect(contractResult?.warning.action).toBe("resolved");
     expect(resolveResult.alertsResolved).toBeGreaterThanOrEqual(1);
 
-    // Notification remains persisted — resolution does not delete notifications
+    // Notification remains persisted - resolution does not delete notifications
     const notifications = await repositories.notifications.listNotificationsForUser(
       context.workspaceId,
       context.userId,
@@ -357,10 +357,10 @@ describe("P106-05 — resolution (integration)", () => {
 });
 
 // ---------------------------------------------------------------------------
-// Re-trigger — resolve then re-fire
+// Re-trigger - resolve then re-fire
 // ---------------------------------------------------------------------------
 
-describe("P106-05 — re-trigger (integration)", () => {
+describe("P106-05 - re-trigger (integration)", () => {
   it("creates a new alert after resolution when condition fires again", async () => {
     const context = await buildContext("retrigger");
     const { client, contract } = await buildContract(context, 10);
@@ -402,7 +402,7 @@ describe("P106-05 — re-trigger (integration)", () => {
 // Threshold override via WorkspaceSettings
 // ---------------------------------------------------------------------------
 
-describe("P106-05 — threshold override (integration)", () => {
+describe("P106-05 - threshold override (integration)", () => {
   it("respects WorkspaceSettings.contractWarningPercent when set to non-default", async () => {
     // Set custom threshold to 90%
     const context = await buildContext("threshold-override");
@@ -415,7 +415,7 @@ describe("P106-05 — threshold override (integration)", () => {
     });
     const { client, contract } = await buildContract(context, 10);
 
-    // 85% = 510 min — below 90% threshold, should NOT fire
+    // 85% = 510 min - below 90% threshold, should NOT fire
     await logEntry(context, client.id, contract.id, 510);
     const svc = makeAlertService();
     const result = await svc.evaluateContractAlerts(context);
@@ -432,7 +432,7 @@ describe("P106-05 — threshold override (integration)", () => {
 // Workspace isolation (integration path)
 // ---------------------------------------------------------------------------
 
-describe("P106-05 — workspace isolation (integration)", () => {
+describe("P106-05 - workspace isolation (integration)", () => {
   it("workspace B cannot see workspace A notifications", async () => {
     const contextA = await buildContext("ws-iso-a");
     const contextB = await buildContext("ws-iso-b");
@@ -461,7 +461,7 @@ describe("P106-05 — workspace isolation (integration)", () => {
 // Notification ownership / read state (integration)
 // ---------------------------------------------------------------------------
 
-describe("P106-05 — notification ownership and read state (integration)", () => {
+describe("P106-05 - notification ownership and read state (integration)", () => {
   it("markNotificationRead persists readAt and is returned on re-fetch", async () => {
     const context = await buildContext("read-persist");
     const { client, contract } = await buildContract(context, 10);
@@ -502,7 +502,7 @@ describe("P106-05 — notification ownership and read state (integration)", () =
     if (!unread) throw new Error("Expected an unread notification");
 
     await svc.markNotificationRead(context, unread.id);
-    // Second read — must not throw
+    // Second read - must not throw
     await expect(
       svc.markNotificationRead(context, unread.id),
     ).resolves.toBeDefined();

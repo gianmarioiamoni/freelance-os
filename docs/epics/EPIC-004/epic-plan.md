@@ -1,14 +1,14 @@
-# EPIC-004 — Workspace
+# EPIC-004 - Workspace
 
 ## 1. Epic Identity
 
 **Epic:** EPIC-004  
-**Release:** Release 0 — Foundation  
+**Release:** Release 0 - Foundation  
 **Objective:** Workspace Foundation  
-**Status:** Complete — PASS WITH FINDINGS  
-**Depends on:** EPIC-001 — Foundation / Repository; EPIC-002 — Database & Persistence; EPIC-003 — Authentication  
-**Next Epic:** EPIC-005 — Testing & CI Foundation *(naming only; see §7.1)*  
-**Canonical source:** `MASTER_PLAN.md` R0-E04 — Workspace Foundation
+**Status:** Complete - PASS WITH FINDINGS  
+**Depends on:** EPIC-001 - Foundation / Repository; EPIC-002 - Database & Persistence; EPIC-003 - Authentication  
+**Next Epic:** EPIC-005 - Testing & CI Foundation *(naming only; see §7.1)*  
+**Canonical source:** `MASTER_PLAN.md` R0-E04 - Workspace Foundation
 
 ---
 
@@ -49,9 +49,9 @@ From `MASTER_PLAN.md` R0-E04, this Epic establishes:
 
 Product outcomes from `docs/product-vision.md`:
 
-- **F-010** — create a workspace as part of initial user setup;
-- **F-011** — users must not access data belonging to another workspace;
-- **F-012** — the model supports multiple users per workspace, even if MVP roles are limited.
+- **F-010** - create a workspace as part of initial user setup;
+- **F-011** - users must not access data belonging to another workspace;
+- **F-012** - the model supports multiple users per workspace, even if MVP roles are limited.
 
 The result must be a trusted server-side workspace context that later Epics can use for Clients, Contracts, Time Tracking, Analytics, Alerts, and Notifications.
 
@@ -207,7 +207,7 @@ The development seed creates one workspace, an `OWNER`, a `MEMBER`, settings, an
 
 Application-layer code today is limited to auth route-access helpers. This Epic introduces the first workspace use cases in Application.
 
-### 7.5 Inherited findings — carry only if relevant
+### 7.5 Inherited findings - carry only if relevant
 
 | ID | Relevance to EPIC-004 | Action |
 | --- | --- | --- |
@@ -258,7 +258,7 @@ Workspace-scoped persistence
 | --- | --- |
 | Who is the user? | Authentication (Better Auth) |
 | Which workspace may they use? | Workspace application authorization |
-| What may a role do? | Unresolved — OBD-009 |
+| What may a role do? | Unresolved - OBD-009 |
 | Tenant tables | Application-owned Prisma models (EPIC-002) |
 | Auth tables | Better Auth (EPIC-003) |
 
@@ -463,7 +463,7 @@ Use the existing strategy. Do not add tests only for coverage numbers.
 - input validation for name / timezone / currency;
 - authorization helper: member allowed, non-member denied.
 
-### Integration — PostgreSQL, real migration chain
+### Integration - PostgreSQL, real migration chain
 
 - atomic workspace creation (workspace + OWNER membership + settings);
 - creation rolls back if any of the three writes fails;
@@ -528,9 +528,9 @@ Do not modify CI in a phase that does not require it. Default: no workflow chang
 
 ### Completed
 
-- EPIC-001 — Repository & Application Bootstrap
-- EPIC-002 — Database & Persistence
-- EPIC-003 — Authentication
+- EPIC-001 - Repository & Application Bootstrap
+- EPIC-002 - Database & Persistence
+- EPIC-003 - Authentication
 
 ### Required from EPIC-002
 
@@ -617,7 +617,7 @@ Update only when the corresponding behavior exists:
 | `docs/testing-strategy.md` | After workspace authorization / onboarding tests exist |
 | `README.md` | After setup or onboarding steps change |
 | `CHANGELOG.md` | Each phase |
-| `MASTER_PLAN.md` | Epic completion / status change — not this planning commit |
+| `MASTER_PLAN.md` | Epic completion / status change - not this planning commit |
 | ADR-005 | Only if Phase 5 judges architecture §5.2 / §11 / §12 insufficient |
 
 Do not describe planned behavior as implemented.
@@ -629,15 +629,15 @@ This planning task updates only this file.
 ## 17. Phases
 
 ```text
-Phase 1 — Workspace context & membership resolution
+Phase 1 - Workspace context & membership resolution
       ↓
-Phase 2 — Workspace creation lifecycle
+Phase 2 - Workspace creation lifecycle
       ↓
-Phase 3 — Onboarding UI & workspace-aware boundary
+Phase 3 - Onboarding UI & workspace-aware boundary
       ↓
-Phase 4 — Authorization & isolation verification
+Phase 4 - Authorization & isolation verification
       ↓
-Phase 5 — Documentation & Workspace Engineering Review
+Phase 5 - Documentation & Workspace Engineering Review
 ```
 
 Each phase:
@@ -655,7 +655,7 @@ Prefer this count. Do not add phases for ceremony. Do not merge resolution, crea
 
 ---
 
-## 18. Phase 1 — Workspace context & membership resolution
+## 18. Phase 1 - Workspace context & membership resolution
 
 **Cursor chat:** NEW CHAT  
 **Commit expected:** YES  
@@ -722,7 +722,7 @@ feat(workspace): establish membership resolution
 
 ---
 
-## 19. Phase 2 — Workspace creation lifecycle
+## 19. Phase 2 - Workspace creation lifecycle
 
 **Cursor chat:** NEW CHAT  
 **Commit expected:** YES  
@@ -788,7 +788,7 @@ feat(workspace): implement workspace creation
 
 ---
 
-## 20. Phase 3 — Onboarding UI & workspace-aware boundary
+## 20. Phase 3 - Onboarding UI & workspace-aware boundary
 
 **Cursor chat:** NEW CHAT  
 **Commit expected:** YES  
@@ -855,7 +855,7 @@ feat(workspace): add onboarding and workspace boundary
 
 ---
 
-## 21. Phase 4 — Authorization & isolation verification
+## 21. Phase 4 - Authorization & isolation verification
 
 **Cursor chat:** NEW CHAT  
 **Commit expected:** YES  
@@ -870,7 +870,7 @@ Prove BR-001 at the application authorization boundary and lock the tenant-isola
 - dedicated authorization / isolation tests for membership;
 - identifier-substitution cases against the workspace primitive;
 - user A cannot obtain `WorkspaceContext` for user B’s workspace;
-- a thin authorized read of the current workspace (if not already present) used as a test probe — not a settings product;
+- a thin authorized read of the current workspace (if not already present) used as a test probe - not a settings product;
 - confirm EPIC-002 persistence isolation and EPIC-003 auth suites still pass;
 - confirm Playwright onboarding + auth journeys still pass.
 
@@ -924,7 +924,7 @@ test(workspace): verify authorization and isolation
 
 ---
 
-## 22. Phase 5 — Documentation & Workspace Engineering Review
+## 22. Phase 5 - Documentation & Workspace Engineering Review
 
 **Cursor chat:** NEW CHAT  
 **Commit expected:** YES  
@@ -1215,7 +1215,7 @@ Recorded so implementation does not silently “fix” them.
 
 After EPIC-004 certification, follow `MASTER_PLAN.md`:
 
-**EPIC-005 — Testing & CI Foundation**
+**EPIC-005 - Testing & CI Foundation**
 
 Treat that name as a MASTER_PLAN identifier. Do not assume EPIC-005 must rebuild Vitest, Playwright, or CI from zero. This Epic must not start EPIC-005.
 

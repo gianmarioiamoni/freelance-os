@@ -1,6 +1,6 @@
 // tests/e2e/mvp-integration-journey.spec.ts
 /**
- * P-INT-04 — Cross-Domain MVP Integration E2E Journey (RELEASE GATE)
+ * P-INT-04 - Cross-Domain MVP Integration E2E Journey (RELEASE GATE)
  *
  * Traverses the full MVP operational chain in a single authenticated session:
  *   Auth → Workspace → Client → Contract → TimeEntry
@@ -8,7 +8,7 @@
  *
  * Design decisions:
  *   - monthlyContractedHours=2, timeEntry=2h → 100% utilisation → alert fires
- *   - Fresh user per run (uniqueE2EEmail) — no shared state
+ *   - Fresh user per run (uniqueE2EEmail) - no shared state
  *   - No waitForTimeout / arbitrary sleeps
  *   - All assertions use locator-based expect calls
  */
@@ -27,7 +27,7 @@ import {
 } from "./helpers/analytics-fixtures";
 
 // ---------------------------------------------------------------------------
-// Test data — deterministic low-threshold to guarantee alert firing
+// Test data - deterministic low-threshold to guarantee alert firing
 // ---------------------------------------------------------------------------
 const WORKSPACE_NAME = "MVP Journey Workspace";
 const CLIENT_NAME = "MVP Journey Client";
@@ -58,13 +58,13 @@ test(
       workspaceName: WORKSPACE_NAME,
     });
 
-    // Landed on Dashboard — workspace context established
+    // Landed on Dashboard - workspace context established
     await expect(page).toHaveURL("/dashboard");
     await expect(
       page.getByRole("heading", { name: /dashboard/i }),
     ).toBeVisible();
 
-    // Step 4: Dashboard empty state — no entries yet
+    // Step 4: Dashboard empty state - no entries yet
     await expect(page.getByText(/no time entries/i)).toBeVisible();
 
     // -----------------------------------------------------------------------
@@ -79,7 +79,7 @@ test(
 
     // -----------------------------------------------------------------------
     // Step 7–8: Create Contract (for the Client just created)
-    // AC-INT-004  — Client → Contract boundary assertion: contract created from
+    // AC-INT-004  - Client → Contract boundary assertion: contract created from
     //               client detail page (New contract link is on that page)
     // -----------------------------------------------------------------------
     await page.goto(clientUrl);
@@ -92,7 +92,7 @@ test(
 
     // -----------------------------------------------------------------------
     // Step 9–10: Create TimeEntry for the Contract
-    // AC-INT-005  — Contract → TimeEntry boundary: client/contract selectable
+    // AC-INT-005  - Contract → TimeEntry boundary: client/contract selectable
     // -----------------------------------------------------------------------
     await createTimeEntry(page, {
       clientName: CLIENT_NAME,
@@ -109,13 +109,13 @@ test(
 
     // -----------------------------------------------------------------------
     // Step 11–13: Dashboard reflects persisted TimeEntry
-    // AC-INT-006  — TimeEntry → Dashboard propagation
+    // AC-INT-006  - TimeEntry → Dashboard propagation
     // -----------------------------------------------------------------------
     await page.getByRole("link", { name: "Dashboard" }).click();
     await expect(page).toHaveURL("/dashboard");
     await expect(page.getByText("Monthly Summary", { exact: true })).toBeVisible();
 
-    // 2h entry must appear — total hours > 0
+    // 2h entry must appear - total hours > 0
     await expect(page.getByLabel("2h total hours tracked")).toBeVisible();
 
     // Contract utilization visible for MVP Journey Client
@@ -125,7 +125,7 @@ test(
 
     // -----------------------------------------------------------------------
     // Step 14–16: Reports reflect persisted TimeEntry
-    // AC-INT-007  — TimeEntry → Reports propagation
+    // AC-INT-007  - TimeEntry → Reports propagation
     // -----------------------------------------------------------------------
     await page.getByRole("link", { name: "Reports" }).click();
     await expect(page).toHaveURL("/reports");
@@ -148,10 +148,10 @@ test(
     ).toBeVisible();
 
     // -----------------------------------------------------------------------
-    // Step 17–20: Alerts — alert evaluation fired, notification present
-    // AC-INT-008  — 100% utilisation → alert evaluated
-    // AC-INT-009  — Notification persisted and visible on /alerts
-    // AC-INT-010  — Unread badge appears
+    // Step 17–20: Alerts - alert evaluation fired, notification present
+    // AC-INT-008  - 100% utilisation → alert evaluated
+    // AC-INT-009  - Notification persisted and visible on /alerts
+    // AC-INT-010  - Unread badge appears
     // Alert evaluation is synchronous-on-write (P-INT-02), so no sleep needed
     // -----------------------------------------------------------------------
     await page.goto("/alerts");
@@ -170,7 +170,7 @@ test(
     const firstCard = notificationList.getByRole("listitem").first();
     await expect(firstCard).toBeVisible();
 
-    // AC-INT-010: unread badge on nav item — at least 1 unread
+    // AC-INT-010: unread badge on nav item - at least 1 unread
     const nav = page.getByRole("navigation", { name: "Application" });
     const alertsNavLink = nav.getByRole("link", { name: /alerts/i });
     // Badge span lives inside the alerts link
@@ -180,7 +180,7 @@ test(
     // Also verify unread count text on page
     await expect(page.getByText(/unread notification/i)).toBeVisible();
 
-    // Notification is unread — "Mark as read" button present
+    // Notification is unread - "Mark as read" button present
     // AC-INT-013: the notification card is still visible (alert NOT resolved)
     const markReadButton = firstCard.getByRole("button", {
       name: "Mark as read",
@@ -189,9 +189,9 @@ test(
 
     // -----------------------------------------------------------------------
     // Step 21–22: Mark all notifications as read → badge disappears
-    // AC-INT-011  — mark-as-read persists
-    // AC-INT-012  — unread badge clears when count reaches zero
-    // AC-INT-013  — alert itself is NOT resolved (card still present)
+    // AC-INT-011  - mark-as-read persists
+    // AC-INT-012  - unread badge clears when count reaches zero
+    // AC-INT-013  - alert itself is NOT resolved (card still present)
     // At 100% utilisation, both CONTRACT_WARNING (≥80%) and CONTRACT_EXCEEDED
     // (≥100%) fire → 2 notifications. Mark all to clear the badge.
     // -----------------------------------------------------------------------
@@ -217,7 +217,7 @@ test(
     await expect(
       page.getByRole("button", { name: "Mark as read" }),
     ).toHaveCount(0);
-    // The notifications are still listed (history preserved — AC-INT-013)
+    // The notifications are still listed (history preserved - AC-INT-013)
     await expect(
       notificationList.getByRole("listitem").first(),
     ).toBeVisible();
@@ -226,14 +226,14 @@ test(
     await expect(badge).not.toBeVisible({ timeout: 5000 });
 
     // -----------------------------------------------------------------------
-    // AC-INT-014: Workspace isolation — no data from other contexts visible
+    // AC-INT-014: Workspace isolation - no data from other contexts visible
     // Implicit: all data was created under WORKSPACE_NAME; the user has only
     // one workspace. All queries are workspace-scoped server-side.
     // -----------------------------------------------------------------------
 
     // -----------------------------------------------------------------------
-    // AC-INT-015: No artificial timing workaround — confirmed (zero sleeps above)
-    // AC-INT-016: Cross-domain journey passes as release gate — confirmed by
+    // AC-INT-015: No artificial timing workaround - confirmed (zero sleeps above)
+    // AC-INT-016: Cross-domain journey passes as release gate - confirmed by
     //             full test run without failures
     // -----------------------------------------------------------------------
   },

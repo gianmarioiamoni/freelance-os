@@ -1,4 +1,4 @@
-# FreelanceOS — MVP QA Gate Report
+# FreelanceOS - MVP QA Gate Report
 
 **Document:** `docs/qa/qa-report.md`  
 **Gate:** `MASTER_PLAN.md` §31  
@@ -7,7 +7,7 @@
 **Host clock:** Europe/Rome (CEST, UTC+2)  
 **Verdict:** PASS WITH FINDINGS  
 **Blocking findings:** NONE  
-**Release readiness:** NO — Production Validation / Certification remain required
+**Release readiness:** NO - Production Validation / Certification remain required
 
 ------------------------------------------------------------------------
 
@@ -46,16 +46,16 @@ QA question (§31): **Does it work correctly?** **YES**, with documented non-blo
 
 | Command | Result |
 |---|---|
-| `pnpm test:db:migrate` | PASS — no pending migrations |
-| `pnpm lint` | PASS — 0 errors, 6 pre-existing warnings |
+| `pnpm test:db:migrate` | PASS - no pending migrations |
+| `pnpm lint` | PASS - 0 errors, 6 pre-existing warnings |
 | `pnpm typecheck` | PASS |
-| `pnpm test` | PASS — 392/392 |
-| `pnpm test:integration` | PASS — 224/224 (host TZ) |
-| `pnpm build` | PASS — `/` dynamic (`ƒ`); expected `headers()` static-generation log |
-| `CI=true pnpm test:e2e --workers=1` | PASS — 58/58 |
-| Focused: `auth.spec.ts` + `time-tracking.spec.ts` + `mvp-integration-journey.spec.ts` | PASS — 14/14 |
-| Isolated release-gate ×3 | PASS — 3/3 |
-| `TZ=America/Los_Angeles pnpm test:integration` | 217 passed / 7 failed — used only to revalidate FINDING-INT-001 |
+| `pnpm test` | PASS - 392/392 |
+| `pnpm test:integration` | PASS - 224/224 (host TZ) |
+| `pnpm build` | PASS - `/` dynamic (`ƒ`); expected `headers()` static-generation log |
+| `CI=true pnpm test:e2e --workers=1` | PASS - 58/58 |
+| Focused: `auth.spec.ts` + `time-tracking.spec.ts` + `mvp-integration-journey.spec.ts` | PASS - 14/14 |
+| Isolated release-gate ×3 | PASS - 3/3 |
+| `TZ=America/Los_Angeles pnpm test:integration` | 217 passed / 7 failed - used only to revalidate FINDING-INT-001 |
 
 `.env` has no `AUTH_EMAIL_DELIVERY`. Playwright config forces `AUTH_EMAIL_DELIVERY=test`.
 
@@ -77,7 +77,7 @@ Release-gate runs this session:
 |---|---|---|
 | 1 | Full E2E suite | PASS (6.6s) |
 | 2 | Focused 14-test re-run | PASS (9.4s) |
-| 3 | Isolated, immediately after burst | FAIL — sign-up did not reach `/onboarding` (5s) |
+| 3 | Isolated, immediately after burst | FAIL - sign-up did not reach `/onboarding` (5s) |
 | 4–6 | Isolated consecutive | PASS / PASS / PASS (10.3s / 11.1s / 10.5s) |
 
 ------------------------------------------------------------------------
@@ -121,11 +121,11 @@ Evidence: `client-isolation.test.ts`, `analytics-workspace-isolation.test.ts`, `
 
 | Case | Result |
 |---|---|
-| Workspace.timezone ≠ UTC (`America/New_York` vs UTC today) | PASS — `analytics-timezone-propagation.test.ts` (also passed under `TZ=America/Los_Angeles`) |
-| Current month / week / year end-today | PASS — reporting + period unit tests |
+| Workspace.timezone ≠ UTC (`America/New_York` vs UTC today) | PASS - `analytics-timezone-propagation.test.ts` (also passed under `TZ=America/Los_Angeles`) |
+| Current month / week / year end-today | PASS - reporting + period unit tests |
 | Month / week / year constructors via IANA TZ | PASS |
-| Custom range via `getDateRangePeriod` when process TZ is west of UTC | FAIL — FINDING-QA-002 |
-| Current-day semantics / persisted timezone propagation | PASS — F-105-004 integration |
+| Custom range via `getDateRangePeriod` when process TZ is west of UTC | FAIL - FINDING-QA-002 |
+| Current-day semantics / persisted timezone propagation | PASS - F-105-004 integration |
 
 Authoritative policy remains `Workspace.timezone`. It was not replaced.
 
@@ -166,7 +166,7 @@ Dashboard `page.tsx` still catches `NEXT_REDIRECT` and logs `Failed to load dash
 
 ## 14. New findings
 
-### FINDING-QA-001 — Flaky release-gate registration
+### FINDING-QA-001 - Flaky release-gate registration
 
 | Field | Value |
 |---|---|
@@ -181,7 +181,7 @@ Dashboard `page.tsx` still catches `NEXT_REDIRECT` and logs `Failed to load dash
 | **Blocking** | No |
 | **Next phase** | Test hardening (wait for sign-up completion / URL). Do not treat as a broken product workflow |
 
-### FINDING-QA-002 — `getDateRangePeriod` process-timezone leak
+### FINDING-QA-002 - `getDateRangePeriod` process-timezone leak
 
 | Field | Value |
 |---|---|
@@ -190,10 +190,10 @@ Dashboard `page.tsx` still catches `NEXT_REDIRECT` and logs `Failed to load dash
 | **Status** | OPEN |
 | **Classification** | APPLICATION DEFECT (custom-range helper). Current-period constructors that use `Workspace.timezone` are correct |
 | **Area** | `src/lib/analytics-periods.ts` → `getDateRangePeriod`; used by reporting custom range |
-| **Reproduction** | `TZ=America/Los_Angeles pnpm test:integration` — `reporting-service.test.ts` “resolves 'custom' range correctly”: expected `2026-06-01T00:00:00.000Z`, received `2026-05-31T00:00:00.000Z`. Same TZ run also failed 6 `analytics-isolation` cases that feed local Dates into `getDateRangePeriod` |
+| **Reproduction** | `TZ=America/Los_Angeles pnpm test:integration` - `reporting-service.test.ts` “resolves 'custom' range correctly”: expected `2026-06-01T00:00:00.000Z`, received `2026-05-31T00:00:00.000Z`. Same TZ run also failed 6 `analytics-isolation` cases that feed local Dates into `getDateRangePeriod` |
 | **Expected** | Custom range uses calendar dates independently of process TZ; `Workspace.timezone` remains authoritative |
 | **Observed** | Helper re-encodes via local `getFullYear`/`getMonth`/`getDate`. Host Europe/Rome and typical CI UTC pass. Process TZ west of UTC shifts the calendar day |
-| **Blocking** | No — canonical QA/CI environments pass; current month/week/year paths use IANA TZ and passed under `America/New_York` |
+| **Blocking** | No - canonical QA/CI environments pass; current month/week/year paths use IANA TZ and passed under `America/New_York` |
 | **Next phase** | Implementation: use UTC calendar accessors (or workspace TZ) in `getDateRangePeriod`. Then fix coupled tests |
 
 ------------------------------------------------------------------------
@@ -210,7 +210,7 @@ NONE.
 |---|---|---|---|
 | FINDING-P04-001 | CLOSED | APPLICATION (fixed) | Sign-out race |
 | FINDING-P04-002 | ACCEPTED | BY DESIGN | Dual alerts at 100% |
-| FINDING-P04-003 | CLOSED | — | Hardcoded date absent at HEAD |
+| FINDING-P04-003 | CLOSED | - | Hardcoded date absent at HEAD |
 | FINDING-INT-001 | OPEN | TEST DEFECT | Confirmed under America/Los_Angeles |
 | FINDING-INT-002 | OPEN | TEST DEFECT | Residual; not reproduced |
 | FINDING-INT-003 | OPEN | TEST INFRASTRUCTURE | Residual; not reproduced under Playwright |
@@ -224,7 +224,7 @@ Inherited EPIC-103/104/105/106 debt IDs were not re-opened. They remain in `MAST
 
 ## 17. Recommended next lifecycle phase
 
-**Documentation Gate** — `MASTER_PLAN.md` §32.
+**Documentation Gate** - `MASTER_PLAN.md` §32.
 
 Synchronize README, architecture, storage, testing-strategy, MASTER_PLAN, CHANGELOG, and epic docs with this QA verdict.
 
@@ -264,7 +264,7 @@ This section does not rewrite the QA Gate snapshot above.
 |---|---|---|---|
 | FINDING-QA-002 | OPEN | CLOSED | ER-108-A PASS. P108-01 `985e518`. `docs/epics/EPIC-108/findings.md` |
 | FINDING-INT-001 | OPEN / CONFIRMED | CLOSED | ER-108-A PASS. P108-02 `49c90ed`. Integration 224/224 host + LA |
-| FINDING-108-001 | — (not recorded at QA Gate) | CLOSED | ER-108-A PASS. P108-02B `7dcbc56` |
+| FINDING-108-001 | - (not recorded at QA Gate) | CLOSED | ER-108-A PASS. P108-02B `7dcbc56` |
 | F-104-007 | OPEN (pre-existing) | CLOSED | ER-108-E PASS. P108-03 `38e8bf9`. NEXT_REDIRECT only; `DYNAMIC_SERVER_USAGE` not part of this close |
 | FINDING-QA-001 | OPEN / FLAKY | CLOSED | ER-108-B PASS. Isolated release-gate 3/3 PASS. No test/app fix |
 | FINDING-INT-002 | OPEN / NOT REPRODUCED | CLOSED | ER-108-B PASS. Sign-out E2E 2/2 PASS |

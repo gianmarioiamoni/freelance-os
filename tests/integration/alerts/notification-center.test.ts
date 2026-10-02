@@ -38,7 +38,7 @@ async function createNotification(
   });
 }
 
-describe("notification center — P106-04", () => {
+describe("notification center - P106-04", () => {
   // -------------------------------------------------------------------------
   // User isolation
   // -------------------------------------------------------------------------
@@ -133,7 +133,7 @@ describe("notification center — P106-04", () => {
   });
 
   // -------------------------------------------------------------------------
-  // Mark as read — ownership and persistence
+  // Mark as read - ownership and persistence
   // -------------------------------------------------------------------------
 
   describe("mark as read", () => {
@@ -218,7 +218,7 @@ describe("notification center — P106-04", () => {
         "nc-mark-user-own-n",
       );
 
-      // Verify notification belongs to original user — not to otherUserId
+      // Verify notification belongs to original user - not to otherUserId
       const fetched = await repositories.notifications.getNotification(
         graph.workspaceId,
         notif.id,
@@ -230,7 +230,7 @@ describe("notification center — P106-04", () => {
       // The application action enforces userId check before calling markNotificationRead.
       // Here we verify the repository ownership semantic: if the action passed a
       // different userId context, the notification would not be returned by getNotification
-      // for a different workspace — and the action returns { error: "Not authorized." }.
+      // for a different workspace - and the action returns { error: "Not authorized." }.
       // This test verifies the data layer invariant: userId is stored and queryable.
       expect(notif.userId).toBe(graph.userId);
     });

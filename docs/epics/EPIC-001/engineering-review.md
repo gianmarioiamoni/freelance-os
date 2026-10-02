@@ -1,4 +1,4 @@
-# EPIC-001 — Engineering Review
+# EPIC-001 - Engineering Review
 
 ## Review Status
 
@@ -18,15 +18,15 @@ EPIC-002 was not started.
 
 ## Phase Results
 
-### Phase 1 — Repository Bootstrap
+### Phase 1 - Repository Bootstrap
 
 PASS. Git repository, pnpm `10.22.0`, lockfile, Next.js 15 App Router, TypeScript strict, architectural folders, `.gitignore`, `.env.example`, README, and no committed secrets.
 
-### Phase 2 — Application Shell
+### Phase 2 - Application Shell
 
 PASS. Responsive shell, placeholder routes only, Tailwind 4, shadcn/ui primitives (Button, Sheet), accessible nav, skip link. No business logic.
 
-### Phase 3 — Developer Quality Baseline
+### Phase 3 - Developer Quality Baseline
 
 PASS. `lint`, `typecheck`, `test`, and `build` scripts exist. Vitest unit tests and a Playwright smoke test are meaningful and deterministic. CI runs the minimum PR gate. Playwright is intentionally excluded from that gate.
 
@@ -75,7 +75,7 @@ No PostgreSQL, Prisma, Better Auth, workspace logic, clients, contracts, time en
 
 | ID | Severity | Area | Finding | Status |
 |----|----------|------|---------|--------|
-| F-008 | INFORMATIONAL | Dependencies | Hygiene review deferred from earlier phases; all current packages are justified | Closed — accepted |
+| F-008 | INFORMATIONAL | Dependencies | Hygiene review deferred from earlier phases; all current packages are justified | Closed - accepted |
 | F-009 | MEDIUM | Documentation | MASTER_PLAN / README / Epic plan still described Phase 1–3 as incomplete or in progress | Fixed |
 | F-010 | LOW | Build | `next build --turbopack` failed once against a stale `.next` cache (`/_document`); clean rebuild passed | Accepted |
 

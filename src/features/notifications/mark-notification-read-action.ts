@@ -35,7 +35,7 @@ export async function markNotificationReadAction(
     return { error: "Not authorized." };
   }
 
-  // Already read — idempotent, no error
+  // Already read - idempotent, no error
   if (notification.readAt !== null) {
     return null;
   }

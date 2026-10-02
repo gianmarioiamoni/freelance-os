@@ -1,6 +1,6 @@
 # FreelanceOS --- Storage Architecture
 
-**Status:** Implemented — EPIC-002 complete; EPIC-003 auth persistence reviewed; EPIC-004 workspace index reviewed; EPIC-104 analytics aggregation reviewed\
+**Status:** Implemented - EPIC-002 complete; EPIC-003 auth persistence reviewed; EPIC-004 workspace index reviewed; EPIC-104 analytics aggregation reviewed\
 **Document:** `docs/storage.md`\
 **Scope:** Release 0 Foundation + Release 1 MVP\
 **Canonical format:** Markdown
@@ -126,7 +126,7 @@ conditional spread, so `workspaceId`, `userId`, `workDate`, `clientId`, and
 `contractId` cannot be written after creation. `deleteTimeEntry` is a hard
 `delete` scoped by `{ id, workspaceId }`; there is no archive column.
 `listTimeEntriesForPeriod` filters `workDate` with an inclusive `gte`/`lte`
-range ordered `workDate` asc then `createdAt` asc — that inclusive period
+range ordered `workDate` asc then `createdAt` asc - that inclusive period
 bound is deliberately not the exclusive `[validFrom, validTo)` contract
 convention. The positive-duration CHECK constraint, the workspace-scoped
 composite foreign keys to `Client` and `Contract`, and the required
@@ -1641,7 +1641,7 @@ promoted into scope.
 Current open decision:
 
 ``` text
-OD-008 / OBD-008 — audit requirements
+OD-008 / OBD-008 - audit requirements
 ```
 
 ------------------------------------------------------------------------

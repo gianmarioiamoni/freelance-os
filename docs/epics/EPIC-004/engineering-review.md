@@ -1,7 +1,7 @@
-# EPIC-004 — Engineering Review
+# EPIC-004 - Engineering Review
 
-**Epic:** EPIC-004 — Workspace  
-**Release:** Release 0 — Foundation  
+**Epic:** EPIC-004 - Workspace  
+**Release:** Release 0 - Foundation  
 **Reviewed commits:**
 
 ```text
@@ -51,13 +51,13 @@ Verified against `MASTER_PLAN.md` R0-E04, `docs/epics/EPIC-004/epic-plan.md`, `d
 | `getAuthorizedWorkspace` authorized read | Yes | Yes | Yes |
 | No application User model | Forbidden | Absent | Yes |
 | Better Auth remains authentication authority | Yes | Yes | Yes |
-| Role persist-and-attach only | Yes | Yes | Yes — OBD-009 |
+| Role persist-and-attach only | Yes | Yes | Yes - OBD-009 |
 | No workspace switcher / arbitrary selection | Yes | Absent | Yes |
 | Authorization / isolation tests | Yes | Yes | Yes |
 | Playwright onboarding E2E | Yes | Yes | Yes |
 | Invitation product | Out of scope | Absent | Yes |
 | Permission matrix | Out of scope | Absent | Yes |
-| Audit log | Out of scope | Absent | Yes — OBD-008 |
+| Audit log | Out of scope | Absent | Yes - OBD-008 |
 
 ADR-005 (workspace-based multi-tenancy) is already canonical in `docs/architecture.md` §5.2, §11, and §12. No standalone ADR file was created. This matches the EPIC-003 treatment of ADR-006.
 
@@ -268,12 +268,12 @@ Do not close any OBD.
 | --- | --- | --- |
 | OBD-008 | Audit-log requirements | No |
 | OBD-009 | Workspace roles and permissions | No |
-| OBD-006 | Capacity-warning semantics | No — create uses documented 80% defaults |
-| OBD-002 / OBD-011 | Money rounding / multi-currency | No — currency stored as ISO-4217 |
+| OBD-006 | Capacity-warning semantics | No - create uses documented 80% defaults |
+| OBD-002 / OBD-011 | Money rounding / multi-currency | No - currency stored as ISO-4217 |
 | OBD-001–005, OBD-007, OBD-010, OBD-012 | Billing, time, capacity | No |
-| — | Google/email identity linking | No — EPIC-003 F-001 |
-| — | Production email provider | No for epic completion — EPIC-003 F-003 |
-| — | User with multiple memberships | No — fail closed; no switcher |
+| - | Google/email identity linking | No - EPIC-003 F-001 |
+| - | Production email provider | No for epic completion - EPIC-003 F-003 |
+| - | User with multiple memberships | No - fail closed; no switcher |
 
 No additional product decision was discovered that required a new OBD identifier.
 

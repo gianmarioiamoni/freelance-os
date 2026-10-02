@@ -1,10 +1,10 @@
-# R2 Decision Pack — Revenue Operations
+# R2 Decision Pack - Revenue Operations
 
 **Status:** APPROVED product baseline recorded; residual planning questions explicit  
 **Date:** 2026-09-22  
-**Release:** Release 2 — Revenue Operations  
+**Release:** Release 2 - Revenue Operations  
 **Workshop:** Decision Workshop complete for decisions currently in scope  
-**Supersedes naming:** “Release 2 — Billing & Intelligence” (`MASTER_PLAN.md` §8 / §19 historical)  
+**Supersedes naming:** “Release 2 - Billing & Intelligence” (`MASTER_PLAN.md` §8 / §19 historical)  
 **Does not reopen:** R1 FROZEN (`docs/release/r1-freeze.md`, candidate `c6712224`, freeze commit `8f79216d`)  
 **Owner of product decisions:** Product Owner  
 
@@ -66,11 +66,11 @@ PIVA Balance is the system that owns costs, profitability, and fiscality / accou
 
 These are PRODUCT DECISIONS APPROVED. They are not proposals.
 
-### D1 — Time Tracking first — APPROVED
+### D1 - Time Tracking first - APPROVED
 
 R2 remains centered on operational Time Tracking and revenue visibility. No fiscal / accounting / profitability model.
 
-### D2 — Invoice Tracking only — APPROVED
+### D2 - Invoice Tracking only - APPROVED
 
 Invoice Lifecycle / generation is withdrawn. R2 tracks invoices; it does not generate fiscal invoices.
 
@@ -87,7 +87,7 @@ Invoice Lifecycle / generation is withdrawn. R2 tracks invoices; it does not gen
 
 **In R2:** INVOICE TRACKING only.
 
-### D3 — Profitability out — APPROVED
+### D3 - Profitability out - APPROVED
 
 Profitability, PIVA balance, costs and fiscality remain outside R2. No R2 integration with that domain.
 
@@ -100,7 +100,7 @@ Profitability, PIVA balance, costs and fiscality remain outside R2. No R2 integr
 - accounting calculations
 - FreelanceOS ↔ PIVA Balance integration
 
-### D4 — Accrued / Expected / Forecast independent — APPROVED
+### D4 - Accrued / Expected / Forecast independent - APPROVED
 
 Accrued, Expected and Forecast are separate operational concepts. No ML / AI.
 
@@ -127,7 +127,7 @@ Current-period Accrued + elapsed  → Forecast Revenue
 
 Revenue, Invoice Tracking, and Payment Tracking remain separate.
 
-### D5 — Operational payments — APPROVED
+### D5 - Operational payments - APPROVED
 
 Operational payment tracking. Not accounts receivable / accounting.
 
@@ -163,7 +163,7 @@ PARTIAL + OVERDUE is valid. No payment schedule / installment engine.
 
 D5’s earlier combined status list (NOT_DUE / OVERDUE / PARTIALLY_PAID / PAID / OVERPAID) is **superseded** by R2-OD-009. Overdue is an independent deterministic condition, not a mutually exclusive amount status.
 
-### D6 — Deterministic payment alerts / status — APPROVED
+### D6 - Deterministic payment alerts / status - APPROVED
 
 `PAYMENT_OVERDUE` / `PAYMENT_PARTIAL` / `PAYMENT_MISMATCH` are deterministic.
 
@@ -190,7 +190,7 @@ P-E03-03 implementation contract (closed; confirmed by P-E03-05 QA):
 - sophisticated rule engines
 - advanced grace periods
 
-### D7 — Currency — APPROVED
+### D7 - Currency - APPROVED
 
 Currency belongs to Contract. No FX. Aggregates must remain separated by currency.
 
@@ -218,7 +218,7 @@ Existing R1 `Workspace.currency` remains a create-form default for Contract. It 
 
 These close the corresponding register entries as **product decisions**. They do not invent Prisma fields, APIs, or UI.
 
-### R2-OD-001 — DAILY accrued rule — APPROVED
+### R2-OD-001 - DAILY accrued rule - APPROVED
 
 A DAILY Contract contributes one accrued billable day if at least one TimeEntry exists for that Contract on that calendar date.
 
@@ -227,7 +227,7 @@ A DAILY Contract contributes one accrued billable day if at least one TimeEntry 
 
 Accrued Daily remains `billable days × daily rate`. BR-007 still applies: only billable work contributes to Accrued Revenue.
 
-### R2-OD-002 — Monetary rounding — APPROVED
+### R2-OD-002 - Monetary rounding - APPROVED
 
 Published / displayed monetary amounts are rounded to the nearest integer.
 
@@ -236,7 +236,7 @@ Published / displayed monetary amounts are rounded to the nearest integer.
 
 R1 `NUMERIC(19,4)` rate storage remains the existing persistence representation. Rounding is a publication rule, not a new money type.
 
-### R2-OD-003 — Historical commercial meaning — APPROVED
+### R2-OD-003 - Historical commercial meaning - APPROVED
 
 Commercial Snapshot semantics.
 
@@ -246,7 +246,7 @@ Commercial Snapshot semantics.
 
 **Persistence dependency:** the current R1 model stores `TimeEntry.contractId` only. No historical commercial snapshot field exists (`P102-F-001` / proposed OBD-016). Do not invent the field here. R2-E01 must plan the persistence mechanism before Accrued implementation.
 
-### R2-OD-004 — Expected Revenue — APPROVED
+### R2-OD-004 - Expected Revenue - APPROVED
 
 Expected Revenue is Contract-capacity based and independent of TimeEntry, Invoice and Payment.
 
@@ -261,7 +261,7 @@ DAILY does not receive Expected Revenue in R2: there is no contractual expected-
 
 No calendar inference or heuristic capacity.
 
-### R2-OD-006 — Invoice model — APPROVED
+### R2-OD-006 - Invoice model - APPROVED
 
 MVP:
 
@@ -277,7 +277,7 @@ MVP:
 
 **No:** invoice lines, pro-forma, credit / debit notes, recurring invoice engine, PDF fiscal generation, fiscal numbering, SDI, accounting semantics.
 
-### R2-OD-007 — Invoice reference / period / editing — APPROVED (product)
+### R2-OD-007 - Invoice reference / period / editing - APPROVED (product)
 
 - reference is optional free text
 - `invoiceDate` is required
@@ -291,7 +291,7 @@ VOID list / restore closed by R2-E02 P-E02-00 (`docs/release/r2-e02-invoice-trac
 
 E03-D-VOID-PAYMENTS closed by R2-E03 P-E03-00 (`docs/release/r2-e03-payment-tracking.md`): Option A freeze writes on VOID. Existing Payments may remain and stay readable. No create / update / delete on VOID. No cascade-delete.
 
-### R2-OD-008 — Missing payment terms — APPROVED
+### R2-OD-008 - Missing payment terms - APPROVED
 
 `paymentTermsDays = null` means:
 
@@ -300,7 +300,7 @@ E03-D-VOID-PAYMENTS closed by R2-E03 P-E03-00 (`docs/release/r2-e03-payment-trac
 
 Do not assume 30 days or another default.
 
-### R2-OD-009 — Payment status — APPROVED
+### R2-OD-009 - Payment status - APPROVED
 
 ```text
 paidAmount = sum(paymentEvents.amount)
@@ -312,7 +312,7 @@ Amount status: UNPAID / PARTIAL / PAID / MISMATCH as in D5.
 
 No tolerance, percentage threshold, risk model or AI.
 
-### R2-OD-010 — Payment event editing — APPROVED
+### R2-OD-010 - Payment event editing - APPROVED
 
 Payment events may be edited and deleted in R2.
 
@@ -320,7 +320,7 @@ Payment events may be edited and deleted in R2.
 - Payment mutations trigger recalculation of derived state.
 - No immutable ledger / reversal-event / audit-ledger model in R2.
 
-### R2-OD-011 — Contract currency mutation — APPROVED (product)
+### R2-OD-011 - Contract currency mutation - APPROVED (product)
 
 Contract currency may be changed before monetary records exist.
 
@@ -330,7 +330,7 @@ No FX or retroactive currency conversion.
 
 **Reconciliation with Invoice currency:** D7 requires Invoice / Payment consistency with Contract currency. After the first Invoice or Payment event exists, Contract currency cannot change, so live Contract currency and historical Invoice currency cannot diverge under this rule. R2-E02 P-E02-00 closes the representation: Invoice persists a currency snapshot that must match Contract at write and is immutable after create (`docs/release/r2-e02-invoice-tracking.md` E02-D01). Not FX.
 
-### R2-OD-013 — Contract Time Allocation — APPROVED (product)
+### R2-OD-013 - Contract Time Allocation - APPROVED (product)
 
 R2 does **not** introduce generic workspace capacity alerts.
 
@@ -353,13 +353,13 @@ Do not conflate them.
 
 WARNING threshold = 80%. EXCEEDED only when consumption `>` allocatedMinutes. Exactly 100% is WARNING, not EXCEEDED. Closed by P-E04-00 (`docs/release/r2-e04-forecasting-allocation.md` E04-D-ALLOCATION-WARNING / E04-D-ALLOCATION-EXCEEDED). Zero allocation has no status and no allocation alert regardless of consumption (E04-D-ALLOCATION-ZERO-STATUS / 8-C). CERTIFIED (P-E04-00…P-E04-07).
 
-### R2-OD-014 — Period closure — APPROVED OUT OF R2
+### R2-OD-014 - Period closure - APPROVED OUT OF R2
 
 Do not introduce period-close / accounting-lock semantics in R2.
 
 OBD-007 remains historically open for a later release. It does not block R2.
 
-### R2-OD-015 — Audit — APPROVED OUT OF R2
+### R2-OD-015 - Audit - APPROVED OUT OF R2
 
 Do not introduce a dedicated audit ledger in R2.
 
@@ -375,14 +375,14 @@ R2-OD-005 and the R2-OD-013 WARNING residual are CLOSED by P-E04-00. R2-OD-012 a
 
 | ID | Topic | Needed by |
 | --- | --- | --- |
-| R2-OD-005 | CLOSED — Forecast = Accrued / elapsedFraction on the certified current period (`docs/release/r2-e04-forecasting-allocation.md` E04-D-FORECAST-ARITHMETIC) | R2-E04 |
-| R2-OD-012 | CLOSED — native CSV of the approved filtered `/reports` dataset (E05-D-EXPORT-FORMATS B). PDF / document generation remains out of core R2 | R2-E05 |
-| R2-OD-013 residual | CLOSED — WARNING 80%; EXCEEDED only when consumption `>` allocation (`docs/release/r2-e04-forecasting-allocation.md`) | R2-E04 |
-| R2-OD-007 residual | CLOSED — VOID one-way soft-delete; default lists exclude; no restore (`docs/release/r2-e02-invoice-tracking.md` E02-D02) | R2-E02 P-E02-00 |
-| R2-OD-011 residual | CLOSED — Invoice currency snapshot; must match Contract at write (`docs/release/r2-e02-invoice-tracking.md` E02-D01) | R2-E02 P-E02-00 |
-| R2-OD-003 residual | CLOSED — TimeEntry `snapshotBillingModel` / `snapshotRate` / `snapshotCurrency` | R2-E01 P-E01-01 |
-| R2-OD-016 | APPROVED — weighted-average daily rate; Accrued arithmetic in P-E01-02 | R2-E01 P-E01-02 |
-| R2-OD-017 | CLOSED — existing TimeEntries backfilled from current Contract | R2-E01 P-E01-01 |
+| R2-OD-005 | CLOSED - Forecast = Accrued / elapsedFraction on the certified current period (`docs/release/r2-e04-forecasting-allocation.md` E04-D-FORECAST-ARITHMETIC) | R2-E04 |
+| R2-OD-012 | CLOSED - native CSV of the approved filtered `/reports` dataset (E05-D-EXPORT-FORMATS B). PDF / document generation remains out of core R2 | R2-E05 |
+| R2-OD-013 residual | CLOSED - WARNING 80%; EXCEEDED only when consumption `>` allocation (`docs/release/r2-e04-forecasting-allocation.md`) | R2-E04 |
+| R2-OD-007 residual | CLOSED - VOID one-way soft-delete; default lists exclude; no restore (`docs/release/r2-e02-invoice-tracking.md` E02-D02) | R2-E02 P-E02-00 |
+| R2-OD-011 residual | CLOSED - Invoice currency snapshot; must match Contract at write (`docs/release/r2-e02-invoice-tracking.md` E02-D01) | R2-E02 P-E02-00 |
+| R2-OD-003 residual | CLOSED - TimeEntry `snapshotBillingModel` / `snapshotRate` / `snapshotCurrency` | R2-E01 P-E01-01 |
+| R2-OD-016 | APPROVED - weighted-average daily rate; Accrued arithmetic in P-E01-02 | R2-E01 P-E01-02 |
+| R2-OD-017 | CLOSED - existing TimeEntries backfilled from current Contract | R2-E01 P-E01-01 |
 
 Direction already approved and **not** reopened:
 
@@ -452,7 +452,7 @@ R2 concentrates on Financial / Revenue Operations, always secondary to Time Trac
 
 ---
 
-## 8. Historical R2 themes — reconciliation
+## 8. Historical R2 themes - reconciliation
 
 | Previous theme | Disposition |
 | --- | --- |

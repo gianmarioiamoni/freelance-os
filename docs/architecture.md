@@ -1,6 +1,6 @@
-# FreelanceOS — System Architecture
+# FreelanceOS - System Architecture
 
-**Status:** Architecture Baseline — Authentication, workspace, testing/CI, UI foundation, client management, contract management, time tracking, analytics/dashboard, reporting, alert evaluation with in-app notification center, and MVP Integration COMPLETE / CLOSED (EPIC-003, EPIC-004, EPIC-005, EPIC-006, EPIC-101, EPIC-102, EPIC-103, EPIC-104, EPIC-105, EPIC-106, MVP-INTEGRATION). MVP QA Gate PASS WITH FINDINGS. Documentation Gate COMPLETE. UX Gate PASS WITH FINDINGS. UX Polish COMPLETE. EPIC-107 Public Landing COMPLETE. MASTER_PLAN §34 — READY FOR RELEASE (`docs/release/production-validation.md`). MASTER_PLAN §35 — GRANTED (`docs/release/production-certification.md`). D-005 PROVIDED. Hosted production is `https://freelance-os-timeplan.vercel.app`. Mail transport is Gmail SMTP / Nodemailer. Custom domain was not purchased. Public `/` landing; authenticated Dashboard at `/dashboard`. Production readiness: RELEASE GRANTED.  
+**Status:** Architecture Baseline - Authentication, workspace, testing/CI, UI foundation, client management, contract management, time tracking, analytics/dashboard, reporting, alert evaluation with in-app notification center, and MVP Integration COMPLETE / CLOSED (EPIC-003, EPIC-004, EPIC-005, EPIC-006, EPIC-101, EPIC-102, EPIC-103, EPIC-104, EPIC-105, EPIC-106, MVP-INTEGRATION). MVP QA Gate PASS WITH FINDINGS. Documentation Gate COMPLETE. UX Gate PASS WITH FINDINGS. UX Polish COMPLETE. EPIC-107 Public Landing COMPLETE. MASTER_PLAN §34 - READY FOR RELEASE (`docs/release/production-validation.md`). MASTER_PLAN §35 - GRANTED (`docs/release/production-certification.md`). D-005 PROVIDED. Hosted production is `https://freelance-os-timeplan.vercel.app`. Mail transport is Gmail SMTP / Nodemailer. Custom domain was not purchased. Public `/` landing; authenticated Dashboard at `/dashboard`. Production readiness: RELEASE GRANTED.  
 **Scope:** MVP (R1 baseline). R2 domain delta: `docs/release/r2-architecture-delta.md`. R2 planning baseline: `docs/release/r2-epic-map.md`. R1 remains FROZEN. R2 is in planning and is not production-ready.  
 **Architectural style:** Modular Monolith  
 **Primary runtime:** Next.js / TypeScript  
@@ -31,7 +31,7 @@ This document is an architectural baseline. Implementation must conform to it un
 
 ## 2. Architectural Principles
 
-### A-001 — Modular Monolith
+### A-001 - Modular Monolith
 
 FreelanceOS will be implemented initially as a modular monolith.
 
@@ -45,39 +45,39 @@ We deliberately avoid microservices because:
 
 The architecture must nevertheless maintain explicit module boundaries so that future extraction is possible if justified.
 
-### A-002 — Architecture before implementation
+### A-002 - Architecture before implementation
 
 Business responsibilities, boundaries and contracts are defined before implementation.
 
-### A-003 — Domain independence
+### A-003 - Domain independence
 
 Core business rules must not depend directly on React, Next.js or Prisma.
 
-### A-004 — Server-side authority
+### A-004 - Server-side authority
 
 Authorization, business rules, billing calculations and data access are authoritative on the server.
 
 The browser is never trusted to enforce business rules.
 
-### A-005 — Deterministic business logic
+### A-005 - Deterministic business logic
 
 Hours, revenue, contract utilization, alerts and reporting facts are calculated deterministically.
 
-### A-006 — Shared calculation services
+### A-006 - Shared calculation services
 
 Dashboard, reports, alerts and future AI queries must consume the same application/domain calculation services.
 
-### A-007 — Workspace isolation
+### A-007 - Workspace isolation
 
 Workspace is the primary tenant/security boundary.
 
 Every business-data access path must be scoped to an authorized workspace.
 
-### A-008 — Historical correctness
+### A-008 - Historical correctness
 
 Historical TimeEntries must retain their correct commercial interpretation even when contracts change later.
 
-### A-009 — AI as an adapter
+### A-009 - AI as an adapter
 
 Future LLM capabilities must consume controlled application services. The LLM is never the source of truth for domain facts.
 
@@ -409,12 +409,12 @@ pass/fail threshold is established (PD-105-008 accepted default).
 The following remain future work and must not be described as
 delivered:
 - a workspace-membership guard inside `AnalyticsService` itself
-  (F-104-014) — **resolved by EPIC-105 P105-02** (SI-105-005);
-- weekly aggregation (F-104-013) — **resolved by EPIC-105 P105-03**
+  (F-104-014) - **resolved by EPIC-105 P105-02** (SI-105-005);
+- weekly aggregation (F-104-013) - **resolved by EPIC-105 P105-03**
   (`getWeeklyAnalytics` composes over `getDailyAnalytics`);
-- timezone-aware period boundaries (F-104-005 / F-104-P-002) — **resolved
+- timezone-aware period boundaries (F-104-005 / F-104-P-002) - **resolved
   by EPIC-105 P105-03** (`Workspace.timezone` is now the authority);
-- a measured query-performance baseline (F-104-009 / F-104-P-001) —
+- a measured query-performance baseline (F-104-009 / F-104-P-001) -
   **measured by EPIC-105 P105-06** (baseline recorded; no threshold
   established per PD-105-008).
 
@@ -484,10 +484,10 @@ Evaluate deterministic rules such as:
 
 - contract utilization warning;
 - contract exceeded;
-- capacity warning (DEFERRED — PD-106-001; not pulled into R2);
-- capacity exceeded (DEFERRED — PD-106-001; not pulled into R2);
-- payment overdue / partial / mismatch (R2-E03 implemented — D6);
-- contract time-allocation alerts (R2-E04 implemented — `ALLOCATION_WARNING` / `ALLOCATION_EXCEEDED`; 80% / `>100%`; null and zero allocation never alert — 8-C).
+- capacity warning (DEFERRED - PD-106-001; not pulled into R2);
+- capacity exceeded (DEFERRED - PD-106-001; not pulled into R2);
+- payment overdue / partial / mismatch (R2-E03 implemented - D6);
+- contract time-allocation alerts (R2-E04 implemented - `ALLOCATION_WARNING` / `ALLOCATION_EXCEEDED`; 80% / `>100%`; null and zero allocation never alert - 8-C).
 
 The alert engine should consume analytics/application services rather than duplicate calculations.
 
@@ -515,13 +515,13 @@ Deduplication key: deterministic string scoped to `(type, workspaceId, contractI
 - user-facing alert presentation;
 - read/unread state;
 - notification history;
-- optional future email delivery (deferred — PD-106-002: in-app only for MVP).
+- optional future email delivery (deferred - PD-106-002: in-app only for MVP).
 
 Alert generation and notification delivery remain separate concepts.
 
 ### Implemented by EPIC-106
 
-`/alerts` RSC at `src/app/(app)/alerts/page.tsx` lists workspace-scoped notifications for the authenticated user, newest first. Components at `src/features/notifications/`: `NotificationList.tsx`, `NotificationCard.tsx`. Server query via `src/features/notifications/load-notifications.ts`. Mark-as-read via Server Action `src/features/notifications/mark-notification-read-action.ts` with server-side ownership check (`workspaceId` + `userId` guard). Reading a notification does not resolve the alert; alert resolution does not delete the notification — independent lifecycle objects.
+`/alerts` RSC at `src/app/(app)/alerts/page.tsx` lists workspace-scoped notifications for the authenticated user, newest first. Components at `src/features/notifications/`: `NotificationList.tsx`, `NotificationCard.tsx`. Server query via `src/features/notifications/load-notifications.ts`. Mark-as-read via Server Action `src/features/notifications/mark-notification-read-action.ts` with server-side ownership check (`workspaceId` + `userId` guard). Reading a notification does not resolve the alert; alert resolution does not delete the notification - independent lifecycle objects.
 
 ### Implemented by MVP Integration
 
@@ -566,7 +566,7 @@ The dashboard is labelled `Dashboard` in `src/lib/navigation.ts` (`href: "/dashb
   `Dashboard`, `MonthlyAnalytics`, `ClientAllocation`,
   `ContractUtilization`.
 - Empty state and error state are handled; loading is only the
-  route-level `(app)/loading.tsx` inherited from EPIC-006 — per-section
+  route-level `(app)/loading.tsx` inherited from EPIC-006 - per-section
   skeletons are specified but **not** implemented (F-104-008).
 
 The route is dynamic (`ƒ /dashboard` in the build route table) because
@@ -843,10 +843,10 @@ Membership is the authorization source. `WorkspaceMember.userId` is a logical Be
 
 Implemented primitives:
 
-- `resolveWorkspaceContext(userId)` — 0 memberships → onboarding; 1 → `WorkspaceContext`; >1 → fail closed
-- `requireWorkspaceAccess(userId, workspaceId)` — membership check; non-members receive `UnauthorizedWorkspaceAccessError`
-- `getAuthorizedWorkspace(userId, requestedWorkspaceId)` — authorized read after membership; `getWorkspaceById` is not an authorization API
-- `createFirstWorkspace(userId, input)` — atomic first-workspace create for a user with zero memberships
+- `resolveWorkspaceContext(userId)` - 0 memberships → onboarding; 1 → `WorkspaceContext`; >1 → fail closed
+- `requireWorkspaceAccess(userId, workspaceId)` - membership check; non-members receive `UnauthorizedWorkspaceAccessError`
+- `getAuthorizedWorkspace(userId, requestedWorkspaceId)` - authorized read after membership; `getWorkspaceById` is not an authorization API
+- `createFirstWorkspace(userId, input)` - atomic first-workspace create for a user with zero memberships
 
 `role` is stored and returned. OWNER versus MEMBER permission semantics are not implemented (OBD-009).
 
@@ -1187,7 +1187,7 @@ The engine does not duplicate hour calculations.
 
 ### Implemented by EPIC-106
 
-`AlertService.evaluateAlerts(context)` is the sole write path for alert creation and resolution. No browser can create alerts directly. AR-001 and AR-002 implemented. AR-003/AR-004 deferred (PD-106-001). Workspace isolation: every alert carries `workspaceId`; all repository queries include `workspaceId`. Evaluation is on-write (TimeEntry mutations), not scheduled (PD-106-003). Null `contractedMinutes` suppresses alert (unlimited contract — follows BR-104-011).
+`AlertService.evaluateAlerts(context)` is the sole write path for alert creation and resolution. No browser can create alerts directly. AR-001 and AR-002 implemented. AR-003/AR-004 deferred (PD-106-001). Workspace isolation: every alert carries `workspaceId`; all repository queries include `workspaceId`. Evaluation is on-write (TimeEntry mutations), not scheduled (PD-106-003). Null `contractedMinutes` suppresses alert (unlimited contract - follows BR-104-011).
 
 R2-E03 extends the same engine with `evaluateInvoicePaymentAlerts`. Types: `PAYMENT_PARTIAL` (INFO), `PAYMENT_OVERDUE` (WARNING), `PAYMENT_MISMATCH` (ERROR). Semantic identity is `Alert.invoiceId` + type. T3 triggers: Payment create/update/delete, Invoice amount/`invoiceDate` update, Invoice VOID. Invoice reference-only update does not evaluate. No scheduler. CONTRACT_* behavior is unchanged.
 
@@ -1218,7 +1218,7 @@ Email delivery should be an infrastructure adapter, not embedded into alert busi
 
 ### Implemented by EPIC-106
 
-In-app notification center at `/alerts` (RSC). No email, Slack, or push delivery. One notification created per workspace member per alert event (MVP: single-member workspace; fan-out deferred to OBD-009 resolution). `listNotificationsForUser(workspaceId, userId)` scoped by both identifiers — no cross-tenant access. `markNotificationRead` verifies `workspaceId` + `userId` ownership server-side before update. Unread count is also projected onto the Alerts navigation badge from the authenticated layout RSC (MVP Integration).
+In-app notification center at `/alerts` (RSC). No email, Slack, or push delivery. One notification created per workspace member per alert event (MVP: single-member workspace; fan-out deferred to OBD-009 resolution). `listNotificationsForUser(workspaceId, userId)` scoped by both identifiers - no cross-tenant access. `markNotificationRead` verifies `workspaceId` + `userId` ownership server-side before update. Unread count is also projected onto the Alerts navigation badge from the authenticated layout RSC (MVP Integration).
 
 ---
 
@@ -1487,7 +1487,7 @@ production
 
 Secrets must be environment-specific. Never commit real values. Never prefix these names with `NEXT_PUBLIC_`.
 
-Required production (set on Vercel; values are external — this repository does not invent them):
+Required production (set on Vercel; values are external - this repository does not invent them):
 
 ```text
 DATABASE_URL
@@ -1658,43 +1658,43 @@ Foundation pins currently in use: Next.js 15.5.25, React 19.1.0, TypeScript 5.9.
 
 # 33. Architecture Risks
 
-## R-001 — Over-engineering
+## R-001 - Over-engineering
 
 Risk: introducing abstractions that are not justified by the domain size.
 
 Mitigation: modular monolith, pragmatic boundaries, abstraction only where it protects a real responsibility.
 
-## R-002 — Business logic leaking into UI
+## R-002 - Business logic leaking into UI
 
 Risk: calculations duplicated across components.
 
 Mitigation: application/domain services as the source of truth.
 
-## R-003 — Workspace isolation defects
+## R-003 - Workspace isolation defects
 
 Risk: cross-tenant data access.
 
 Mitigation: server-side workspace context, integration tests and explicit authorization boundaries.
 
-## R-004 — Historical billing corruption
+## R-004 - Historical billing corruption
 
 Risk: contract changes modify old data semantics.
 
 Mitigation: explicit contract applicability and domain tests.
 
-## R-005 — Reporting divergence
+## R-005 - Reporting divergence
 
 Risk: dashboard and reports calculate different numbers.
 
 Mitigation: shared analytics/application calculation services.
 
-## R-006 — AI coupling
+## R-006 - AI coupling
 
 Risk: introducing an LLM into core business logic.
 
 Mitigation: AI remains an adapter over deterministic application services.
 
-## R-007 — Premature integration complexity
+## R-007 - Premature integration complexity
 
 Risk: implementing e-invoicing or other integrations before the core domain is stable.
 
@@ -1730,9 +1730,9 @@ The following are intentionally not frozen yet:
 - production hostname / Vercel project;
 - custom sending domain (Gmail SMTP is used without a purchased domain);
 - database schema/index design;
-- audit-log implementation (out of R2 — R2-OD-015);
+- audit-log implementation (out of R2 - R2-OD-015);
 - holiday/vacation architecture;
-- invoice aggregate design (superseded for R2: Invoice Tracking, not generation — implemented in `docs/release/r2-e02-invoice-tracking.md`);
+- invoice aggregate design (superseded for R2: Invoice Tracking, not generation - implemented in `docs/release/r2-e02-invoice-tracking.md`);
 - AI provider and tool-calling architecture;
 - advanced caching strategy.
 

@@ -24,7 +24,7 @@ export function getTodayInTimezone(
     month: "2-digit",
     day: "2-digit",
   });
-  // "en-CA" locale produces "YYYY-MM-DD" — safe to split
+  // "en-CA" locale produces "YYYY-MM-DD" - safe to split
   const [datePart] = formatter.format(now).split(",");
   const [year, month, day] = datePart.trim().split("-").map(Number);
   return { year, month, day };
@@ -40,7 +40,7 @@ function toUTCDate(year: number, month: number, day: number): Date {
 }
 
 // ---------------------------------------------------------------------------
-// Current-period constructors (timezone-aware, ends today — BR-105-014/015)
+// Current-period constructors (timezone-aware, ends today - BR-105-014/015)
 // ---------------------------------------------------------------------------
 
 /**
@@ -79,7 +79,7 @@ export function getCurrentWeekPeriod(timezone: string, now: Date = new Date()): 
  * BR-105-015: current month ends today (replaces end-of-month semantics per F-104-017).
  * BR-105-014: boundary derived from Workspace.timezone.
  *
- * @deprecated Pass a timezone — the zero-argument overload is removed by P105-03.
+ * @deprecated Pass a timezone - the zero-argument overload is removed by P105-03.
  *             Kept for backward compatibility during the transition only; callers
  *             in production must pass `context.timezone`.
  */
@@ -118,7 +118,7 @@ export function getWeekStartFromDate(date: Date): Date {
 }
 
 // ---------------------------------------------------------------------------
-// Historical period constructors (natural end — BR-105-015)
+// Historical period constructors (natural end - BR-105-015)
 // ---------------------------------------------------------------------------
 
 /**
@@ -188,7 +188,7 @@ export function isCurrentAnalyticsPeriod(
 /**
  * Calendar-date key for a Date stored as UTC midnight (`workDate`,
  * `AnalyticsPeriod` bounds). This is the workspace calendar date already
- * persisted at write time — not an instant to convert through a timezone.
+ * persisted at write time - not an instant to convert through a timezone.
  * Local getters would shift the day west of UTC (FINDING-108-001).
  */
 export function getCalendarDateKey(date: Date): string {

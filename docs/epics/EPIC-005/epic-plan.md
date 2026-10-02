@@ -1,14 +1,14 @@
-# EPIC-005 — Testing & CI Foundation
+# EPIC-005 - Testing & CI Foundation
 
 ## 1. Epic Identity
 
 **Epic:** EPIC-005  
-**Release:** Release 0 — Foundation  
+**Release:** Release 0 - Foundation  
 **Objective:** Testing & CI Foundation  
-**Status:** COMPLETE — PASS  
-**Depends on:** EPIC-001 — Foundation / Repository; EPIC-002 — Database & Persistence; EPIC-003 — Authentication; EPIC-004 — Workspace  
-**Next Epic:** EPIC-006 — UI Foundation  
-**Canonical source:** `MASTER_PLAN.md` R0-E05 — Testing & CI Foundation
+**Status:** COMPLETE - PASS  
+**Depends on:** EPIC-001 - Foundation / Repository; EPIC-002 - Database & Persistence; EPIC-003 - Authentication; EPIC-004 - Workspace  
+**Next Epic:** EPIC-006 - UI Foundation  
+**Canonical source:** `MASTER_PLAN.md` R0-E05 - Testing & CI Foundation
 
 MASTER_PLAN naming variants exist (`Testing & CI` vs `Testing & CI Foundation`). This plan uses the R0-E05 title. Do not treat the shorter name as a different Epic.
 
@@ -277,7 +277,7 @@ EPIC-005 must not change:
 - modular monolith layers;
 - Prisma / Better Auth / workspace authorization behavior;
 - production rate limits;
-- schema or migrations (unless a test-only documentation comment is required — prefer none);
+- schema or migrations (unless a test-only documentation comment is required - prefer none);
 - application routes or UI.
 
 Allowed changes: test helpers, Playwright/Vitest config, CI contract tests, documentation, and Engineering Review.
@@ -359,7 +359,7 @@ Never migrate or test against `freelance_os`.
 
 ## 10. CI Architecture
 
-Expected pipeline — already implemented; EPIC-005 must keep it and lock it:
+Expected pipeline - already implemented; EPIC-005 must keep it and lock it:
 
 ```text
 frozen-lockfile install
@@ -404,7 +404,7 @@ Foundation-level guarantees (BR-001 / A-007 / F-011):
 
 **Baseline decision:** retain the EPIC-002/003/004 tests listed in §7.1. They are the Foundation suite.
 
-**Phase 2:** lock those files/behaviors as a regression contract (existence + continued CI execution). Expand only if a listed guarantee has no test. G-004 is already covered at unit/integration; do not add a Playwright fail-closed journey unless a test-only seed can be done without new product surface — default is **do not add**.
+**Phase 2:** lock those files/behaviors as a regression contract (existence + continued CI execution). Expand only if a listed guarantee has no test. G-004 is already covered at unit/integration; do not add a Playwright fail-closed journey unless a test-only seed can be done without new product surface - default is **do not add**.
 
 Role permission semantics (OBD-009) remain untested by design.
 
@@ -467,16 +467,16 @@ Local E2E after Phase 1 must use the isolated test database and the same auth te
 Three phases. Justified by G-001–G-003 and G-005. No rename-only phase.
 
 ```text
-Phase 1 — COMPLETE
-Phase 2 — COMPLETE
-Phase 3 — COMPLETE
+Phase 1 - COMPLETE
+Phase 2 - COMPLETE
+Phase 3 - COMPLETE
 ```
 
 Each implementation chat is a new Cursor chat. One phase = one commit.
 
 ---
 
-## 15. Phase 1 — Test/CI reliability and foundation contract
+## 15. Phase 1 - Test/CI reliability and foundation contract
 
 **Status:** COMPLETE  
 **Commit:** `71b8e2ee6078a45c6b48cb66c5cb4868d851211b`  
@@ -537,7 +537,7 @@ test(ci): align e2e with isolated database and lock quality gates
 
 ---
 
-## 16. Phase 2 — Isolation/security regression lock
+## 16. Phase 2 - Isolation/security regression lock
 
 **Status:** COMPLETE  
 **Commit:** `0ba1aa888b28bcb2a1cc61dfe6038a2009adef97`  
@@ -593,7 +593,7 @@ test(security): lock workspace isolation regression baseline
 
 ---
 
-## 17. Phase 3 — Documentation and Engineering Review
+## 17. Phase 3 - Documentation and Engineering Review
 
 **Status:** COMPLETE  
 **Commit expected:** `docs(ci): complete EPIC-005 engineering review`  
@@ -607,10 +607,10 @@ Synchronize canonical documents with the formalized Foundation and record the En
 
 Update only what changed or is stale relative to this Epic:
 
-- `MASTER_PLAN.md` — current phase, next work (EPIC-006), Foundation Completion Gate checkboxes that this Epic actually certifies (tests execute, CI passes). Do not check UI-shell or production-readiness items.
-- `docs/testing-strategy.md` — implemented Foundation stack; mark R0 tooling as pinned; record F-004; do not claim MVP E2E exists.
-- `docs/architecture.md` / `docs/storage.md` / `README.md` / `CHANGELOG.md` — only if wording still says testing/CI is unestablished or omits the E2E isolated-DB rule.
-- `docs/epics/EPIC-005/engineering-review.md` — create here, not earlier.
+- `MASTER_PLAN.md` - current phase, next work (EPIC-006), Foundation Completion Gate checkboxes that this Epic actually certifies (tests execute, CI passes). Do not check UI-shell or production-readiness items.
+- `docs/testing-strategy.md` - implemented Foundation stack; mark R0 tooling as pinned; record F-004; do not claim MVP E2E exists.
+- `docs/architecture.md` / `docs/storage.md` / `README.md` / `CHANGELOG.md` - only if wording still says testing/CI is unestablished or omits the E2E isolated-DB rule.
+- `docs/epics/EPIC-005/engineering-review.md` - create here, not earlier.
 - This plan’s status block → implementation complete after review.
 
 ### Non-goals
@@ -673,8 +673,8 @@ Preserve all MASTER_PLAN OBDs. EPIC-005 must not resolve any of them.
 | OBD-008 | Audit-log requirements | No |
 | OBD-009 | Workspace roles and permissions | No |
 | OBD-001–007, OBD-010–012 | Billing, time, capacity, currency | No |
-| — | Google/email identity linking | No — EPIC-003 F-001 |
-| — | Production email provider | No — EPIC-003 F-003 |
+| - | Google/email identity linking | No - EPIC-003 F-001 |
+| - | Production email provider | No - EPIC-003 F-003 |
 
 `docs/testing-strategy.md` §50 uses overlapping `TD-*` identifiers that are **not** the MASTER_PLAN technical-debt register. Do not merge those tables. See §22.
 
@@ -741,7 +741,7 @@ Distinguish these states. Do not collapse them.
 | Engineering completion | Phases 1–3 done; DoD checklist complete; Engineering Review written |
 | Validation | Quality commands pass; not a separate QA report in this Epic |
 | Certification | Engineering Review verdict only (`PASS` / `PASS WITH FINDINGS`). Not production certification |
-| Production readiness | **NO** — remaining Release 0 (EPIC-006), prior findings, production email/Google decisions, production validation, and production certification are all still required |
+| Production readiness | **NO** - remaining Release 0 (EPIC-006), prior findings, production email/Google decisions, production validation, and production certification are all still required |
 
 ```text
 EPIC-005 engineering completion
@@ -753,7 +753,7 @@ production certification
 READY FOR RELEASE
 ```
 
-After a passing Engineering Review, MASTER_PLAN next work is EPIC-006 — UI Foundation.
+After a passing Engineering Review, MASTER_PLAN next work is EPIC-006 - UI Foundation.
 
 ---
 

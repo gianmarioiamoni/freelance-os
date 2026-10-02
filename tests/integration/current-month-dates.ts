@@ -14,7 +14,7 @@ import { getCurrentMonthPeriod } from "@/lib/analytics-periods";
  * Timezone semantics: `getCurrentMonthPeriod` now ends on workspace-local
  * today (BR-105-015) and resolves boundaries from `Workspace.timezone`
  * (BR-105-014), both delivered in P105-03. These helpers call it with no
- * explicit timezone, which defaults to "UTC" — correct for integration
+ * explicit timezone, which defaults to "UTC" - correct for integration
  * fixtures that are not asserting timezone-authority behavior (that is
  * tested separately in the P105-03 unit and integration suites).
  */

@@ -1,9 +1,9 @@
 # EPIC-107 Production Validation
 
-**Epic:** EPIC-107 — Public Landing  
+**Epic:** EPIC-107 - Public Landing  
 **Phase:** P107-06  
-**Release:** Release 1 — MVP  
-**MASTER_PLAN identifier:** R1-E07 — Public Landing  
+**Release:** Release 1 - MVP  
+**MASTER_PLAN identifier:** R1-E07 - Public Landing  
 **Date:** 2026-09-18  
 **Validator:** Production Validation Agent  
 
@@ -215,7 +215,7 @@ Desktop viewport (~733px): overflow **0**. No horizontal overflow observed on th
 
 Production server logs during this validation:
 
-- Repeated `Failed to load dashboard analytics: Error: NEXT_REDIRECT` with digests `replace;/sign-in;307` and `replace;/onboarding;307` — **F-104-007 reconfirmed**. User-visible navigation still followed the layout 307.
+- Repeated `Failed to load dashboard analytics: Error: NEXT_REDIRECT` with digests `replace;/sign-in;307` and `replace;/onboarding;307` - **F-104-007 reconfirmed**. User-visible navigation still followed the layout 307.
 - Production password-reset warning (expected; no mailer).
 - Build-time `DYNAMIC_SERVER_USAGE` for `/dashboard` (dynamic route; not a user-facing failure).
 

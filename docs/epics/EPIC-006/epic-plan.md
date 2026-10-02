@@ -1,14 +1,14 @@
-# EPIC-006 — UI Foundation
+# EPIC-006 - UI Foundation
 
 ## 1. Epic Identity
 
 **Epic:** EPIC-006  
-**Release:** Release 0 — Foundation  
+**Release:** Release 0 - Foundation  
 **Objective:** UI Foundation  
-**Status:** COMPLETE — PASS  
-**Depends on:** EPIC-001 — Foundation / Repository; EPIC-003 — Authentication; EPIC-004 — Workspace; EPIC-005 — Testing & CI Foundation  
-**Next Epic:** EPIC-101 — Clients (`MASTER_PLAN.md` §11 R1-E01 / §43)  
-**Canonical source:** `MASTER_PLAN.md` R0-E06 — UI Foundation
+**Status:** COMPLETE - PASS  
+**Depends on:** EPIC-001 - Foundation / Repository; EPIC-003 - Authentication; EPIC-004 - Workspace; EPIC-005 - Testing & CI Foundation  
+**Next Epic:** EPIC-101 - Clients (`MASTER_PLAN.md` §11 R1-E01 / §43)  
+**Canonical source:** `MASTER_PLAN.md` R0-E06 - UI Foundation
 
 ```text
 IMPLEMENTATION COMPLETE
@@ -135,9 +135,9 @@ Auth and onboarding forms stay as they are unless a primitive swap preserves acc
 | Dependency | Status | Role for this Epic |
 | --- | --- | --- |
 | EPIC-001 | Complete | Next.js App Router, Tailwind, shadcn bootstrap, AppShell, placeholder routes |
-| EPIC-003 | Complete — PASS WITH FINDINGS | Better Auth session; protected `(app)` boundary; auth pages |
-| EPIC-004 | Complete — PASS WITH FINDINGS | `WorkspaceContext`, membership resolution, onboarding, fail-closed multi-membership |
-| EPIC-005 | Complete — PASS | Vitest, isolated PostgreSQL, Playwright, CI quality gates |
+| EPIC-003 | Complete - PASS WITH FINDINGS | Better Auth session; protected `(app)` boundary; auth pages |
+| EPIC-004 | Complete - PASS WITH FINDINGS | `WorkspaceContext`, membership resolution, onboarding, fail-closed multi-membership |
+| EPIC-005 | Complete - PASS | Vitest, isolated PostgreSQL, Playwright, CI quality gates |
 | `getCurrentWorkspaceContext()` | Implemented | Authenticated layout gate |
 | `getAuthorizedWorkspace()` | Implemented | Authorized workspace record read for display |
 | `getServerAuthSession()` | Implemented | Session user projection for account label |
@@ -422,15 +422,15 @@ Existing tests that must remain green:
 Four phases. One objective each. One commit each. New Cursor chat per phase.
 
 ```text
-Phase 1 — Design system and primitives
-Phase 2 — Authenticated shell and page composition
-Phase 3 — UI tests and accessibility baseline
-Phase 4 — Documentation and Engineering Review
+Phase 1 - Design system and primitives
+Phase 2 - Authenticated shell and page composition
+Phase 3 - UI tests and accessibility baseline
+Phase 4 - Documentation and Engineering Review
 ```
 
 ---
 
-### Phase 1 — Design system and primitives
+### Phase 1 - Design system and primitives
 
 **Phase ID:** P6-01  
 **Entry conditions:** this plan exists; no EPIC-006 implementation yet.
@@ -502,7 +502,7 @@ feat(ui): establish design tokens and foundation primitives
 
 ---
 
-### Phase 2 — Authenticated shell and page composition
+### Phase 2 - Authenticated shell and page composition
 
 **Phase ID:** P6-02  
 **Entry conditions:** Phase 1 complete.
@@ -547,7 +547,7 @@ Phase 1 primitives; `getCurrentWorkspaceContext`; `getAuthorizedWorkspace`; `get
 
 #### Implementation notes
 
-Layout remains a server component. Header can stay a server component and receive props. Do not read `searchParams.workspaceId`. Do not display `workspaceId` or `role`. If `getAuthorizedWorkspace` fails after a resolved context, fail closed with the existing error primitive — do not invent a client retry against another workspace.
+Layout remains a server component. Header can stay a server component and receive props. Do not read `searchParams.workspaceId`. Do not display `workspaceId` or `role`. If `getAuthorizedWorkspace` fails after a resolved context, fail closed with the existing error primitive - do not invent a client retry against another workspace.
 
 #### Tests
 
@@ -578,7 +578,7 @@ feat(ui): complete authenticated application shell
 
 ---
 
-### Phase 3 — UI tests and accessibility baseline
+### Phase 3 - UI tests and accessibility baseline
 
 **Phase ID:** P6-03  
 **Entry conditions:** Phase 2 complete.
@@ -641,7 +641,7 @@ test(ui): cover authenticated shell and accessibility baseline
 
 ---
 
-### Phase 4 — Documentation and Engineering Review
+### Phase 4 - Documentation and Engineering Review
 
 **Phase ID:** P6-04  
 **Entry conditions:** Phases 1–3 complete.
@@ -654,11 +654,11 @@ Synchronize documents with the implemented UI foundation and record the Engineer
 
 Update only what this Epic changed or left stale:
 
-- `MASTER_PLAN.md` — current phase complete; next work EPIC-101; Foundation gate “initial UI shell works” only if implementation earned it;
-- `docs/architecture.md` §14 — describe implemented UI foundation, not a future rebuild;
-- `docs/testing-strategy.md` — Foundation UI/E2E additions; no MVP UI completeness claim;
+- `MASTER_PLAN.md` - current phase complete; next work EPIC-101; Foundation gate “initial UI shell works” only if implementation earned it;
+- `docs/architecture.md` §14 - describe implemented UI foundation, not a future rebuild;
+- `docs/testing-strategy.md` - Foundation UI/E2E additions; no MVP UI completeness claim;
 - `README.md` / `CHANGELOG.md` as needed;
-- `docs/epics/EPIC-006/engineering-review.md` — create here, not earlier;
+- `docs/epics/EPIC-006/engineering-review.md` - create here, not earlier;
 - this plan’s status block → implementation complete after review.
 
 #### Non-goals
@@ -759,12 +759,12 @@ Preserve all MASTER_PLAN OBDs. EPIC-006 must not resolve any of them.
 | OBD-006 | Capacity warning threshold | No |
 | OBD-007 | Post-closure edits/deletes | No |
 | OBD-008 | Audit requirements | No |
-| OBD-009 | Workspace roles | No — do not display or interpret `role` |
+| OBD-009 | Workspace roles | No - do not display or interpret `role` |
 | OBD-010 | Payment-term catalog | No |
 | OBD-011 | Multi-currency | No |
 | OBD-012 | Contract-hour rollover/expiry | No |
-| — | Google/email identity linking | No — EPIC-003 F-001 |
-| — | Production email provider | No — EPIC-003 F-003 |
+| - | Google/email identity linking | No - EPIC-003 F-001 |
+| - | Production email provider | No - EPIC-003 F-003 |
 
 Evaluated and **not** created as new OBDs:
 
@@ -791,7 +791,7 @@ P6-03 UI tests and accessibility baseline
         ↓
 P6-04 Documentation and Engineering Review
         ↓
-EPIC-101 — Clients
+EPIC-101 - Clients
 ```
 
 Each phase: new Cursor chat, one commit, no later-phase work.

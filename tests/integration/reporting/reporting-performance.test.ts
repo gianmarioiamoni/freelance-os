@@ -3,9 +3,9 @@
 // P105-06: Performance baseline measurement at the EPIC-104 scalability reference volume.
 //
 // Fixture volume (§15, Table):
-//   100 clients  — first 50 receive a contract each
-//    50 contracts — one per first 50 clients
-//  1000 time entries — distributed across 13 months (Sep 2025 … Sep 2026)
+//   100 clients  - first 50 receive a contract each
+//    50 contracts - one per first 50 clients
+//  1000 time entries - distributed across 13 months (Sep 2025 … Sep 2026)
 //
 // Reference queries (§15):
 //   1. Monthly report  (getContractReport, kind: "month")
@@ -14,15 +14,15 @@
 //   4. Year-scale contract report (getContractReport, kind: "year")
 //
 // Measurement: wall-clock duration of each call, via Date.now().
-// No CI pass/fail threshold (PD-105-008 unanswered — no threshold invented here).
+// No CI pass/fail threshold (PD-105-008 unanswered - no threshold invented here).
 // Results are logged so they appear in test output and can be recorded in the
 // Engineering Review for F-104-P-001.
 //
 // Query-count behaviour of getContractUtilizations (F-105-P-007):
-//   Query 1: findMany — contracts with validity overlap
-//   Query 2: groupBy  — in-period consumption by contractId
-//   Query 3: findMany — contracts present in consumption but not in validity overlap (conditional)
-//   Query 4 group: Promise.all of COUNT queries — one per contract with in-period consumption.
+//   Query 1: findMany - contracts with validity overlap
+//   Query 2: groupBy  - in-period consumption by contractId
+//   Query 3: findMany - contracts present in consumption but not in validity overlap (conditional)
+//   Query 4 group: Promise.all of COUNT queries - one per contract with in-period consumption.
 //             At CONTRACT_COUNT=50 this is ≤ 50 concurrent COUNTs per call.
 //             These are batched via Promise.all (concurrent, not serial).
 //             This is NOT a classical serial N+1; it is O(contracts_with_consumption)
@@ -73,12 +73,12 @@ const MONTHS = [
 ];
 
 // ---------------------------------------------------------------------------
-// All measurements in one test — fixture survives across measurements
+// All measurements in one test - fixture survives across measurements
 // (beforeEach in setup.ts truncates between tests, so fixture must be
 //  built once and all queries run within the same test body)
 // ---------------------------------------------------------------------------
 
-describe("P105-06 performance baseline — §15 fixture volume", () => {
+describe("P105-06 performance baseline - §15 fixture volume", () => {
   it(
     "measures monthly, year-scale, annual-overview, and weekly queries at reference volume (no pass/fail threshold, PD-105-008)",
     async () => {

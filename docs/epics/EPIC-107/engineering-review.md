@@ -1,9 +1,9 @@
 # EPIC-107 Engineering Review
 
-**Epic:** EPIC-107 — Public Landing  
+**Epic:** EPIC-107 - Public Landing  
 **Phase:** P107-05  
-**Release:** Release 1 — MVP  
-**MASTER_PLAN identifier:** R1-E07 — Public Landing  
+**Release:** Release 1 - MVP  
+**MASTER_PLAN identifier:** R1-E07 - Public Landing  
 **Date:** 2026-09-18  
 **Reviewer:** Engineering Review Agent  
 
@@ -59,11 +59,11 @@ Reviewed commits: `39fdd70` … `752de33` (P107-00 … P107-04). HEAD at review 
 
 | Gate | Command | Result |
 | --- | --- | --- |
-| Unit | `pnpm test` | PASS — 398/398 |
-| Integration | `pnpm test:integration` | PASS — 224/224 (host TZ) |
+| Unit | `pnpm test` | PASS - 398/398 |
+| Integration | `pnpm test:integration` | PASS - 224/224 (host TZ) |
 | Lint | `pnpm lint` | PASS |
 | Typecheck | `pnpm typecheck` | PASS |
-| E2E | `CI=true pnpm test:e2e --workers=1` | PASS — 66/66 (3.5m) |
+| E2E | `CI=true pnpm test:e2e --workers=1` | PASS - 66/66 (3.5m) |
 | Build | `pnpm build` | PASS |
 
 `TZ=America/Los_Angeles pnpm test:integration` was not re-run. FINDING-INT-001 remains OPEN on prior confirmed evidence.
@@ -174,7 +174,7 @@ P107-02 deleted `(app)/page.tsx`. Build route table: `ƒ /dashboard`, `ƒ /`.
 
 | Session | Membership | `/` | `/dashboard` |
 | --- | --- | --- | --- |
-| none | — | 200 landing | 307 `/sign-in` |
+| none | - | 200 landing | 307 `/sign-in` |
 | yes | 0 | 307 `/onboarding` | 307 `/onboarding` |
 | yes | 1 | 307 `/dashboard` | 200 dashboard |
 | yes | >1 | unit/integration: `/workspace-unavailable` | same via `getCurrentWorkspaceContext()` |
@@ -272,7 +272,7 @@ E2E coverage executed (all PASS):
 | TimeEntry | `time-tracking.spec.ts` | 6 |
 | Dashboard | `dashboard.spec.ts`, `dashboard-accessibility.spec.ts` | 5 + 11 |
 | Reports | `reports.spec.ts` | 14 |
-| Alerts isolation | included in alerts spec | — |
+| Alerts isolation | included in alerts spec | - |
 | MVP journey | `mvp-integration-journey.spec.ts` `@release-gate` | 1 |
 | Landing | `landing.spec.ts` | 7 |
 

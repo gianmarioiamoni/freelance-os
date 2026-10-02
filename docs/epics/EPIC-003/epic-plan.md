@@ -1,13 +1,13 @@
-# EPIC-003 — Authentication
+# EPIC-003 - Authentication
 
 ## 1. Epic Identity
 
 **Epic:** EPIC-003  
-**Release:** Release 0 — Foundation  
+**Release:** Release 0 - Foundation  
 **Objective:** Authentication Foundation  
-**Status:** Complete — PASS WITH FINDINGS  
-**Depends on:** EPIC-001 — Foundation / Repository; EPIC-002 — Database & Persistence  
-**Next Epic:** EPIC-004 — Workspace
+**Status:** Complete - PASS WITH FINDINGS  
+**Depends on:** EPIC-001 - Foundation / Repository; EPIC-002 - Database & Persistence  
+**Next Epic:** EPIC-004 - Workspace
 
 ---
 
@@ -105,7 +105,7 @@ Phase 4 implemented password recovery through Better Auth's `requestPasswordRese
 
 ```text
 Application implementation: NOT STARTED
-Authentication: IMPLEMENTED — certified PASS WITH FINDINGS
+Authentication: IMPLEMENTED - certified PASS WITH FINDINGS
 Authorization: NOT STARTED
 Workspace onboarding: NOT STARTED
 MVP implementation: NOT STARTED
@@ -226,7 +226,7 @@ The authenticated-user identifier used by the application is the Better Auth use
 
 ## 9. Epic Scope
 
-### In Scope — MVP authentication
+### In Scope - MVP authentication
 
 Product scope from `docs/product-vision.md` F-001–F-005 and `MASTER_PLAN.md` R0-E03:
 
@@ -247,7 +247,7 @@ Product scope from `docs/product-vision.md` F-001–F-005 and `MASTER_PLAN.md` R
 - CI that can run those tests without Google credentials;
 - documentation synchronization and Engineering Review.
 
-### Out of Scope — future authentication enhancements
+### Out of Scope - future authentication enhancements
 
 - email verification as a product gate before sign-in, unless the pinned Better Auth version cannot operate email/password without it;
 - MFA;
@@ -487,7 +487,7 @@ Document the chosen mechanism and why it matches both Better Auth and the projec
 - expire according to Better Auth configuration;
 - cookie/security model from the library.
 
-### Password recovery — in scope
+### Password recovery - in scope
 
 Product requirement F-004.
 
@@ -500,7 +500,7 @@ Product requirement F-004.
 
 Email delivery is an Infrastructure adapter. Production provider remains TBD. Development/test must use a captured or console adapter so CI never sends real email.
 
-### Email verification — not a product requirement
+### Email verification - not a product requirement
 
 F-001–F-005 do not require verifying email before use.
 
@@ -520,7 +520,7 @@ Follow `docs/testing-strategy.md`. Do not replace EPIC-002 persistence tests.
 
 Only for application/auth utilities that contain real logic. Do not unit-test Better Auth internals.
 
-### Integration — PostgreSQL, real migration chain
+### Integration - PostgreSQL, real migration chain
 
 When the relevant phase lands, verify:
 
@@ -594,8 +594,8 @@ Playwright auth E2E may run locally and in CI only if they remain deterministic 
 
 ### Completed
 
-- EPIC-001 — Repository & Application Bootstrap
-- EPIC-002 — Database & Persistence
+- EPIC-001 - Repository & Application Bootstrap
+- EPIC-002 - Database & Persistence
 
 ### Required from EPIC-002
 
@@ -667,7 +667,7 @@ Update only when the corresponding behavior exists:
 | `README.md` | After env vars, scripts, or setup steps change |
 | `CHANGELOG.md` | Each phase |
 | `MASTER_PLAN.md` | Epic completion / status change |
-| ADR-006 — Authentication ownership | Only if Phase 6 judges the decision architectural enough for a standalone ADR |
+| ADR-006 - Authentication ownership | Only if Phase 6 judges the decision architectural enough for a standalone ADR |
 
 Do not describe planned behavior as implemented.
 
@@ -690,7 +690,7 @@ Corrections stay in the same phase chat.
 
 ---
 
-### Phase 1 — Authentication architecture & persistence foundation
+### Phase 1 - Authentication architecture & persistence foundation
 
 **Cursor chat:** NEW CHAT  
 **Commit expected:** YES
@@ -751,7 +751,7 @@ feat(auth): establish better auth persistence foundation
 
 ---
 
-### Phase 2 — Email/password authentication, sessions & protected server boundary
+### Phase 2 - Email/password authentication, sessions & protected server boundary
 
 **Cursor chat:** NEW CHAT  
 **Commit expected:** YES
@@ -817,7 +817,7 @@ Next.js 15.5.25 does not provide `proxy.ts`. Better Auth still documents `middle
 
 ---
 
-### Phase 3 — Google OAuth
+### Phase 3 - Google OAuth
 
 **Cursor chat:** NEW CHAT  
 **Commit expected:** YES
@@ -879,7 +879,7 @@ Better Auth 1.7.4 implicit account linking requires the existing local user to h
 
 ---
 
-### Phase 4 — Password recovery
+### Phase 4 - Password recovery
 
 **Cursor chat:** NEW CHAT  
 **Commit expected:** YES
@@ -947,7 +947,7 @@ feat(auth): implement password recovery
 
 ---
 
-### Phase 5 — Authentication integration testing & CI
+### Phase 5 - Authentication integration testing & CI
 
 **Cursor chat:** NEW CHAT  
 **Commit expected:** YES
@@ -1017,7 +1017,7 @@ test(auth): verify authentication persistence and flows
 
 ---
 
-### Phase 6 — Documentation & Authentication Engineering Review
+### Phase 6 - Documentation & Authentication Engineering Review
 
 **Cursor chat:** NEW CHAT  
 **Commit expected:** YES
@@ -1289,7 +1289,7 @@ Ready for EPIC-004 only when the review says so and no Blocker/High finding rema
 
 After EPIC-003 certification:
 
-**EPIC-004 — Workspace**
+**EPIC-004 - Workspace**
 
 EPIC-004 will introduce workspace lifecycle, membership, server-side workspace resolution, and tenant isolation primitives that consume the authenticated user id established here.
 

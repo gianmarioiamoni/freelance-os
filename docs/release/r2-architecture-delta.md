@@ -1,4 +1,4 @@
-# R2 Architecture Delta — Revenue Operations
+# R2 Architecture Delta - Revenue Operations
 
 **Status:** Domain and persistence-planning delta. R2-E01 snapshot / Accrued / Expected are implemented. R2-E02 Invoice Tracking is implemented. R2-E03 Payment Tracking is CERTIFIED. R2-E04 Forecasting & Contract Time Allocation is CERTIFIED (`docs/release/r2-e04-forecasting-allocation.md`). R2-E05 Advanced Reporting & Export is CERTIFIED (`docs/release/r2-e05-advanced-reporting-export.md`; P-E05-00…P-E05-06). R2 is CERTIFIED (`docs/release/r2-certification.md`). R2 is RELEASED WITH FINDINGS (`docs/release/r2-release.md`). R2 is PRODUCTION-RELEASED.  
 **Date:** 2026-09-24  
@@ -9,11 +9,11 @@ This document records what must change conceptually for R2. Invoice Prisma names
 
 Legend:
 
-- **DOMAIN DECISION** — product/domain meaning is approved or already present in R1.
-- **CONFIRMED REQUIREMENT** — R2 needs this concept. Persistence may not exist yet.
-- **IMPLEMENTATION DETAIL STILL OPEN** — design work for epic planning. Not a product decision.
-- **EXISTING MODEL REUSED** — R1 fact R2 must consume.
-- **TECHNICAL IMPLEMENTATION TO BE PLANNED** — later architecture/planning work.
+- **DOMAIN DECISION** - product/domain meaning is approved or already present in R1.
+- **CONFIRMED REQUIREMENT** - R2 needs this concept. Persistence may not exist yet.
+- **IMPLEMENTATION DETAIL STILL OPEN** - design work for epic planning. Not a product decision.
+- **EXISTING MODEL REUSED** - R1 fact R2 must consume.
+- **TECHNICAL IMPLEMENTATION TO BE PLANNED** - later architecture/planning work.
 
 ---
 

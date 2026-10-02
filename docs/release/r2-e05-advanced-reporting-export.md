@@ -1,9 +1,9 @@
-# R2-E05 — Advanced Reporting & Export — Epic Plan
+# R2-E05 - Advanced Reporting & Export - Epic Plan
 
-**Epic:** R2-E05 — Advanced Reporting & Export  
-**Release:** Release 2 — Revenue Operations  
+**Epic:** R2-E05 - Advanced Reporting & Export  
+**Release:** Release 2 - Revenue Operations  
 **MASTER_PLAN identifier:** R2-E05 (`MASTER_PLAN.md` §19)  
-**Status:** CERTIFIED — P-E05-00…P-E05-06 COMPLETE. QA PASS WITH FINDINGS. Release Validation PASS WITH FINDINGS. Residual findings retained.  
+**Status:** CERTIFIED - P-E05-00…P-E05-06 COMPLETE. QA PASS WITH FINDINGS. Release Validation PASS WITH FINDINGS. Residual findings retained.  
 **Planning date:** 2026-09-24  
 **QA date:** 2026-09-25  
 **Certification date:** 2026-09-25  
@@ -19,13 +19,13 @@
 **Does not authorize:** R2 production release
 
 ```text
-P-E05-00  PLANNING / DECISION GATE                 COMPLETE — PO DECISIONS CLOSED
-P-E05-01  REPORT READ MODEL + FILTERS              COMPLETE — APPROVED WITH FINDINGS
-P-E05-02  REPORT UI                                COMPLETE — APPROVED WITH FINDINGS
-P-E05-03  CSV EXPORT                               COMPLETE — APPROVED WITH FINDINGS
-P-E05-04  QA / DOCUMENTATION                       COMPLETE — QA PASS WITH FINDINGS
-P-E05-05  RELEASE VALIDATION                       COMPLETE — PASS WITH FINDINGS
-P-E05-06  CERTIFICATION                            COMPLETE — CERTIFIED
+P-E05-00  PLANNING / DECISION GATE                 COMPLETE - PO DECISIONS CLOSED
+P-E05-01  REPORT READ MODEL + FILTERS              COMPLETE - APPROVED WITH FINDINGS
+P-E05-02  REPORT UI                                COMPLETE - APPROVED WITH FINDINGS
+P-E05-03  CSV EXPORT                               COMPLETE - APPROVED WITH FINDINGS
+P-E05-04  QA / DOCUMENTATION                       COMPLETE - QA PASS WITH FINDINGS
+P-E05-05  RELEASE VALIDATION                       COMPLETE - PASS WITH FINDINGS
+P-E05-06  CERTIFICATION                            COMPLETE - CERTIFIED
 
 R2-E05: CERTIFIED
 R2-E04: CERTIFIED
@@ -40,9 +40,9 @@ R2: NOT PRODUCTION-READY
 
 ## P-E05-00 verdict
 
-**COMPLETE — PO DECISIONS CLOSED**
+**COMPLETE - PO DECISIONS CLOSED**
 
-All four blocking Product Owner decisions are CLOSED — PO APPROVED. The final E05 contract is recorded below. This phase does not implement.
+All four blocking Product Owner decisions are CLOSED - PO APPROVED. The final E05 contract is recorded below. This phase does not implement.
 
 P-E05-01 is **AUTHORIZED** for a later chat. Do not start it here.
 
@@ -52,10 +52,10 @@ P-E05-01 is **AUTHORIZED** for a later chat. Do not start it here.
 
 | ID | Decision |
 | --- | --- |
-| E05-D-REPORT-SCOPE | **A** — extend existing `/reports`. Publish already-loaded Expected and Contract Allocation. No Invoice/Payment report axis. No workspace indexes. No new dedicated tables |
-| E05-D-TEMPORAL-MODEL | **D** — Invoice/Payment are not periodized. Existing report temporal semantics remain authoritative |
-| E05-D-REPORT-FILTERS | **B** — Period + Client + Contract. No currency / VOID / amountStatus / overdue |
-| E05-D-EXPORT-FORMATS | **B** — native CSV of the same approved filtered dataset. Closes R2-OD-012. No XLSX / PDF / persistence / export framework |
+| E05-D-REPORT-SCOPE | **A** - extend existing `/reports`. Publish already-loaded Expected and Contract Allocation. No Invoice/Payment report axis. No workspace indexes. No new dedicated tables |
+| E05-D-TEMPORAL-MODEL | **D** - Invoice/Payment are not periodized. Existing report temporal semantics remain authoritative |
+| E05-D-REPORT-FILTERS | **B** - Period + Client + Contract. No currency / VOID / amountStatus / overdue |
+| E05-D-EXPORT-FORMATS | **B** - native CSV of the same approved filtered dataset. Closes R2-OD-012. No XLSX / PDF / persistence / export framework |
 
 CSV cell format, filename, and download mechanics are **P-E05-01 / P-E05-03 engineering**. Do not invent them here.
 
@@ -143,14 +143,14 @@ Planning inspection at P-E05-00. Shipped state is §23.
 | HEAD | `39714a184e3e97c19d434f9111f67354f604d8b6` |
 | Working tree at inspection | clean |
 | Existing E05 plan | **absent** before this document |
-| `ReportingService` | present — period resolve + publish only |
-| `/reports` | present — RSC; period URL; Hours by Client; Contract Report; Annual Overview; Accrued + Forecast |
+| `ReportingService` | present - period resolve + publish only |
+| `/reports` | present - RSC; period URL; Hours by Client; Contract Report; Annual Overview; Accrued + Forecast |
 | CSV / XLSX / PDF / download route | **absent** |
 | Export library | **absent** |
-| Workspace Invoice index | **absent** — `listInvoicesForContract` only |
-| Workspace Payment index | **absent** — `listPaymentsForInvoice` only |
+| Workspace Invoice index | **absent** - `listInvoicesForContract` only |
+| Workspace Payment index | **absent** - `listPaymentsForInvoice` only |
 | Report / export schema | **absent** |
-| Alert interaction for reports | **absent** — E05 epic map: none |
+| Alert interaction for reports | **absent** - E05 epic map: none |
 
 ---
 
@@ -162,17 +162,17 @@ Legend: **FACT** = repository text. **OPEN** = PO required. **NOT AUTHORIZED** =
 
 | Claim | Class |
 | --- | --- |
-| Epic name: Advanced Reporting & Export | FACT — MASTER_PLAN §19 / epic map |
-| Extend operational reporting so revenue, invoice tracking, and payment status can be inspected | FACT — epic map E05 objective |
-| Advanced filtering on existing / R2 operational facts | **CLOSED** — Period + Client + Contract (E05-D-REPORT-FILTERS B) |
-| Revenue / invoice / payment columns once those semantics are finalized | Envelope narrowed: **CLOSED A** — Expected + allocation on existing `/reports`; no Invoice/Payment axis |
+| Epic name: Advanced Reporting & Export | FACT - MASTER_PLAN §19 / epic map |
+| Extend operational reporting so revenue, invoice tracking, and payment status can be inspected | FACT - epic map E05 objective |
+| Advanced filtering on existing / R2 operational facts | **CLOSED** - Period + Client + Contract (E05-D-REPORT-FILTERS B) |
+| Revenue / invoice / payment columns once those semantics are finalized | Envelope narrowed: **CLOSED A** - Expected + allocation on existing `/reports`; no Invoice/Payment axis |
 | Shared calculation services only | FACT |
-| Simple tabular / CSV export only if planning shows low complexity and clear value | **CLOSED** — native CSV (E05-D-EXPORT-FORMATS B / R2-OD-012) |
+| Simple tabular / CSV export only if planning shows low complexity and clear value | **CLOSED** - native CSV (E05-D-EXPORT-FORMATS B / R2-OD-012) |
 | Reports remain a derived read model | FACT |
 | Same RSC / `WorkspaceContext` rules as EPIC-105 `/reports` | FACT |
 | Period parameters are view state, not tenant grants | FACT |
 | E05 must consume E01–E04 outputs; no formula duplication | FACT |
-| E05 is trailing and does not block E01–E03 | FACT — already satisfied |
+| E05 is trailing and does not block E01–E03 | FACT - already satisfied |
 
 ### B. Existing implementation E05 may extend
 
@@ -181,7 +181,7 @@ Legend: **FACT** = repository text. **OPEN** = PO required. **NOT AUTHORIZED** =
 | `/reports` | Period kinds `today` / `week` / `month` / `year` / `custom` |
 | Hours by Client | Client, total, billable, share. Archived labelled |
 | Contract Report | Client, consumed, capacity, utilization. Archived / Ongoing / Out of validity flags |
-| Annual Overview | Current workspace year only. Hours + Accrued + Forecast. Footer hours total; money footer is `—` |
+| Annual Overview | Current workspace year only. Hours + Accrued + Forecast. Footer hours total; money footer is `-` |
 | Revenue summary | Accrued + Expected + Forecast. Forecast hidden when `null` |
 | `ReportingService.getContractReport` | Publishes Expected and `contractAllocations`. Rendered on `/reports` and exported in CSV |
 | Dashboard | Reuses `RevenueSummary` (Accrued + Forecast) |
@@ -191,7 +191,7 @@ Legend: **FACT** = repository text. **OPEN** = PO required. **NOT AUTHORIZED** =
 
 ### C. Product decisions
 
-See §17. All four blocking decisions are **CLOSED — PO APPROVED**.
+See §17. All four blocking decisions are **CLOSED - PO APPROVED**.
 
 ### D. Ideas that are NOT authorized
 
@@ -205,9 +205,9 @@ See §17. All four blocking decisions are **CLOSED — PO APPROVED**.
 | Generic `ReportEngine` | No evidence |
 | Background jobs / cron | Not justified |
 | Redesign of certified E01–E04 surfaces | E04 closed “no E01/E02 redesign”; E05 is additive |
-| Workspace Invoice / Payment **index pages** | CLOSED A — not granted |
-| Invoice/Payment report columns / tables / temporal axis | CLOSED A / D — not in E05 |
-| Currency / VOID / amountStatus / overdue filters | CLOSED B filters — not in E05 |
+| Workspace Invoice / Payment **index pages** | CLOSED A - not granted |
+| Invoice/Payment report columns / tables / temporal axis | CLOSED A / D - not in E05 |
+| Currency / VOID / amountStatus / overdue filters | CLOSED B filters - not in E05 |
 | Report-created alerts | Epic map E05 §10: none |
 | Persist report totals | Epic map: none expected |
 
@@ -296,12 +296,12 @@ Do not invent `invoiceDate` / `dueDate` / `paymentDate` periodization. Do not in
 
 ## 8. Currency / financial semantics
 
-**FACT — not reopened:**
+**FACT - not reopened:**
 
 - Reports that publish money are currency-grouped.
 - Multi-currency workspaces are supported as **separate** currency rows.
 - FX does not exist.
-- Totals across currencies are forbidden (D7). Annual Overview money footer is already `—`.
+- Totals across currencies are forbidden (D7). Annual Overview money footer is already `-`.
 - Invoice / Payment use persisted currency snapshots, not a live Contract reread.
 - Accrued uses `snapshotCurrency`. Expected uses live Contract currency. Forecast inherits Accrued grouping.
 - Published money is nearest integer. Intermediates stay unrounded (R2-OD-002).
@@ -316,7 +316,7 @@ Profitability is **not** in E05. Do not invent margin, cost, or net.
 | Format | Status |
 | --- | --- |
 | On-screen tables | Existing |
-| CSV | **CLOSED B** — native CSV of the same approved filtered dataset (R2-OD-012) |
+| CSV | **CLOSED B** - native CSV of the same approved filtered dataset (R2-OD-012) |
 | XLSX / Excel | Out of R2 |
 | PDF / document generation | Out of core R2 |
 
@@ -397,7 +397,7 @@ Possible later outcomes, only if PO creates a persistence need:
 | --- | --- |
 | No migration | Default |
 | Additive index | Only if Client/Contract filter queries prove existing TimeEntry indexes insufficient |
-| Report configuration / export metadata tables | Saved or scheduled reports — **not authorized** |
+| Report configuration / export metadata tables | Saved or scheduled reports - **not authorized** |
 
 Do not invent persistence in P-E05-01.
 
@@ -420,7 +420,7 @@ Additive E05 UI only. Do not redesign Dashboard, Contract detail, Client detail,
 | `/reports` existing tables / revenue summary | Publish Expected + allocation. Add Client + Contract filters |
 | New `/reports` sections / tables | **No** |
 | Export control on `/reports` | CSV in P-E05-03 |
-| Dashboard | Out — E04 revenue surface unchanged |
+| Dashboard | Out - E04 revenue surface unchanged |
 | Contract / Client detail | Out |
 | Workspace Invoice / Payment index pages | **No** |
 | Saved / scheduled report UI | **No** |
@@ -482,8 +482,8 @@ Expected and allocation are already loaded into `ContractReport` and not shown. 
 | C | Add new Invoice and/or Payment **tables** on `/reports`, still no standalone index routes |
 | D | Add workspace Invoice and/or Payment **index** surfaces |
 
-**Decision:** **A** — extend existing `/reports`. Publish already-loaded Expected and Contract Allocation. No Invoice/Payment report axis. No workspace-wide index pages. No new dedicated report tables.  
-**Status:** **CLOSED — PO APPROVED**
+**Decision:** **A** - extend existing `/reports`. Publish already-loaded Expected and Contract Allocation. No Invoice/Payment report axis. No workspace-wide index pages. No new dedicated report tables.  
+**Status:** **CLOSED - PO APPROVED**
 
 ### E05-D-TEMPORAL-MODEL
 
@@ -498,8 +498,8 @@ Expected and allocation are already loaded into `ContractReport` and not shown. 
 | C | Invoice/Payment reports are not period-sliced; show current operational set only |
 | D | E05 contains no Invoice/Payment period report (only if REPORT-SCOPE = A) |
 
-**Decision:** **D** — Invoice/Payment do not participate in the E05 report temporal model. Do not introduce `invoiceDate` / `dueDate` / `paymentDate` periodization. Existing report temporal semantics remain authoritative.  
-**Status:** **CLOSED — PO APPROVED**
+**Decision:** **D** - Invoice/Payment do not participate in the E05 report temporal model. Do not introduce `invoiceDate` / `dueDate` / `paymentDate` periodization. Existing report temporal semantics remain authoritative.  
+**Status:** **CLOSED - PO APPROVED**
 
 ### E05-D-REPORT-FILTERS
 
@@ -514,8 +514,8 @@ Expected and allocation are already loaded into `ContractReport` and not shown. 
 | C | B + currency |
 | D | C + Invoice tracking (ACTIVE / VOID / ALL) and/or amountStatus / overdue |
 
-**Decision:** **B** — Period + Client + Contract. Workspace-scoped. Do not add Currency, VOID, amountStatus, or overdue filters.  
-**Status:** **CLOSED — PO APPROVED**
+**Decision:** **B** - Period + Client + Contract. Workspace-scoped. Do not add Currency, VOID, amountStatus, or overdue filters.  
+**Status:** **CLOSED - PO APPROVED**
 
 ### E05-D-EXPORT-FORMATS
 
@@ -527,23 +527,23 @@ Expected and allocation are already loaded into `ContractReport` and not shown. 
 | --- | --- |
 | A | No export in E05. On-screen reports only |
 | B | Simple CSV of the approved on-screen report tables. Native UTF-8 serializer. No new library |
-| C | Broader export (XLSX / PDF / engine) — **invalid in R2** |
+| C | Broader export (XLSX / PDF / engine) - **invalid in R2** |
 
-**Decision:** **B** — native CSV of the same approved report dataset under the same active filters and workspace authorization. No XLSX. No PDF. No export persistence. No new export framework.  
-**Status:** **CLOSED — PO APPROVED** (closes R2-OD-012)
+**Decision:** **B** - native CSV of the same approved report dataset under the same active filters and workspace authorization. No XLSX. No PDF. No export persistence. No new export framework.  
+**Status:** **CLOSED - PO APPROVED** (closes R2-OD-012)
 
 ### Conditional (no longer PO blockers)
 
 #### E05-D-CSV-FORMAT
 
-**Status:** TECHNICAL — shipped. Not a PO residual.
+**Status:** TECHNICAL - shipped. Not a PO residual.
 
 Native UTF-8 CSV of the filtered operational `/reports` read model (`getHoursByClient` + `getContractReport`). Annual Overview is excluded. Four sections in page order, RFC 4180-style escaping, LF lines, final newline:
 
 | Section | Columns |
 | --- | --- |
 | `meta` | `period_kind,period_start,period_end,client_id,contract_id` |
-| `revenue` | `metric,currency,published` — Accrued, Expected, Forecast; Forecast omitted when `null`; one row per currency/metric; published values only |
+| `revenue` | `metric,currency,published` - Accrued, Expected, Forecast; Forecast omitted when `null`; one row per currency/metric; published values only |
 | `hours_by_client` | `client_name,is_archived,total_minutes,billable_minutes,share_percent` |
 | `contract_report` | utilization + allocation columns from the read model |
 
@@ -556,23 +556,23 @@ Technical default: no extra cap beyond the current report query; no streaming un
 
 #### E05-D-INVOICE-VOID-VISIBILITY
 
-**N/A** — REPORT-SCOPE A. No Invoice report axis.
+**N/A** - REPORT-SCOPE A. No Invoice report axis.
 
 #### E05-D-PAGINATION
 
-**N/A** — no workspace-wide Invoice/Payment lists.
+**N/A** - no workspace-wide Invoice/Payment lists.
 
 ### Not opened (explicitly out or already closed)
 
 | ID | Status |
 | --- | --- |
-| E05-D-CURRENCY-GROUPING | CLOSED by D7 / R2-OD-002 — per currency; no FX; no mixed total |
+| E05-D-CURRENCY-GROUPING | CLOSED by D7 / R2-OD-002 - per currency; no FX; no mixed total |
 | E05-D-XLSX-FORMAT | NOT AUTHORIZED |
 | E05-D-PDF-FORMAT | NOT AUTHORIZED |
 | E05-D-SAVED-REPORTS | NOT AUTHORIZED |
 | E05-D-SCHEDULED-EXPORTS | NOT AUTHORIZED |
-| E05-D-REPORT-PERSISTENCE | CLOSED by epic map — derived; no document store |
-| E05-D-GROUPING | CLOSED — existing tables keep current grouping |
+| E05-D-REPORT-PERSISTENCE | CLOSED by epic map - derived; no document store |
+| E05-D-GROUPING | CLOSED - existing tables keep current grouping |
 | Alert / job / warehouse / profitability | NOT AUTHORIZED |
 
 ---
@@ -583,13 +583,13 @@ P-E05-00…P-E05-06 are **COMPLETE**. E05 is **CERTIFIED**. R2 remains not produ
 
 | Phase | Objective | Depends | Deliverables | Tests | Commit intent | Exit | Risks |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| P-E05-00 | Planning / PO gate | E01–E04 certified | This document | None | `docs(r2-e05): close planning decisions` | COMPLETE — PO DECISIONS CLOSED | Implicit product invention |
-| P-E05-01 | Report read model + filters | Closed A/D/B | Expected + allocation publication; Period + Client + Contract filter projection; CSV-ready dataset | Unit + integration isolation / authority | bundled in `f482ec1` | COMPLETE — APPROVED WITH FINDINGS | Formula duplication; Invoice/Payment leakage |
-| P-E05-02 | Additive `/reports` UI | P-E05-01 | Expected / allocation on existing surfaces; Client + Contract filters | E2E reports | `feat(r2-e05): add report filters and revenue surfaces` | COMPLETE — APPROVED WITH FINDINGS | Redesigning E01–E04 |
-| P-E05-03 | Native CSV | EXPORT-FORMATS B; P-E05-02 | Native CSV of the same filtered dataset | Unit serialize; E2E download; authz | `feat(r2-e05): add native csv export` | COMPLETE — APPROVED WITH FINDINGS | New library / document generation |
-| P-E05-04 | QA / documentation | P-E05-03 | Docs match shipped behavior | QA | `chore(r2-e05): close advanced reporting and export` | COMPLETE — QA PASS WITH FINDINGS | Doc drift |
-| P-E05-05 | Release validation | P-E05-04 | Validation record | Gate B | none (validation-only) | COMPLETE — PASS WITH FINDINGS | Claiming R2 production-ready |
-| P-E05-06 | Certification | P-E05-05 | Certification metadata | — | `chore(r2-e05): certify advanced reporting and export` | COMPLETE — CERTIFIED; R2 still not production-ready | Starting R2 release gates early |
+| P-E05-00 | Planning / PO gate | E01–E04 certified | This document | None | `docs(r2-e05): close planning decisions` | COMPLETE - PO DECISIONS CLOSED | Implicit product invention |
+| P-E05-01 | Report read model + filters | Closed A/D/B | Expected + allocation publication; Period + Client + Contract filter projection; CSV-ready dataset | Unit + integration isolation / authority | bundled in `f482ec1` | COMPLETE - APPROVED WITH FINDINGS | Formula duplication; Invoice/Payment leakage |
+| P-E05-02 | Additive `/reports` UI | P-E05-01 | Expected / allocation on existing surfaces; Client + Contract filters | E2E reports | `feat(r2-e05): add report filters and revenue surfaces` | COMPLETE - APPROVED WITH FINDINGS | Redesigning E01–E04 |
+| P-E05-03 | Native CSV | EXPORT-FORMATS B; P-E05-02 | Native CSV of the same filtered dataset | Unit serialize; E2E download; authz | `feat(r2-e05): add native csv export` | COMPLETE - APPROVED WITH FINDINGS | New library / document generation |
+| P-E05-04 | QA / documentation | P-E05-03 | Docs match shipped behavior | QA | `chore(r2-e05): close advanced reporting and export` | COMPLETE - QA PASS WITH FINDINGS | Doc drift |
+| P-E05-05 | Release validation | P-E05-04 | Validation record | Gate B | none (validation-only) | COMPLETE - PASS WITH FINDINGS | Claiming R2 production-ready |
+| P-E05-06 | Certification | P-E05-05 | Certification metadata | - | `chore(r2-e05): certify advanced reporting and export` | COMPLETE - CERTIFIED; R2 still not production-ready | Starting R2 release gates early |
 
 ---
 
@@ -633,13 +633,13 @@ P-E05-00…P-E05-06 are **COMPLETE**. E05 is **CERTIFIED**. R2 remains not produ
 ## 21. Implementation authorization
 
 ```text
-P-E05-00: COMPLETE — PO DECISIONS CLOSED
-P-E05-01: COMPLETE — APPROVED WITH FINDINGS
-P-E05-02: COMPLETE — APPROVED WITH FINDINGS
-P-E05-03: COMPLETE — APPROVED WITH FINDINGS
-P-E05-04: COMPLETE — QA PASS WITH FINDINGS
-P-E05-05: COMPLETE — PASS WITH FINDINGS
-P-E05-06: COMPLETE — CERTIFIED
+P-E05-00: COMPLETE - PO DECISIONS CLOSED
+P-E05-01: COMPLETE - APPROVED WITH FINDINGS
+P-E05-02: COMPLETE - APPROVED WITH FINDINGS
+P-E05-03: COMPLETE - APPROVED WITH FINDINGS
+P-E05-04: COMPLETE - QA PASS WITH FINDINGS
+P-E05-05: COMPLETE - PASS WITH FINDINGS
+P-E05-06: COMPLETE - CERTIFIED
 E05: CERTIFIED
 R2: NOT PRODUCTION-READY
 ```
@@ -670,11 +670,11 @@ E05 is QA validated and ready for the Release Validation Gate. E05 is **not** ce
 
 | Phase | Status | Commit | Review | Findings |
 | --- | --- | --- | --- | --- |
-| P-E05-00 | COMPLETE — PO DECISIONS CLOSED | `2b9871b` planning; `bd623e5` close decisions | PO APPROVED | none |
-| P-E05-01 | COMPLETE — APPROVED WITH FINDINGS | bundled in `f482ec1` | APPROVED WITH FINDINGS | F-E05-01-001 closed in P-E05-02; F-E05-01-002 LOW residual; F-E05-01-003 ACCEPTED |
-| P-E05-02 | COMPLETE — APPROVED WITH FINDINGS | `f482ec1` | APPROVED WITH FINDINGS | F-E05-02-001 closed in P-E05-04 |
-| P-E05-03 | COMPLETE — APPROVED WITH FINDINGS | `a65e928` | APPROVED WITH FINDINGS | F-E05-03-001 ACCEPTED; F-E05-03-002 closed in P-E05-04 |
-| P-E05-04 | COMPLETE — QA PASS WITH FINDINGS | this commit | QA PASS WITH FINDINGS | no new findings |
+| P-E05-00 | COMPLETE - PO DECISIONS CLOSED | `2b9871b` planning; `bd623e5` close decisions | PO APPROVED | none |
+| P-E05-01 | COMPLETE - APPROVED WITH FINDINGS | bundled in `f482ec1` | APPROVED WITH FINDINGS | F-E05-01-001 closed in P-E05-02; F-E05-01-002 LOW residual; F-E05-01-003 ACCEPTED |
+| P-E05-02 | COMPLETE - APPROVED WITH FINDINGS | `f482ec1` | APPROVED WITH FINDINGS | F-E05-02-001 closed in P-E05-04 |
+| P-E05-03 | COMPLETE - APPROVED WITH FINDINGS | `a65e928` | APPROVED WITH FINDINGS | F-E05-03-001 ACCEPTED; F-E05-03-002 closed in P-E05-04 |
+| P-E05-04 | COMPLETE - QA PASS WITH FINDINGS | this commit | QA PASS WITH FINDINGS | no new findings |
 
 ### FINAL CAPABILITIES
 
@@ -696,19 +696,19 @@ E05 is QA validated and ready for the Release Validation Gate. E05 is **not** ce
 | --- | --- | --- | --- |
 | F-E05-01-001 | LOW | CLOSED | Additive filter tests added in P-E05-02 |
 | F-E05-01-002 | LOW | OPEN residual | `contractEntityWhere` can overwrite `id: { in: consumptionOnly }`. No real defect evidenced. Not refactored |
-| F-E05-01-003 | — | ACCEPTED | Annual Overview remains unfiltered |
+| F-E05-01-003 | - | ACCEPTED | Annual Overview remains unfiltered |
 | F-E05-02-001 | LOW | CLOSED | Absorbed by QA: entity-filter E2E, CSV E2E, URL-state unit, incomplete-custom HTTP |
-| F-E05-03-001 | — | ACCEPTED | CSV multi-section is a serializer of the approved read model |
+| F-E05-03-001 | - | ACCEPTED | CSV multi-section is a serializer of the approved read model |
 | F-E05-03-002 | LOW | CLOSED | `GET /reports/export?period=custom&start=<date>` without `end` fails open to month; HTTP E2E added |
 
 ### QA
 
 | Suite | Result |
 | --- | --- |
-| Focused unit (`features/reporting`, `application/reporting`, `application/analytics`) | PASS — 234 |
+| Focused unit (`features/reporting`, `application/reporting`, `application/analytics`) | PASS - 234 |
 | Full unit | 727 passed; 2 failed |
-| Full integration | PASS — 353 |
-| Reports E2E | PASS — 26 / 42.8s |
+| Full integration | PASS - 353 |
+| Reports E2E | PASS - 26 / 42.8s |
 | `pnpm typecheck` | PASS |
 | `pnpm lint` | PASS |
 | `pnpm build` | PASS |
@@ -758,27 +758,27 @@ P-E05-05 is **not** certification.
 
 ### Functional
 
-PASS — default/preset/custom period; Client; Contract; Client + Contract; mismatch; contract-only; URL state preservation; unset behavior; Accrued; Expected; Forecast; Allocation; Annual Overview unfiltered.
+PASS - default/preset/custom period; Client; Contract; Client + Contract; mismatch; contract-only; URL state preservation; unset behavior; Accrued; Expected; Forecast; Allocation; Annual Overview unfiltered.
 
 ### CSV
 
-PASS — `GET /reports/export`; same filtered operational dataset; meta; revenue; hours_by_client; contract_report; UTF-8; RFC4180-style escaping; deterministic ordering; deterministic filename; no FX; no mixed-currency totals; Forecast omitted when null.
+PASS - `GET /reports/export`; same filtered operational dataset; meta; revenue; hours_by_client; contract_report; UTF-8; RFC4180-style escaping; deterministic ordering; deterministic filename; no FX; no mixed-currency totals; Forecast omitted when null.
 
 ### Security
 
-PASS — unauthenticated `/reports` redirects; unauthenticated `/reports/export` redirects; workspace isolation; foreign IDs do not grant access; no cross-workspace leakage.
+PASS - unauthenticated `/reports` redirects; unauthenticated `/reports/export` redirects; workspace isolation; foreign IDs do not grant access; no cross-workspace leakage.
 
 ### Temporal
 
-PASS — Hours/Accrued → `workDate`; Expected → validity ∩ period; Forecast → current certified period only; historical/custom Forecast → `null`; Allocation → `[validFrom, validTo)`; Allocation not period-sliced; OOV TimeEntry excluded from consumption.
+PASS - Hours/Accrued → `workDate`; Expected → validity ∩ period; Forecast → current certified period only; historical/custom Forecast → `null`; Allocation → `[validFrom, validTo)`; Allocation not period-sliced; OOV TimeEntry excluded from consumption.
 
 ### Regression
 
 | Suite | Result |
 | --- | --- |
 | Full unit | 727 passed / 2 failed / 729 |
-| Full integration | PASS — 353 |
-| Reports E2E | PASS — 26 |
+| Full integration | PASS - 353 |
+| Reports E2E | PASS - 26 |
 | `pnpm typecheck` | PASS |
 | `pnpm lint` | PASS |
 | `pnpm build` | PASS |
@@ -787,7 +787,7 @@ The two unit failures are pre-existing, present at E04 certification commit `397
 
 ### Performance
 
-PASS — baseline 100 clients / 50 contracts / 1000 TimeEntries. No new N+1. No second analytics pipeline. Export reuses `ReportingService`.
+PASS - baseline 100 clients / 50 contracts / 1000 TimeEntries. No new N+1. No second analytics pipeline. Export reuses `ReportingService`.
 
 ---
 
@@ -851,8 +851,8 @@ Advanced Reporting & Export
 | ID | Severity | Status | Note |
 | --- | --- | --- | --- |
 | F-E05-01-002 | LOW | OPEN residual | `contractEntityWhere` can overwrite `id: { in: consumptionOnly }` when `contractId` is set. No leak; combined-filter/mismatch tests pass; no wrong-result behavior evidenced. Not closed without evidence. |
-| F-E05-01-003 | — | ACCEPTED | Annual Overview intentionally unfiltered. `getAnnualOverview` unchanged. |
-| F-E05-03-001 | — | ACCEPTED | CSV four-section serialization is a presentation serialization of the approved read model, not a second reporting model. |
+| F-E05-01-003 | - | ACCEPTED | Annual Overview intentionally unfiltered. `getAnnualOverview` unchanged. |
+| F-E05-03-001 | - | ACCEPTED | CSV four-section serialization is a presentation serialization of the approved read model, not a second reporting model. |
 
 Closed before certification: F-E05-01-001, F-E05-02-001, F-E05-03-002.
 

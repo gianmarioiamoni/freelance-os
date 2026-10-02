@@ -42,7 +42,7 @@ const CLIENT_B = contractRecord({
 
 const CATALOG = [FUTURE, BOUNDED, CLIENT_B];
 
-describe("filterEligibleContracts — FINDING-110-P06-002", () => {
+describe("filterEligibleContracts - FINDING-110-P06-002", () => {
   it("hides a future-start contract on today, shows it on validFrom, hides it again before validFrom", () => {
     const clientId = "client-a";
     let workDate = "2026-09-20";

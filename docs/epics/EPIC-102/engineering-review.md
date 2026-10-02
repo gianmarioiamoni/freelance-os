@@ -1,8 +1,8 @@
-# EPIC-102 — Engineering Review
+# EPIC-102 - Engineering Review
 
-**Epic:** EPIC-102 — Contracts  
-**Release:** Release 1 — MVP  
-**MASTER_PLAN identifier:** R1-E02 — Contract Management  
+**Epic:** EPIC-102 - Contracts  
+**Release:** Release 1 - MVP  
+**MASTER_PLAN identifier:** R1-E02 - Contract Management  
 **Reviewed commits:**
 
 ```text
@@ -175,7 +175,7 @@ Applicability is derived from workspace-calendar `today` (`Scheduled` / `Current
 
 **Verdict:** PASS WITH FINDINGS
 
-### P102-F-001 — commercial edits can rewrite historical meaning
+### P102-F-001 - commercial edits can rewrite historical meaning
 
 - **Severity:** Medium
 - **Blocking:** No for EPIC-102 engineering completion
@@ -291,7 +291,7 @@ Validation matches workspace parse functions. Zod was not added.
 
 ## 12. Accessibility Baseline
 
-**Verdict:** PASS — baseline only
+**Verdict:** PASS - baseline only
 
 This is not WCAG certification.
 
@@ -317,8 +317,8 @@ Phase-gate evidence cited from P102-03. This review did not rerun the implementa
 
 | Phase | Unit | Integration | E2E | Notes |
 | --- | --- | --- | --- | --- |
-| P102-01 | PASS | — | — | application services + repository completion |
-| P102-02 | PASS | — | — | browser flows verified; no Playwright expansion |
+| P102-01 | PASS | - | - | application services + repository completion |
+| P102-02 | PASS | - | - | browser flows verified; no Playwright expansion |
 | P102-03 | 116 / 23 files | 75 / 21 files | 15 / 1 worker | isolation + contract journey |
 | P102-04 | 116 | 75 | 15 | this review; suite not rerun |
 
@@ -441,7 +441,7 @@ P102-F-001 remains the only new EPIC-102 finding. Inherited findings remain open
 
 - **Severity:** Low
 - **Blocking:** No
-- **Status:** Open / formalized — `pnpm dev` + 1 CI worker
+- **Status:** Open / formalized - `pnpm dev` + 1 CI worker
 - **Description:** Playwright CI uses `pnpm dev` with one worker because `next start` rate limits collide across auth journeys. EPIC-005 locked this contract. It is not a new defect.
 
 ### G-004
@@ -503,20 +503,20 @@ Do not close any OBD. Do not promote proposed OBDs.
 
 | ID | Decision | Blocks EPIC-102? |
 | --- | --- | --- |
-| OBD-001 | Daily-rate semantics / partial days | No — `DAILY` is stored, not calculated |
-| OBD-002 | Monetary rounding | No — rate stored as `NUMERIC(19,4)`; no rounding policy |
+| OBD-001 | Daily-rate semantics / partial days | No - `DAILY` is stored, not calculated |
+| OBD-002 | Monetary rounding | No - rate stored as `NUMERIC(19,4)`; no rounding policy |
 | OBD-003 | Midnight-crossing entries | No |
 | OBD-004 | Holiday model | No |
 | OBD-005 | Vacation/absence model | No |
 | OBD-006 | Capacity warning threshold | No |
 | OBD-007 | Post-closure edits/deletes | No |
-| OBD-008 | Audit requirements | No — no audit log |
-| OBD-009 | Workspace roles | No — any member may manage contracts |
-| OBD-010 | Payment-term catalog | No — existing days + note fields |
-| OBD-011 | Multi-currency | No — ISO-4217 stored; no conversion |
-| OBD-012 | Contract-hour rollover/expiry | No — minutes stored; no utilization |
-| — | Google/email identity linking | No — EPIC-003 F-001 |
-| — | Production email provider | No — EPIC-003 F-003 |
+| OBD-008 | Audit requirements | No - no audit log |
+| OBD-009 | Workspace roles | No - any member may manage contracts |
+| OBD-010 | Payment-term catalog | No - existing days + note fields |
+| OBD-011 | Multi-currency | No - ISO-4217 stored; no conversion |
+| OBD-012 | Contract-hour rollover/expiry | No - minutes stored; no utilization |
+| - | Google/email identity linking | No - EPIC-003 F-001 |
+| - | Production email provider | No - EPIC-003 F-003 |
 
 Proposed, not accepted, not written into `MASTER_PLAN.md`:
 
@@ -535,7 +535,7 @@ Those defaults are temporary. They do not close the decisions.
 
 Out of scope and not started:
 
-- R1-E03 — Time Tracking
+- R1-E03 - Time Tracking
 - F-021 current-period hours and client-list active-contract column
 - billing calculation, utilization, invoicing
 - `MONTHLY_FIXED`
@@ -589,13 +589,13 @@ PASS WITH FINDINGS
 | Scope compliance | PASS |
 | Architecture | PASS |
 | Domain correctness | PASS |
-| Historical correctness | PASS WITH FINDINGS — P102-F-001 open |
+| Historical correctness | PASS WITH FINDINGS - P102-F-001 open |
 | Persistence / no schema drift | PASS |
 | Workspace isolation | PASS |
 | Authorization | PASS |
 | UI architecture | PASS |
 | Validation / states | PASS |
-| Accessibility baseline | PASS — not WCAG certification |
+| Accessibility baseline | PASS - not WCAG certification |
 | Tests | PASS |
 | CI | PASS |
 | Security | PASS |

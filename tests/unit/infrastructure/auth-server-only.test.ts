@@ -86,7 +86,7 @@ describe("Better Auth server/client boundary", () => {
     expect(example).toMatch(/Optional \(all environments\)/);
     expect(example).toMatch(/Local \/ test \(never set on Vercel\)/);
     expect(example).toMatch(/E2E-only \(never set on Vercel\)/);
-    expect(example).toMatch(/Secrets — never commit real values/);
+    expect(example).toMatch(/Secrets - never commit real values/);
     expect(example).toMatch(/TEST_DATABASE_URL/);
     expect(example).toMatch(/AUTH_E2E_RUNTIME/);
   });

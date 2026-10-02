@@ -1,8 +1,8 @@
 # EPIC-108 Engineering Review
 
-**Epic:** EPIC-108 — Post-Release Hardening  
+**Epic:** EPIC-108 - Post-Release Hardening  
 **Phase:** Final ER  
-**Release:** Release 1 — MVP  
+**Release:** Release 1 - MVP  
 **Date:** 2026-09-20  
 **Reviewer:** Engineering Review Agent  
 **HEAD:** `9f62e675f1c306fc70063d9acbc16b4241edcb27`
@@ -33,10 +33,10 @@ Out of scope: application or test remediation; historical gate snapshot rewrites
 |---|---|
 | typecheck | PASS |
 | lint | PASS |
-| unit | PASS — 430/430 |
-| integration (host) | PASS — 224/224 |
-| integration (`TZ=America/Los_Angeles`) | PASS — 224/224 |
-| Reports E2E (isolated) | PASS — 22/22 |
+| unit | PASS - 430/430 |
+| integration (host) | PASS - 224/224 |
+| integration (`TZ=America/Los_Angeles`) | PASS - 224/224 |
+| Reports E2E (isolated) | PASS - 22/22 |
 | Full E2E (isolated retry of flakes) | 72/76 first run; auth + contracts PASS on retry; 2 time-tracking failures reproduced (FINDING-108-ER-001) |
 
 First Reports E2E run (10 failures) collided with a parallel integration process on the same test database (`account_userId_fkey`). Classified ENVIRONMENT. Isolated re-run: 22/22.
@@ -96,14 +96,14 @@ Historical snapshots that still say OPEN are not current-state errors.
 | Layer | Status |
 |---|---|
 | EPIC-108 technical | CLOSED / ER PASS WITH FINDINGS |
-| R1 certification | UNCHANGED — GRANTED |
+| R1 certification | UNCHANGED - GRANTED |
 | New §37 Release Blockers | NONE |
 
 ---
 
 ## 8. New finding
 
-### FINDING-108-ER-001 — Time-tracking E2E “today” disagrees across UTC midnight
+### FINDING-108-ER-001 - Time-tracking E2E “today” disagrees across UTC midnight
 
 | Field | Value |
 |---|---|

@@ -1,13 +1,13 @@
-# EPIC-103 — Time Tracking
+# EPIC-103 - Time Tracking
 
 ## 1. Epic Identity
 
 **Epic:** EPIC-103  
-**Release:** Release 1 — MVP  
-**MASTER_PLAN identifier:** R1-E03 — Time Tracking  
+**Release:** Release 1 - MVP  
+**MASTER_PLAN identifier:** R1-E03 - Time Tracking  
 **Objective:** Time Tracking  
-**Status:** IMPLEMENTED — ENGINEERING COMPLETE (PASS WITH FINDINGS)  
-**Depends on:** EPIC-002 — Database & Persistence; EPIC-003 — Authentication; EPIC-004 — Workspace; EPIC-005 — Testing & CI Foundation; EPIC-006 — UI Foundation; EPIC-101 — Clients; EPIC-102 — Contracts  
+**Status:** IMPLEMENTED - ENGINEERING COMPLETE (PASS WITH FINDINGS)  
+**Depends on:** EPIC-002 - Database & Persistence; EPIC-003 - Authentication; EPIC-004 - Workspace; EPIC-005 - Testing & CI Foundation; EPIC-006 - UI Foundation; EPIC-101 - Clients; EPIC-102 - Contracts  
 **Next Epic:** Analytics & Dashboard (`MASTER_PLAN.md` §14 R1-E04)  
 **Canonical sources:** `MASTER_PLAN.md` §13 R1-E03; `docs/product-vision.md`; `docs/domain-model.md` §3.5 / §4.2 / §8 / BR-002 / BR-003 / BR-004; `docs/storage.md`; `docs/architecture.md`; `docs/testing-strategy.md`
 
@@ -38,7 +38,7 @@ P103-01 COMPLETE  934d202
 P103-02 COMPLETE  ba1c597
 P103-03 COMPLETE  2e67759
 P103-04 COMPLETE  documentation & engineering review
-FINAL VERDICT: PASS WITH FINDINGS — ENGINEERING COMPLETE; PRODUCTION READINESS NO
+FINAL VERDICT: PASS WITH FINDINGS - ENGINEERING COMPLETE; PRODUCTION READINESS NO
 ```
 
 Final test evidence after EPIC-103: 164 unit, 119 integration, 21 E2E. These are suite totals, not counts of tests added by this Epic.
@@ -254,7 +254,7 @@ Based on finalized Product Owner decisions:
 
 **Canonical numbering:** the six `PD-103-00x` identifiers used in this document are canonical. Phase handoff notes sometimes refer to a four-item short list that numbers future dates, duplicate entries, and client-first selection differently. The reconciliation table is `docs/epics/EPIC-103/engineering-review.md` §6 (finding F-103-004).
 
-### PD-103-001 — TimeEntry Deletion Mechanism
+### PD-103-001 - TimeEntry Deletion Mechanism
 
 **DECISION:** HARD DELETE
 
@@ -265,7 +265,7 @@ TimeEntry deletion uses hard delete in Release 1 MVP.
 - No Prisma migration required for deletion semantics
 - Future audit/reporting requirements may introduce dedicated lifecycle through later schema change
 
-### PD-103-002 — workDate Editability
+### PD-103-002 - workDate Editability
 
 **DECISION:** IMMUTABLE
 
@@ -277,7 +277,7 @@ TimeEntry deletion uses hard delete in Release 1 MVP.
 - UI edit does not expose workDate as editable
 - Correcting work date requires delete and recreate
 
-### PD-103-003 — clientId/contractId Editability
+### PD-103-003 - clientId/contractId Editability
 
 **DECISION:** IMMUTABLE
 
@@ -870,7 +870,7 @@ Following established EPIC-006 accessibility baseline:
 
 Each phase = one commit; each phase = NEW CURSOR CHAT
 
-### 19.2 Phase 1 — TimeEntry Application Services & Validation
+### 19.2 Phase 1 - TimeEntry Application Services & Validation
 
 **Objective:** Complete TimeEntry business logic, application services, and server-side validation
 
@@ -937,7 +937,7 @@ feat(time-tracking): add TimeEntry application services and validation
 
 ---
 
-### 19.3 Phase 2 — Authenticated Time Tracking UI
+### 19.3 Phase 2 - Authenticated Time Tracking UI
 
 **Objective:** Replace `/time-tracking` placeholder with complete authenticated time tracking interface
 
@@ -1013,7 +1013,7 @@ feat(time-tracking): add authenticated time tracking UI and forms
 
 ---
 
-### 19.4 Phase 3 — Integration Tests & Workspace Isolation
+### 19.4 Phase 3 - Integration Tests & Workspace Isolation
 
 **Objective:** Validate workspace isolation, integration flows, and end-to-end time tracking journey
 
@@ -1078,7 +1078,7 @@ test(time-tracking): add integration tests and E2E journey
 
 ---
 
-### 19.5 Phase 4 — Documentation & Engineering Review
+### 19.5 Phase 4 - Documentation & Engineering Review
 
 **Objective:** Synchronize documentation and perform engineering review
 
@@ -1451,7 +1451,7 @@ Each phase documents its completion in commit message and any implementation not
 
 **Epic Identity:**
 - [x] Exact Epic identifier confirmed from MASTER_PLAN.md: EPIC-103
-- [x] Epic title confirmed: R1-E03 — Time Tracking  
+- [x] Epic title confirmed: R1-E03 - Time Tracking  
 - [x] Dependencies verified as complete
 
 **Implementation Readiness:**
@@ -1501,8 +1501,8 @@ EPIC-103 planning is complete and implementation-ready.
 
 ### 27.1 Epic Summary
 
-**Epic Identifier:** EPIC-103 — Time Tracking  
-**MASTER_PLAN Reference:** R1-E03 — Time Tracking  
+**Epic Identifier:** EPIC-103 - Time Tracking  
+**MASTER_PLAN Reference:** R1-E03 - Time Tracking  
 **Planning Status:** COMPLETE  
 **Implementation Status:** READY TO START
 
@@ -1540,7 +1540,7 @@ EPIC-103 planning is complete and implementation-ready.
 
 ## Implementation Status
 
-**IMPLEMENTED — ENGINEERING COMPLETE (PASS WITH FINDINGS)**
+**IMPLEMENTED - ENGINEERING COMPLETE (PASS WITH FINDINGS)**
 
 Delivered: workspace-scoped TimeEntry create / read / update / hard delete, contract eligibility and `[validFrom, validTo)` validity at create, archived-client create rejection, client-first selection, daily view, weekly timesheet, and the authenticated `/time-tracking`, `/time-tracking/new`, and `/time-tracking/[timeEntryId]/edit` surfaces. No Prisma schema change and no migration.
 
@@ -1563,7 +1563,7 @@ These decisions establish:
 - UI forms: full create form, restricted edit form (duration/description/billable only)
 - Database schema: no changes required for EPIC-103
 
-**Next Action:** Plan EPIC-104 — Analytics & Dashboard (`MASTER_PLAN.md` §14 R1-E04) in a NEW CURSOR CHAT.
+**Next Action:** Plan EPIC-104 - Analytics & Dashboard (`MASTER_PLAN.md` §14 R1-E04) in a NEW CURSOR CHAT.
 
 **Planning Status:** COMPLETE  
 **Implementation Status:** COMPLETE  

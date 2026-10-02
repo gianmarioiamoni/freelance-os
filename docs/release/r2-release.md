@@ -1,4 +1,4 @@
-# R2 Release — Revenue Operations
+# R2 Release - Revenue Operations
 
 **Gate:** R2 Release  
 **Date:** 2026-09-26  
@@ -16,8 +16,8 @@ R2 GLOBAL STATUS:         PRODUCTION-RELEASED
 CERTIFIED APPLICATION:    670e7505857649efe62775d7e12d47e60c747080
 DEPLOYED GIT SHA:         a0707e1da3392cadcdf5ae6356913da220b531bb
 GITHUB PRODUCTION:        6672213732
-MIGRATION:                PASS — prisma migrate deploy (Vercel build)
-RELEASE TAG:              NOT CREATED — no documented tag convention
+MIGRATION:                PASS - prisma migrate deploy (Vercel build)
+RELEASE TAG:              NOT CREATED - no documented tag convention
 NEXT:                     STOP. Do not start R3.
 ```
 
@@ -42,10 +42,10 @@ Deployment, certified application identity, migration chain, production runtime,
 | Certified application HEAD | `670e7505857649efe62775d7e12d47e60c747080` |
 | Certification commit | `a0707e1da3392cadcdf5ae6356913da220b531bb` |
 | Deployed git SHA | `a0707e1da3392cadcdf5ae6356913da220b531bb` |
-| Source / Prisma / test delta vs certified app | none — documentation only |
+| Source / Prisma / test delta vs certified app | none - documentation only |
 | Previous Production SHA | `2ad1a1e1e032709bb5de7c228f083259ac5d5ecd` (E03) |
 | Production URL | `https://freelance-os-timeplan.vercel.app` |
-| GitHub Production | `6672213732` — success 2026-09-25T23:51:21Z |
+| GitHub Production | `6672213732` - success 2026-09-25T23:51:21Z |
 | Vercel | `https://vercel.com/gianmario-projects/freelance-os/7sPQSXU98o4c5RJWaH333dD4xcsr` |
 
 ---
@@ -54,10 +54,10 @@ Deployment, certified application identity, migration chain, production runtime,
 
 | Check | Result |
 | --- | --- |
-| Pre-release gate | **PASS** — clean `main`; certification present; no source / Prisma / migration / test drift after `670e750` |
+| Pre-release gate | **PASS** - clean `main`; certification present; no source / Prisma / migration / test drift after `670e750` |
 | Official mechanism | `git push origin main` → GitHub / Vercel Production |
 | Build | **PASS** |
-| Runtime | **PASS** — production alias serves the new artifact (`/reports/export` 307 when anonymous; was 404 on E03) |
+| Runtime | **PASS** - production alias serves the new artifact (`/reports/export` 307 when anonymous; was 404 on E03) |
 
 ---
 
@@ -66,7 +66,7 @@ Deployment, certified application identity, migration chain, production runtime,
 | Check | Result |
 | --- | --- |
 | Procedure | Official `prisma migrate deploy` in the Vercel build command |
-| Outcome | **PASS** — Vercel Production completed. A migrate failure would fail the build. |
+| Outcome | **PASS** - Vercel Production completed. A migrate failure would fail the build. |
 | Applied this cutover | Certified E04: `20260923230000_add_contract_allocated_minutes`, `20260923235000_add_allocation_alerts` |
 | Already on Production (E03) | E01 TimeEntry snapshot UPDATE; E02 Invoice; E03 Payment; payment alerts |
 | E05 | no schema migration |
@@ -81,10 +81,10 @@ Secrets were not printed. Vercel CLI was logged out; dashboard login was not ava
 
 | Name | Production state |
 | --- | --- |
-| `DATABASE_URL` | Present — migrate deploy and authenticated reads succeeded (hosted Neon) |
-| `BETTER_AUTH_SECRET` | Present — session issued |
-| `BETTER_AUTH_URL` | Present — Google callback on the production origin |
-| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Present — Google OAuth reached accounts.google.com |
+| `DATABASE_URL` | Present - migrate deploy and authenticated reads succeeded (hosted Neon) |
+| `BETTER_AUTH_SECRET` | Present - session issued |
+| `BETTER_AUTH_URL` | Present - Google callback on the production origin |
+| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Present - Google OAuth reached accounts.google.com |
 | `SMTP_HOST` / `SMTP_PORT` / `SMTP_SECURE` / `SMTP_USER` / `SMTP_PASSWORD` | Not re-listed. Not re-sent. Historical production-validation presence retained. No unwanted mail sent. |
 | `AUTH_EMAIL_DELIVERY` | Not inspected by name. Runtime is production (`NODE_ENV=production` on Vercel). |
 | `AUTH_E2E_RUNTIME` | Must remain unset. Ignored when `VERCEL=1` or `VERCEL_ENV=production`. No E2E bypass used. |
@@ -98,11 +98,11 @@ No development fallback observed. Production URL is `https://freelance-os-timepl
 
 | Check | Result |
 | --- | --- |
-| Sign-in page | **PASS** — email/password + Google + forgot-password |
-| Google OAuth | **PASS** — production callback |
-| Email/password session | **PASS** — existing workspace `Tets WS` / Gianmario Iamoni → `/dashboard` |
-| Workspace resolution | **PASS** — session workspace, not query `workspaceId` |
-| Sign-out | **PASS** — `/` |
+| Sign-in page | **PASS** - email/password + Google + forgot-password |
+| Google OAuth | **PASS** - production callback |
+| Email/password session | **PASS** - existing workspace `Tets WS` / Gianmario Iamoni → `/dashboard` |
+| Workspace resolution | **PASS** - session workspace, not query `workspaceId` |
+| Sign-out | **PASS** - `/` |
 
 A separate Google identity without membership resolved to `/onboarding`. No workspace was created. That identity was signed out.
 
@@ -112,11 +112,11 @@ A separate Google identity without membership resolved to `/onboarding`. No work
 
 | Check | Result |
 | --- | --- |
-| Anonymous protected routes | **PASS** — `/dashboard`, `/contracts`, `/time-tracking`, `/reports`, `/alerts`, `/reports/export` → 307 `/sign-in` |
-| Foreign `workspaceId` query | **PASS** — dashboard remains `Tets WS` |
-| Foreign contract / invoice IDs | **PASS** — Page not found. No foreign data. |
-| `/reports/export` anonymous | **PASS** — 307 `/sign-in` |
-| CSV secret leakage | **PASS** — none |
+| Anonymous protected routes | **PASS** - `/dashboard`, `/contracts`, `/time-tracking`, `/reports`, `/alerts`, `/reports/export` → 307 `/sign-in` |
+| Foreign `workspaceId` query | **PASS** - dashboard remains `Tets WS` |
+| Foreign contract / invoice IDs | **PASS** - Page not found. No foreign data. |
+| `/reports/export` anonymous | **PASS** - 307 `/sign-in` |
+| CSV secret leakage | **PASS** - none |
 
 ---
 
@@ -132,7 +132,7 @@ A separate Google identity without membership resolved to `/onboarding`. No work
 | `/alerts` | **PASS** | Empty list. |
 | `/reports` period | **PASS** | Today / Week / Month / Year / Custom |
 | Client / Contract filters | **PASS** | Present. Client `Test1` listed. |
-| Accrued / Expected / Forecast | **PASS** | Published. Empty workspace shows `—`. |
+| Accrued / Expected / Forecast | **PASS** | Published. Empty workspace shows `-`. |
 | Annual Overview | **PASS** | Present. |
 | Allocation | **PASS** | Contract Report surface + CSV allocation columns. No live allocated contracts. |
 | Invoice → Payment read | **NOT EXERCISED** | No contract / invoice / payment records in the exercised workspace. Routes exist. Foreign invoice 404. No test data created. |
@@ -182,7 +182,7 @@ Not reopened. Not remediated. No new production-specific impact.
 | Item | Value |
 | --- | --- |
 | Release documentation commit | created after this record (docs only) |
-| Release tag | **not created** — repository has no documented tag convention (R1 freeze created none) |
+| Release tag | **not created** - repository has no documented tag convention (R1 freeze created none) |
 
 ---
 

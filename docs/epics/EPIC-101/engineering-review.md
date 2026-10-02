@@ -1,8 +1,8 @@
-# EPIC-101 — Engineering Review
+# EPIC-101 - Engineering Review
 
-**Epic:** EPIC-101 — Clients  
-**Release:** Release 1 — MVP  
-**MASTER_PLAN identifier:** R1-E01 — Client Management  
+**Epic:** EPIC-101 - Clients  
+**Release:** Release 1 - MVP  
+**MASTER_PLAN identifier:** R1-E01 - Client Management  
 **Reviewed commits:**
 
 ```text
@@ -265,7 +265,7 @@ Server Actions map `InvalidClientInputError` to field messages. Client-side `req
 
 ## 13. Accessibility Baseline
 
-**Verdict:** PASS — baseline only
+**Verdict:** PASS - baseline only
 
 This is not WCAG certification.
 
@@ -289,8 +289,8 @@ Phase-gate evidence (not re-run here except Phase 4):
 
 | Phase | Unit | Integration | E2E | Notes |
 | --- | --- | --- | --- | --- |
-| P101-01 | 82 | 60 | — | application services + repository `updateClient` |
-| P101-02 | 82 | 60 | — | browser flows verified; no new unit/integration tests |
+| P101-01 | 82 | 60 | - | application services + repository `updateClient` |
+| P101-02 | 82 | 60 | - | browser flows verified; no new unit/integration tests |
 | P101-03 | 82 | 62 | 14 | isolation tests + client journey |
 | P101-04 | 82 | 62 | 14 | this review |
 
@@ -425,7 +425,7 @@ Inherited findings remain open and are not closed by this review.
 
 - **Severity:** Low
 - **Blocking:** No
-- **Status:** Open / formalized — `pnpm dev` + 1 CI worker
+- **Status:** Open / formalized - `pnpm dev` + 1 CI worker
 - **Description:** Playwright CI uses `pnpm dev` with one worker because `next start` rate limits collide across auth journeys. EPIC-005 locked this contract. It is not a new defect.
 
 ### G-004
@@ -468,13 +468,13 @@ Do not close any OBD. Do not promote proposed OBDs.
 | OBD-005 | Vacation/absence model | No |
 | OBD-006 | Capacity warning threshold | No |
 | OBD-007 | Post-closure edits/deletes | No |
-| OBD-008 | Audit requirements | No — no audit log |
-| OBD-009 | Workspace roles | No — any member may manage clients |
+| OBD-008 | Audit requirements | No - no audit log |
+| OBD-009 | Workspace roles | No - any member may manage clients |
 | OBD-010 | Payment-term catalog | No |
 | OBD-011 | Multi-currency | No |
 | OBD-012 | Contract-hour rollover/expiry | No |
-| — | Google/email identity linking | No — EPIC-003 F-001 |
-| — | Production email provider | No — EPIC-003 F-003 |
+| - | Google/email identity linking | No - EPIC-003 F-001 |
+| - | Production email provider | No - EPIC-003 F-003 |
 
 Proposed, not accepted, not written into `MASTER_PLAN.md`:
 
@@ -492,7 +492,7 @@ Those defaults are temporary. They do not close the decisions.
 
 Out of scope and not started:
 
-- R1-E02 — Contract Management
+- R1-E02 - Contract Management
 - time tracking, analytics, alerts, notifications
 - F-021 / F-022 contract and current-period hours on list/detail
 - free-text search, user-controlled sort, pagination
@@ -553,7 +553,7 @@ PASS
 | UI architecture | PASS |
 | Validation | PASS |
 | Error / loading / empty | PASS |
-| Accessibility baseline | PASS — not WCAG certification |
+| Accessibility baseline | PASS - not WCAG certification |
 | Tests | PASS |
 | CI | PASS |
 | Security | PASS |

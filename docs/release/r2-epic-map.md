@@ -1,4 +1,4 @@
-# R2 Epic Map — Planning Baseline
+# R2 Epic Map - Planning Baseline
 
 **Status:** Executable planning baseline. R2-E01 COMPLETE / RELEASE-READY. R2-E02 COMPLETE WITH NON-BLOCKING FINDING. R2-E03 CERTIFIED (P-E03-00…P-E03-07). R2-E04 CERTIFIED (P-E04-00…P-E04-07). R2-E05 CERTIFIED (P-E05-00…P-E05-06). R2 CERTIFIED (`docs/release/r2-certification.md`). R2 RELEASED WITH FINDINGS (`docs/release/r2-release.md`). No EPIC-2xx opened. R2 is PRODUCTION-RELEASED.  
 **Date:** 2026-09-24  
@@ -89,14 +89,14 @@ E01 and E02 may be planned and implemented in parallel. E03 is sequential on E02
 
 ---
 
-## R2-E01 — Revenue Visibility
+## R2-E01 - Revenue Visibility
 
 Detailed plan: `docs/release/r2-e01-revenue-visibility.md`.  
 Status: **COMPLETE / RELEASE-READY.** P-E01-00…P-E01-07 COMPLETE. Engineering Review PASS WITH FINDINGS. QA PASS WITH FINDINGS. F-E01-001 CLOSED. F-E01-002 CLOSED.
 
 ### 1. Objective
 
-Publish deterministic Accrued Revenue and Expected Revenue so the freelancer understands the economic value of recorded work and of HOURLY contractual capacity — without invoicing or accounting.
+Publish deterministic Accrued Revenue and Expected Revenue so the freelancer understands the economic value of recorded work and of HOURLY contractual capacity - without invoicing or accounting.
 
 ### 2. User value
 
@@ -111,7 +111,7 @@ See what work is already worth (Accrued) and what the HOURLY contract economical
 - Expected Revenue = null when HOURLY contractual capacity is unavailable.
 - Published amounts rounded to nearest integer; intermediates not prematurely rounded (R2-OD-002).
 - Per-currency presentation (D7).
-- Surfaces that reuse shared calculation services (dashboard / reports — exact UI in the later epic plan).
+- Surfaces that reuse shared calculation services (dashboard / reports - exact UI in the later epic plan).
 
 ### 4. Explicitly out of scope
 
@@ -142,7 +142,7 @@ See what work is already worth (Accrued) and what the HOURLY contract economical
 
 ### 8. Persistence impact
 
-- Implemented: **B — TimeEntry** `snapshotBillingModel`, `snapshotRate`, `snapshotCurrency`. Not A. C not required.
+- Implemented: **B - TimeEntry** `snapshotBillingModel`, `snapshotRate`, `snapshotCurrency`. Not A. C not required.
 - Closed: R2-OD-003 residual; R2-OD-017 backfill; R2-OD-016 weighted-average daily rate.
 - Revenue totals remain derived unless a later plan proves persistence.
 - Migration was P-E01-01 only.
@@ -193,7 +193,7 @@ See what work is already worth (Accrued) and what the HOURLY contract economical
 
 ---
 
-## R2-E02 — Invoice Tracking
+## R2-E02 - Invoice Tracking
 
 Detailed plan: `docs/release/r2-e02-invoice-tracking.md`.  
 Status: **COMPLETE WITH NON-BLOCKING FINDING.** P-E02-00…P-E02-07 COMPLETE. Engineering Review PASS WITH FINDINGS. QA PASS WITH FINDINGS. F-E02-001 CLOSED. F-E02-002 CLOSED. F-E02-003 CLOSED. F-E02-004 OPEN (non-blocking / test hygiene).
@@ -289,7 +289,7 @@ Independent of R2-E01. Detailed plan: `docs/release/r2-e02-invoice-tracking.md`.
 
 ---
 
-## R2-E03 — Payment Tracking & Reconciliation
+## R2-E03 - Payment Tracking & Reconciliation
 
 ### 1. Objective
 
@@ -297,7 +297,7 @@ Track expected versus actual payments operationally and surface simple determini
 
 ### 2. User value
 
-Know whether an invoice is unpaid, partial, paid, mismatched, and/or overdue — without an accounting subsystem.
+Know whether an invoice is unpaid, partial, paid, mismatched, and/or overdue - without an accounting subsystem.
 
 ### 3. In scope
 
@@ -390,7 +390,7 @@ Know whether an invoice is unpaid, partial, paid, mismatched, and/or overdue —
 
 ---
 
-## R2-E04 — Forecasting & Contract Time Allocation
+## R2-E04 - Forecasting & Contract Time Allocation
 
 ### 1. Objective
 
@@ -398,7 +398,7 @@ Project Accrued Revenue to period end with a simple linear Forecast, and compare
 
 ### 2. User value
 
-See where current-period Accrued is heading, and whether a Contract’s total allocated time is being consumed — without ML or a workspace capacity model.
+See where current-period Accrued is heading, and whether a Contract’s total allocated time is being consumed - without ML or a workspace capacity model.
 
 ### 3. In scope
 
@@ -472,7 +472,7 @@ See where current-period Accrued is heading, and whether a Contract’s total al
 
 ### 14. Product decisions still required
 
-None. See `docs/release/r2-e04-forecasting-allocation.md` §17. Forecast arithmetic, allocation WARNING / EXCEEDED, consumption rules, and revenue UI surface are CLOSED — PO APPROVED. Alert lifecycle is CLOSED TECHNICAL.
+None. See `docs/release/r2-e04-forecasting-allocation.md` §17. Forecast arithmetic, allocation WARNING / EXCEEDED, consumption rules, and revenue UI surface are CLOSED - PO APPROVED. Alert lifecycle is CLOSED TECHNICAL.
 
 ### 15. Risks / architectural constraints
 
@@ -482,7 +482,7 @@ None. See `docs/release/r2-e04-forecasting-allocation.md` §17. Forecast arithme
 
 ---
 
-## R2-E05 — Advanced Reporting & Export
+## R2-E05 - Advanced Reporting & Export
 
 ### 1. Objective
 
@@ -576,7 +576,7 @@ None. Closed in `docs/release/r2-e05-advanced-reporting-export.md` §17:
 
 | Topic | Handling |
 | --- | --- |
-| Rounding | APPROVED (R2-OD-002) — apply before any published money |
+| Rounding | APPROVED (R2-OD-002) - apply before any published money |
 | DAILY accrued | APPROVED (R2-OD-001) |
 | Commercial snapshot semantics | APPROVED; TimeEntry snapshot implemented in E01 |
 | Period closure | OUT OF R2 (R2-OD-014) |
@@ -590,15 +590,15 @@ None. Closed in `docs/release/r2-e05-advanced-reporting-export.md` §17:
 
 Do not implement these as assumptions.
 
-1. Contract Time Allocation WARNING threshold — CLOSED (E04-D-ALLOCATION-WARNING / E04-D-ALLOCATION-EXCEEDED).
-2. Exact Forecast calculation semantics — CLOSED (E04-D-FORECAST-ARITHMETIC).
-3. Invoice currency snapshot representation — CLOSED (E02-D01).
-4. Exact Invoice VOID behaviour and UI semantics — CLOSED (E02-D02).
-5. Simple CSV in R2-E05 — CLOSED (E05-D-EXPORT-FORMATS B / R2-OD-012). E05-D-REPORT-SCOPE A, E05-D-TEMPORAL-MODEL D, E05-D-REPORT-FILTERS B CLOSED. See `docs/release/r2-e05-advanced-reporting-export.md`.
-6. Commercial snapshot persistence: CLOSED — TimeEntry `snapshotBillingModel` / `snapshotRate` / `snapshotCurrency`.
-7. R2-OD-016 — APPROVED / implemented — weighted-average daily rate (P-E01-02).
-8. R2-OD-017 — CLOSED / implemented — existing TimeEntries backfilled from current Contract.
-9. E04 allocation EXCEEDED, consumption numerator/window/out-of-validity, and revenue UI surface — CLOSED. See `docs/release/r2-e04-forecasting-allocation.md` §17.
+1. Contract Time Allocation WARNING threshold - CLOSED (E04-D-ALLOCATION-WARNING / E04-D-ALLOCATION-EXCEEDED).
+2. Exact Forecast calculation semantics - CLOSED (E04-D-FORECAST-ARITHMETIC).
+3. Invoice currency snapshot representation - CLOSED (E02-D01).
+4. Exact Invoice VOID behaviour and UI semantics - CLOSED (E02-D02).
+5. Simple CSV in R2-E05 - CLOSED (E05-D-EXPORT-FORMATS B / R2-OD-012). E05-D-REPORT-SCOPE A, E05-D-TEMPORAL-MODEL D, E05-D-REPORT-FILTERS B CLOSED. See `docs/release/r2-e05-advanced-reporting-export.md`.
+6. Commercial snapshot persistence: CLOSED - TimeEntry `snapshotBillingModel` / `snapshotRate` / `snapshotCurrency`.
+7. R2-OD-016 - APPROVED / implemented - weighted-average daily rate (P-E01-02).
+8. R2-OD-017 - CLOSED / implemented - existing TimeEntries backfilled from current Contract.
+9. E04 allocation EXCEEDED, consumption numerator/window/out-of-validity, and revenue UI surface - CLOSED. See `docs/release/r2-e04-forecasting-allocation.md` §17.
 
 ---
 
@@ -622,15 +622,15 @@ This document is the release-level planning baseline. R2-E01 is COMPLETE / RELEA
 
 | Stage | R2 status |
 | --- | --- |
-| Vision | Complete — decision pack |
-| Architecture | Complete as domain delta — `r2-architecture-delta.md` |
+| Vision | Complete - decision pack |
+| Architecture | Complete as domain delta - `r2-architecture-delta.md` |
 | Planning | This baseline. E01–E05 detailed plans complete. E05 CERTIFIED |
 | Implementation | R2-E01 COMPLETE / RELEASE-READY. R2-E02 COMPLETE WITH NON-BLOCKING FINDING. R2-E03 CERTIFIED. R2-E04 CERTIFIED. E05 CERTIFIED |
 | Engineering Review → Release | E01–E05 ER + QA complete. Release QA / UX / Production Validation PASS WITH FINDINGS. R2 CERTIFIED. R2 RELEASED WITH FINDINGS (`docs/release/r2-release.md`). PRODUCTION-RELEASED |
 
 ### Proposed small phases (planning labels only)
 
-**R2-E01** — detailed plan: `docs/release/r2-e01-revenue-visibility.md`
+**R2-E01** - detailed plan: `docs/release/r2-e01-revenue-visibility.md`
 
 | Phase | Intent | Status |
 | --- | --- | --- |
@@ -639,11 +639,11 @@ This document is the release-level planning baseline. R2-E01 is COMPLETE / RELEA
 | P-E01-02 | Accrued Revenue | COMPLETE |
 | P-E01-03 | Expected Revenue | COMPLETE |
 | P-E01-04 | Integration with existing analytics / reporting | COMPLETE |
-| P-E01-05 | Engineering Review | COMPLETE — PASS WITH FINDINGS |
-| P-E01-06 | QA | COMPLETE — PASS WITH FINDINGS |
+| P-E01-05 | Engineering Review | COMPLETE - PASS WITH FINDINGS |
+| P-E01-06 | QA | COMPLETE - PASS WITH FINDINGS |
 | P-E01-07 | Documentation / Epic closure | COMPLETE |
 
-**R2-E02** — detailed plan: `docs/release/r2-e02-invoice-tracking.md`
+**R2-E02** - detailed plan: `docs/release/r2-e02-invoice-tracking.md`
 
 | Phase | Intent | Status |
 | --- | --- | --- |
@@ -652,47 +652,47 @@ This document is the release-level planning baseline. R2-E01 is COMPLETE / RELEA
 | P-E02-02 | Invoice application service + Contract currency guard | COMPLETE |
 | P-E02-03 | Derived status / due-date behaviour | COMPLETE |
 | P-E02-04 | Contract-scoped invoice UI | COMPLETE |
-| P-E02-05 | Engineering Review | COMPLETE — PASS WITH FINDINGS |
-| P-E02-06 | QA | COMPLETE — PASS WITH FINDINGS |
+| P-E02-05 | Engineering Review | COMPLETE - PASS WITH FINDINGS |
+| P-E02-06 | QA | COMPLETE - PASS WITH FINDINGS |
 | P-E02-07 | Documentation / Epic closure | COMPLETE |
 
-**R2-E03** — detailed plan: `docs/release/r2-e03-payment-tracking.md`
+**R2-E03** - detailed plan: `docs/release/r2-e03-payment-tracking.md`
 
 | Phase | Intent | Status |
 | --- | --- | --- |
 | P-E03-00 | Planning / VOID policy closure | COMPLETE |
 | P-E03-01 | Payment events + derived status | COMPLETE |
 | P-E03-02 | Payment application service | COMPLETE |
-| P-E03-03 | Payment alerts via AlertService | COMPLETE — ER APPROVED WITH FINDINGS |
-| P-E03-04 | Payment UI | COMPLETE — ER APPROVED WITH FINDINGS |
-| P-E03-05 | QA + Documentation Synchronization | COMPLETE — PASS WITH FINDINGS |
-| P-E03-06 | Release Validation | COMPLETE — PASS WITH FINDINGS / GATE B |
-| P-E03-07 | Certification | COMPLETE — CERTIFIED |
+| P-E03-03 | Payment alerts via AlertService | COMPLETE - ER APPROVED WITH FINDINGS |
+| P-E03-04 | Payment UI | COMPLETE - ER APPROVED WITH FINDINGS |
+| P-E03-05 | QA + Documentation Synchronization | COMPLETE - PASS WITH FINDINGS |
+| P-E03-06 | Release Validation | COMPLETE - PASS WITH FINDINGS / GATE B |
+| P-E03-07 | Certification | COMPLETE - CERTIFIED |
 
-**R2-E04** — detailed plan: `docs/release/r2-e04-forecasting-allocation.md`
-
-| Phase | Intent | Status |
-| --- | --- | --- |
-| P-E04-00 | Planning / decision gate | COMPLETE — PO DECISIONS CLOSED |
-| P-E04-01 | Persistence / domain | COMPLETE — ENGINEERING REVIEW APPROVED WITH FINDINGS |
-| P-E04-02 | Application / calculations | COMPLETE — ENGINEERING REVIEW APPROVED WITH FINDINGS |
-| P-E04-03 | Forecast / allocation integration | COMPLETE — ENGINEERING REVIEW APPROVED WITH FINDINGS |
-| P-E04-04 | UI | COMPLETE — ENGINEERING REVIEW APPROVED WITH FINDINGS |
-| P-E04-05 | QA / documentation | COMPLETE — QA PASS WITH FINDINGS |
-| P-E04-06 | Release validation | COMPLETE — READY WITH EXPLICIT FINDINGS / GATE B |
-| P-E04-07 | Certification | COMPLETE — CERTIFIED |
-
-**R2-E05** — detailed plan: `docs/release/r2-e05-advanced-reporting-export.md`
+**R2-E04** - detailed plan: `docs/release/r2-e04-forecasting-allocation.md`
 
 | Phase | Intent | Status |
 | --- | --- | --- |
-| P-E05-00 | Planning / decision gate | COMPLETE — PO DECISIONS CLOSED |
-| P-E05-01 | Report read model + filters | COMPLETE — APPROVED WITH FINDINGS |
-| P-E05-02 | Additive `/reports` UI | COMPLETE — APPROVED WITH FINDINGS |
-| P-E05-03 | Native CSV export | COMPLETE — APPROVED WITH FINDINGS |
-| P-E05-04 | QA / documentation | COMPLETE — QA PASS WITH FINDINGS |
-| P-E05-05 | Release validation | COMPLETE — PASS WITH FINDINGS |
-| P-E05-06 | Certification | COMPLETE — CERTIFIED |
+| P-E04-00 | Planning / decision gate | COMPLETE - PO DECISIONS CLOSED |
+| P-E04-01 | Persistence / domain | COMPLETE - ENGINEERING REVIEW APPROVED WITH FINDINGS |
+| P-E04-02 | Application / calculations | COMPLETE - ENGINEERING REVIEW APPROVED WITH FINDINGS |
+| P-E04-03 | Forecast / allocation integration | COMPLETE - ENGINEERING REVIEW APPROVED WITH FINDINGS |
+| P-E04-04 | UI | COMPLETE - ENGINEERING REVIEW APPROVED WITH FINDINGS |
+| P-E04-05 | QA / documentation | COMPLETE - QA PASS WITH FINDINGS |
+| P-E04-06 | Release validation | COMPLETE - READY WITH EXPLICIT FINDINGS / GATE B |
+| P-E04-07 | Certification | COMPLETE - CERTIFIED |
+
+**R2-E05** - detailed plan: `docs/release/r2-e05-advanced-reporting-export.md`
+
+| Phase | Intent | Status |
+| --- | --- | --- |
+| P-E05-00 | Planning / decision gate | COMPLETE - PO DECISIONS CLOSED |
+| P-E05-01 | Report read model + filters | COMPLETE - APPROVED WITH FINDINGS |
+| P-E05-02 | Additive `/reports` UI | COMPLETE - APPROVED WITH FINDINGS |
+| P-E05-03 | Native CSV export | COMPLETE - APPROVED WITH FINDINGS |
+| P-E05-04 | QA / documentation | COMPLETE - QA PASS WITH FINDINGS |
+| P-E05-05 | Release validation | COMPLETE - PASS WITH FINDINGS |
+| P-E05-06 | Certification | COMPLETE - CERTIFIED |
 
 Release gates (QA, UX, Production Validation, Certification, Release) run after the implemented R2 scope is reviewable. They are not claimed here.
 

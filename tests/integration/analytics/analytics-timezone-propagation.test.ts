@@ -16,7 +16,7 @@
 //   - America/New_York date: 2026-09-15  (UTC-4 EDT)
 //   - Workspace timezone:    America/New_York
 //   - Expected period end:   2026-09-15 (workspace-local today)
-//   - Rejected period end:   2026-09-16 (UTC today — must NOT appear)
+//   - Rejected period end:   2026-09-16 (UTC today - must NOT appear)
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AnalyticsService } from "@/application/analytics/analytics-service";
@@ -27,7 +27,7 @@ import { date } from "../persistence/helpers";
 const CLOCK_UTC = new Date("2026-09-16T01:00:00.000Z");
 // At this instant: UTC = Sep 16, America/New_York (EDT, UTC-4) = Sep 15
 
-describe("Analytics timezone propagation — F-105-004 (BR-105-014)", () => {
+describe("Analytics timezone propagation - F-105-004 (BR-105-014)", () => {
   beforeEach(() => {
     vi.useFakeTimers();
     vi.setSystemTime(CLOCK_UTC);
@@ -94,7 +94,7 @@ describe("Analytics timezone propagation — F-105-004 (BR-105-014)", () => {
       userId,
       clientId: client.id,
       contractId: contract.id,
-      workDate: date("2026-09-16"), // UTC today — must be EXCLUDED by workspace timezone
+      workDate: date("2026-09-16"), // UTC today - must be EXCLUDED by workspace timezone
       durationMinutes: 120,
       billable: true,
     });

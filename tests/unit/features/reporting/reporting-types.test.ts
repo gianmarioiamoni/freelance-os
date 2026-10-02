@@ -186,7 +186,7 @@ describe("periodHref", () => {
   });
 });
 
-describe("periodHrefFromState — URL preservation", () => {
+describe("periodHrefFromState - URL preservation", () => {
   const clientId = "11111111-1111-4111-8111-111111111111";
   const contractId = "22222222-2222-4222-8222-222222222222";
   const june = { kind: "custom" as const, start: "2026-06-01", end: "2026-06-30" };
@@ -254,7 +254,7 @@ describe("reportExportHrefFromState", () => {
   });
 });
 
-describe("getReportingCalendarYear — F-105-013", () => {
+describe("getReportingCalendarYear - F-105-013", () => {
   it("keeps the workspace-local year when UTC has already rolled over", () => {
     const now = new Date("2027-01-01T02:00:00.000Z");
     expect(now.getUTCFullYear()).toBe(2027);

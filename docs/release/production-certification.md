@@ -1,4 +1,4 @@
-# MVP Production Certification — §35
+# MVP Production Certification - §35
 
 **Gate:** `MASTER_PLAN.md` §35  
 **Date:** 2026-09-19  
@@ -22,13 +22,13 @@ This record is Production Certification. It is not a new §34 execution. It does
 ## Certification record
 
 ```text
-Release:                 Release 1 — MVP
+Release:                 Release 1 - MVP
 Version:                 0.1.0
 Build:                   2b58af442f0ab169f08eb0c216c467375acdb285
 Validation result:       READY FOR RELEASE
 Known limitations:       Gmail SMTP is the MVP mailer (no custom domain; not a high-scale transactional standard). Historical non-blocking findings remain OPEN.
 Open operational warnings: FINDING-QA-001, FINDING-QA-002, FINDING-INT-001, FINDING-INT-002, FINDING-INT-003, FINDING-UX-004, F-104-007, F-104-010, F-104-011, F-104-012
-Product Owner approval:  D-005 PROVIDED — Product Owner explicitly approved production release
+Product Owner approval:  D-005 PROVIDED - Product Owner explicitly approved production release
 Date:                    2026-09-19
 ```
 
@@ -41,9 +41,9 @@ Hosted production origin: `https://freelance-os-timeplan.vercel.app`.
 | Criterion | Result |
 | --- | --- |
 | 1. §34 outcome is `READY FOR RELEASE` | **MET** |
-| 2. Remaining mandatory §34 items closed or accepted as Known Limitations | **MET** — hosted deploy, Google production, production mail, password-reset completion, F-004 all CLOSED. No open §34 blockers. |
+| 2. Remaining mandatory §34 items closed or accepted as Known Limitations | **MET** - hosted deploy, Google production, production mail, password-reset completion, F-004 all CLOSED. No open §34 blockers. |
 | 3. Certification record includes Product Owner approval (D-005) | **MET** |
-| 4. §36 remains binary | **MET** — `READY FOR RELEASE` |
+| 4. §36 remains binary | **MET** - `READY FOR RELEASE` |
 
 ---
 
@@ -51,9 +51,9 @@ Hosted production origin: `https://freelance-os-timeplan.vercel.app`.
 
 | Field | Value |
 | --- | --- |
-| Decision | D-005 — Product Owner approval of the release |
+| Decision | D-005 - Product Owner approval of the release |
 | Type | Explicit Product Owner decision |
-| Disposition | **PROVIDED** — production release approved |
+| Disposition | **PROVIDED** - production release approved |
 | Scope | MASTER_PLAN §35 grant after §34 `READY FOR RELEASE` |
 
 ---

@@ -1,4 +1,4 @@
-# R1 Freeze — EPIC-110 / P110-08
+# R1 Freeze - EPIC-110 / P110-08
 
 **Phase:** EPIC-110 / P110-08  
 **Date:** 2026-09-21  
@@ -15,7 +15,7 @@ PRODUCTION VALIDATION:    P110-06C FINAL PASS
 ACTIONABLE R1 FINDINGS:   0
 PRODUCTION-VERIFIED
 CRITICAL WORKFLOW:        PASS
-F-110-P06-002:            CLOSED TECHNICAL — production-verified
+F-110-P06-002:            CLOSED TECHNICAL - production-verified
 NEW FINDINGS:             NONE
 R1 FREEZE:                GRANTED
 ```
@@ -28,7 +28,7 @@ This record freezes the **current consolidated R1** after EPIC-110. It does not 
 
 | Field | Value |
 | --- | --- |
-| Release | Release 1 — MVP |
+| Release | Release 1 - MVP |
 | Candidate SHA | `c6712224e8d093b6f64cb46a17823a20de356a31` |
 | Production | `https://freelance-os-timeplan.vercel.app` |
 | Deployment | `6558481150` |
@@ -36,7 +36,7 @@ This record freezes the **current consolidated R1** after EPIC-110. It does not 
 | Production Validation | P110-06C FINAL PASS |
 | Actionable R1 findings | 0 |
 | Production-verified critical workflow | PASS |
-| F-110-P06-002 | CLOSED TECHNICAL — production-verified |
+| F-110-P06-002 | CLOSED TECHNICAL - production-verified |
 | New findings | NONE |
 | R1 Freeze | GRANTED |
 

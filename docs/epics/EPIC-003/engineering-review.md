@@ -1,7 +1,7 @@
-# EPIC-003 — Engineering Review
+# EPIC-003 - Engineering Review
 
-**Epic:** EPIC-003 — Authentication  
-**Release:** Release 0 — Foundation  
+**Epic:** EPIC-003 - Authentication  
+**Release:** Release 0 - Foundation  
 **Reviewed commits:**
 
 ```text
@@ -51,7 +51,7 @@ Verified against `MASTER_PLAN.md` R0-E03, `docs/epics/EPIC-003/epic-plan.md`, `d
 | Google OAuth provider when both client id/secret are set | Yes | Yes | Yes |
 | Password recovery + reset + session revocation | Yes | Yes | Yes |
 | Email delivery boundary (`development` / `test` / `production`) | Yes | Yes | Yes |
-| Production email provider | No | No | Yes — F-003 |
+| Production email provider | No | No | Yes - F-003 |
 | Application-owned User table | Forbidden | Absent | Yes |
 | Workspace authorization | Out of scope | Not implemented | Yes |
 | Unit + PostgreSQL integration + Playwright auth E2E | Yes | Yes | Yes |
@@ -288,8 +288,8 @@ Do not close any OBD.
 | --- | --- | --- |
 | OBD-008 | Audit-log requirements | No |
 | OBD-009 | Workspace roles and permissions | No |
-| — | Google/email identity linking (`emailVerified` / implicit merge) | No — tracked as F-001 |
-| — | Production email provider for password-reset delivery | No for epic completion — tracked as F-003. Blocks production-ready password recovery. |
+| - | Google/email identity linking (`emailVerified` / implicit merge) | No - tracked as F-001 |
+| - | Production email provider for password-reset delivery | No for epic completion - tracked as F-003. Blocks production-ready password recovery. |
 | OBD-001–007, OBD-010–012 | Billing, time, capacity, currency | No |
 
 No additional product decision was discovered that required a new OBD identifier.

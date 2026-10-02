@@ -1,6 +1,6 @@
 # EPIC-109 Engineering Review
 
-- **Epic:** EPIC-109 — Calendar-date & clock-test hardening
+- **Epic:** EPIC-109 - Calendar-date & clock-test hardening
 - **Phase:** P109-06 Final ER
 - **Release:** Post-R1 structured cycle (D-NEXT-001 = A)
 - **Date:** 2026-09-20
@@ -50,7 +50,7 @@ Diff `692403bd..HEAD`: 7 files, **no `src/`**. Commits: `fc3c829` P109-00 · `52
 
 ---
 
-## 3. FINDING-108-ER-001 — CLOSED
+## 3. FINDING-108-ER-001 - CLOSED
 
 | Field | Value |
 |---|---|
@@ -62,7 +62,7 @@ Diff `692403bd..HEAD`: 7 files, **no `src/`**. Commits: `fc3c829` P109-00 · `52
 
 ---
 
-## 4. F-104-006 — three axes — CLOSED
+## 4. F-104-006 - three axes - CLOSED
 
 | Axis | Status | Evidence |
 |---|---|---|
@@ -80,7 +80,7 @@ Overall **F-104-006: CLOSED**. Original 2026-10-01 expiry applied to axis 1 only
 
 | Field | Value |
 |---|---|
-| File | `tests/integration/time-tracking.test.ts` — `updates mutable fields successfully` |
+| File | `tests/integration/time-tracking.test.ts` - `updates mutable fields successfully` |
 | Assertion | `updated.updatedAt` equal to `created.updatedAt` (same ms: `2026-09-20T12:14:14.011Z`) |
 | `workDate` | explicit `date("2026-06-15")` |
 | Class | Instant timestamp, not calendar-date |
@@ -131,10 +131,10 @@ All AC-109-001 … AC-109-010 are PASS. FINDING-108-ER-001 CLOSED. F-104-006 CLO
 | Layer | Status |
 |---|---|
 | EPIC-109 technical | CLOSED / ER PASS |
-| R1 certification | UNCHANGED — GRANTED |
+| R1 certification | UNCHANGED - GRANTED |
 | `MASTER_PLAN.md` §33 / §34 / §35 | Not rewritten |
 | EPIC-108 snapshots | Not rewritten |
-| New certification | None — this review is EPIC-109 only |
+| New certification | None - this review is EPIC-109 only |
 
 Documentation current-state updates (debt register, testing-strategy durability warning, CHANGELOG) belong to **P109-07**.
 
@@ -144,12 +144,12 @@ Documentation current-state updates (debt register, testing-strategy durability 
 
 ### CLOSED
 
-- **FINDING-108-ER-001** — test defect; UTC calendar today in time-tracking E2E; original mismatch not reproduced.
-- **F-104-006** — all three axes CLOSED (see §4).
+- **FINDING-108-ER-001** - test defect; UTC calendar today in time-tracking E2E; original mismatch not reproduced.
+- **F-104-006** - all three axes CLOSED (see §4).
 
 ### OPEN (unchanged, not this Epic)
 
-- **F-103-006** — invalid `?date=` silent fallback. Out of scope.
+- **F-103-006** - invalid `?date=` silent fallback. Out of scope.
 
 ### Stream A (unchanged CLOSED)
 

@@ -1,28 +1,28 @@
-# EPIC-106 — Alerts & Notifications
+# EPIC-106 - Alerts & Notifications
 
 **Epic:** EPIC-106\
-**Release:** Release 1 — MVP\
-**MASTER_PLAN identifier:** R1-E06 — Alerts & Notifications (`MASTER_PLAN.md` §16)\
-**Status:** COMPLETE / CLOSED — Engineering Review PASS\
+**Release:** Release 1 - MVP\
+**MASTER_PLAN identifier:** R1-E06 - Alerts & Notifications (`MASTER_PLAN.md` §16)\
+**Status:** COMPLETE / CLOSED - Engineering Review PASS\
 **Dependencies:** EPIC-002, EPIC-003, EPIC-004, EPIC-005, EPIC-006, EPIC-101, EPIC-102, EPIC-103, EPIC-104, EPIC-105\
 **Previous Epic:** EPIC-105 Reporting (`docs/epics/EPIC-105/engineering-review.md`, commit `03ff14e`)
 
 ```text
 PLANNING:              COMPLETE
-PRODUCT DECISIONS:     RESOLVED — PD-106-001 DEFERRED, PD-106-002 IN-APP ONLY, PD-106-003 ON-WRITE
+PRODUCT DECISIONS:     RESOLVED - PD-106-001 DEFERRED, PD-106-002 IN-APP ONLY, PD-106-003 ON-WRITE
 BLOCKING DECISIONS:    NONE OUTSTANDING
 IMPLEMENTATION:        COMPLETE
-P106-00:               COMPLETE — (planning commit — part of P106-00 chat)
-P106-01:               REMOVED (PD-106-001 DEFERRED — capacity alerts out of MVP scope)
-P106-02:               COMPLETE — commit 6daf2cd
-P106-03:               COMPLETE — commit 012f6da
-P106-04:               COMPLETE — commit 95eaede
-P106-05:               COMPLETE — commit 72d9f1d
-P106-06:               COMPLETE — documentation sync
-P106-07:               COMPLETE — commit 13a48a0
-P106-08:               COMPLETE — commit 47f82ec
-P106-09:               COMPLETE — commit b421e60
-P106-10:               COMPLETE — EPIC CLOSURE
+P106-00:               COMPLETE - (planning commit - part of P106-00 chat)
+P106-01:               REMOVED (PD-106-001 DEFERRED - capacity alerts out of MVP scope)
+P106-02:               COMPLETE - commit 6daf2cd
+P106-03:               COMPLETE - commit 012f6da
+P106-04:               COMPLETE - commit 95eaede
+P106-05:               COMPLETE - commit 72d9f1d
+P106-06:               COMPLETE - documentation sync
+P106-07:               COMPLETE - commit 13a48a0
+P106-08:               COMPLETE - commit 47f82ec
+P106-09:               COMPLETE - commit b421e60
+P106-10:               COMPLETE - EPIC CLOSURE
 ```
 
 ---
@@ -56,20 +56,20 @@ OBD-006 is resolved: the Product Owner has approved a capacity warning threshold
 
 ### In scope
 
-- **Alert evaluation service** — deterministic rule engine consuming `AnalyticsService` and `WorkspaceSettings`; no calculation duplication.
-- **Alert types** — `CONTRACT_WARNING`, `CONTRACT_EXCEEDED` (MVP scope after PD-106-001 DEFERRED). `CAPACITY_WARNING` and `CAPACITY_EXCEEDED` remain in the schema but are not evaluated in MVP.
-- **Alert persistence** — `Alert` table exists with full schema: `deduplicationKey`, `resolvedAt`, `periodStart`/`periodEnd`, `clientId`, `contractId`.
-- **Alert deduplication** — idempotent: if an alert with the same `deduplicationKey` already exists and is active, no duplicate is created.
-- **Alert resolution** — when the condition drops below threshold, the active alert is resolved (`resolvedAt` set).
-- **Notification creation** — one `Notification` row per workspace member per alert event.
-- **In-app notification center** — `/alerts` route (currently a placeholder), listing notifications for the current user; read/unread state; mark-as-read.
-- **Workspace isolation** — every alert and notification is scoped to `workspaceId`; no cross-tenant access.
-- **WorkspaceSettings integration** — threshold read from `WorkspaceSettings.contractWarningPercent` (default 80, OBD-006 resolved). `monthlyCapacityWarningPercent` is not evaluated in MVP (PD-106-001 DEFERRED).
-- **Alert evaluation trigger** — on-write, called after successful TimeEntry mutations (`create-time-entry-action.ts`, `update-time-entry-action.ts`, `delete-time-entry-action.ts`) as a non-blocking side-effect (PD-106-003 resolved).
+- **Alert evaluation service** - deterministic rule engine consuming `AnalyticsService` and `WorkspaceSettings`; no calculation duplication.
+- **Alert types** - `CONTRACT_WARNING`, `CONTRACT_EXCEEDED` (MVP scope after PD-106-001 DEFERRED). `CAPACITY_WARNING` and `CAPACITY_EXCEEDED` remain in the schema but are not evaluated in MVP.
+- **Alert persistence** - `Alert` table exists with full schema: `deduplicationKey`, `resolvedAt`, `periodStart`/`periodEnd`, `clientId`, `contractId`.
+- **Alert deduplication** - idempotent: if an alert with the same `deduplicationKey` already exists and is active, no duplicate is created.
+- **Alert resolution** - when the condition drops below threshold, the active alert is resolved (`resolvedAt` set).
+- **Notification creation** - one `Notification` row per workspace member per alert event.
+- **In-app notification center** - `/alerts` route (currently a placeholder), listing notifications for the current user; read/unread state; mark-as-read.
+- **Workspace isolation** - every alert and notification is scoped to `workspaceId`; no cross-tenant access.
+- **WorkspaceSettings integration** - threshold read from `WorkspaceSettings.contractWarningPercent` (default 80, OBD-006 resolved). `monthlyCapacityWarningPercent` is not evaluated in MVP (PD-106-001 DEFERRED).
+- **Alert evaluation trigger** - on-write, called after successful TimeEntry mutations (`create-time-entry-action.ts`, `update-time-entry-action.ts`, `delete-time-entry-action.ts`) as a non-blocking side-effect (PD-106-003 resolved).
 
 ### Out of scope
 
-- **`CAPACITY_WARNING` / `CAPACITY_EXCEEDED` alert types** — DEFERRED (PD-106-001). Monthly workspace capacity has insufficient domain semantics for MVP. No `monthlyCapacityMinutes` field added. No P106-01 migration.
+- **`CAPACITY_WARNING` / `CAPACITY_EXCEEDED` alert types** - DEFERRED (PD-106-001). Monthly workspace capacity has insufficient domain semantics for MVP. No `monthlyCapacityMinutes` field added. No P106-01 migration.
 - Email notification delivery (PD-106-002 resolved: in-app only).
 - Slack or any external channel.
 - Push notifications.
@@ -82,7 +82,7 @@ OBD-006 is resolved: the Product Owner has approved a capacity warning threshold
 - Alert history pagination.
 - Real-time (WebSocket/SSE) push of new notifications.
 - Settings UI for configuring thresholds (WorkspaceSettings exist but no settings page is in scope for this Epic).
-- OBD-012 rollover/expiry semantics — alert capacity calculation uses the same no-rollover pro-rata logic as EPIC-105.
+- OBD-012 rollover/expiry semantics - alert capacity calculation uses the same no-rollover pro-rata logic as EPIC-105.
 
 ---
 
@@ -90,7 +90,7 @@ OBD-006 is resolved: the Product Owner has approved a capacity warning threshold
 
 | Non-goal | Rationale |
 | --- | --- |
-| `CAPACITY_WARNING` / `CAPACITY_EXCEEDED` alert evaluation | PD-106-001 DEFERRED — monthly capacity lacks sufficient domain semantics for MVP |
+| `CAPACITY_WARNING` / `CAPACITY_EXCEEDED` alert evaluation | PD-106-001 DEFERRED - monthly capacity lacks sufficient domain semantics for MVP |
 | `monthlyCapacityMinutes` field / migration | Not introduced; PD-106-001 defers the capacity model |
 | Email delivery | PD-106-002 resolved: in-app only for MVP |
 | Slack / Teams | PD-106-002 resolved: in-app only; explicitly deferred in `MASTER_PLAN.md` §18 |
@@ -135,20 +135,20 @@ The following are already delivered and must not be reimplemented.
 | `AnalyticsService.getContractUtilizations()` | `ContractUtilization[]` with `consumedMinutes`, `contractedMinutes`, `utilizationPercentage` per contract per period |
 | `AnalyticsService.getMonthlyAnalytics()` | `totalMinutes`, `billableMinutes` per period |
 | `getCurrentMonthPeriod(timezone)` | Workspace-timezone-aware current month period |
-| `WorkspaceContext` | `workspaceId`, `userId`, `timezone` — workspace boundary |
+| `WorkspaceContext` | `workspaceId`, `userId`, `timezone` - workspace boundary |
 | `requireWorkspaceAccess` | membership guard pattern |
-| `DEFAULT_CONTRACT_WARNING_PERCENT` | 80 — already defined in `create-first-workspace.ts` |
-| `DEFAULT_MONTHLY_CAPACITY_WARNING_PERCENT` | 80 — already defined |
+| `DEFAULT_CONTRACT_WARNING_PERCENT` | 80 - already defined in `create-first-workspace.ts` |
+| `DEFAULT_MONTHLY_CAPACITY_WARNING_PERCENT` | 80 - already defined |
 
 ### UI system (reused)
 
-Shadcn/ui `Alert`, `Button`, `Card`, `EmptyState`, `LoadingState`, `ErrorState`, `PageHeader`, `PageContent` — all available.
+Shadcn/ui `Alert`, `Button`, `Card`, `EmptyState`, `LoadingState`, `ErrorState`, `PageHeader`, `PageContent` - all available.
 
 ---
 
 ## 6. Product Decisions
 
-### PD-106-001 — Capacity model (RESOLVED: DEFERRED)
+### PD-106-001 - Capacity model (RESOLVED: DEFERRED)
 
 **Decision:** DEFER `CAPACITY_WARNING` and `CAPACITY_EXCEEDED` alerts.
 
@@ -163,7 +163,7 @@ Shadcn/ui `Alert`, `Button`, `Card`, `EmptyState`, `LoadingState`, `ErrorState`,
 
 ---
 
-### PD-106-002 — Notification channels (RESOLVED: IN-APP ONLY)
+### PD-106-002 - Notification channels (RESOLVED: IN-APP ONLY)
 
 **Decision:** In-app notifications only for MVP.
 
@@ -174,7 +174,7 @@ Shadcn/ui `Alert`, `Button`, `Card`, `EmptyState`, `LoadingState`, `ErrorState`,
 
 ---
 
-### PD-106-003 — Alert evaluation trigger (RESOLVED: ON-WRITE AFTER TIMEENTRY MUTATIONS)
+### PD-106-003 - Alert evaluation trigger (RESOLVED: ON-WRITE AFTER TIMEENTRY MUTATIONS)
 
 **Decision:** `evaluateAlerts(context)` is called as a non-blocking side-effect after successful TimeEntry mutations.
 
@@ -224,8 +224,8 @@ All three are in scope for trigger integration (P106-03).
 | --- | --- | --- | --- | --- | --- |
 | AR-001 | `CONTRACT_WARNING` | `utilizationPercentage >= contractWarningPercent` | `WorkspaceSettings.contractWarningPercent` (default 80%) | `WARNING` | **IN SCOPE** |
 | AR-002 | `CONTRACT_EXCEEDED` | `consumedMinutes >= contractedMinutes` (utilization >= 100%) | 100% (hard) | `ERROR` | **IN SCOPE** |
-| AR-003 | `CAPACITY_WARNING` | `totalMinutes / monthlyCapacityMinutes >= monthlyCapacityWarningPercent / 100` | `WorkspaceSettings.monthlyCapacityWarningPercent` (default 80%) | `WARNING` | **DEFERRED — PD-106-001** |
-| AR-004 | `CAPACITY_EXCEEDED` | `totalMinutes >= monthlyCapacityMinutes` | same | `ERROR` | **DEFERRED — PD-106-001** |
+| AR-003 | `CAPACITY_WARNING` | `totalMinutes / monthlyCapacityMinutes >= monthlyCapacityWarningPercent / 100` | `WorkspaceSettings.monthlyCapacityWarningPercent` (default 80%) | `WARNING` | **DEFERRED - PD-106-001** |
+| AR-004 | `CAPACITY_EXCEEDED` | `totalMinutes >= monthlyCapacityMinutes` | same | `ERROR` | **DEFERRED - PD-106-001** |
 
 **MVP implements AR-001 and AR-002 only.** AR-003 and AR-004 are deferred (PD-106-001) and require a future capacity model decision before implementation.
 
@@ -261,7 +261,7 @@ Period is the current month period (matching the analytics evaluation period). K
 2. Next evaluation: condition re-fires → `findAlertByDeduplicationKey()` returns the resolved alert.
 3. Since the resolved alert exists, create a **new** alert. To avoid key collision: append a suffix derived from the new `createdAt` timestamp (ISO timestamp suffix) OR increment a counter stored as a query on the resolved count.
 
-**Decision:** For MVP, if `findAlertByDeduplicationKey` returns a resolved alert, treat it as "not found" — create a new alert. The deduplication key suffix strategy deferred until Product Owner specifies re-trigger suppression windows.
+**Decision:** For MVP, if `findAlertByDeduplicationKey` returns a resolved alert, treat it as "not found" - create a new alert. The deduplication key suffix strategy deferred until Product Owner specifies re-trigger suppression windows.
 
 ### 8.4 Persistence model (existing schema, no migration needed for AR-001/AR-002)
 
@@ -321,10 +321,10 @@ For MVP (single-member workspace), one notification is created for `WorkspaceCon
 
 ## 10. Capacity Warning Semantics
 
-### Contract utilization (AR-001, AR-002 — MVP IN SCOPE)
+### Contract utilization (AR-001, AR-002 - MVP IN SCOPE)
 
 - **What is measured:** `consumedMinutes` per contract per current period.
-- **Denominator:** `contractedMinutes` — pro-rated from `Contract.monthlyContractedMinutes` using the overlap between `[validFrom, validTo)` and the current month period (identical to EPIC-105 reporting logic).
+- **Denominator:** `contractedMinutes` - pro-rated from `Contract.monthlyContractedMinutes` using the overlap between `[validFrom, validTo)` and the current month period (identical to EPIC-105 reporting logic).
 - **Reporting period:** current month period resolved from `Workspace.timezone` (same as `getCurrentMonthPeriod(timezone)`).
 - **Threshold:** `WorkspaceSettings.contractWarningPercent` (default 80, OBD-006 resolved).
 - **Alert fires when:** `utilizationPercentage >= contractWarningPercent` (float comparison).
@@ -332,9 +332,9 @@ For MVP (single-member workspace), one notification is created for `WorkspaceCon
 - **Exceeded condition:** `consumedMinutes >= contractedMinutes` (≥ 100%). This may overlap with warning; both alerts may exist simultaneously for the same contract.
 - **Null denominator:** no alert fires if `contractedMinutes` is null (unlimited contract).
 - **Per-contract evaluation:** each contract is evaluated independently; one alert per contract per period.
-- **Calculation source:** `AnalyticsService.getContractUtilizations()` — not duplicated in `AlertService`.
+- **Calculation source:** `AnalyticsService.getContractUtilizations()` - not duplicated in `AlertService`.
 
-### Monthly workspace capacity (AR-003, AR-004 — DEFERRED PD-106-001)
+### Monthly workspace capacity (AR-003, AR-004 - DEFERRED PD-106-001)
 
 Monthly workspace capacity alerts are **not implemented in MVP**. The capacity model (denominator, semantics) lacks sufficient domain definition. Future implementation requires a separate Product Decision resolving the capacity model before reintroducing AR-003/AR-004.
 
@@ -430,9 +430,9 @@ All existing isolation invariants apply.
 
 | Invariant | Enforcement |
 | --- | --- |
-| `Alert.workspaceId` always set | Repository `createAlert(workspaceId, input)` — first param |
-| `Notification.workspaceId` always set | Repository `createNotification(workspaceId, input)` — first param |
-| `WorkspaceContext` from server session only | `getCurrentWorkspaceContext()` — never from request param |
+| `Alert.workspaceId` always set | Repository `createAlert(workspaceId, input)` - first param |
+| `Notification.workspaceId` always set | Repository `createNotification(workspaceId, input)` - first param |
+| `WorkspaceContext` from server session only | `getCurrentWorkspaceContext()` - never from request param |
 | Membership guard in `AlertService` | `WorkspaceMemberRepository.getMember()` before any operation |
 | No `workspaceId` from browser | Server Actions resolve context server-side |
 | Cross-workspace read denied | `listNotificationsForUser(workspaceId, userId)` scoped by both |
@@ -454,7 +454,7 @@ Security invariant (SI-106-001): alert evaluation never exposes data from anothe
 
 Pattern:
 ```typescript
-// in TimeEntry Server Action — after successful mutation
+// in TimeEntry Server Action - after successful mutation
 void alertService.evaluateAlerts(context).catch((err) => {
   console.error("[alert-evaluation] failed", err);
 });
@@ -473,7 +473,7 @@ void alertService.evaluateAlerts(context).catch((err) => {
 | `AnalyticsService` throws | `AlertService.evaluateAlerts()` propagates; caller (server action or page) catches and logs; evaluation skipped for this cycle |
 | `AlertRepository` `createAlert` fails (unique constraint on dedup key) | Repository already uses `withPersistenceErrors`; duplicate creates should not reach the DB due to `findAlertByDeduplicationKey` pre-check; if race occurs, treat as idempotent success |
 | `NotificationRepository.createNotification` fails | Log error; alert creation is already committed; notification may be retried on next evaluation |
-| `markNotificationRead` on a notification from another user/workspace | Repository query `WHERE id AND workspaceId` — `RecordNotFoundError` thrown; Server Action returns user-safe error |
+| `markNotificationRead` on a notification from another user/workspace | Repository query `WHERE id AND workspaceId` - `RecordNotFoundError` thrown; Server Action returns user-safe error |
 | Evaluation runs concurrently (two requests same user) | Both will find the same active alert via `findAlertByDeduplicationKey` and skip creation; safe |
 
 ---
@@ -482,7 +482,7 @@ void alertService.evaluateAlerts(context).catch((err) => {
 
 ### `/alerts` page
 
-- **RSC** — no `use client`, no `useEffect`.
+- **RSC** - no `use client`, no `useEffect`.
 - **Authorization:** `getCurrentWorkspaceContext()` outside any try/catch (following F-103-001 precedent).
 - **Content:** `NotificationList` component receiving `NotificationRecord[]`.
 - **States:** `EmptyState` (no notifications), `ErrorState` (evaluation failed).
@@ -498,7 +498,7 @@ void alertService.evaluateAlerts(context).catch((err) => {
 
 ### Dashboard integration
 
-Not applicable — PD-106-003 resolved to on-write trigger. Alert evaluation occurs on TimeEntry mutations, not on dashboard load.
+Not applicable - PD-106-003 resolved to on-write trigger. Alert evaluation occurs on TimeEntry mutations, not on dashboard load.
 
 ---
 
@@ -583,11 +583,11 @@ Not applicable — PD-106-003 resolved to on-write trigger. Alert evaluation occ
 ## 19. Performance Considerations
 
 - `evaluateAlerts` calls `getContractUtilizations` which is already measured (EPIC-105 P105-06 baseline). At MVP scale (50 contracts), this yields ≤ 53 DB operations.
-- `findAlertByDeduplicationKey` uses the existing `@@unique([workspaceId, deduplicationKey])` index — single-row lookup.
-- `listNotificationsForUser` uses existing `@@index([workspaceId, userId, createdAt])` — efficient.
+- `findAlertByDeduplicationKey` uses the existing `@@unique([workspaceId, deduplicationKey])` index - single-row lookup.
+- `listNotificationsForUser` uses existing `@@index([workspaceId, userId, createdAt])` - efficient.
 - `markNotificationRead` uses `updateMany + findFirst` pattern consistent with `resolveAlert`.
 - No new indexes required if existing schema is unchanged.
-- If PD-106-001 = Option 1 (new field), the `WorkspaceSettings` table is accessed with a primary-key lookup — no index needed.
+- If PD-106-001 = Option 1 (new field), the `WorkspaceSettings` table is accessed with a primary-key lookup - no index needed.
 
 ---
 
@@ -613,7 +613,7 @@ P106-07 Engineering Review
 
 ---
 
-### P106-00 — Product Decision resolution ✅ COMPLETE
+### P106-00 - Product Decision resolution ✅ COMPLETE
 
 - **Objective:** Obtain Product Owner decisions on PD-106-001, PD-106-002, PD-106-003.
 - **Scope:** Documentation only.
@@ -623,22 +623,22 @@ P106-07 Engineering Review
 
 ---
 
-### ~~P106-01~~ — Schema migration (REMOVED — PD-106-001 DEFERRED)
+### ~~P106-01~~ - Schema migration (REMOVED - PD-106-001 DEFERRED)
 
 P106-01 is removed from the MVP phase breakdown. `monthlyCapacityMinutes` is not added. No migration is required. If PD-106-001 is revisited in a future release, a new epic phase will be defined.
 
 ---
 
-### P106-02 — Alert domain and evaluation service ✅ COMPLETE
+### P106-02 - Alert domain and evaluation service ✅ COMPLETE
 
-- **Commit:** `6daf2cd` — `feat(alerts): implement alert evaluation service with deduplication (P106-02)`
+- **Commit:** `6daf2cd` - `feat(alerts): implement alert evaluation service with deduplication (P106-02)`
 - **Objective:** Implement `AlertService` with evaluation, deduplication, resolution logic, and notification creation.
 - **Delivered:**
-  - `src/application/alerts/alert-service.ts` — `AlertService` factory (357 lines).
-  - `src/application/alerts/alert-evaluation-types.ts` — `AlertEvaluationResult` type.
-  - `src/application/alerts/alert-dedup-key.ts` — deterministic key builder.
-  - `tests/unit/application/alerts/alert-service.test.ts` — 569 lines.
-  - `tests/unit/application/alerts/alert-dedup-key.test.ts` — 99 lines.
+  - `src/application/alerts/alert-service.ts` - `AlertService` factory (357 lines).
+  - `src/application/alerts/alert-evaluation-types.ts` - `AlertEvaluationResult` type.
+  - `src/application/alerts/alert-dedup-key.ts` - deterministic key builder.
+  - `tests/unit/application/alerts/alert-service.test.ts` - 569 lines.
+  - `tests/unit/application/alerts/alert-dedup-key.test.ts` - 99 lines.
 - **Acceptance criteria validated:**
   - AR-001: alert fires when `utilizationPercentage >= contractWarningPercent`; does not fire below. ✅
   - AR-002: alert fires when `utilizationPercentage >= 100` (or `consumedMinutes >= contractedMinutes`). ✅
@@ -652,19 +652,19 @@ P106-01 is removed from the MVP phase breakdown. `monthlyCapacityMinutes` is not
 
 ---
 
-### P106-03 — Alert evaluation trigger integration ✅ COMPLETE
+### P106-03 - Alert evaluation trigger integration ✅ COMPLETE
 
-- **Commit:** `012f6da` — `feat(alerts): wire AlertService trigger into TimeEntry mutations (P106-03)`
+- **Commit:** `012f6da` - `feat(alerts): wire AlertService trigger into TimeEntry mutations (P106-03)`
 - **Objective:** Wire `AlertService.evaluateAlerts()` into TimeEntry Server Actions (PD-106-003 resolved: on-write).
 - **Delivered:**
-  - `src/features/time-entries/trigger-alert-evaluation.ts` — non-blocking trigger helper (56 lines).
-  - `src/features/time-entries/create-time-entry-action.ts` — trigger wired after successful create.
-  - `src/features/time-entries/update-time-entry-action.ts` — trigger wired after successful update.
-  - `src/features/time-entries/delete-time-entry-action.ts` — trigger wired after successful delete.
-  - `src/features/time-entries/authenticated-time-entry-context.ts` — context updated for alert injection.
-  - `src/application/time-entries/delete-time-entry.ts` — minor adjustment.
-  - `tests/integration/alerts/time-entry-alert-trigger.test.ts` — 349 lines.
-  - `tests/unit/time-entries/trigger-alert-evaluation.test.ts` — 147 lines.
+  - `src/features/time-entries/trigger-alert-evaluation.ts` - non-blocking trigger helper (56 lines).
+  - `src/features/time-entries/create-time-entry-action.ts` - trigger wired after successful create.
+  - `src/features/time-entries/update-time-entry-action.ts` - trigger wired after successful update.
+  - `src/features/time-entries/delete-time-entry-action.ts` - trigger wired after successful delete.
+  - `src/features/time-entries/authenticated-time-entry-context.ts` - context updated for alert injection.
+  - `src/application/time-entries/delete-time-entry.ts` - minor adjustment.
+  - `tests/integration/alerts/time-entry-alert-trigger.test.ts` - 349 lines.
+  - `tests/unit/time-entries/trigger-alert-evaluation.test.ts` - 147 lines.
 - **Acceptance criteria validated:**
   - Evaluation runs after create, update, and delete TimeEntry mutations. ✅
   - Evaluation failure does not fail the TimeEntry operation (non-blocking `void ... .catch`). ✅
@@ -673,17 +673,17 @@ P106-01 is removed from the MVP phase breakdown. `monthlyCapacityMinutes` is not
 
 ---
 
-### P106-04 — Notification center UI ✅ COMPLETE
+### P106-04 - Notification center UI ✅ COMPLETE
 
-- **Commit:** `95eaede` — `feat(alerts): implement /alerts notification center with mark-as-read (P106-04)`
+- **Commit:** `95eaede` - `feat(alerts): implement /alerts notification center with mark-as-read (P106-04)`
 - **Objective:** Replace the `/alerts` placeholder with a functional RSC notification center.
 - **Delivered:**
-  - `src/app/(app)/alerts/page.tsx` — RSC, replaces placeholder (38 lines).
-  - `src/features/notifications/NotificationList.tsx` — notification list component (41 lines).
-  - `src/features/notifications/NotificationCard.tsx` — individual notification card with mark-as-read (96 lines).
-  - `src/features/notifications/load-notifications.ts` — server query helper (11 lines).
-  - `src/features/notifications/mark-notification-read-action.ts` — Server Action with ownership check (58 lines).
-  - `tests/integration/alerts/notification-center.test.ts` — 276 lines.
+  - `src/app/(app)/alerts/page.tsx` - RSC, replaces placeholder (38 lines).
+  - `src/features/notifications/NotificationList.tsx` - notification list component (41 lines).
+  - `src/features/notifications/NotificationCard.tsx` - individual notification card with mark-as-read (96 lines).
+  - `src/features/notifications/load-notifications.ts` - server query helper (11 lines).
+  - `src/features/notifications/mark-notification-read-action.ts` - Server Action with ownership check (58 lines).
+  - `tests/integration/alerts/notification-center.test.ts` - 276 lines.
   - Note: actual module path is `src/features/notifications/` (not `src/features/alerts/` as planned).
 - **Acceptance criteria validated:**
   - Notifications listed, newest first. ✅
@@ -693,18 +693,18 @@ P106-01 is removed from the MVP phase breakdown. `monthlyCapacityMinutes` is not
   - Authorization: only own workspace + own userId notifications shown. ✅
   - No `use client` on page.tsx. ✅
   - Server-side authorization + ownership check in mark-as-read action. ✅
-- **Finding registered:** Unbounded notification list — accepted for MVP / non-blocking (no pagination implemented per scope).
+- **Finding registered:** Unbounded notification list - accepted for MVP / non-blocking (no pagination implemented per scope).
 - **Dependencies:** P106-02, P106-03 COMPLETE.
 
 ---
 
-### P106-05 — Integration and E2E tests ✅ COMPLETE
+### P106-05 - Integration and E2E tests ✅ COMPLETE
 
-- **Commit:** `72d9f1d` — `test(alerts): E2E and integration validation suite (P106-05)`
+- **Commit:** `72d9f1d` - `test(alerts): E2E and integration validation suite (P106-05)`
 - **Objective:** Full integration test suite for alert evaluation, workspace isolation, and E2E notification journeys.
 - **Delivered:**
-  - `tests/e2e/alerts.spec.ts` — Playwright notification journeys (323 lines).
-  - `tests/integration/alerts/alert-service-integration.test.ts` — real DB evaluation suite (524 lines).
+  - `tests/e2e/alerts.spec.ts` - Playwright notification journeys (323 lines).
+  - `tests/integration/alerts/alert-service-integration.test.ts` - real DB evaluation suite (524 lines).
 - **Acceptance criteria validated:**
   - Boundary cases covered (exact threshold, null capacity, deduplication, re-trigger). ✅
   - Workspace isolation verified. ✅
@@ -713,72 +713,72 @@ P106-01 is removed from the MVP phase breakdown. `monthlyCapacityMinutes` is not
   - Unit: 379/379 PASS
   - Integration: 219/219 PASS
   - P106-05 E2E: 6/6 PASS
-  - Full E2E: 56 PASS / 1 FAIL (F-106-P05-001 — PRE-EXISTING / FLAKY — not a P106 regression)
+  - Full E2E: 56 PASS / 1 FAIL (F-106-P05-001 - PRE-EXISTING / FLAKY - not a P106 regression)
   - Lint: PASS
   - Typecheck: PASS
   - Build: PASS
-- **Finding F-106-P05-001:** `auth.spec.ts` — "should register, stay authenticated, and sign out" — 1 failure. Classified PRE-EXISTING / FLAKY. Reproduced at commit `95eaede` (pre-P106-05). Not a P106 regression. Not to be resolved in P106 scope.
+- **Finding F-106-P05-001:** `auth.spec.ts` - "should register, stay authenticated, and sign out" - 1 failure. Classified PRE-EXISTING / FLAKY. Reproduced at commit `95eaede` (pre-P106-05). Not a P106 regression. Not to be resolved in P106 scope.
 - **Dependencies:** P106-04 COMPLETE.
 
 ---
 
-### P106-06 — Documentation synchronization ✅ COMPLETE
+### P106-06 - Documentation synchronization ✅ COMPLETE
 
 - **Objective:** Update all documentation to reflect EPIC-106 implementation.
 - **Delivered:**
-  - `docs/epics/EPIC-106/epic-plan.md` — phase statuses, commits, acceptance criteria, findings, module structure.
-  - `README.md` — EPIC-106 status added; alerts implemented.
-  - `CHANGELOG.md` — EPIC-106 entries added.
-  - `docs/testing-strategy.md` — suite totals updated to 379/219/57 (P106-06 E2E pending); EPIC-106 coverage described.
-  - `docs/architecture.md` §5.8, §5.9, §14.2, §19, §20 — implemented markers added.
-  - `MASTER_PLAN.md` — verified correct (pre-existing modifications already accurate); not modified.
-  - `docs/domain-model.md` — verified correct; not modified.
-  - `docs/storage.md` — verified correct (no schema change); not modified.
+  - `docs/epics/EPIC-106/epic-plan.md` - phase statuses, commits, acceptance criteria, findings, module structure.
+  - `README.md` - EPIC-106 status added; alerts implemented.
+  - `CHANGELOG.md` - EPIC-106 entries added.
+  - `docs/testing-strategy.md` - suite totals updated to 379/219/57 (P106-06 E2E pending); EPIC-106 coverage described.
+  - `docs/architecture.md` §5.8, §5.9, §14.2, §19, §20 - implemented markers added.
+  - `MASTER_PLAN.md` - verified correct (pre-existing modifications already accurate); not modified.
+  - `docs/domain-model.md` - verified correct; not modified.
+  - `docs/storage.md` - verified correct (no schema change); not modified.
 - **Working tree discrepancy noted:** `docs/epics/EPIC-106/epic-plan.md` was untracked (never committed after P106-00 planning). It is included in the P106-06 commit as the sole untracked EPIC-106 artifact.
 - **Tests:** None (documentation only).
 - **Dependencies:** P106-05 COMPLETE.
 
 ---
 
-### P106-07 — Engineering Review ✅ COMPLETE
+### P106-07 - Engineering Review ✅ COMPLETE
 
-- **Commit:** `13a48a0` — `docs(alerts): EPIC-106 engineering review`
+- **Commit:** `13a48a0` - `docs(alerts): EPIC-106 engineering review`
 - **Objective:** Produce `docs/epics/EPIC-106/engineering-review.md`.
-- **Delivered:** `docs/epics/EPIC-106/engineering-review.md` — verdict, per-suite gate evidence, findings, OBD relevance, production-readiness limitations.
-- **Verdict:** PASS (initial — F-106-P07-001 blocking, subsequent correction in P106-08)
+- **Delivered:** `docs/epics/EPIC-106/engineering-review.md` - verdict, per-suite gate evidence, findings, OBD relevance, production-readiness limitations.
+- **Verdict:** PASS (initial - F-106-P07-001 blocking, subsequent correction in P106-08)
 - **Dependencies:** P106-06 COMPLETE.
 
 ---
 
-### P106-08 — Corrective fix: resolveIfActive semantic lookup ✅ COMPLETE
+### P106-08 - Corrective fix: resolveIfActive semantic lookup ✅ COMPLETE
 
-- **Commit:** `47f82ec` — `fix(alerts): resolve re-triggered alerts correctly`
-- **Objective:** Fix F-106-P07-001 — `resolveIfActive` used deduplication key lookup instead of semantic lookup, preventing correct resolution of re-triggered alerts.
+- **Commit:** `47f82ec` - `fix(alerts): resolve re-triggered alerts correctly`
+- **Objective:** Fix F-106-P07-001 - `resolveIfActive` used deduplication key lookup instead of semantic lookup, preventing correct resolution of re-triggered alerts.
 - **Delivered:** `resolveIfActive` now uses semantic lookup: `workspaceId + contractId + type + periodStart + resolvedAt IS NULL` instead of `deduplicationKey`.
 - **Finding resolved:** F-106-P07-001 CLOSED.
 - **Dependencies:** P106-07 COMPLETE.
 
 ---
 
-### P106-09 — Engineering Review verification ✅ COMPLETE
+### P106-09 - Engineering Review verification ✅ COMPLETE
 
-- **Commit:** `b421e60` — `docs(alerts): close EPIC-106 engineering review`
+- **Commit:** `b421e60` - `docs(alerts): close EPIC-106 engineering review`
 - **Objective:** Verify P106-08 correction; confirm Engineering Review PASS.
-- **Delivered:** `docs/epics/EPIC-106/engineering-review.md` updated — F-106-P07-001 CLOSED; final verdict PASS.
+- **Delivered:** `docs/epics/EPIC-106/engineering-review.md` updated - F-106-P07-001 CLOSED; final verdict PASS.
 - **Gate evidence:**
   - F-106-P07-001: CLOSED (semantic lookup verified)
-  - F-106-P04-001: ACCEPTED — MVP (unbounded list, non-blocking)
+  - F-106-P04-001: ACCEPTED - MVP (unbounded list, non-blocking)
   - F-106-P05-001: PRE-EXISTING / FLAKY / ACCEPTED
-  - Engineering Review: PASS — 0 blocking findings
+  - Engineering Review: PASS - 0 blocking findings
 - **Dependencies:** P106-08 COMPLETE.
 
 ---
 
-### P106-10 — EPIC Closure ✅ COMPLETE
+### P106-10 - EPIC Closure ✅ COMPLETE
 
 - **Commit:** `docs(alerts): close EPIC-106 and synchronize roadmap`
 - **Objective:** Formally close EPIC-106; synchronize MASTER_PLAN, CHANGELOG, README, epic-plan.
-- **Delivered:** documentation closure only — no code or test changes.
+- **Delivered:** documentation closure only - no code or test changes.
 - **Dependencies:** P106-09 COMPLETE.
 
 ---
@@ -830,9 +830,9 @@ P106-01 is removed from the MVP phase breakdown. `monthlyCapacityMinutes` is not
 
 | ID | Description | Severity | Status |
 | --- | --- | --- | --- |
-| F-106-P07-001 | `resolveIfActive` used deduplication key instead of semantic lookup — re-triggered alerts not correctly resolved | BLOCKING | CLOSED — fixed in P106-08 (commit `47f82ec`); semantic lookup verified in P106-09 |
-| F-106-P05-001 | `auth.spec.ts` — "should register, stay authenticated, and sign out" — 1 E2E failure | PRE-EXISTING / FLAKY | ACCEPTED — not a P106 regression; reproduced at commit `95eaede` (pre-P106-05) |
-| F-106-P04-001 | Unbounded notification list (no pagination) | NON-BLOCKING | ACCEPTED — MVP; pagination deliberately out of scope |
+| F-106-P07-001 | `resolveIfActive` used deduplication key instead of semantic lookup - re-triggered alerts not correctly resolved | BLOCKING | CLOSED - fixed in P106-08 (commit `47f82ec`); semantic lookup verified in P106-09 |
+| F-106-P05-001 | `auth.spec.ts` - "should register, stay authenticated, and sign out" - 1 E2E failure | PRE-EXISTING / FLAKY | ACCEPTED - not a P106 regression; reproduced at commit `95eaede` (pre-P106-05) |
+| F-106-P04-001 | Unbounded notification list (no pagination) | NON-BLOCKING | ACCEPTED - MVP; pagination deliberately out of scope |
 
 ### Inherited open findings (not owned by EPIC-106)
 
@@ -842,7 +842,7 @@ P106-01 is removed from the MVP phase breakdown. `monthlyCapacityMinutes` is not
 | F-105-013 | Latent year/now inconsistency | LOW | Carry forward; EPIC-106 does not own |
 | F-104-006 | Clock-sensitive E2E failures (2 tests) | ENVIRONMENTAL | Carry forward; not owned by EPIC-106 |
 | F-104-006 | Clock-sensitive integration failure (analytics-isolation.test.ts, 1 test) | ENVIRONMENTAL | Carry forward; not owned by EPIC-106 |
-| P102-F-001 | Contract commercial-term mutability affects historical utilization denominators | OPEN | Carry forward; alert evaluation reads live `contractedMinutes` — same limitation as analytics |
+| P102-F-001 | Contract commercial-term mutability affects historical utilization denominators | OPEN | Carry forward; alert evaluation reads live `contractedMinutes` - same limitation as analytics |
 | OBD-009 | Workspace roles / permissions | OPEN | Fan-out to all members deferred until OBD-009 resolved |
 | OBD-012 | Rollover / expiry semantics | OPEN | Not in scope; alert uses same no-rollover pro-rata as EPIC-105 |
 
@@ -876,17 +876,17 @@ P106-01 is removed from the MVP phase breakdown. `monthlyCapacityMinutes` is not
 EPIC-106 is DONE when:
 
 - [x] All blocking Product Decisions resolved: PD-106-001 DEFERRED, PD-106-002 IN-APP ONLY, PD-106-003 ON-WRITE.
-- [x] `AlertService` implemented with AR-001 and AR-002 (AR-003/AR-004 deferred per PD-106-001). — commit `6daf2cd`
-- [x] Alert deduplication proven by unit and integration tests. — commit `6daf2cd`, `72d9f1d`
-- [x] Alert resolution proven by unit and integration tests. — commit `6daf2cd`, `72d9f1d`
-- [x] Notification creation and mark-as-read proven by tests. — commit `95eaede`, `72d9f1d`
-- [x] `/alerts` page functional RSC with notification list. — commit `95eaede`
-- [x] Workspace isolation integration-proven. — commit `72d9f1d`
-- [x] All gates pass (lint, typecheck, unit, integration, E2E, build). — 379/379 unit, 219/219 integration, 6/6 P106-05 E2E, build PASS
-- [x] `docs/epics/EPIC-106/engineering-review.md` produced. — commit `13a48a0`; final verdict commit `b421e60`
-- [x] `MASTER_PLAN.md` updated to reflect EPIC-106 COMPLETE. — P106-10
-- [x] No analytics calculation duplicated. — `AlertService` delegates to `AnalyticsService`
-- [x] No `use client` on RSC pages. — verified `/alerts/page.tsx`
+- [x] `AlertService` implemented with AR-001 and AR-002 (AR-003/AR-004 deferred per PD-106-001). - commit `6daf2cd`
+- [x] Alert deduplication proven by unit and integration tests. - commit `6daf2cd`, `72d9f1d`
+- [x] Alert resolution proven by unit and integration tests. - commit `6daf2cd`, `72d9f1d`
+- [x] Notification creation and mark-as-read proven by tests. - commit `95eaede`, `72d9f1d`
+- [x] `/alerts` page functional RSC with notification list. - commit `95eaede`
+- [x] Workspace isolation integration-proven. - commit `72d9f1d`
+- [x] All gates pass (lint, typecheck, unit, integration, E2E, build). - 379/379 unit, 219/219 integration, 6/6 P106-05 E2E, build PASS
+- [x] `docs/epics/EPIC-106/engineering-review.md` produced. - commit `13a48a0`; final verdict commit `b421e60`
+- [x] `MASTER_PLAN.md` updated to reflect EPIC-106 COMPLETE. - P106-10
+- [x] No analytics calculation duplicated. - `AlertService` delegates to `AnalyticsService`
+- [x] No `use client` on RSC pages. - verified `/alerts/page.tsx`
 
 ---
 
@@ -896,15 +896,15 @@ The following stale references require updates independent of EPIC-106 implement
 
 ### MASTER_PLAN.md stale items (to be updated as part of this planning commit)
 
-1. **§4 Current Project Status** — `NEXT: R1-E05 Engineering Review (P105-08)` → should read `NEXT: R1-E06 Alerts & Notifications (EPIC-106)`.
-2. **Line 168** — `Reporting: IMPLEMENTED — see docs/epics/EPIC-105/engineering-review.md (pending P105-08)` → remove `(pending P105-08)` since Engineering Review is complete.
-3. **`next:` YAML block** (lines 1994–1999) — update `epic: EPIC-105`, `phase: engineering-review` → `epic: EPIC-106`, `phase: planning`.
-4. **Lines 192–193** — `Engineering status: COMPLETE (P105-08 Engineering Review pending)` → `Engineering status: COMPLETE`.
+1. **§4 Current Project Status** - `NEXT: R1-E05 Engineering Review (P105-08)` → should read `NEXT: R1-E06 Alerts & Notifications (EPIC-106)`.
+2. **Line 168** - `Reporting: IMPLEMENTED - see docs/epics/EPIC-105/engineering-review.md (pending P105-08)` → remove `(pending P105-08)` since Engineering Review is complete.
+3. **`next:` YAML block** (lines 1994–1999) - update `epic: EPIC-105`, `phase: engineering-review` → `epic: EPIC-106`, `phase: planning`.
+4. **Lines 192–193** - `Engineering status: COMPLETE (P105-08 Engineering Review pending)` → `Engineering status: COMPLETE`.
 
 ### docs/epics/EPIC-105/epic-plan.md stale items
 
-1. **Status header line 27** — `P105-08: PENDING — Engineering Review` → `P105-08: COMPLETE — see docs/epics/EPIC-105/engineering-review.md`.
-2. **Document Status block** (lines 1761–1769) — `ENGINEERING REVIEW: NOT CREATED` → `ENGINEERING REVIEW: COMPLETE — docs/epics/EPIC-105/engineering-review.md`.
+1. **Status header line 27** - `P105-08: PENDING - Engineering Review` → `P105-08: COMPLETE - see docs/epics/EPIC-105/engineering-review.md`.
+2. **Document Status block** (lines 1761–1769) - `ENGINEERING REVIEW: NOT CREATED` → `ENGINEERING REVIEW: COMPLETE - docs/epics/EPIC-105/engineering-review.md`.
 
 These updates are documentation-only and do not affect implementation. They should be included in the planning commit for EPIC-106.
 
@@ -914,24 +914,24 @@ These updates are documentation-only and do not affect implementation. They shou
 
 | Check | Status |
 | --- | --- |
-| Scope consistent with `MASTER_PLAN.md` §16 | YES — all four alert types and in-app notification center covered |
-| Non-goals explicit | YES — §4, email/Slack/background jobs explicitly excluded |
-| Blocking Product Decisions resolved | YES — PD-106-001 DEFERRED, PD-106-002 IN-APP ONLY, PD-106-003 ON-WRITE |
-| Existing capabilities identified and reused | YES — schema, repositories, analytics service all pre-existing |
-| No analytics duplication | YES — `AlertService` delegates to `AnalyticsService` |
-| Workspace isolation explicit | YES — §12, SI-106-001 |
-| Alert/notification semantics distinct | YES — §7, §8, §9 |
-| Capacity warning semantics defined | YES — §10; contract utilization in scope; monthly capacity deferred PD-106-001 |
-| Deduplication semantics defined | YES — §8.1, §8.2, §8.3 |
-| Testing strategy concrete | YES — §16, per-behaviour, per-level |
-| Phase breakdown implementable | YES — P106-00 COMPLETE; P106-01 removed; P106-02 through P106-07 ready |
-| OBD-006 incorporated | YES — 80% threshold from WorkspaceSettings, OBD-006 resolved |
-| Inherited findings not re-opened | YES — carried forward with no action |
-| No scope creep | YES — notification platform, email, background jobs excluded |
+| Scope consistent with `MASTER_PLAN.md` §16 | YES - all four alert types and in-app notification center covered |
+| Non-goals explicit | YES - §4, email/Slack/background jobs explicitly excluded |
+| Blocking Product Decisions resolved | YES - PD-106-001 DEFERRED, PD-106-002 IN-APP ONLY, PD-106-003 ON-WRITE |
+| Existing capabilities identified and reused | YES - schema, repositories, analytics service all pre-existing |
+| No analytics duplication | YES - `AlertService` delegates to `AnalyticsService` |
+| Workspace isolation explicit | YES - §12, SI-106-001 |
+| Alert/notification semantics distinct | YES - §7, §8, §9 |
+| Capacity warning semantics defined | YES - §10; contract utilization in scope; monthly capacity deferred PD-106-001 |
+| Deduplication semantics defined | YES - §8.1, §8.2, §8.3 |
+| Testing strategy concrete | YES - §16, per-behaviour, per-level |
+| Phase breakdown implementable | YES - P106-00 COMPLETE; P106-01 removed; P106-02 through P106-07 ready |
+| OBD-006 incorporated | YES - 80% threshold from WorkspaceSettings, OBD-006 resolved |
+| Inherited findings not re-opened | YES - carried forward with no action |
+| No scope creep | YES - notification platform, email, background jobs excluded |
 
 ```text
-PLANNING STATUS: COMPLETE — ALL PRODUCT DECISIONS RESOLVED
-IMPLEMENTATION STATUS: READY — P106-02 may begin immediately
+PLANNING STATUS: COMPLETE - ALL PRODUCT DECISIONS RESOLVED
+IMPLEMENTATION STATUS: READY - P106-02 may begin immediately
 ```
 
 Implementation begins with P106-02 (AlertService). No migration required (P106-01 removed).
@@ -941,31 +941,31 @@ Implementation begins with P106-02 (AlertService). No migration required (P106-0
 ## Document Status
 
 ```text
-EPIC-106 — Alerts & Notifications
+EPIC-106 - Alerts & Notifications
 STATUS: COMPLETE / CLOSED
 PLANNING: COMPLETE
 PRODUCT DECISIONS: RESOLVED
-  PD-106-001: DEFERRED — CAPACITY_WARNING/CAPACITY_EXCEEDED out of MVP scope
-  PD-106-002: IN-APP ONLY — /alerts notification center, no external channels
-  PD-106-003: ON-WRITE — TimeEntry mutations (create, update, delete)
+  PD-106-001: DEFERRED - CAPACITY_WARNING/CAPACITY_EXCEEDED out of MVP scope
+  PD-106-002: IN-APP ONLY - /alerts notification center, no external channels
+  PD-106-003: ON-WRITE - TimeEntry mutations (create, update, delete)
 P106-00: COMPLETE
 P106-01: REMOVED (capacity model deferred)
-P106-02: COMPLETE — commit 6daf2cd
-P106-03: COMPLETE — commit 012f6da
-P106-04: COMPLETE — commit 95eaede
-P106-05: COMPLETE — commit 72d9f1d
-P106-06: COMPLETE — documentation sync
-P106-07: COMPLETE — commit 13a48a0
-P106-08: COMPLETE — commit 47f82ec
-P106-09: COMPLETE — commit b421e60
-P106-10: COMPLETE — EPIC CLOSURE
+P106-02: COMPLETE - commit 6daf2cd
+P106-03: COMPLETE - commit 012f6da
+P106-04: COMPLETE - commit 95eaede
+P106-05: COMPLETE - commit 72d9f1d
+P106-06: COMPLETE - documentation sync
+P106-07: COMPLETE - commit 13a48a0
+P106-08: COMPLETE - commit 47f82ec
+P106-09: COMPLETE - commit b421e60
+P106-10: COMPLETE - EPIC CLOSURE
 FINDINGS:
   F-106-P07-001: CLOSED (fixed P106-08)
-  F-106-P04-001: ACCEPTED — MVP
+  F-106-P04-001: ACCEPTED - MVP
   F-106-P05-001: PRE-EXISTING / FLAKY / ACCEPTED
 BLOCKING FINDINGS: 0
 OPEN DEPENDENCIES: OBD-009 (fan-out), OBD-012 (no rollover, carries from EPIC-105)
 IMPLEMENTATION: COMPLETE
-ENGINEERING REVIEW: PASS — docs/epics/EPIC-106/engineering-review.md
+ENGINEERING REVIEW: PASS - docs/epics/EPIC-106/engineering-review.md
 NEXT EPIC: MVP Integration Epic (§17 MASTER_PLAN.md)
 ```

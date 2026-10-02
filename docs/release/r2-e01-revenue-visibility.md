@@ -1,9 +1,9 @@
-# R2-E01 — Revenue Visibility — Epic Plan
+# R2-E01 - Revenue Visibility - Epic Plan
 
-**Epic:** R2-E01 — Revenue Visibility  
-**Release:** Release 2 — Revenue Operations  
+**Epic:** R2-E01 - Revenue Visibility  
+**Release:** Release 2 - Revenue Operations  
 **MASTER_PLAN identifier:** R2-E01 (`MASTER_PLAN.md` §19)  
-**Status:** COMPLETE / RELEASE-READY — P-E01-00…P-E01-07 COMPLETE. Engineering Review PASS WITH FINDINGS. QA PASS WITH FINDINGS. F-E01-001 CLOSED. F-E01-002 CLOSED.  
+**Status:** COMPLETE / RELEASE-READY - P-E01-00…P-E01-07 COMPLETE. Engineering Review PASS WITH FINDINGS. QA PASS WITH FINDINGS. F-E01-001 CLOSED. F-E01-002 CLOSED.  
 **Authority:** `docs/release/r2-decision-pack.md`  
 **Companions:** `docs/release/r2-epic-map.md`, `docs/release/r2-architecture-delta.md`, `docs/release/r2-open-decisions.md`  
 **Does not assign:** an EPIC-2xx number
@@ -14,8 +14,8 @@ P-E01-01  PERSISTENCE / DOMAIN FOUNDATION  COMPLETE
 P-E01-02  ACCRUED REVENUE                  COMPLETE
 P-E01-03  EXPECTED REVENUE                 COMPLETE
 P-E01-04  ANALYTICS / REPORTING INTEGRATION COMPLETE
-P-E01-05  ENGINEERING REVIEW               COMPLETE — PASS WITH FINDINGS
-P-E01-06  QA                               COMPLETE — PASS WITH FINDINGS
+P-E01-05  ENGINEERING REVIEW               COMPLETE - PASS WITH FINDINGS
+P-E01-06  QA                               COMPLETE - PASS WITH FINDINGS
 P-E01-07  DOCUMENTATION / EPIC CLOSURE     COMPLETE
 
 R2-E01: COMPLETE / RELEASE-READY
@@ -65,7 +65,7 @@ are not rewritten.
 
 Publish deterministic **Accrued Revenue** and **Expected Revenue** so the
 freelancer can see the economic value of recorded billable work and of
-HOURLY contractual capacity — without invoicing, accounting, or Forecast.
+HOURLY contractual capacity - without invoicing, accounting, or Forecast.
 
 ```text
 TimeEntry + commercial snapshot   → Accrued Revenue
@@ -115,7 +115,7 @@ Do not duplicate these rules. E01 consumes them.
 | Pro-rata capacity | PD-105-005; `AnalyticsService.calculateProRataCapacity` | Expected capacity = `monthlyContractedMinutes × (overlapDays / periodDays)`. Null capacity stays null. Zero overlap → `0`, not null. No rollover (OBD-012). |
 | Relevance union | PD-105-006 | Contract appears if validity overlaps the period **or** it has in-period consumption. |
 | Out-of-validity time retained | PD-105-006 / BR-105-018 | Historical TimeEntries outside `[validFrom, validTo)` stay in Accrued and are flagged, not dropped. |
-| Billable eligibility | BR-007 | Only billable work contributes to Accrued. Utilization still uses all minutes (PD-104-002) — do not change that. |
+| Billable eligibility | BR-007 | Only billable work contributes to Accrued. Utilization still uses all minutes (PD-104-002) - do not change that. |
 | Stored associations authoritative | EPIC-104 | Analytics reads stored `clientId` / `contractId`. Never re-resolves. |
 | Archived clients included | PD-104-001 | Accrued / Expected include archived-client history. New TimeEntries for archived clients remain rejected. |
 | No Contract archive | schema | Contracts have no status field. Isolation is workspace-scoped. |
@@ -414,7 +414,7 @@ period machinery.
 
 ---
 
-## 8. Commercial Snapshot — conclusion
+## 8. Commercial Snapshot - conclusion
 
 ### 8.1 Evidence
 
@@ -482,8 +482,8 @@ existing rows from the live associated Contract (R2-OD-017).
 | ID | Status |
 | --- | --- |
 | R2-OD-003 residual | **CLOSED** as `snapshotBillingModel` / `snapshotRate` / `snapshotCurrency` on TimeEntry |
-| R2-OD-016 | **APPROVED** — weighted-average daily rate by billable minutes. Calculation is P-E01-02 |
-| R2-OD-017 | **APPROVED** — migrate/backfill existing TimeEntries from the current associated Contract |
+| R2-OD-016 | **APPROVED** - weighted-average daily rate by billable minutes. Calculation is P-E01-02 |
+| R2-OD-017 | **APPROVED** - migrate/backfill existing TimeEntries from the current associated Contract |
 
 Accrued calculation is implemented in P-E01-02. Historical Accrued reads
 only TimeEntry snapshot columns. Live Contract commercial fields are not
@@ -590,7 +590,7 @@ Every E01 calculation is workspace-scoped.
 | Browser input | `workspaceId` never accepted from the client as a tenant grant. |
 | Cross-workspace | Workspace A totals ignore Workspace B rows even if ids leak. |
 | Archived clients | Included in Accrued / Expected (PD-104-001). Not selectable for new work. |
-| Archived contracts | N/A — no Contract archive. |
+| Archived contracts | N/A - no Contract archive. |
 | Roles | OBD-009 unchanged. No new E01 role. |
 
 ### Required negative tests
@@ -715,7 +715,7 @@ Count: **17**.
 Methodology: Release → Epic → Phase → Commit.
 No implementation commit is created by this plan.
 
-### P-E01-00 — Planning / architecture freeze
+### P-E01-00 - Planning / architecture freeze
 
 | | |
 | --- | --- |
@@ -730,7 +730,7 @@ No implementation commit is created by this plan.
 
 **Status: COMPLETE.**
 
-### P-E01-01 — Persistence / domain foundation
+### P-E01-01 - Persistence / domain foundation
 
 | | |
 | --- | --- |
@@ -744,7 +744,7 @@ No implementation commit is created by this plan.
 | Exit criteria | New TimeEntries persist billing model + rate + currency at create; live Contract edits leave those values intact; R1 TimeEntry behaviour otherwise unchanged. |
 | Status | **COMPLETE** |
 
-### P-E01-02 — Accrued Revenue
+### P-E01-02 - Accrued Revenue
 
 | | |
 | --- | --- |
@@ -783,7 +783,7 @@ Test evidence:
 - Integration: `tests/integration/analytics/accrued-revenue.test.ts`
 - R1 analytics regression suites remain green.
 
-### P-E01-03 — Expected Revenue
+### P-E01-03 - Expected Revenue
 
 | | |
 | --- | --- |
@@ -840,7 +840,7 @@ Test evidence:
 - Integration: `tests/integration/analytics/expected-revenue.test.ts`
 - R1 / Accrued analytics regression suites remain the baseline.
 
-### P-E01-04 — Integration with existing analytics / reporting
+### P-E01-04 - Integration with existing analytics / reporting
 
 | | |
 | --- | --- |
@@ -876,10 +876,10 @@ Implemented application/reporting integration (no formula change):
 
 DTO / type changes:
 
-- `MonthlyHoursAnalytics` — hours-only repository shape.
-- `MonthlyAnalytics` — `MonthlyHoursAnalytics` + `accrued` + `expected`.
-- `ContractReport` — added `accrued` and `expected`.
-- `HoursByClientReport` — unchanged.
+- `MonthlyHoursAnalytics` - hours-only repository shape.
+- `MonthlyAnalytics` - `MonthlyHoursAnalytics` + `accrued` + `expected`.
+- `ContractReport` - added `accrued` and `expected`.
+- `HoursByClientReport` - unchanged.
 
 Exposure limitations (not blockers for this phase):
 
@@ -896,7 +896,7 @@ Test evidence:
 - Integration: `tests/integration/reporting/revenue-reporting.test.ts`
 - Regression: analytics unit / analytics integration / reporting integration.
 
-### P-E01-05 — E01 Engineering Review
+### P-E01-05 - E01 Engineering Review
 
 | | |
 | --- | --- |
@@ -908,7 +908,7 @@ Test evidence:
 | Migration | No. |
 | Depends on | P-E01-04. |
 | Exit criteria | ER recorded; no silent product decisions; P102-F-001 closed **for Accrued** only. |
-| Status | **COMPLETE** — PASS WITH FINDINGS |
+| Status | **COMPLETE** - PASS WITH FINDINGS |
 
 **HEAD reviewed:** `cafa537611f4f26f1f8de26b286bdb7776e9dd23`
 
@@ -923,7 +923,7 @@ PRODUCTION READINESS:    UNCHANGED (R2 not production-ready)
 
 Full review: §19.
 
-### P-E01-06 — QA
+### P-E01-06 - QA
 
 | | |
 | --- | --- |
@@ -935,7 +935,7 @@ Full review: §19.
 | Migration | No. |
 | Depends on | P-E01-05. |
 | Exit criteria | Blocking QA findings = 0 or explicitly deferred by Product Owner. |
-| Status | **COMPLETE** — PASS WITH FINDINGS |
+| Status | **COMPLETE** - PASS WITH FINDINGS |
 
 **HEAD reviewed:** `0e171a93e881b50c1e1102f251af6cf803732b84`
 
@@ -943,7 +943,7 @@ Full review: §19.
 VERDICT:                 PASS WITH FINDINGS
 BLOCKING FINDINGS:       NONE
 F-E01-001:               CLOSED
-F-E01-002:               CLOSED — companions synchronized in P-E01-07
+F-E01-002:               CLOSED - companions synchronized in P-E01-07
 P-E01:                   COMPLETE / RELEASE-READY
 P-E01-07:                COMPLETE
 PRODUCTION READINESS:    UNCHANGED (R2 not production-ready)
@@ -951,7 +951,7 @@ PRODUCTION READINESS:    UNCHANGED (R2 not production-ready)
 
 Full QA: §20.
 
-### P-E01-07 — Documentation / Epic closure
+### P-E01-07 - Documentation / Epic closure
 
 | | |
 | --- | --- |
@@ -963,7 +963,7 @@ Full QA: §20.
 | Migration | No. |
 | Depends on | P-E01-06. |
 | Exit criteria | Docs state E01 implemented scope honestly; open residuals remain open; R2 still not production-ready until later release gates. |
-| Status | **COMPLETE** — E01 COMPLETE / RELEASE-READY |
+| Status | **COMPLETE** - E01 COMPLETE / RELEASE-READY |
 
 **HEAD closed:** this P-E01-07 commit.
 
@@ -1020,9 +1020,9 @@ Do not resolve these in implementation.
 
 ### Closed in E01
 
-6. **R2-OD-003 residual** — `snapshotBillingModel` / `snapshotRate` / `snapshotCurrency` on TimeEntry.
-7. **R2-OD-016** — weighted-average daily rate by billable minutes. Implemented in P-E01-02.
-8. **R2-OD-017** — existing TimeEntries backfilled from the current associated Contract.
+6. **R2-OD-003 residual** - `snapshotBillingModel` / `snapshotRate` / `snapshotCurrency` on TimeEntry.
+7. **R2-OD-016** - weighted-average daily rate by billable minutes. Implemented in P-E01-02.
+8. **R2-OD-017** - existing TimeEntries backfilled from the current associated Contract.
 
 Expected remains live-Contract for rate and capacity. That is reused R1
 semantics, not a new snapshot, and is not listed as an open product
@@ -1066,7 +1066,7 @@ No blocker. Accrued / Expected match the approved commercial semantics. P102-F-0
 | Evidence | `AnalyticsService.getMonthlyAnalytics` always loads hours + `listTimeEntriesForPeriod` + `listExpectedContracts`. `/reports` always calls `getAnnualOverview`, which runs that composition 12 times. `AnnualOverviewTable` / `ContractReportTable` / dashboard Monthly Summary still render hours only. |
 | Impact | Extra period TimeEntry and Contract reads on every dashboard and reports load. Correctness is unaffected. Cost is unmeasured. |
 | Remediation | Measured in P-E01-06. No optimization. |
-| QA disposition | **CLOSED** — see §20. Acceptable at the P105-06 reference volume. No serial N+1 introduced by E01. |
+| QA disposition | **CLOSED** - see §20. Acceptable at the P105-06 reference volume. No serial N+1 introduced by E01. |
 | Release impact | Does not block P-E01. Closed in P-E01-06. No PO decision. |
 
 #### F-E01-002
@@ -1078,7 +1078,7 @@ No blocker. Accrued / Expected match the approved commercial semantics. P102-F-0
 | Evidence | `docs/release/r2-epic-map.md` still says Accrued not started and P-E01-02…04 “Not started”. `docs/release/r2-architecture-delta.md` §13 still lists R2-OD-016 / R2-OD-017 as undecided. Both contradict this plan and the implemented commits. |
 | Impact | Planning companions are stale. Implementation and this plan remain the E01 authority. |
 | Remediation | Synchronized in P-E01-07. Do not rewrite R1 freeze snapshots. |
-| QA disposition | **CLOSED** — see §21. Companions aligned to implemented E01. |
+| QA disposition | **CLOSED** - see §21. Companions aligned to implemented E01. |
 | Release impact | Does not block P-E01. Closed in P-E01-07. No PO decision. |
 
 ### Verified areas
@@ -1136,14 +1136,14 @@ No blocker. AC-01…AC-17 hold on existing unit and integration evidence. R1 hou
 
 | Command | Result |
 | --- | --- |
-| `pnpm test:db:migrate` | PASS — no pending migrations |
+| `pnpm test:db:migrate` | PASS - no pending migrations |
 | `pnpm lint` | PASS |
 | `pnpm typecheck` | PASS |
-| Focused unit Analytics / Reporting / periods / Accrued / Expected | PASS — 232 / 232 |
-| Full unit (`pnpm test` analytics+reporting+time-entries filter resolved to the unit suite) | PASS — 504 / 504 |
-| Integration Accrued / Expected / revenue / reporting / snapshot / weekly | PASS — 71 / 71 |
-| Integration isolation / membership / timezone / product decisions | PASS — 34 / 34 |
-| Integration performance (`reporting-performance.test.ts`) | PASS — 1 / 1 |
+| Focused unit Analytics / Reporting / periods / Accrued / Expected | PASS - 232 / 232 |
+| Full unit (`pnpm test` analytics+reporting+time-entries filter resolved to the unit suite) | PASS - 504 / 504 |
+| Integration Accrued / Expected / revenue / reporting / snapshot / weekly | PASS - 71 / 71 |
+| Integration isolation / membership / timezone / product decisions | PASS - 34 / 34 |
+| Integration performance (`reporting-performance.test.ts`) | PASS - 1 / 1 |
 | `pnpm build` | PASS |
 
 E2E and the R1 release-gate journey were not executed. E01 does not change those surfaces (no money UI; no auth/onboarding change).
@@ -1167,9 +1167,9 @@ E2E and the R1 release-gate journey were not executed. E01 does not change those
 | Integration weekly analytics | 8 | 0 | 0 | PASS |
 | Integration isolation / membership / timezone / product decisions | 34 | 0 | 0 | PASS |
 | Integration performance baseline | 1 | 0 | 0 | PASS |
-| Lint | — | 0 | 0 | PASS |
-| Typecheck | — | 0 | 0 | PASS |
-| Build | — | 0 | 0 | PASS |
+| Lint | - | 0 | 0 | PASS |
+| Typecheck | - | 0 | 0 | PASS |
+| Build | - | 0 | 0 | PASS |
 
 ### Acceptance criteria
 
@@ -1193,7 +1193,7 @@ E2E and the R1 release-gate journey were not executed. E01 does not change those
 | AC-16 | PASS | No Forecast field; HoursByClient hours-only; no year mixed monetary total |
 | AC-17 | PASS | R1 hours / utilization / isolation / timezone / membership suites green |
 
-### Performance — F-E01-001
+### Performance - F-E01-001
 
 Surfaces measured: `getMonthlyAnalytics`, `getCurrentMonthAnalytics`, `getAnnualOverview` (×12).
 
@@ -1239,7 +1239,7 @@ E01 adds two workspace-scoped `findMany` reads beside the existing hours path, i
 | --- | --- |
 | Severity | low |
 | Area | Documentation |
-| Status | **CLOSED** — P-E01-07 |
+| Status | **CLOSED** - P-E01-07 |
 | Evidence | QA recorded companions stale. P-E01-07 synchronized `r2-epic-map.md` and `r2-architecture-delta.md`. |
 | Impact | None. Planning companions now match implemented E01. |
 | Remediation phase | P-E01-07 |
@@ -1251,7 +1251,7 @@ No new finding.
 | Item | Value |
 | --- | --- |
 | Blocker | No |
-| E01 release-ready | Yes — COMPLETE / RELEASE-READY after P-E01-07 |
+| E01 release-ready | Yes - COMPLETE / RELEASE-READY after P-E01-07 |
 | Open findings | None. F-E01-001 CLOSED. F-E01-002 CLOSED. |
 | PO decision required | No |
 | P-E01-07 | COMPLETE |

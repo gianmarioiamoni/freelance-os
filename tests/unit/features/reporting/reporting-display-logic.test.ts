@@ -41,7 +41,7 @@ describe("HoursByClientTable display logic", () => {
 
   it("formats percentage via AnalyticsService", () => {
     expect(AnalyticsService.formatPercentage(50)).toBe("50%");
-    expect(AnalyticsService.formatPercentage(null)).toBe("—");
+    expect(AnalyticsService.formatPercentage(null)).toBe("-");
   });
 });
 
@@ -88,13 +88,13 @@ describe("ContractReportTable display logic", () => {
     expect(outOfValidity.isOutOfValidity).toBe(true);
   });
 
-  it("shows '—' utilization for unlimited contracts (null contractedMinutes)", () => {
+  it("shows '-' utilization for unlimited contracts (null contractedMinutes)", () => {
     const unlimited: ContractUtilization = {
       ...base,
       contractedMinutes: null,
       utilizationPercentage: null,
     };
-    // Display rule: contractedMinutes === null → show "—" not percentage
+    // Display rule: contractedMinutes === null → show "-" not percentage
     expect(unlimited.contractedMinutes).toBeNull();
     expect(unlimited.utilizationPercentage).toBeNull();
   });
@@ -105,7 +105,7 @@ describe("ContractReportTable display logic", () => {
   });
 
   it("shows 'Unlimited' label text for null contractedMinutes", () => {
-    // Display text for null capacity — tested as a pure value
+    // Display text for null capacity - tested as a pure value
     const capacity =
       base.contractedMinutes !== null
         ? AnalyticsService.formatDuration(base.contractedMinutes)
@@ -142,19 +142,19 @@ describe("ContractReportTable display logic", () => {
 // ---------------------------------------------------------------------------
 
 describe("AnnualOverviewTable display logic", () => {
-  it("shows '—' for months with no activity", () => {
+  it("shows '-' for months with no activity", () => {
     const emptyMonthMinutes = 0;
     const display = emptyMonthMinutes > 0
       ? AnalyticsService.formatDuration(emptyMonthMinutes)
-      : "—";
-    expect(display).toBe("—");
+      : "-";
+    expect(display).toBe("-");
   });
 
   it("shows formatted duration for months with activity", () => {
     const minutes = 480;
     const display = minutes > 0
       ? AnalyticsService.formatDuration(minutes)
-      : "—";
+      : "-";
     expect(display).toBe("8h");
   });
 
@@ -176,6 +176,6 @@ describe("AnnualOverviewTable display logic", () => {
   it("shows null percentage when total is 0", () => {
     const pct = 0 > 0 ? (0 / 0) * 100 : null;
     expect(pct).toBeNull();
-    expect(AnalyticsService.formatPercentage(pct)).toBe("—");
+    expect(AnalyticsService.formatPercentage(pct)).toBe("-");
   });
 });

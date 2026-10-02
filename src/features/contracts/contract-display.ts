@@ -127,7 +127,7 @@ export function displayPaymentTerms(
     return displayOptionalText(null);
   }
 
-  return parts.join(" — ");
+  return parts.join(" - ");
 }
 
 export function toContractListItems(

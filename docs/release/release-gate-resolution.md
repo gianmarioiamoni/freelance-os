@@ -70,23 +70,23 @@ Extracted from `MASTER_PLAN.md` §34. No extra requirements were added.
 
 §37 classes:
 
-- **Release Blocker** — must be fixed before release (examples: broken workflow, impossible task, corrupted export, invalid data)
-- **Known Limitation** — accepted limitation that does not block release
-- **Operational Warning** — technical issue that does not affect the user
+- **Release Blocker** - must be fixed before release (examples: broken workflow, impossible task, corrupted export, invalid data)
+- **Known Limitation** - accepted limitation that does not block release
+- **Operational Warning** - technical issue that does not affect the user
 
 §37 does not auto-accept a finding. “Accepted” is a Product Owner / certification act. This analysis does not perform that act.
 
 | Item | Source | Mandatory | Type | Evidence | Can be accepted? | Required action |
 | --- | --- | --- | --- | --- | --- | --- |
-| Production build | §34 minimum | Yes | Validation | `pnpm build` PASS | N/A — already PASS | None |
+| Production build | §34 minimum | Yes | Validation | `pnpm build` PASS | N/A - already PASS | None |
 | Deployment configuration / hosted target | §34 minimum (“deployment configuration”; “exact build that will be deployed”). Architecture §27 Vercel **candidate**; architecture §35 exact deployment configuration **deferred**. | Yes as a recorded deployable configuration. Hosted re-run is mandatory **if** production is hosted. Hosted is **not** named as a §37 Release Blocker. | Environment / release-governance | Local `pnpm start` recorded. No `vercel.json`, Dockerfile, or deploy manifest. No hosted URL. | Not auto-accepted. Local-only is recorded, not hosted production. N/A for hosted only if Product Owner / release governance decides the release target is local production-like. | Product Owner / release governance must decide the production target. Then record that target. Deploy/validate hosted only if that target exists and access exists. |
-| Database migration | §34 minimum | Yes | Validation | PASS (`freelance_os` 5 migrations up to date; `freelanceos_test` no pending) | N/A — already PASS | None for this candidate |
-| Authentication (email/password) | §34 minimum | Yes | Validation | Sign-up / first workspace / sign-in / sign-out PASS on `pnpm start` | N/A — already PASS | None |
+| Database migration | §34 minimum | Yes | Validation | PASS (`freelance_os` 5 migrations up to date; `freelanceos_test` no pending) | N/A - already PASS | None for this candidate |
+| Authentication (email/password) | §34 minimum | Yes | Validation | Sign-up / first workspace / sign-in / sign-out PASS on `pnpm start` | N/A - already PASS | None |
 | Authentication (password-reset completion) | §34 authentication. Product vision F-004 (password recovery). Architecture §11 recovery implemented; production provider TBD. EPIC-003 F-003. | Authentication is mandatory. Production completion is **not verified**. Architecture §35 defers exact email provider. Not newly classed as a §37 Release Blocker. | Environment / external dependency | Reset request PASS. Completion NOT VERIFIED. `AUTH_EMAIL_DELIVERY` unset → production mode does not send. | Not auto-accepted as a Known Limitation. Known Limitation requires acceptance. F-003 Blocking: No for EPIC-003; “blocks production-ready password recovery”. FINDING-INT-003 may remain OPEN. | Do not invent a provider. See §5. Provider selection is deferred architecture. Completion verification needs ENVIRONMENT / EXTERNAL DEPENDENCY. |
 | Authentication (Google while offered) | §34 authentication + environment variables. Product vision F-001. Architecture §11 “The MVP will use … Google OAuth”. `.env.example`: required in production **if Google sign-in is offered**. | Google is specified as MVP authentication in product/architecture (not in architecture §35 deferred list). Credentials are mandatory in production **if offered**. UI currently offers it. Not newly classed as a §37 Release Blocker. | Environment, plus Product Owner disposition of the offered-but-unconfigured surface | UI “Continue with Google”. Click → `Google sign-in is unavailable.` Provider not registered. Consent/callback NOT VERIFIED. | Not auto-accepted. F-002 covers **CI** consent/callback, not production unavailability of an offered control. | Do not remove the control. Do not add fake credentials. See §4. |
-| Complete MVP workflow | §34 minimum | Yes | Validation | PASS on `pnpm start` | N/A — already PASS | None |
+| Complete MVP workflow | §34 minimum | Yes | Validation | PASS on `pnpm start` | N/A - already PASS | None |
 | Critical E2E regression / F-004 | §34 minimum (“critical E2E regression”). §34 does **not** name `next start` vs `pnpm dev`. Testing strategy / CI lock `pnpm dev` because of F-004. | Critical E2E is mandatory. Green Playwright on `next start` is **not** an explicit §34 sentence. Last §34 run treated `next start` as additional candidate evidence and recorded FAIL. F-004 Blocking: No (EPIC-003). Not a new §37 Release Blocker. | Test infrastructure / release-gate limitation | Canonical: `pnpm dev` historical 66/66. Additional `next start`: 43 passed / 25 failed / 68. Manual `pnpm start` workflow PASS. Tests not modified. | Not auto-accepted. Known Limitation requires acceptance. Testing strategy already treats F-004 as the formalized CI contract, “not a new defect”. That is not the same as Product Owner acceptance for this release. | Do not change tests. Do not disable or raise production rate limits. See §7. |
-| Reports / Alerts / Notifications | §34 minimum | Yes | Validation | PASS | N/A — already PASS | None |
+| Reports / Alerts / Notifications | §34 minimum | Yes | Validation | PASS | N/A - already PASS | None |
 | Security baseline | §34 minimum | Yes on exercised paths | Validation | PASS on exercised paths. Not a whole-app security certification. | N/A for exercised paths | None new. Do not treat as whole-app certification. |
 | Environment variables | §34 minimum | Yes (production env complete for the chosen offering) | Configuration / environment | Required present: `DATABASE_URL`, `TEST_DATABASE_URL`, `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL`. Absent: `AUTH_EMAIL_DELIVERY`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`. | Partial env is not `READY FOR RELEASE` by itself. Missing keys follow Google / mailer decisions above. | Do not invent values. |
 | No release-blocking defects | §34 minimum + §37 | Yes | Finding class | No new §37 Release Blocker confirmed | Does **not** by itself yield `READY FOR RELEASE` | Do not reclassify historical findings without new §37 evidence. |
@@ -103,21 +103,21 @@ Explicit §37 Release Blocker? **None newly confirmed.** Incomplete §34 items s
 
 The last §34 record listed five remaining mandatory gaps. Mapped to the written gates:
 
-1. **Hosted deployment if production is hosted** — follows from “exact build that will be deployed” + deployment configuration, **conditional** on the production target. Architecture does not freeze hosted production.
-2. **Production mailer / reset completion** — follows from §34 authentication + product-vision password recovery, **with** architecture deferring the provider. Completion was not verified.
-3. **Google credentials if Google remains offered** — follows from `.env.example` plus the live UI offering Google. Product/architecture also specify Google as MVP authentication.
-4. **Green Playwright on `next start`, or F-004 accepted at certification** — §34 requires critical E2E; it does not name `next start`. The last run added `next start` and recorded F-004.
-5. **Product Owner approval** — §35, not §34.
+1. **Hosted deployment if production is hosted** - follows from “exact build that will be deployed” + deployment configuration, **conditional** on the production target. Architecture does not freeze hosted production.
+2. **Production mailer / reset completion** - follows from §34 authentication + product-vision password recovery, **with** architecture deferring the provider. Completion was not verified.
+3. **Google credentials if Google remains offered** - follows from `.env.example` plus the live UI offering Google. Product/architecture also specify Google as MVP authentication.
+4. **Green Playwright on `next start`, or F-004 accepted at certification** - §34 requires critical E2E; it does not name `next start`. The last run added `next start` and recorded F-004.
+5. **Product Owner approval** - §35, not §34.
 
 ### 3.2 Engineering vs environment vs Product Owner
 
 | Gap | Engineering implementation now? | Environment / deploy? | Product Owner? |
 | --- | --- | --- | --- |
-| Hosted target | No (no target to implement against) | Only after target and access exist | Yes — target not frozen |
-| Mailer / reset completion | Do not select a provider here (architecture §35) | Yes — provider credentials | Yes — provider not selected |
-| Google offered without credentials | Do not hide or fake | Yes — real Google credentials if in this release | Disposition of offered-but-unconfigured UI vs supplying credentials |
+| Hosted target | No (no target to implement against) | Only after target and access exist | Yes - target not frozen |
+| Mailer / reset completion | Do not select a provider here (architecture §35) | Yes - provider credentials | Yes - provider not selected |
+| Google offered without credentials | Do not hide or fake | Yes - real Google credentials if in this release | Disposition of offered-but-unconfigured UI vs supplying credentials |
 | F-004 `next start` E2E | Do not change tests or production rate limits | Existing CI uses `pnpm dev` | Acceptance as Known Limitation / CI contract for this release, if governance uses that path |
-| Product Owner approval | No | No | Yes — §35 |
+| Product Owner approval | No | No | Yes - §35 |
 
 No application-code change is required by this classification step.
 
@@ -230,10 +230,10 @@ Recorded as **not an application defect**: the same user journeys passed earlier
 | Class | Applies |
 | --- | --- |
 | Application defect | No (on recorded evidence) |
-| Test defect | No — tests were not changed to hide or cause this |
-| Environment defect (missing test DB / test mailer) | No — isolated DB and test mailer were set as designed |
-| Production configuration issue (app misconfigured) | No — production rate limits behaving as Better Auth production defaults |
-| Test infrastructure / CI environment limitation | **Yes — F-004** (EPIC-003: Severity Low; Blocking: No; Open CI environment limitation) |
+| Test defect | No - tests were not changed to hide or cause this |
+| Environment defect (missing test DB / test mailer) | No - isolated DB and test mailer were set as designed |
+| Production configuration issue (app misconfigured) | No - production rate limits behaving as Better Auth production defaults |
+| Test infrastructure / CI environment limitation | **Yes - F-004** (EPIC-003: Severity Low; Blocking: No; Open CI environment limitation) |
 | Release-gate limitation | **Yes, if** §34 is read as requiring a green Playwright suite on `next start`. §34 text requires “critical E2E regression” and “the exact build that will be deployed”; it does **not** name `next start`. |
 
 F-004 is not a new finding id.
@@ -271,35 +271,35 @@ Approval is **NOT PROVIDED**. No option is recommended.
 
 ## Decisions Required From Product Owner
 
-### D-001 — Production deployment target
+### D-001 - Production deployment target
 
 - **Decision:** What is the production target for this MVP release?
 - **Why required:** §34 requires validating the exact build that will be deployed and lists deployment configuration. Architecture §32 says “Vercel candidate”. Architecture §35 defers exact deployment configuration. The repository has no hosted target.
 - **Options supported by current project documentation:** (1) local production-like (`pnpm build` + `pnpm start`) as the recorded deployable artifact; (2) hosted production on a provider still to be chosen; (3) Vercel as the architecture candidate, still requiring exact configuration that is currently deferred.
 - **Engineering consequence:** (1) no hosted deploy; keep the recorded local artifact; hosted gap becomes N/A for this release. (2)/(3) need provider access, deploy manifest/config, production env, and a new §34 pass on that URL. Do not deploy without access.
 
-### D-002 — Google OAuth on this MVP release
+### D-002 - Google OAuth on this MVP release
 
 - **Decision:** Does this release require working Google sign-in, and may the current control remain offered while credentials are absent?
 - **Why required:** Product vision and architecture specify Google as MVP authentication. The UI offers it. Credentials are absent. `.env.example` requires credentials in production if offered. This analysis must not change product scope or hide the control.
 - **Options supported by current project documentation:** (1) Google remains in MVP scope → supply real credentials and validate consent/callback in a safe environment; (2) treat full Google consent as the existing F-002 **CI** limitation only, which does **not** by itself authorize an unavailable production button; (3) Product Owner explicitly accepts the offered-but-unavailable control as a Known Limitation for this release (not recorded today).
 - **Engineering consequence:** (1) environment/credentials + manual Google validation; no UI removal. (2) does not complete production Google. (3) documentation-only disposition if and only if Product Owner accepts; still not an engineering hide/fake.
 
-### D-003 — Production password-reset mailer
+### D-003 - Production password-reset mailer
 
 - **Decision:** Which production email provider (if any) is selected for password-reset completion on this release?
 - **Why required:** Password recovery is product-vision F-004. Architecture defers the exact provider. Production mode does not send. Reset completion is NOT VERIFIED. F-003 blocks production-ready password recovery.
 - **Options supported by current project documentation:** (1) select and configure a production provider (provider identity not invented here); (2) leave provider TBD, which leaves production completion unverified; (3) Product Owner explicitly accepts unverified production completion as a Known Limitation (not recorded today).
 - **Engineering consequence:** (1) environment/credentials, then verify request → delivered token → new password → `/sign-in`. (2) ENVIRONMENT / EXTERNAL DEPENDENCY remains. (3) documentation-only if accepted; FINDING-INT-003 stays OPEN unless later evidence closes it.
 
-### D-004 — F-004 disposition for §34 critical E2E
+### D-004 - F-004 disposition for §34 critical E2E
 
 - **Decision:** For this release, is critical E2E satisfied by the documented `pnpm dev` CI contract plus manual `pnpm start` workflow, or must Playwright be green on `next start`?
 - **Why required:** §34 requires critical E2E and does not name the server command. Last §34 run recorded `next start` FAIL as F-004. Testing strategy already formalizes `pnpm dev`. Making `next start` green without weakening production rate limits is not available with current configuration.
-- **Options supported by current project documentation:** (1) accept F-004 as Known Limitation / formalized CI contract (EPIC-003 Blocking: No; testing strategy); (2) require green Playwright on `next start` before `READY FOR RELEASE`; (3) later consider a test-only mechanism that does not weaken production — not currently present, not implemented here.
+- **Options supported by current project documentation:** (1) accept F-004 as Known Limitation / formalized CI contract (EPIC-003 Blocking: No; testing strategy); (2) require green Playwright on `next start` before `READY FOR RELEASE`; (3) later consider a test-only mechanism that does not weaken production - not currently present, not implemented here.
 - **Engineering consequence:** (1) no test or rate-limit change; certification records the limitation. (2) blocks §34 until a legitimate non-weakening path exists. (3) future implementation only after legitimacy is established; not this phase.
 
-### D-005 — Product Owner approval of the release
+### D-005 - Product Owner approval of the release
 
 - **Decision:** Approve or withhold the §35 certification record after §34 is no longer `RELEASE BLOCKED`.
 - **Why required:** §35 lists Product Owner approval. It is NOT PROVIDED. §35 cannot grant release without it.
@@ -408,7 +408,7 @@ Product Owner decisions D-001–D-004 were implemented in-repository after the c
 | 16. Runtime health | F-104-007 remains OPEN | Revalidate |
 
 ```text
-§34:                          EXECUTED ON f5592b3 — RELEASE BLOCKED
+§34:                          EXECUTED ON f5592b3 - RELEASE BLOCKED
 §35 PRODUCTION CERTIFICATION: DEFERRED / NOT ELIGIBLE
 RELEASE:                      NOT APPROVED
 PRODUCTION READINESS:         NO
@@ -444,10 +444,10 @@ This section updates the current gate after hosted validation. It does not rewri
 | D-005 Product Owner approval | **NOT PROVIDED**. §35 only. |
 
 ```text
-§34:                          EXECUTED ON 2b58af4 — READY FOR RELEASE
+§34:                          EXECUTED ON 2b58af4 - READY FOR RELEASE
 §35 PRODUCTION CERTIFICATION: NOT RUN / AWAITING PRODUCT OWNER APPROVAL
 RELEASE:                      NOT APPROVED
-PRODUCTION READINESS:         VALIDATED — RELEASE NOT GRANTED
+PRODUCTION READINESS:         VALIDATED - RELEASE NOT GRANTED
 ```
 
 Historical findings remain OPEN and are not §34 blockers: QA-001, QA-002, INT-001, INT-002, INT-003, UX-004, F-104-007, F-104-010, F-104-011, F-104-012.

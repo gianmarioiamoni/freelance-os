@@ -83,7 +83,7 @@ export type ContractUtilization = {
   consumedMinutes: number;
   /**
    * Pro-rated contracted minutes for the reporting period (BR-105-017).
-   * null when monthlyContractedMinutes is null (unlimited capacity — no denominator invented).
+   * null when monthlyContractedMinutes is null (unlimited capacity - no denominator invented).
    */
   contractedMinutes: number | null;
   /**

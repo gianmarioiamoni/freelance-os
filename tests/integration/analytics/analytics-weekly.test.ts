@@ -16,7 +16,7 @@ import { createWorkspaceGraph } from "../persistence/fixtures";
 import { date, repositories } from "../persistence/helpers";
 import type { WorkspaceContext } from "@/application/workspace/workspace-context";
 
-describe("getWeeklyAnalytics — F-104-013 / P105-03", () => {
+describe("getWeeklyAnalytics - F-104-013 / P105-03", () => {
   let graph: Awaited<ReturnType<typeof createWorkspaceGraph>>;
   let analyticsService: AnalyticsService;
   let context: WorkspaceContext;
@@ -79,7 +79,7 @@ describe("getWeeklyAnalytics — F-104-013 / P105-03", () => {
         userId: graph.userId,
         clientId: graph.clientId,
         contractId: graph.contractId,
-        workDate: date("2026-09-16"), // Wednesday — non-billable
+        workDate: date("2026-09-16"), // Wednesday - non-billable
         durationMinutes: 60,
         billable: false,
       });

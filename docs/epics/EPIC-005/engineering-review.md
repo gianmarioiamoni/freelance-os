@@ -1,7 +1,7 @@
-# EPIC-005 — Engineering Review
+# EPIC-005 - Engineering Review
 
-**Epic:** EPIC-005 — Testing & CI Foundation  
-**Release:** Release 0 — Foundation  
+**Epic:** EPIC-005 - Testing & CI Foundation  
+**Release:** Release 0 - Foundation  
 **Reviewed commits:**
 
 ```text
@@ -242,7 +242,7 @@ Inherited findings remain open and are not closed by this review.
 
 - **Severity:** Low
 - **Blocking:** No
-- **Status:** Open CI environment limitation — formalized as Foundation contract
+- **Status:** Open CI environment limitation - formalized as Foundation contract
 - **Description:** Playwright CI uses `pnpm dev` with one worker because `next start` rate limits collide across auth journeys. EPIC-005 locked this contract. It is not a new defect.
 
 ### G-004
@@ -276,8 +276,8 @@ Do not close any OBD.
 | OBD-010 | Payment-term catalog | No |
 | OBD-011 | Multi-currency | No |
 | OBD-012 | Contract-hour rollover/expiry | No |
-| — | Google/email identity linking | No — EPIC-003 F-001 |
-| — | Production email provider | No — EPIC-003 F-003 |
+| - | Google/email identity linking | No - EPIC-003 F-001 |
+| - | Production email provider | No - EPIC-003 F-003 |
 
 `docs/testing-strategy.md` §50 `TD-*` identifiers remain a separate open-testing table. They are not merged with the MASTER_PLAN register.
 
@@ -289,7 +289,7 @@ No additional product decision was discovered that required a new OBD identifier
 
 Out of scope and not started:
 
-- EPIC-006 — UI Foundation;
+- EPIC-006 - UI Foundation;
 - clients, contracts, time tracking, analytics, alerts, notifications;
 - MVP E2E journeys beyond auth/onboarding/shell;
 - Playwright `/workspace-unavailable` journey;

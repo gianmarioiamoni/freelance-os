@@ -207,7 +207,7 @@ async function main(): Promise<void> {
     const totalRows = Object.values(beforeCounts).reduce((a, b) => a + b, 0);
 
     if (options.dryRun) {
-      console.log("DRY RUN MODE — No data will be deleted");
+      console.log("DRY RUN MODE - No data will be deleted");
       console.log("");
       console.log("Current row counts:");
       for (const [table, count] of Object.entries(beforeCounts)) {

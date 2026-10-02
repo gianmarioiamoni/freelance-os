@@ -1,4 +1,4 @@
-# FreelanceOS — Domain Model + Business Rules
+# FreelanceOS - Domain Model + Business Rules
 
 **Status:** Draft domain baseline  
 **Scope:** MVP (R1 baseline). R2 domain additions: `docs/release/r2-decision-pack.md`, `docs/release/r2-architecture-delta.md`. R2 planning baseline: `docs/release/r2-epic-map.md`. R2 is in planning and is not production-ready.
@@ -11,24 +11,24 @@ The model must preserve historical correctness and provide deterministic results
 
 ## 2. Domain Language
 
-- **Workspace** — isolated professional environment containing users and business data.
-- **User** — authenticated person using the system.
-- **Client** — business/customer for whom work is performed.
-- **Contract** — time-bounded commercial agreement defining billing conditions.
-- **TimeEntry** — recorded work performed on a specific date for a client under a contract context.
-- **Billable** — work eligible for billing under the applicable contract/rules.
-- **Contracted Hours** — monthly number of hours agreed for a contract.
-- **Contract Utilization** — consumed contracted hours divided by contracted hours.
-- **Capacity** — user's available working time for a period.
-- **Alert** — system-generated operational condition requiring user awareness.
-- **Billing Period** — reporting period used to determine billable activity and accrued amount.
-- **Accrued Revenue** *(R2)* — consuntivo economic value of billable TimeEntries using the commercial value applicable when the work occurred. Independent of invoice and payment.
-- **Expected Revenue** *(R2)* — HOURLY contractual-capacity value for the reporting period, using existing pro-rata semantics. Null if capacity is unavailable. DAILY has no Expected Revenue in R2. Independent of TimeEntry, Invoice, and Payment.
-- **Forecast Revenue** *(R2)* — deterministic linear projection of Accrued Revenue: Accrued / elapsedFraction on the certified current period only. Elapsed includes today. elapsed=0 or Accrued=0 ⇒ 0. Historical/custom ⇒ null. Derived, not persisted. Not ML/AI.
-- **Invoice Tracking** *(R2)* — operational record of an invoiced amount and date for a Contract. Not a fiscal invoice. One Contract has many Invoices; one Invoice has exactly one Contract.
-- **Payment** *(R2)* — operational payment event against an Invoice Tracking record. Status is derived (UNPAID / PARTIAL / PAID / MISMATCH). PAYMENT_OVERDUE is independent.
-- **allocatedMinutes** *(R2)* — optional Contract-level total time budget in minutes. Distinct from `monthlyContractedMinutes`. Null = no allocation / no status / no alert. 0 = valid zero allocation / no status / no alert (8-C). Positive: `<80%` NORMAL, `80–100%` WARNING, `>100%` EXCEEDED.
-- **PIVA Balance** *(external)* — system that owns costs, profitability, and fiscality / accounting. Not part of the FreelanceOS domain.
+- **Workspace** - isolated professional environment containing users and business data.
+- **User** - authenticated person using the system.
+- **Client** - business/customer for whom work is performed.
+- **Contract** - time-bounded commercial agreement defining billing conditions.
+- **TimeEntry** - recorded work performed on a specific date for a client under a contract context.
+- **Billable** - work eligible for billing under the applicable contract/rules.
+- **Contracted Hours** - monthly number of hours agreed for a contract.
+- **Contract Utilization** - consumed contracted hours divided by contracted hours.
+- **Capacity** - user's available working time for a period.
+- **Alert** - system-generated operational condition requiring user awareness.
+- **Billing Period** - reporting period used to determine billable activity and accrued amount.
+- **Accrued Revenue** *(R2)* - consuntivo economic value of billable TimeEntries using the commercial value applicable when the work occurred. Independent of invoice and payment.
+- **Expected Revenue** *(R2)* - HOURLY contractual-capacity value for the reporting period, using existing pro-rata semantics. Null if capacity is unavailable. DAILY has no Expected Revenue in R2. Independent of TimeEntry, Invoice, and Payment.
+- **Forecast Revenue** *(R2)* - deterministic linear projection of Accrued Revenue: Accrued / elapsedFraction on the certified current period only. Elapsed includes today. elapsed=0 or Accrued=0 ⇒ 0. Historical/custom ⇒ null. Derived, not persisted. Not ML/AI.
+- **Invoice Tracking** *(R2)* - operational record of an invoiced amount and date for a Contract. Not a fiscal invoice. One Contract has many Invoices; one Invoice has exactly one Contract.
+- **Payment** *(R2)* - operational payment event against an Invoice Tracking record. Status is derived (UNPAID / PARTIAL / PAID / MISMATCH). PAYMENT_OVERDUE is independent.
+- **allocatedMinutes** *(R2)* - optional Contract-level total time budget in minutes. Distinct from `monthlyContractedMinutes`. Null = no allocation / no status / no alert. 0 = valid zero allocation / no status / no alert (8-C). Positive: `<80%` NORMAL, `80–100%` WARNING, `>100%` EXCEEDED.
+- **PIVA Balance** *(external)* - system that owns costs, profitability, and fiscality / accounting. Not part of the FreelanceOS domain.
 
 ## 3. Core Entities
 
@@ -88,13 +88,13 @@ Historical entries must not silently change commercial meaning when a later cont
 
 ## 5. Value Objects / Enumerations
 
-- **Duration** — integer number of minutes; no floating-point hours in persistence.
-- **Money** — amount plus currency. R2 published / displayed amounts round to the nearest integer; intermediate calculations are not prematurely rounded (R2-OD-002). No accounting-grade precision.
-- **BillingModel** — HOURLY, DAILY for MVP.
-- **ClientStatus** — ACTIVE, ARCHIVED.
-- **PaymentTerms** — controlled domain value or extensible representation; exact catalog to be finalized.
-- **AlertSeverity** — informational / warning / critical, subject to final UX terminology.
-- **BillableStatus** — BILLABLE / NON_BILLABLE.
+- **Duration** - integer number of minutes; no floating-point hours in persistence.
+- **Money** - amount plus currency. R2 published / displayed amounts round to the nearest integer; intermediate calculations are not prematurely rounded (R2-OD-002). No accounting-grade precision.
+- **BillingModel** - HOURLY, DAILY for MVP.
+- **ClientStatus** - ACTIVE, ARCHIVED.
+- **PaymentTerms** - controlled domain value or extensible representation; exact catalog to be finalized.
+- **AlertSeverity** - informational / warning / critical, subject to final UX terminology.
+- **BillableStatus** - BILLABLE / NON_BILLABLE.
 
 ## 6. Business Invariants
 
@@ -232,7 +232,7 @@ Historical correctness is a first-class domain requirement.
 
 A TimeEntry recorded under Contract A must continue to report under the commercial conditions applicable to that work period even if Contract B later becomes active.
 
-The final persistence design must make contract applicability unambiguous. The exact mechanism—explicit contract reference, validity resolution, or a combination—belongs to the storage/architecture phase.
+The final persistence design must make contract applicability unambiguous. The exact mechanism-explicit contract reference, validity resolution, or a combination-belongs to the storage/architecture phase.
 
 ## 12. Billing Boundary
 
@@ -288,18 +288,18 @@ Example:
 
 ## 16. Open Business Decisions
 
-- **OBD-001** — Exact daily-rate billing semantics, including partial days. R2 Accrued Daily closed by R2-OD-001.
-- **OBD-002** — Monetary rounding and currency precision. R2 publication rounding closed by R2-OD-002.
-- **OBD-003** — Whether TimeEntry may cross midnight.
-- **OBD-004** — Holiday calendar model.
-- **OBD-005** — Vacation/absence model.
-- **OBD-006** — Exact capacity warning threshold.
-- **OBD-007** — Rules for editing/deleting entries after billing-period closure. OUT OF R2 (R2-OD-014). Historically open for a later release.
-- **OBD-008** — Audit requirements. OUT OF R2 (R2-OD-015). Historically open for a later release.
-- **OBD-009** — Workspace roles and permissions.
-- **OBD-010** — Payment-term catalog and semantics. Catalog deferred. R2 expected payment date uses `paymentTermsDays` (D5). Null days: no dueDate and no automatic overdue (R2-OD-008).
-- **OBD-011** — Multi-currency behavior. CLOSED (D7 + R2-OD-011 + E02-D01): Contract currency, TimeEntry currency-agnostic, no FX, per-currency aggregates, immutable after first monetary record. Invoice persists a currency snapshot that must match Contract at write.
-- **OBD-012** — Whether contracted hours roll over or expire monthly.
+- **OBD-001** - Exact daily-rate billing semantics, including partial days. R2 Accrued Daily closed by R2-OD-001.
+- **OBD-002** - Monetary rounding and currency precision. R2 publication rounding closed by R2-OD-002.
+- **OBD-003** - Whether TimeEntry may cross midnight.
+- **OBD-004** - Holiday calendar model.
+- **OBD-005** - Vacation/absence model.
+- **OBD-006** - Exact capacity warning threshold.
+- **OBD-007** - Rules for editing/deleting entries after billing-period closure. OUT OF R2 (R2-OD-014). Historically open for a later release.
+- **OBD-008** - Audit requirements. OUT OF R2 (R2-OD-015). Historically open for a later release.
+- **OBD-009** - Workspace roles and permissions.
+- **OBD-010** - Payment-term catalog and semantics. Catalog deferred. R2 expected payment date uses `paymentTermsDays` (D5). Null days: no dueDate and no automatic overdue (R2-OD-008).
+- **OBD-011** - Multi-currency behavior. CLOSED (D7 + R2-OD-011 + E02-D01): Contract currency, TimeEntry currency-agnostic, no FX, per-currency aggregates, immutable after first monetary record. Invoice persists a currency snapshot that must match Contract at write.
+- **OBD-012** - Whether contracted hours roll over or expire monthly.
 
 ## 17. Domain Design Acceptance Criteria
 

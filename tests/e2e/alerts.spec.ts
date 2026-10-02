@@ -127,21 +127,21 @@ test("primary journey: TimeEntry above threshold → /alerts → unread → mark
   // Create time entry above 80% threshold (9h = 90%)
   await createTimeEntry(page, CLIENT_NAME, ABOVE_THRESHOLD_HOURS);
 
-  // Navigate to /alerts — evaluation is synchronous on-write, so notification exists
+  // Navigate to /alerts - evaluation is synchronous on-write, so notification exists
   await page.goto("/alerts");
   await expect(page).toHaveURL(/\/alerts$/);
   await expect(
     page.getByRole("heading", { name: "Alerts", exact: true, level: 1 }),
   ).toBeVisible();
 
-  // Step 9: notification is visible — scoped to the notification list
+  // Step 9: notification is visible - scoped to the notification list
   const notificationList = page.getByRole("list", { name: "Notification list" });
   await expect(notificationList).toBeVisible();
 
   const notificationCard = notificationList.getByRole("listitem").first();
   await expect(notificationCard).toBeVisible();
 
-  // Step 10: notification is unread — card has "Mark as read" button
+  // Step 10: notification is unread - card has "Mark as read" button
   const markReadButton = notificationCard.getByRole("button", {
     name: "Mark as read",
   });
@@ -150,13 +150,13 @@ test("primary journey: TimeEntry above threshold → /alerts → unread → mark
   // Step 11: mark as read
   await markReadButton.click();
 
-  // Step 12/13: RSC refresh occurs — button disappears, read state visible
+  // Step 12/13: RSC refresh occurs - button disappears, read state visible
   await expect(markReadButton).not.toBeVisible({ timeout: 5000 });
 
   // Step 14: notification card still visible (stays as read record)
   await expect(notificationCard).toBeVisible();
 
-  // Step 15: reload — read state persisted
+  // Step 15: reload - read state persisted
   await page.reload();
   await expect(page).toHaveURL(/\/alerts$/);
   // No "Mark as read" button anymore
@@ -216,7 +216,7 @@ test("alerts page meets basic accessibility requirements", async ({ page }) => {
 
   await page.goto("/alerts");
 
-  // Semantic notification list — <ol> with aria-label
+  // Semantic notification list - <ol> with aria-label
   const notificationList = page.getByRole("list", {
     name: "Notification list",
   });
@@ -245,7 +245,7 @@ test("alerts page meets basic accessibility requirements", async ({ page }) => {
 
   // Unread cards have distinguishable visual treatment (border-l-4 via aria-label prefix)
   // We can verify the card's aria-label starts with "Unread notification:" before marking read
-  // (tested before marking above — at this point already marked, so skip re-check)
+  // (tested before marking above - at this point already marked, so skip re-check)
 });
 
 // ---------------------------------------------------------------------------

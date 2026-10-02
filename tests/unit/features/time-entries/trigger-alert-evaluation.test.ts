@@ -110,7 +110,7 @@ describe("triggerAlertEvaluation", () => {
     await expect(triggerAlertEvaluation(context, repos)).resolves.toBeUndefined();
   });
 
-  it("does not throw when alert evaluation fails — best-effort semantics", async () => {
+  it("does not throw when alert evaluation fails - best-effort semantics", async () => {
     const repos = makeRepositories({
       members: {
         getMember: vi.fn().mockRejectedValue(new Error("DB connection failure")),

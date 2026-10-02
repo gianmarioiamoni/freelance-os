@@ -57,7 +57,7 @@ export function AnnualOverviewTable({
     <div className="overflow-x-auto">
       <table className="w-full text-sm border-collapse">
         <caption className="text-left text-base font-semibold mb-2">
-          Annual Overview — {year}
+          Annual Overview - {year}
         </caption>
         <thead>
           <tr className="border-b">
@@ -95,19 +95,19 @@ export function AnnualOverviewTable({
               <tr key={i} className="border-b last:border-0">
                 <td className="py-2 pr-4">{MONTH_NAMES[i]}</td>
                 <td className="text-right py-2 pr-4 tabular-nums">
-                  {month.totalMinutes > 0 ? total : "—"}
+                  {month.totalMinutes > 0 ? total : "-"}
                 </td>
                 <td className="text-right py-2 pr-4 tabular-nums">
-                  {month.totalMinutes > 0 ? billable : "—"}
+                  {month.totalMinutes > 0 ? billable : "-"}
                 </td>
                 <td className="text-right py-2 pr-4 tabular-nums">
-                  {month.totalMinutes > 0 ? pct : "—"}
+                  {month.totalMinutes > 0 ? pct : "-"}
                 </td>
                 <td className="text-right py-2 pr-4 tabular-nums">
                   {formatPublishedAmounts(month.accrued.byCurrency)}
                 </td>
                 <td className="text-right py-2 tabular-nums">
-                  {forecast ?? "—"}
+                  {forecast ?? "-"}
                 </td>
               </tr>
             );
@@ -127,8 +127,8 @@ export function AnnualOverviewTable({
                 totalMinutes > 0 ? (billableMinutes / totalMinutes) * 100 : null,
               )}
             </td>
-            <td className="text-right py-2 pr-4 tabular-nums">—</td>
-            <td className="text-right py-2 tabular-nums">—</td>
+            <td className="text-right py-2 pr-4 tabular-nums">-</td>
+            <td className="text-right py-2 tabular-nums">-</td>
           </tr>
         </tfoot>
       </table>

@@ -148,7 +148,7 @@ describe("ReportingService integration", () => {
       billable: true,
     });
 
-    // Query OUR workspace — must not see the other workspace's data.
+    // Query OUR workspace - must not see the other workspace's data.
     const ourContext: WorkspaceContext = {
       workspaceId: context.workspaceId,
       userId: context.userId,
@@ -164,7 +164,7 @@ describe("ReportingService integration", () => {
   });
 
   // --------------------------------------------------------------------------
-  // Case 1 — Finite validity + finite capacity (full overlap)
+  // Case 1 - Finite validity + finite capacity (full overlap)
   // --------------------------------------------------------------------------
 
   it("finite validity + finite capacity: correct pro-rata and utilization", async () => {
@@ -214,7 +214,7 @@ describe("ReportingService integration", () => {
   });
 
   // --------------------------------------------------------------------------
-  // Case 2 — Finite validity + null capacity
+  // Case 2 - Finite validity + null capacity
   // --------------------------------------------------------------------------
 
   it("finite validity + null capacity: contractedMinutes null, percentage null", async () => {
@@ -235,7 +235,7 @@ describe("ReportingService integration", () => {
       billingModel: "DAILY",
       rate: "800.0000",
       currency: "EUR",
-      monthlyContractedMinutes: null, // unlimited — no capacity denominator
+      monthlyContractedMinutes: null, // unlimited - no capacity denominator
     });
 
     await repositories.timeEntries.recordTimeEntry(context.workspaceId, {
@@ -254,12 +254,12 @@ describe("ReportingService integration", () => {
     expect(util!.isOngoing).toBe(false); // finite validTo
     expect(util!.consumedMinutes).toBe(480);
     expect(util!.contractedMinutes).toBeNull(); // no denominator invented
-    expect(util!.utilizationPercentage).toBeNull(); // null — not zero
+    expect(util!.utilizationPercentage).toBeNull(); // null - not zero
     expect(util!.isOutOfValidity).toBe(false);
   });
 
   // --------------------------------------------------------------------------
-  // Case 3 — Ongoing validity + finite capacity (BR-105-016: ongoing ≠ unlimited)
+  // Case 3 - Ongoing validity + finite capacity (BR-105-016: ongoing ≠ unlimited)
   // --------------------------------------------------------------------------
 
   it("ongoing validity + finite capacity: isOngoing true, capacity pro-rated", async () => {
@@ -280,7 +280,7 @@ describe("ReportingService integration", () => {
       billingModel: "HOURLY",
       rate: "100.0000",
       currency: "EUR",
-      monthlyContractedMinutes: 4800, // finite capacity — ongoing does NOT mean unlimited
+      monthlyContractedMinutes: 4800, // finite capacity - ongoing does NOT mean unlimited
     });
 
     await repositories.timeEntries.recordTimeEntry(context.workspaceId, {
@@ -298,7 +298,7 @@ describe("ReportingService integration", () => {
     expect(util).toBeDefined();
     // BR-105-016: ongoing ≡ validTo === null.
     expect(util!.isOngoing).toBe(true);
-    // BR-105-017: finite capacity — ongoing does not imply unlimited.
+    // BR-105-017: finite capacity - ongoing does not imply unlimited.
     expect(util!.contractedMinutes).not.toBeNull();
     expect(util!.contractedMinutes).toBeGreaterThan(0);
     // Utilization is computable.
@@ -307,7 +307,7 @@ describe("ReportingService integration", () => {
   });
 
   // --------------------------------------------------------------------------
-  // Case 4 — Ongoing validity + null capacity
+  // Case 4 - Ongoing validity + null capacity
   // --------------------------------------------------------------------------
 
   it("ongoing validity + null capacity: isOngoing true, percentage null", async () => {
@@ -350,7 +350,7 @@ describe("ReportingService integration", () => {
   });
 
   // --------------------------------------------------------------------------
-  // Case 5 — Partial overlap (start-side and end-side)
+  // Case 5 - Partial overlap (start-side and end-side)
   // --------------------------------------------------------------------------
 
   it("partial overlap: contract starts after period start (start-side)", async () => {
@@ -440,7 +440,7 @@ describe("ReportingService integration", () => {
   });
 
   // --------------------------------------------------------------------------
-  // Case 6 — Zero tracked time (contract with no consumption) (BR-105-018)
+  // Case 6 - Zero tracked time (contract with no consumption) (BR-105-018)
   // --------------------------------------------------------------------------
 
   it("zero-consumption contract with validity overlap appears at 0h/capacity/0% (BR-105-018)", async () => {
@@ -478,12 +478,12 @@ describe("ReportingService integration", () => {
   });
 
   // --------------------------------------------------------------------------
-  // Case 7 — No overlap: period entirely outside contract validity (F-105-P-009)
+  // Case 7 - No overlap: period entirely outside contract validity (F-105-P-009)
   // --------------------------------------------------------------------------
 
   it("consumption outside validity: retained, flagged, percentage null (F-105-P-009)", async () => {
     // Contract: Jan 1 → Jul 1 2026 (exclusive). Period: Sep 1–16.
-    // No validity overlap — contract found via consumption relevance only.
+    // No validity overlap - contract found via consumption relevance only.
     const workCtx: WorkspaceContext = {
       workspaceId: context.workspaceId,
       userId: context.userId,
@@ -504,7 +504,7 @@ describe("ReportingService integration", () => {
       monthlyContractedMinutes: 4800,
     });
 
-    // Time recorded in Sep — outside validity. Retained and flagged (BR-105-018).
+    // Time recorded in Sep - outside validity. Retained and flagged (BR-105-018).
     await repositories.timeEntries.recordTimeEntry(context.workspaceId, {
       userId: context.userId,
       clientId: client.id,
@@ -519,7 +519,7 @@ describe("ReportingService integration", () => {
 
     // BR-105-018: row must not be dropped.
     expect(util).toBeDefined();
-    // Consumption retained — not silently discarded.
+    // Consumption retained - not silently discarded.
     expect(util!.consumedMinutes).toBe(480);
     // Pro-rata: no overlap → 0 capacity denominator.
     expect(util!.contractedMinutes).toBe(0);
@@ -618,7 +618,7 @@ describe("ReportingService integration", () => {
   // OBD-012: No rollover semantics
   // --------------------------------------------------------------------------
 
-  it("OBD-012: no rollover — capacity is computed independently per period", async () => {
+  it("OBD-012: no rollover - capacity is computed independently per period", async () => {
     // Run two separate period queries. The second period must not accumulate
     // unused capacity from the first period. Each period stands alone.
     const workCtx: WorkspaceContext = {
@@ -670,7 +670,7 @@ describe("ReportingService integration", () => {
     expect(sepUtil!.consumedMinutes).toBe(480);
     // Sep period = 16 days: 4800 × 16/16 = 4800 (contract covers all).
     expect(sepUtil!.contractedMinutes).toBeCloseTo(4800, 4);
-    // Capacity is NOT aug's 4800 + sep's 4800 — no rollover.
+    // Capacity is NOT aug's 4800 + sep's 4800 - no rollover.
   });
 
   // --------------------------------------------------------------------------
@@ -748,7 +748,7 @@ describe("ReportingService integration", () => {
       timezone: "UTC",
     };
 
-    // Contract with finite capacity, valid over the period — no time entries.
+    // Contract with finite capacity, valid over the period - no time entries.
     const clientFinite = await repositories.clients.createClient(context.workspaceId, {
       companyName: "Zero Activity Finite",
     });
@@ -762,7 +762,7 @@ describe("ReportingService integration", () => {
       monthlyContractedMinutes: 4800,
     });
 
-    // Contract with null capacity, valid over the period — no time entries.
+    // Contract with null capacity, valid over the period - no time entries.
     const clientNull = await repositories.clients.createClient(context.workspaceId, {
       companyName: "Zero Activity Null",
     });
@@ -794,7 +794,7 @@ describe("ReportingService integration", () => {
     expect(nullUtil).toBeDefined();
     expect(nullUtil!.consumedMinutes).toBe(0);
     expect(nullUtil!.contractedMinutes).toBeNull(); // no denominator
-    expect(nullUtil!.utilizationPercentage).toBeNull(); // null — not 0%
+    expect(nullUtil!.utilizationPercentage).toBeNull(); // null - not 0%
   });
 
   // --------------------------------------------------------------------------
@@ -866,13 +866,13 @@ describe("ReportingService integration", () => {
     expect(dashboardUtil).toBeDefined();
     expect(reportUtil).toBeDefined();
 
-    // Same consumed minutes — both use ALL tracked time (PD-104-002).
+    // Same consumed minutes - both use ALL tracked time (PD-104-002).
     expect(reportUtil!.consumedMinutes).toBe(dashboardUtil!.consumedMinutes);
 
-    // Same pro-rated capacity — both use the same AnalyticsService calculation (BR-105-017).
+    // Same pro-rated capacity - both use the same AnalyticsService calculation (BR-105-017).
     expect(reportUtil!.contractedMinutes).toBe(dashboardUtil!.contractedMinutes);
 
-    // Same utilization percentage — single shared calculation, no divergence (F-104-002).
+    // Same utilization percentage - single shared calculation, no divergence (F-104-002).
     expect(reportUtil!.utilizationPercentage).toBe(dashboardUtil!.utilizationPercentage);
 
     // Exact values (480/4800 = 10%); verifying both sides agree and are correct.

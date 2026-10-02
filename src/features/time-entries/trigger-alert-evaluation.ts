@@ -25,7 +25,7 @@ type AlertRepositories = {
  * The TimeEntry mutation has already committed; a secondary alerting failure must
  * not corrupt or roll back the primary operation.
  *
- * Workspace membership guard remains inside AlertService — not bypassed here.
+ * Workspace membership guard remains inside AlertService - not bypassed here.
  */
 export async function triggerAlertEvaluation(
   context: WorkspaceContext,
