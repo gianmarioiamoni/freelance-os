@@ -187,14 +187,11 @@ test.describe("Dashboard Accessibility", () => {
     await expect(h1).toBeVisible();
     await expect(h1).toContainText("Dashboard");
 
-    // Should have h2 headings for the ask-box plus the three analytics cards
+    // Should have h2 headings for the three analytics cards (Ask AI removed from Dashboard)
     const h2Headings = page.getByRole("heading", { level: 2 });
-    await expect(h2Headings).toHaveCount(4);
+    await expect(h2Headings).toHaveCount(3);
 
     // Verify section headings
-    await expect(
-      page.getByRole("heading", { level: 2, name: "Ask about your analytics" }),
-    ).toBeVisible();
     await expect(page.getByRole("heading", { level: 2, name: /monthly summary/i })).toBeVisible();
     await expect(page.getByRole("heading", { level: 2, name: /client allocation/i })).toBeVisible();
     await expect(page.getByRole("heading", { level: 2, name: /contract utilization/i })).toBeVisible();

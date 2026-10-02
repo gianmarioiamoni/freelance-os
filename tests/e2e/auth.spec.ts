@@ -16,7 +16,7 @@ test("should redirect unauthenticated users to sign-in", async ({ page }) => {
 
   await expect(page).toHaveURL(/\/sign-in$/);
   await expect(
-    page.getByRole("paragraph").filter({ hasText: /^FreelanceOS$/ }),
+    page.getByRole("link", { name: "FreelanceOS" }),
   ).toBeVisible();
   await expect(page.getByRole("heading", { name: "Sign in" })).toBeVisible();
 });
@@ -43,6 +43,36 @@ test("should reject invalid credentials", async ({ page }) => {
 
   await expect(page.getByText("Invalid email or password.")).toBeVisible();
   await expect(page).toHaveURL(/\/sign-in$/);
+});
+
+test("should navigate from auth pages back to landing via wordmark", async ({
+  page,
+}) => {
+  await page.goto("/sign-in");
+  await expect(page.getByRole("heading", { name: "Sign in" })).toBeVisible();
+
+  const wordmark = page.getByRole("link", { name: "FreelanceOS" });
+  await expect(wordmark).toBeVisible();
+  await expect(wordmark).toHaveAttribute("href", "/");
+
+  await wordmark.click();
+  await expect(page).toHaveURL("/");
+  await expect(
+    page.getByRole("heading", { level: 1, name: "FreelanceOS" }),
+  ).toBeVisible();
+
+  await page.goto("/sign-up");
+  await expect(page.getByRole("heading", { name: "Sign up" })).toBeVisible();
+
+  const wordmarkSignUp = page.getByRole("link", { name: "FreelanceOS" });
+  await expect(wordmarkSignUp).toBeVisible();
+  await expect(wordmarkSignUp).toHaveAttribute("href", "/");
+
+  await wordmarkSignUp.click();
+  await expect(page).toHaveURL("/");
+  await expect(
+    page.getByRole("heading", { level: 1, name: "FreelanceOS" }),
+  ).toBeVisible();
 });
 
 test("should register, stay authenticated, and sign out", async ({ page }) => {

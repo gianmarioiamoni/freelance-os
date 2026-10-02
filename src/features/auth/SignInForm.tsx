@@ -1,9 +1,10 @@
 // src/features/auth/SignInForm.tsx
 "use client";
 
-import { DEFAULT_AUTHENTICATED_PATH } from "@/application/auth/route-access";
+import { DEFAULT_AUTHENTICATED_PATH, LANDING_PATH } from "@/application/auth/route-access";
 import { Button } from "@/components/ui/button";
 import { GoogleSignInButton } from "@/features/auth/GoogleSignInButton";
+import { Wordmark } from "@/features/landing/Wordmark";
 import { authClient } from "@/infrastructure/auth/auth-client";
 import Link from "next/link";
 import { useState, type FormEvent, type JSX } from "react";
@@ -37,8 +38,10 @@ export function SignInForm(): JSX.Element {
   }
 
   return (
-    <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-      <h1>Sign in</h1>
+    <div className="flex flex-col gap-6">
+      <Wordmark href={LANDING_PATH} />
+      <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+        <h1>Sign in</h1>
       <div className="flex flex-col gap-1">
         <label htmlFor="email">Email</label>
         <input
@@ -82,6 +85,7 @@ export function SignInForm(): JSX.Element {
           Sign up
         </Link>
       </p>
-    </form>
+      </form>
+    </div>
   );
 }
