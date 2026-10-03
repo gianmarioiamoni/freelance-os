@@ -100,11 +100,16 @@ export default async function TimeTrackingPage({
                 Next Week
               </Link>
             </Button>
-            <Button asChild variant="outline" size="sm">
-              <Link href={`/time-tracking?date=${getTodayISO()}`}>
-                Daily View
-              </Link>
-            </Button>
+            <div className="flex gap-2">
+              <Button asChild variant="outline" size="sm">
+                <Link href={`/time-tracking?date=${getTodayISO()}`}>
+                  Daily
+                </Link>
+              </Button>
+              <Button asChild variant="default" size="sm">
+                <span>Weekly</span>
+              </Button>
+            </div>
           </div>
           <WeeklyTimesheet entries={entriesWithDetails} weekStart={weekStart} />
         </PageContent>
@@ -151,11 +156,16 @@ export default async function TimeTrackingPage({
               Next Day
             </Link>
           </Button>
-          <Button asChild variant="outline" size="sm">
-            <Link href={`/time-tracking?view=week&start=${weekStart.toISOString().split('T')[0]}`}>
-              Weekly View
-            </Link>
-          </Button>
+          <div className="flex gap-2">
+            <Button asChild variant="default" size="sm">
+              <span>Daily</span>
+            </Button>
+            <Button asChild variant="outline" size="sm">
+              <Link href={`/time-tracking?view=week&start=${weekStart.toISOString().split('T')[0]}`}>
+                Weekly
+              </Link>
+            </Button>
+          </div>
         </div>
         <TimeEntryList entries={entriesWithDetails} date={selectedDate} />
       </PageContent>

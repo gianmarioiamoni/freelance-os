@@ -12,6 +12,20 @@ import type { ContractUtilization } from "@/domain/analytics-types";
 import { AnalyticsService } from "@/application/analytics/analytics-service";
 
 // ---------------------------------------------------------------------------
+// Mock getCurrentMonthPeriod to return deterministic October 2026 period
+// ---------------------------------------------------------------------------
+vi.mock("@/lib/analytics-periods", async () => {
+  const actual = await vi.importActual<typeof import("@/lib/analytics-periods")>("@/lib/analytics-periods");
+  return {
+    ...actual,
+    getCurrentMonthPeriod: vi.fn(() => ({
+      startDate: new Date("2026-10-01T00:00:00.000Z"),
+      endDate: new Date("2026-10-31T23:59:59.999Z"),
+    })),
+  };
+});
+
+// ---------------------------------------------------------------------------
 // Fixtures
 // ---------------------------------------------------------------------------
 
@@ -23,8 +37,8 @@ const context: WorkspaceContext = {
 };
 
 const period = {
-  startDate: new Date("2026-09-01T00:00:00.000Z"),
-  endDate: new Date("2026-09-17T00:00:00.000Z"),
+  startDate: new Date("2026-10-01T00:00:00.000Z"),
+  endDate: new Date("2026-10-17T00:00:00.000Z"),
 };
 
 const contractId = "contract-1";
@@ -58,7 +72,7 @@ function makeAlert(override: Partial<AlertRecord> = {}): AlertRecord {
     periodStart: period.startDate,
     periodEnd: period.endDate,
     deduplicationKey: buildContractAlertDedupKey("CONTRACT_WARNING", context.workspaceId, contractId, period.startDate),
-    createdAt: new Date("2026-09-10T08:00:00.000Z"),
+    createdAt: new Date("2026-10-10T08:00:00.000Z"),
     resolvedAt: null,
     ...override,
   };
@@ -74,7 +88,7 @@ function makeNotification(override: Partial<NotificationRecord> = {}): Notificat
     title: "Contract approaching limit",
     body: "ACME Corp contract is at 80% of contracted capacity.",
     readAt: null,
-    createdAt: new Date("2026-09-10T08:00:00.000Z"),
+    createdAt: new Date("2026-10-10T08:00:00.000Z"),
     ...override,
   };
 }
@@ -335,7 +349,7 @@ describe("AlertService.evaluateContractAlerts", () => {
       expect(mocks.alerts.createAlert).toHaveBeenCalledWith(
         context.workspaceId,
         expect.objectContaining({
-          deduplicationKey: expect.stringMatching(/^cw:ws-1:contract-1:2026-09-01/),
+          deduplicationKey: expect.stringMatching(/^cw:ws-1:contract-1:2026-10-01/),
         }),
       );
     });
@@ -457,7 +471,7 @@ describe("AlertService.evaluateContractAlerts", () => {
   describe("re-trigger after resolution", () => {
     it("creates a new alert when resolved alert exists and condition re-fires", async () => {
       const resolvedAlert = makeAlert({
-        resolvedAt: new Date("2026-09-09T00:00:00.000Z"),
+        resolvedAt: new Date("2026-10-09T00:00:00.000Z"),
       });
       const { service, mocks } = makeService({
         utilizations: [makeUtilization({ utilizationPercentage: 85 })],
@@ -477,7 +491,7 @@ describe("AlertService.evaluateContractAlerts", () => {
 
     it("creates a notification for the re-triggered alert", async () => {
       const resolvedAlert = makeAlert({
-        resolvedAt: new Date("2026-09-09T00:00:00.000Z"),
+        resolvedAt: new Date("2026-10-09T00:00:00.000Z"),
       });
       const { service, mocks } = makeService({
         utilizations: [makeUtilization({ utilizationPercentage: 85 })],

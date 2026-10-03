@@ -27,11 +27,17 @@ vi.mock("@/application/time-entries/create-time-entry", () => ({
 }));
 
 vi.mock("@/application/time-entries/update-time-entry", () => ({
-  updateTimeEntry: vi.fn().mockResolvedValue(undefined),
+  updateTimeEntry: vi.fn().mockResolvedValue({
+    id: "entry-1",
+    contractId: "contract-1",
+  }),
 }));
 
 vi.mock("@/application/time-entries/delete-time-entry", () => ({
-  deleteTimeEntry: vi.fn().mockResolvedValue(undefined),
+  deleteTimeEntry: vi.fn().mockResolvedValue({
+    id: "entry-1",
+    contractId: "contract-1",
+  }),
 }));
 
 vi.mock("@/features/time-entries/trigger-alert-evaluation", () => ({
