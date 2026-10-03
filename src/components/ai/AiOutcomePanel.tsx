@@ -11,14 +11,16 @@ import type { JSX } from "react";
 
 type AiOutcomePanelProps = {
   result: AiAskResult;
+  originalQuestion?: string;
   onRetry?: () => void;
 };
 
 export function AiOutcomePanel({
   result,
+  originalQuestion,
   onRetry,
 }: AiOutcomePanelProps): JSX.Element {
-  const copy = aiOutcomeCopy(result);
+  const copy = aiOutcomeCopy(result, originalQuestion);
 
   if (result.outcome === "success") {
     const visibleFacts = result.facts.filter(

@@ -112,6 +112,7 @@ export function AnalyticsAskBox({ surface }: AnalyticsAskBoxProps): JSX.Element 
           ) : result ? (
             <AiOutcomePanel
               result={result}
+              originalQuestion={question}
               onRetry={() => {
                 void submitQuestion(question);
               }}
