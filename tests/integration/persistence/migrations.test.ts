@@ -24,6 +24,7 @@ describe("migration-based test schema", () => {
       "20260923010000_add_payment_alerts",
       "20260923230000_add_contract_allocated_minutes",
       "20260923235000_add_allocation_alerts",
+      "20261003192057_add_user_lifecycle_fields",
     ]);
   });
 

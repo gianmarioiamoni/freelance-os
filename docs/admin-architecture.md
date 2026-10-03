@@ -194,26 +194,372 @@ Admin authorization is covered by:
 - ✓ Authenticated normal users cannot access `/admin`
 - ✓ Admin route does not require workspace context
 
+## Phase 2: User Lifecycle Management (Implemented)
+
+### Overview
+
+Phase 2 establishes the complete server-side User Lifecycle, including:
+
+- User disable/enable
+- User delete with workspace cascade
+- Delete impact analysis
+- Admin self-protection
+- Authentication lifecycle enforcement
+
+**No Admin dashboard UI** is implemented in Phase 2. UI development is deferred to Phase 3.
+
+### User Lifecycle Fields
+
+#### disabledAt
+
+```typescript
+disabledAt: DateTime?
+```
+
+Semantics:
+
+- `null` → active user (normal behavior)
+- `non-null` → disabled user (authentication blocked)
+- Idempotent: disabling an already-disabled user throws `UserAlreadyDisabledError`
+- Reversible: `enableUser()` sets `disabledAt = null`
+- Disabling does **not** delete workspace data or memberships
+- Workspace memberships remain intact
+
+#### deletedAt
+
+```typescript
+deletedAt: DateTime?
+```
+
+Semantics:
+
+- `null` → active or disabled user
+- `non-null` → deleted user (terminal state)
+- Terminal: deleted users cannot be re-enabled or restored
+- Soft-delete: user identity anonymized but record preserved for referential integrity
+- Authentication permanently blocked
+
+### Admin Self-Protection
+
+The configured Admin **cannot**:
+
+- Disable itself
+- Delete itself
+- Analyze own delete impact
+
+Self-protection is enforced server-side through:
+
+- `AdminSelfProtectionError` thrown before any mutation
+- Check performed in every lifecycle operation
+
+### Disable User
+
+**Operation:** `disableUser(targetUserId: string)`
+
+**Authorization:** `requireAdminAuthorization()`
+
+**Behavior:**
+
+1. Reject if target is Admin
+2. Reject if target does not exist → `UserNotFoundError`
+3. Reject if target is deleted → `UserAlreadyDeletedError`
+4. Reject if target already disabled → `UserAlreadyDisabledError`
+5. Set `disabledAt = now()`
+
+**Effects:**
+
+- User cannot authenticate (enforced in `getAuthSessionFromHeaders`)
+- Workspace memberships preserved
+- Workspace data preserved
+- User identity preserved
+
+### Enable User
+
+**Operation:** `enableUser(targetUserId: string)`
+
+**Authorization:** `requireAdminAuthorization()`
+
+**Behavior:**
+
+1. Reject if target does not exist → `UserNotFoundError`
+2. Reject if target is deleted → `UserDeletedError`
+3. Reject if target not disabled → `UserNotDisabledError`
+4. Set `disabledAt = null`
+
+**Effects:**
+
+- User can authenticate again
+- Workspace memberships unchanged
+- User identity unchanged
+
+### Delete User
+
+**Operation:** `deleteUser(targetUserId: string)`
+
+**Authorization:** `requireAdminAuthorization()`
+
+**Behavior:**
+
+1. Reject if target is Admin
+2. Reject if target does not exist → `UserNotFoundError`
+3. Reject if target already deleted → `UserAlreadyDeletedError`
+4. Begin transaction
+5. For each owned workspace:
+   - If sole OWNER → delete workspace + all workspace data
+   - If another OWNER exists → preserve workspace, remove target membership
+6. For each MEMBER workspace → remove target membership
+7. Delete all target sessions (Better Auth)
+8. Delete all target accounts (Better Auth)
+9. Anonymize user identity:
+   - `email = deleted-user-{userId}@deleted.local`
+   - `name = Deleted User`
+   - `deletedAt = now()`
+   - `disabledAt = now()`
+10. Commit transaction
+
+**Atomicity:**
+
+- All-or-nothing transaction
+- No partial deletion
+- No orphaned workspaces
+- No orphaned workspace data
+- No invalid membership references
+
+**Workspace Cascade Dependency Order:**
+
+1. Notification (depends on WorkspaceMember, Alert)
+2. Alert (depends on Workspace, Client, Contract, Invoice)
+3. Payment (depends on Invoice)
+4. Invoice (depends on Contract)
+5. TimeEntry (depends on WorkspaceMember, Contract, Client)
+6. Contract (depends on Client)
+7. Client (depends on Workspace)
+8. WorkspaceSettings (depends on Workspace)
+9. WorkspaceMember (depends on Workspace)
+10. Workspace
+
+For sole-owner deletion:
+
+- All entities deleted in dependency order
+- No cascade left to Prisma foreign keys
+
+For preserved workspaces:
+
+- Only target user's dependent records deleted (TimeEntry, Notification)
+- Only target user's membership deleted
+- Other members and workspace data preserved
+
+### Delete Impact Analysis
+
+**Operation:** `analyzeUserDeleteImpact(targetUserId: string)`
+
+**Authorization:** `requireAdminAuthorization()`
+
+**Behavior:**
+
+1. Reject if target is Admin
+2. Reject if target does not exist → `UserNotFoundError`
+3. Find all workspaces where target is OWNER
+4. For each workspace, determine:
+   - `isSoleOwner` (count of OWNER members === 1)
+   - `willBeDeleted` (same as `isSoleOwner`)
+5. Return `DeleteImpactAnalysis`
+
+**Result Type:**
+
+```typescript
+type DeleteImpactAnalysis = {
+  targetUserId: string;
+  targetUserEmail: string;
+  workspaces: WorkspaceImpact[];
+  canDelete: boolean;
+  reason?: string;
+};
+
+type WorkspaceImpact = {
+  workspaceId: string;
+  workspaceName: string;
+  isSoleOwner: boolean;
+  willBeDeleted: boolean;
+};
+```
+
+**Purpose:**
+
+- Server-side operation reusable by future Admin UI
+- Provides confirmation data for delete decisions
+- No UI implemented in Phase 2
+
+### Authentication Lifecycle Enforcement
+
+**Modified:** `src/infrastructure/auth/session.ts`
+
+**Function:** `validateUserLifecycleState(session: AuthSession | null)`
+
+**Behavior:**
+
+1. If session is null → return null
+2. Query `User.disabledAt` and `User.deletedAt`
+3. If user not found → return null
+4. If `disabledAt` is set → return null
+5. If `deletedAt` is set → return null
+6. Otherwise → return session
+
+**Applied to:**
+
+- `getAuthSessionFromHeaders()`
+- `getServerAuthSession()`
+
+**Effect:**
+
+- Disabled users treated as unauthenticated
+- Deleted users treated as unauthenticated
+- Admin users subject to same lifecycle checks (unless Admin itself)
+- Central enforcement; no per-route duplication required
+
+### No Ownership Transfer
+
+Delete never automatically transfers workspace ownership.
+
+If the user is the sole OWNER:
+
+- Workspace is deleted
+- No transfer to MEMBER
+- No promotion of another user
+
+Ownership transfer (if needed) must be performed manually before deletion.
+
+### Terminal State
+
+Deleted users are **terminal** for normal lifecycle:
+
+- `enableUser()` rejects deleted users
+- `disableUser()` rejects deleted users (already checked via `deletedAt`)
+- No restoration workflow
+- Anonymized identity permanent
+
+### Error Classes
+
+**New errors in** `src/application/admin/user-lifecycle-errors.ts`:
+
+- `UserNotFoundError`
+- `AdminSelfProtectionError`
+- `UserAlreadyDisabledError`
+- `UserNotDisabledError`
+- `UserAlreadyDeletedError`
+- `UserDeletedError`
+
+### Application Services
+
+**New modules:**
+
+- `src/application/admin/disable-user.ts`
+- `src/application/admin/enable-user.ts`
+- `src/application/admin/delete-user.ts`
+- `src/application/admin/analyze-user-delete-impact.ts`
+- `src/application/admin/user-lifecycle-errors.ts`
+
+**Each service:**
+
+- Calls `requireAdminAuthorization()` first
+- Validates input and target state
+- Performs atomic mutations
+- Throws explicit domain errors
+
+### Prisma Schema Changes
+
+**Migration:** `20261003192057_add_user_lifecycle_fields`
+
+```sql
+ALTER TABLE "user" ADD COLUMN "disabledAt" TIMESTAMP(3);
+ALTER TABLE "user" ADD COLUMN "deletedAt" TIMESTAMP(3);
+```
+
+**Fields added to User model:**
+
+```prisma
+model User {
+  id            String    @id
+  name          String
+  email         String
+  emailVerified Boolean   @default(false)
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  disabledAt    DateTime?
+  deletedAt     DateTime?
+  sessions      Session[]
+  accounts      Account[]
+
+  @@unique([email])
+  @@map("user")
+}
+```
+
+### Security Guarantees
+
+1. **Admin self-protection:** Admin cannot delete/disable itself
+2. **Authorization boundary:** All operations require `requireAdminAuthorization()`
+3. **Atomicity:** Delete is all-or-nothing transaction
+4. **Referential integrity:** No orphaned workspaces or membership records
+5. **Authentication enforcement:** Disabled/deleted users cannot authenticate
+6. **Terminal deletion:** Deleted users cannot be restored
+7. **Workspace cascade:** Sole-owner workspace deletion is explicit and complete
+8. **No privilege escalation:** Admin cannot bypass workspace authorization
+9. **No partial deletion:** Transaction rollback on any failure
+
+### Testing
+
+#### Unit Tests
+
+**New:**
+
+- `tests/unit/application/admin/disable-user.test.ts`
+- `tests/unit/application/admin/enable-user.test.ts`
+
+**Coverage:**
+
+- Admin authorization enforcement
+- Self-protection checks
+- State validation
+- Error conditions
+
+#### Integration Tests
+
+**New:**
+
+- `tests/integration/admin/user-lifecycle.test.ts`
+- `tests/integration/admin/authentication-lifecycle.test.ts`
+
+**Coverage:**
+
+- Disable → enable flow
+- Workspace membership preservation after disable/enable
+- Delete with sole-owner workspace (workspace deleted)
+- Delete with shared ownership (workspace preserved)
+- Delete impact analysis correctness
+- Admin self-protection (disable, delete, analyze)
+- Deleted user terminal state
+- Authentication blocking for disabled users
+- Authentication blocking for deleted users
+- Atomicity failure scenarios
+
 ## Future Phases (Not Implemented)
 
-The following are explicitly **not** implemented in Phase 1:
+### Phase 3: Admin Dashboard UI
 
-### User Management
-
-- User listing
-- User status fields (`disabledAt`, `deletedAt`)
-- User disable
-- User enable
-- User delete
-- User search
-- User filtering
-
-### Admin Dashboard
-
-- Admin landing page
-- User table
+- User listing table
+- User status display
+- Disable/Enable user actions
+- Delete user with impact confirmation
 - Admin navigation menu
-- Admin audit UI
+- User search/filtering
+
+### Phase 4: Admin Audit
+
+- Audit trail for lifecycle operations
+- Admin activity log
+- User lifecycle history
 
 ### Generic RBAC
 
@@ -222,44 +568,7 @@ The following are explicitly **not** implemented in Phase 1:
 - Multiple admin roles
 - Admin role assignment
 
-### User Delete Behavior (Architectural Decision)
-
-When Admin user delete is implemented in a future phase, the following behavior must be enforced:
-
-#### Sole Owner Workspace Cascade
-
-If the user owns a workspace where they are the **only OWNER**:
-
-- Deleting the user **must** also permanently delete that workspace
-- All workspace-owned data must be deleted atomically
-- No automatic ownership transfer
-
-#### Multiple Owners
-
-If another OWNER exists in the workspace:
-
-- Preserve the workspace
-- Delete only the user
-
-#### Multiple Workspaces
-
-If the user owns multiple workspaces:
-
-- Apply the sole-owner rule independently to each workspace
-- Delete user + affected workspaces atomically
-
-#### Admin Self-Delete
-
-Deleting the Admin account itself must always be **forbidden**.
-
-#### Implementation Requirements (Future)
-
-- The operation must be atomic (all-or-nothing)
-- The Admin UI must show workspace/data impact before confirmation
-- Explicit tests must verify the cascade behavior
-- Audit trail must be maintained
-
-This decision is architectural and must be preserved, but the actual delete functionality is **not** implemented in Phase 1.
+These capabilities are explicitly **not** part of Phase 2.
 
 ## Security Invariants
 
