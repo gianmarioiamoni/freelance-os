@@ -47,6 +47,12 @@ enum AlertSeverity {
   ERROR
 }
 
+enum AdminActionType {
+  DISABLE_USER
+  ENABLE_USER
+  DELETE_USER
+}
+
 model Workspace {
   id        String   @id @default(uuid()) @db.Uuid
   name      String
@@ -343,4 +349,18 @@ model Verification {
 
   @@index([identifier])
   @@map("verification")
+}
+
+/// Privileged Admin lifecycle mutations. No User FK: Better Auth owns User,
+/// and deleted users remain as anonymized rows. targetUserId is the durable
+/// identifier after anonymization. Original email/name are not stored.
+model AdminAction {
+  id           String          @id @default(uuid()) @db.Uuid
+  adminUserId  String
+  targetUserId String
+  action       AdminActionType
+  createdAt    DateTime        @default(now()) @db.Timestamptz(6)
+
+  @@index([adminUserId, createdAt])
+  @@index([targetUserId])
 }

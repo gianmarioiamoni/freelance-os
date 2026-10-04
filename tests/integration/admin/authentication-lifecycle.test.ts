@@ -1,82 +1,116 @@
 // tests/integration/admin/authentication-lifecycle.test.ts
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
+import * as adminAuth from "@/application/admin/admin-authorization";
+import { deleteUser } from "@/application/admin/delete-user";
+import { disableUser } from "@/application/admin/disable-user";
+import { enableUser } from "@/application/admin/enable-user";
+import {
+  AdminSelfProtectionError,
+  UserAlreadyDeletedError,
+  UserDeletedError,
+} from "@/application/admin/user-lifecycle-errors";
+import { getAuthSessionFromHeaders } from "@/infrastructure/auth/session";
 import { prisma } from "@/infrastructure/prisma/client";
+import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
-describe("User Lifecycle Database State", () => {
-  let testUserId: string;
+import {
+  TEST_PASSWORD,
+  auth,
+  countSessionsForUser,
+  registerUser,
+  signInHeaders,
+  uniqueEmail,
+} from "../auth/helpers";
 
-  beforeEach(async () => {
-    testUserId = `test-auth-user-${Date.now()}`;
-
-    await prisma.user.create({
-      data: {
-        id: testUserId,
-        name: "Test Auth User",
-        email: `authtest-${testUserId}@example.com`,
+async function expectSignInRejected(email: string): Promise<void> {
+  await expect(
+    auth.api.signInEmail({
+      body: {
+        email,
+        password: TEST_PASSWORD,
       },
+    }),
+  ).rejects.toThrow();
+}
+
+vi.mock("@/application/admin/admin-authorization");
+
+describe("Authentication lifecycle", () => {
+  const mockAdminUserId = "auth-lifecycle-admin";
+
+  beforeAll(() => {
+    vi.mocked(adminAuth.requireAdminAuthorization).mockResolvedValue({
+      userId: mockAdminUserId,
+      email: "admin@test.com",
     });
   });
 
-  afterEach(async () => {
-    await prisma.session.deleteMany({
-      where: { userId: testUserId },
-    });
-    await prisma.account.deleteMany({
-      where: { userId: testUserId },
-    });
-    await prisma.user.deleteMany({
-      where: { id: testUserId },
+  beforeEach(() => {
+    vi.mocked(adminAuth.requireAdminAuthorization).mockResolvedValue({
+      userId: mockAdminUserId,
+      email: "admin@test.com",
     });
   });
 
-  it("should persist disabledAt when user is disabled", async () => {
-    const now = new Date();
-    await prisma.user.update({
-      where: { id: testUserId },
-      data: { disabledAt: now },
-    });
+  it("ACTIVE users can authenticate, DISABLED users cannot, ENABLE restores access", async () => {
+    const email = uniqueEmail("auth-active");
+    const { userId } = await registerUser({ email, name: "Lifecycle User" });
+    const activeHeaders = await signInHeaders({ email });
+
+    expect(await getAuthSessionFromHeaders(activeHeaders)).not.toBeNull();
+
+    await disableUser(userId);
+
+    expect(await getAuthSessionFromHeaders(activeHeaders)).toBeNull();
+    expect(await countSessionsForUser(userId)).toBe(0);
+
+    const disabledSignIn = await signInHeaders({ email });
+    expect(await getAuthSessionFromHeaders(disabledSignIn)).toBeNull();
+
+    await enableUser(userId);
+
+    const enabledHeaders = await signInHeaders({ email });
+    expect(await getAuthSessionFromHeaders(enabledHeaders)).not.toBeNull();
+  });
+
+  it("DELETED users cannot authenticate, be enabled, or be deleted again", async () => {
+    const email = uniqueEmail("auth-deleted");
+    const { userId } = await registerUser({ email, name: "Delete Lifecycle" });
+    const headers = await signInHeaders({ email });
+
+    expect(await getAuthSessionFromHeaders(headers)).not.toBeNull();
+
+    await deleteUser(userId);
+
+    expect(await getAuthSessionFromHeaders(headers)).toBeNull();
+    expect(await countSessionsForUser(userId)).toBe(0);
+    await expectSignInRejected(email);
+    await expect(enableUser(userId)).rejects.toThrow(UserDeletedError);
+    await expect(deleteUser(userId)).rejects.toThrow(UserAlreadyDeletedError);
 
     const user = await prisma.user.findUnique({
-      where: { id: testUserId },
-      select: { disabledAt: true },
+      where: { id: userId },
+      select: { deletedAt: true, email: true },
     });
-
-    expect(user?.disabledAt).toEqual(now);
+    expect(user?.deletedAt).not.toBeNull();
+    expect(user?.email).toBe(`deleted-user-${userId}@deleted.local`);
   });
 
-  it("should persist deletedAt when user is deleted", async () => {
-    const now = new Date();
-    await prisma.user.update({
-      where: { id: testUserId },
-      data: { deletedAt: now },
-    });
+  it("DISABLED then DELETED users cannot authenticate", async () => {
+    const email = uniqueEmail("auth-disabled-deleted");
+    const { userId } = await registerUser({ email });
 
-    const user = await prisma.user.findUnique({
-      where: { id: testUserId },
-      select: { deletedAt: true },
-    });
+    await disableUser(userId);
+    await deleteUser(userId);
 
-    expect(user?.deletedAt).toEqual(now);
+    await expectSignInRejected(email);
   });
 
-  it("should allow both disabledAt and deletedAt to be set", async () => {
-    const disabledTime = new Date();
-    const deletedTime = new Date(disabledTime.getTime() + 1000);
-
-    await prisma.user.update({
-      where: { id: testUserId },
-      data: { 
-        disabledAt: disabledTime,
-        deletedAt: deletedTime,
-      },
-    });
-
-    const user = await prisma.user.findUnique({
-      where: { id: testUserId },
-      select: { disabledAt: true, deletedAt: true },
-    });
-
-    expect(user?.disabledAt).toEqual(disabledTime);
-    expect(user?.deletedAt).toEqual(deletedTime);
+  it("protects the Admin from self-disable and self-delete", async () => {
+    await expect(disableUser(mockAdminUserId)).rejects.toThrow(
+      AdminSelfProtectionError,
+    );
+    await expect(deleteUser(mockAdminUserId)).rejects.toThrow(
+      AdminSelfProtectionError,
+    );
   });
 });

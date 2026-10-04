@@ -76,6 +76,7 @@ async function validateDatabaseStructure(
     "Payment",
     "Alert",
     "Notification",
+    "AdminAction",
     "user",
     "session",
     "account",
@@ -111,6 +112,7 @@ async function getTableRowCounts(
     "Payment",
     "Alert",
     "Notification",
+    "AdminAction",
     "user",
     "session",
     "account",
@@ -141,6 +143,7 @@ async function resetDatabaseData(prisma: PrismaClient): Promise<void> {
     await tx.workspaceSettings.deleteMany({});
     await tx.workspaceMember.deleteMany({});
     await tx.workspace.deleteMany({});
+    await tx.adminAction.deleteMany({});
 
     await tx.$executeRaw`DELETE FROM "session"`;
     await tx.$executeRaw`DELETE FROM "account"`;

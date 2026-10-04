@@ -4,6 +4,7 @@ import "server-only";
 import { prisma } from "@/infrastructure/prisma/client";
 
 import { requireAdminAuthorization } from "./admin-authorization";
+import { recordAdminAction } from "./record-admin-action";
 import {
   AdminSelfProtectionError,
   UserAlreadyDeletedError,
@@ -18,25 +19,37 @@ export async function disableUser(targetUserId: string): Promise<void> {
     throw new AdminSelfProtectionError("disable");
   }
 
-  const user = await prisma.user.findUnique({
-    where: { id: targetUserId },
-    select: { id: true, disabledAt: true, deletedAt: true },
-  });
+  await prisma.$transaction(async (tx) => {
+    const user = await tx.user.findUnique({
+      where: { id: targetUserId },
+      select: { id: true, disabledAt: true, deletedAt: true },
+    });
 
-  if (!user) {
-    throw new UserNotFoundError(targetUserId);
-  }
+    if (!user) {
+      throw new UserNotFoundError(targetUserId);
+    }
 
-  if (user.deletedAt) {
-    throw new UserAlreadyDeletedError(targetUserId);
-  }
+    if (user.deletedAt) {
+      throw new UserAlreadyDeletedError(targetUserId);
+    }
 
-  if (user.disabledAt) {
-    throw new UserAlreadyDisabledError(targetUserId);
-  }
+    if (user.disabledAt) {
+      throw new UserAlreadyDisabledError(targetUserId);
+    }
 
-  await prisma.user.update({
-    where: { id: targetUserId },
-    data: { disabledAt: new Date() },
+    await tx.user.update({
+      where: { id: targetUserId },
+      data: { disabledAt: new Date() },
+    });
+
+    await tx.session.deleteMany({
+      where: { userId: targetUserId },
+    });
+
+    await recordAdminAction(tx, {
+      adminUserId: admin.userId,
+      targetUserId,
+      action: "DISABLE_USER",
+    });
   });
 }

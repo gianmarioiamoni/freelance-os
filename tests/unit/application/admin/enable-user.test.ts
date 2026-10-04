@@ -8,6 +8,8 @@ import {
   UserNotFoundError,
 } from "@/application/admin/user-lifecycle-errors";
 import * as adminAuth from "@/application/admin/admin-authorization";
+import * as recordAdminAction from "@/application/admin/record-admin-action";
+import { mockPrismaTransactionAsPassthrough } from "./mock-prisma-transaction";
 
 vi.mock("@/application/admin/admin-authorization");
 
@@ -17,10 +19,12 @@ describe("enableUser", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    mockPrismaTransactionAsPassthrough();
     vi.mocked(adminAuth.requireAdminAuthorization).mockResolvedValue({
       userId: mockAdminUserId,
       email: "admin@example.com",
     });
+    vi.spyOn(recordAdminAction, "recordAdminAction").mockResolvedValue();
   });
 
   it("should enable a disabled user", async () => {
@@ -37,12 +41,10 @@ describe("enableUser", () => {
     };
 
     vi.spyOn(prisma.user, "findUnique").mockResolvedValue(mockUser);
-    const updateSpy = vi
-      .spyOn(prisma.user, "update")
-      .mockResolvedValue({
-        ...mockUser,
-        disabledAt: null,
-      });
+    const updateSpy = vi.spyOn(prisma.user, "update").mockResolvedValue({
+      ...mockUser,
+      disabledAt: null,
+    });
 
     await enableUser(mockTargetUserId);
 
@@ -50,6 +52,14 @@ describe("enableUser", () => {
       where: { id: mockTargetUserId },
       data: { disabledAt: null },
     });
+    expect(recordAdminAction.recordAdminAction).toHaveBeenCalledWith(
+      expect.anything(),
+      {
+        adminUserId: mockAdminUserId,
+        targetUserId: mockTargetUserId,
+        action: "ENABLE_USER",
+      },
+    );
   });
 
   it("should throw UserNotFoundError when user does not exist", async () => {
@@ -58,6 +68,7 @@ describe("enableUser", () => {
     await expect(enableUser(mockTargetUserId)).rejects.toThrow(
       UserNotFoundError,
     );
+    expect(recordAdminAction.recordAdminAction).not.toHaveBeenCalled();
   });
 
   it("should throw UserDeletedError when user is deleted", async () => {
@@ -76,6 +87,7 @@ describe("enableUser", () => {
     vi.spyOn(prisma.user, "findUnique").mockResolvedValue(mockUser);
 
     await expect(enableUser(mockTargetUserId)).rejects.toThrow(UserDeletedError);
+    expect(recordAdminAction.recordAdminAction).not.toHaveBeenCalled();
   });
 
   it("should throw UserNotDisabledError when user is not disabled", async () => {
@@ -96,6 +108,7 @@ describe("enableUser", () => {
     await expect(enableUser(mockTargetUserId)).rejects.toThrow(
       UserNotDisabledError,
     );
+    expect(recordAdminAction.recordAdminAction).not.toHaveBeenCalled();
   });
 
   it("should require admin authorization", async () => {

@@ -3,9 +3,11 @@ import { expect, test } from "@playwright/test";
 
 import {
   E2E_ADMIN_NAME,
+  E2E_ADMIN_PASSWORD,
   createManagedUser,
   createWorkspaceForUser,
   registerAndPromoteAdmin,
+  signInUser,
 } from "./helpers/admin";
 import {
   registerAndCreateFirstWorkspace,
@@ -207,6 +209,68 @@ test.describe("Admin dashboard", () => {
     });
     await expect(deletedRow.getByText("Deleted User", { exact: true })).toBeVisible();
     await expect(deletedRow.locator('[role="status"]')).toHaveText("Deleted");
+  });
+
+  test("disabled user cannot use protected routes until enabled", async ({
+    page,
+    browser,
+  }) => {
+    const managedEmail = uniqueE2EEmail("disabled-auth");
+    await registerAndCreateFirstWorkspace(page, {
+      email: managedEmail,
+      workspaceName: "Disabled Auth Workspace",
+    });
+    await expect(page).toHaveURL(/\/dashboard$/);
+
+    const adminContext = await browser.newContext();
+    const adminPage = await adminContext.newPage();
+
+    try {
+      await registerAndPromoteAdmin(adminPage);
+      await adminPage.goto("/admin");
+
+      const row = adminPage.getByRole("row").filter({ hasText: managedEmail });
+      await row.getByRole("button", { name: "Disable" }).click();
+      await adminPage
+        .getByRole("alertdialog")
+        .getByRole("button", { name: "Disable" })
+        .click();
+      await expect(adminPage.getByText("User disabled.")).toBeVisible();
+
+      await page.goto("/dashboard");
+      await expect(page).toHaveURL(/\/sign-in$/);
+
+      await adminPage
+        .getByRole("row")
+        .filter({ hasText: managedEmail })
+        .getByRole("button", { name: "Enable" })
+        .click();
+      await adminPage
+        .getByRole("alertdialog")
+        .getByRole("button", { name: "Enable" })
+        .click();
+      await expect(adminPage.getByText("User enabled.")).toBeVisible();
+    } finally {
+      await adminContext.close();
+    }
+
+    await signInUser(page, managedEmail, E2E_ADMIN_PASSWORD);
+    await expect(page).toHaveURL(/\/dashboard$/);
+  });
+
+  test("normal user cannot invoke admin lifecycle from the UI", async ({
+    page,
+  }) => {
+    const email = uniqueE2EEmail("e2e-normal-action");
+    await registerAndCreateFirstWorkspace(page, {
+      email,
+      workspaceName: "Normal Action Workspace",
+    });
+
+    await page.goto("/admin");
+    await expect(page.getByText(/unauthorized admin access/i)).toBeVisible();
+    await expect(page.getByRole("button", { name: "Disable" })).toHaveCount(0);
+    await expect(page.getByRole("button", { name: "Delete" })).toHaveCount(0);
   });
 
   test("admin sees no-workspace delete impact", async ({ page }) => {

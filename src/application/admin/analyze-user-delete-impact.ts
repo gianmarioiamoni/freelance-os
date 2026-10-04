@@ -4,7 +4,11 @@ import "server-only";
 import { prisma } from "@/infrastructure/prisma/client";
 
 import { requireAdminAuthorization } from "./admin-authorization";
-import { AdminSelfProtectionError, UserNotFoundError } from "./user-lifecycle-errors";
+import {
+  AdminSelfProtectionError,
+  UserAlreadyDeletedError,
+  UserNotFoundError,
+} from "./user-lifecycle-errors";
 
 export type WorkspaceImpact = {
   workspaceId: string;
@@ -37,6 +41,10 @@ export async function analyzeUserDeleteImpact(
 
   if (!user) {
     throw new UserNotFoundError(targetUserId);
+  }
+
+  if (user.deletedAt) {
+    throw new UserAlreadyDeletedError(targetUserId);
   }
 
   const ownedWorkspaces = await prisma.workspaceMember.findMany({

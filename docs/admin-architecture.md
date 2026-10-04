@@ -2,7 +2,7 @@
 
 ## Overview
 
-FreelanceOS Admin is a server-side administrative boundary that provides a single system administrator with platform-level capabilities independent of workspace context. This document describes the Admin Phase 1 implementation: the authorization foundation.
+FreelanceOS Admin is a server-side administrative boundary that provides a single system administrator with platform-level capabilities independent of workspace context. This document covers Phases 1–4: authorization, user lifecycle, Admin dashboard, and audit/hardening.
 
 ## Admin Model
 
@@ -265,10 +265,13 @@ Self-protection is enforced server-side through:
 3. Reject if target is deleted → `UserAlreadyDeletedError`
 4. Reject if target already disabled → `UserAlreadyDisabledError`
 5. Set `disabledAt = now()`
+6. Delete all target Better Auth sessions
+7. Persist a `DISABLE_USER` audit record in the same transaction
 
 **Effects:**
 
 - User cannot authenticate (enforced in `getAuthSessionFromHeaders`)
+- Existing sessions are revoked immediately
 - Workspace memberships preserved
 - Workspace data preserved
 - User identity preserved
@@ -285,10 +288,12 @@ Self-protection is enforced server-side through:
 2. Reject if target is deleted → `UserDeletedError`
 3. Reject if target not disabled → `UserNotDisabledError`
 4. Set `disabledAt = null`
+5. Persist an `ENABLE_USER` audit record in the same transaction
 
 **Effects:**
 
-- User can authenticate again
+- User can authenticate again by signing in
+- Previously revoked sessions are not restored
 - Workspace memberships unchanged
 - User identity unchanged
 
@@ -315,7 +320,8 @@ Self-protection is enforced server-side through:
    - `name = Deleted User`
    - `deletedAt = now()`
    - `disabledAt = now()`
-10. Commit transaction
+10. Persist a `DELETE_USER` audit record that retains `targetUserId` only
+11. Commit transaction
 
 **Atomicity:**
 
@@ -359,7 +365,8 @@ For preserved workspaces:
 
 1. Reject if target is Admin
 2. Reject if target does not exist → `UserNotFoundError`
-3. Find all workspaces where target is OWNER
+3. Reject if target is deleted → `UserAlreadyDeletedError`
+4. Find all workspaces where target is OWNER
 4. For each workspace, determine:
    - `isSoleOwner` (count of OWNER members === 1)
    - `willBeDeleted` (same as `isSoleOwner`)
@@ -525,10 +532,11 @@ model User {
 
 #### Integration Tests
 
-**New:**
-
 - `tests/integration/admin/user-lifecycle.test.ts`
 - `tests/integration/admin/authentication-lifecycle.test.ts`
+- `tests/integration/admin/admin-audit.test.ts`
+- `tests/integration/admin/admin-idor.test.ts`
+- `tests/integration/admin/workspace-cascade.test.ts`
 
 **Coverage:**
 
@@ -599,13 +607,84 @@ This is display-only. `AdminSelfProtectionError` remains enforced in the applica
 - The UI never calculates delete impact itself
 - Server-side authorization remains authoritative
 
+## Phase 4: Audit, Hardening, and Certification (Implemented)
+
+Phase 4 does not add product features. It makes the existing Admin capability auditable, transactionally consistent, and regression-safe.
+
+### Audit Model
+
+Privileged lifecycle mutations persist an `AdminAction` row:
+
+| Field | Meaning |
+| --- | --- |
+| `id` | Server-generated UUID |
+| `adminUserId` | Authenticated Admin identity from `requireAdminAuthorization()` |
+| `targetUserId` | Target user id |
+| `action` | `DISABLE_USER` \| `ENABLE_USER` \| `DELETE_USER` |
+| `createdAt` | Database `now()` — never client-supplied |
+
+There is no audit dashboard, search, filter, or analytics UI.
+
+### Audited Actions
+
+Only privileged mutations are audited:
+
+- `DISABLE_USER`
+- `ENABLE_USER`
+- `DELETE_USER`
+
+Reads such as `listUsers()` and `analyzeUserDeleteImpact()` are not audited.
+
+### Transaction / Audit Atomicity
+
+`recordAdminAction()` runs inside the same Prisma interactive transaction as the mutation.
+
+- If the mutation fails, no audit row is committed
+- If audit persistence fails, the mutation rolls back
+- There is no asynchronous audit path
+
+### DELETE_USER Audit Semantics
+
+Deleted users are anonymized. The audit row stores `targetUserId` only.
+
+- The anonymized `user` row remains, so `targetUserId` still identifies the operation
+- Original email and name are **not** copied into `AdminAction`
+- This preserves Phase 2 anonymization. The retention tradeoff is that audit cannot reconstruct the pre-delete identity; it can only prove that the Admin performed `DELETE_USER` against that durable user id
+
+### Session Invalidation
+
+Disable deletes the target's Better Auth sessions in the same transaction as `disabledAt`. Delete already deleted sessions. `getAuthSessionFromHeaders()` also treats `disabledAt` / `deletedAt` as unauthenticated.
+
+### Security Invariants
+
+1. **Server-side authorization**: every Admin route and server action independently calls `requireAdminAuthorization()`
+2. **Google identity verification**: matching email alone is insufficient
+3. **No client-side trust**: navigation visibility is not authorization
+4. **Secret isolation**: `ADMIN_GOOGLE_EMAIL` is server-only and never `NEXT_PUBLIC_*`
+5. **Workspace isolation preservation**: Admin authorization does not weaken workspace protection
+6. **No privilege escalation**: Admin has no elevated workspace privileges
+7. **Admin self-protection**: Admin cannot disable or delete itself
+8. **Authorization identity**: Admin identity always comes from the authenticated session, never from a client-supplied actor id
+9. **Target manipulation**: changing `targetUserId` cannot bypass Admin authorization or delete workspaces outside the target's ownership rules
+10. **Audit integrity**: a successful lifecycle mutation cannot commit without its audit row
+11. **Referential integrity**: sole-owner cascade is explicit and ordered; shared-owner workspaces are preserved
+12. **Terminal deletion**: deleted users cannot be enabled or deleted again
+
+### Known Limitations
+
+- Single Admin only. No RBAC, no multiple Admins
+- No audit UI
+- Google verification checks that the authenticated user has a Google-linked Better Auth `Account`, then compares the session email to `ADMIN_GOOGLE_EMAIL`
+- Credential sign-in for a disabled user may persist an inert Better Auth session row; application session resolution still returns unauthenticated and disable/delete revoke existing sessions
+- `InvalidAdminConfigurationError` is mapped to a generic unauthorized message in the Admin UI so configuration details are not leaked
+
 ## Future Phases (Not Implemented)
 
-### Phase 4: Admin Audit
+### Audit dashboard
 
-- Audit trail for lifecycle operations
-- Admin activity log
-- User lifecycle history
+- Admin activity log UI
+- Audit search/filter
+- User lifecycle history views
 
 ### Generic RBAC
 
@@ -614,11 +693,11 @@ This is display-only. `AdminSelfProtectionError` remains enforced in the applica
 - Multiple admin roles
 - Admin role assignment
 
-These capabilities are explicitly **not** part of Phase 3.
+These capabilities are explicitly **not** part of Phase 4.
 
 ## Security Invariants
 
-Admin Phase 1 establishes the following security guarantees:
+Admin Phase 1–4 establish the following security guarantees:
 
 1. **Server-side authorization**: All Admin operations enforce authorization independently
 2. **Google identity verification**: Matching email alone is insufficient
@@ -628,6 +707,8 @@ Admin Phase 1 establishes the following security guarantees:
 6. **Independent verification**: Every Admin route/action calls `requireAdminAuthorization()`
 7. **No privilege escalation**: Admin has no elevated workspace privileges
 8. **Route protection**: Direct `/admin` URL access is protected
+9. **Audit atomicity**: Lifecycle mutations and audit records commit together
+10. **Anonymized delete traceability**: Delete audit uses `targetUserId` without storing original PII
 
 ## Implementation Files
 
@@ -640,6 +721,7 @@ Admin Phase 1 establishes the following security guarantees:
 - `src/application/admin/enable-user.ts`
 - `src/application/admin/delete-user.ts`
 - `src/application/admin/analyze-user-delete-impact.ts`
+- `src/application/admin/record-admin-action.ts`
 
 ### Routes
 
@@ -665,6 +747,11 @@ Admin Phase 1 establishes the following security guarantees:
 - `tests/unit/application/admin/admin-configuration.test.ts`
 - `tests/unit/features/admin/`
 - `tests/e2e/admin.spec.ts`
+- `tests/integration/admin/admin-audit.test.ts`
+- `tests/integration/admin/admin-idor.test.ts`
+- `tests/integration/admin/workspace-cascade.test.ts`
+- `tests/integration/admin/authentication-lifecycle.test.ts`
+- `tests/integration/admin/user-lifecycle.test.ts`
 
 ### Configuration
 
@@ -672,15 +759,13 @@ Admin Phase 1 establishes the following security guarantees:
 
 ## Next Steps
 
-Future Admin phases will build upon this authorization and dashboard foundation:
+Future Admin phases may add an audit dashboard or generic RBAC. They are not implemented.
 
-1. Admin audit trail
-2. Admin activity history
-
-Each phase will:
+Each future phase must:
 
 - Use `requireAdminAuthorization()` for all server operations
 - Follow the established security model
-- Maintain the single-admin constraint
+- Maintain the single-admin constraint until RBAC is an explicit product decision
 - Preserve workspace isolation
+- Keep audit writes in the same transaction as the mutation
 - Apply the architectural decisions documented here

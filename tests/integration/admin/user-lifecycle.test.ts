@@ -280,5 +280,13 @@ describe("User Lifecycle Integration", () => {
         UserAlreadyDeletedError,
       );
     });
+
+    it("should prevent analyzing delete impact for a deleted user", async () => {
+      await deleteUser(testUserId);
+
+      await expect(analyzeUserDeleteImpact(testUserId)).rejects.toThrow(
+        UserAlreadyDeletedError,
+      );
+    });
   });
 });
