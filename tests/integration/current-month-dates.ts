@@ -17,6 +17,9 @@ import { getCurrentMonthPeriod } from "@/lib/analytics-periods";
  * explicit timezone, which defaults to "UTC" - correct for integration
  * fixtures that are not asserting timezone-authority behavior (that is
  * tested separately in the P105-03 unit and integration suites).
+ *
+ * Tests that fixture days after the 1st (e.g. day 15) must pin the clock
+ * via `pinIntegrationClock()` so those days stay inside first-of-month→today.
  */
 
 function currentMonthReference(): { year: number; month: number } {

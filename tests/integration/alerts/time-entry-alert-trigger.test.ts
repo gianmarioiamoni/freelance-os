@@ -7,6 +7,10 @@
  */
 import { describe, expect, it } from "vitest";
 
+import { pinIntegrationClock } from "../freeze-system-time";
+
+pinIntegrationClock();
+
 import { createTimeEntry } from "@/application/time-entries/create-time-entry";
 import { updateTimeEntry } from "@/application/time-entries/update-time-entry";
 import { deleteTimeEntry } from "@/application/time-entries/delete-time-entry";

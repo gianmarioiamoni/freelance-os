@@ -125,7 +125,7 @@ The review found no P0 or P1 issues in the Phase 4 diff.
 | P2 | Google verification confirms a Google `Account` row for the user id and compares the session email to `ADMIN_GOOGLE_EMAIL`. It does not bind the OAuth subject email independently. | Accepted / pre-existing Phase 1 |
 | P3 | `InvalidAdminConfigurationError` is shown as generic unauthorized in the Admin UI. | Accepted — avoids configuration leakage |
 | P3 | No audit UI. | Accepted — Phase 4 boundary |
-| P3 | Date-sensitive analytics/alert integration tests can fail when current-month fixtures fall outside today's date. Unrelated to Admin. | Accepted / pre-existing |
+| P3 | Date-sensitive analytics/alert integration tests can fail when current-month fixtures fall outside today's date. Unrelated to Admin. | Closed by development freeze — tests now pin a fixed clock |
 
 No P0 or P1 finding was downgraded.
 
@@ -228,7 +228,6 @@ pnpm lint       PASS (0 errors)
 - P2 Google account-link check is not an OAuth subject bind
 - P3 generic unauthorized for invalid Admin configuration
 - P3 no audit UI
-- P3 unrelated date-sensitive analytics/alert integration failures
 
 ---
 

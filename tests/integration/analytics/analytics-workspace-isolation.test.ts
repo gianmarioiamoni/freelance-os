@@ -2,6 +2,10 @@
 import { randomUUID } from "node:crypto";
 
 import { beforeEach, describe, expect, it } from "vitest";
+
+import { pinIntegrationClock } from "../freeze-system-time";
+
+pinIntegrationClock();
 import { AnalyticsService } from "@/application/analytics/analytics-service";
 import { InvalidPersistenceStateError } from "@/domain/persistence-errors";
 import { UnauthorizedWorkspaceAccessError } from "@/domain/workspace-errors";

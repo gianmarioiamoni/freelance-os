@@ -1,5 +1,9 @@
 // tests/integration/dashboard/dashboard-page.test.ts
 import { beforeEach, describe, expect, it } from "vitest";
+
+import { pinIntegrationClock } from "../freeze-system-time";
+
+pinIntegrationClock();
 import { AnalyticsService } from "@/application/analytics/analytics-service";
 import {
   currentMonthDay,

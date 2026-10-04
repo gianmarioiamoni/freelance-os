@@ -161,7 +161,7 @@ test("should complete authenticated time tracking journey", async ({ page }) => 
   await expect(page.getByText("Billable: 0m")).toBeVisible();
 
   // Test weekly view
-  await page.getByRole("link", { name: "Weekly View" }).click();
+  await page.getByRole("link", { name: "Weekly" }).click();
   await expect(page).toHaveURL(/\/time-tracking\?view=week/);
   await expect(page.getByText("Weekly timesheet view")).toBeVisible();
 
@@ -170,7 +170,7 @@ test("should complete authenticated time tracking journey", async ({ page }) => 
   await expect(page.getByText("Week Total: 3h")).toBeVisible();
 
   // Test navigation between views
-  await page.getByRole("link", { name: "Daily View" }).click();
+  await page.getByRole("link", { name: "Daily" }).click();
   await expect(page).toHaveURL(/\/time-tracking\?date=/);
 
   // Test date navigation

@@ -165,6 +165,10 @@ describe("payment alert evaluation and triggers", () => {
   it("re-evaluates on payment update/delete and invoice amount/date updates", async () => {
     const context = await buildContext("triggers");
     const { invoice } = await seedInvoice(context, "triggers", {
+      // Implicit mutation triggers use wall-clock `now`. A far-future invoice
+      // date keeps those steps free of PAYMENT_OVERDUE; overdue is asserted
+      // later with an explicit evaluation instant.
+      invoiceDate: "2099-06-01",
       paymentTermsDays: "30",
     });
     const payment = await createPayment(

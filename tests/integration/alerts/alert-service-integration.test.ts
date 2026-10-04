@@ -7,6 +7,10 @@
  */
 import { describe, expect, it } from "vitest";
 
+import { pinIntegrationClock } from "../freeze-system-time";
+
+pinIntegrationClock();
+
 import { createFirstWorkspace } from "@/application/workspace/create-first-workspace";
 import { createClient } from "@/application/clients/create-client";
 import { createContract } from "@/application/contracts/create-contract";
