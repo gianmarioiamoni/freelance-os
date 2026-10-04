@@ -81,7 +81,7 @@ Admin functionality lives in the `(admin)` route group:
 src/app/(admin)/
   layout.tsx       # Enforces requireAdminAuthorization()
   admin/
-    page.tsx       # Admin placeholder page
+    page.tsx       # Admin user management dashboard
 ```
 
 The `(admin)` layout:
@@ -149,14 +149,14 @@ Thrown when:
 
 ## Navigation
 
-Admin Phase 1 does **not** implement the Admin dashboard UI or navigation menu entry.
+The Admin navigation item is visible only when `isAuthenticatedUserAdmin()` returns true.
 
-The navigation architecture has been prepared to support future Admin menu visibility through `isAuthenticatedUserAdmin()`, but:
-
-- No UI changes are included in Phase 1
-- Navigation rendering is a UX convenience only
-- Server-side authorization remains authoritative
+- Visibility is a UX convenience only
+- The item is rendered from the server-provided `isAdmin` flag in the application shell
+- `ADMIN_GOOGLE_EMAIL` is never sent to the browser
+- Server-side `requireAdminAuthorization()` remains authoritative
 - Route visibility does not constitute authorization
+- Normal users never see the Admin item
 
 ## Testing
 
@@ -206,7 +206,7 @@ Phase 2 establishes the complete server-side User Lifecycle, including:
 - Admin self-protection
 - Authentication lifecycle enforcement
 
-**No Admin dashboard UI** is implemented in Phase 2. UI development is deferred to Phase 3.
+Phase 2 implements the server-side lifecycle services. The Admin dashboard UI is implemented in Phase 3 and calls these services without duplicating their logic.
 
 ### User Lifecycle Fields
 
@@ -386,9 +386,8 @@ type WorkspaceImpact = {
 
 **Purpose:**
 
-- Server-side operation reusable by future Admin UI
+- Server-side operation reused by the Admin delete confirmation UI
 - Provides confirmation data for delete decisions
-- No UI implemented in Phase 2
 
 ### Authentication Lifecycle Enforcement
 
@@ -544,16 +543,63 @@ model User {
 - Authentication blocking for deleted users
 - Atomicity failure scenarios
 
+## Phase 3: Admin Dashboard UI (Implemented)
+
+### Overview
+
+Phase 3 adds the first usable Admin UI over the existing Phase 2 application services.
+
+The dashboard is operational, not analytical. It does **not** implement search, filtering, pagination, bulk actions, audit logs, analytics, or workspace management.
+
+### Admin Dashboard
+
+`/admin` is a server-rendered page in the `(admin)` route group.
+
+- Calls `listUsers()` after layout-level `requireAdminAuthorization()`
+- Works without workspace context
+- Shows a user table and lifecycle actions
+- Uses `revalidatePath("/admin")` after mutations
+
+### User Lifecycle UI
+
+The table displays name, email, lifecycle status, registration date (`createdAt`), and actions.
+
+Status values:
+
+- **Active**
+- **Disabled**
+- **Deleted**
+
+Deleted users show the anonymized identity persisted by Phase 2. The UI does not reconstruct original identity and does not expose Enable, Disable, or Delete for deleted users.
+
+### Delete Impact Preview
+
+Opening Delete calls `analyzeUserDeleteImpact()` before any mutation.
+
+The dialog displays only data returned by that service:
+
+- Sole-owner workspaces as **Workspaces That Will Be Deleted**
+- Shared-owner workspaces as **Workspaces That Will Be Preserved**
+- An explicit no-workspace message when the user owns no workspaces
+
+If any workspace will be deleted, the Admin must check an explicit confirmation control before **Delete User** is enabled.
+
+Cancel closes the dialog without calling `deleteUser()`.
+
+### Admin Self-Protection in UI
+
+The Admin row is labeled **(Admin)** and shows **Admin (protected)** instead of Disable/Delete.
+
+This is display-only. `AdminSelfProtectionError` remains enforced in the application services.
+
+### Authorization
+
+- `listUsers()` and every lifecycle server action call `requireAdminAuthorization()`
+- Navigation visibility uses `isAuthenticatedUserAdmin()` only
+- The UI never calculates delete impact itself
+- Server-side authorization remains authoritative
+
 ## Future Phases (Not Implemented)
-
-### Phase 3: Admin Dashboard UI
-
-- User listing table
-- User status display
-- Disable/Enable user actions
-- Delete user with impact confirmation
-- Admin navigation menu
-- User search/filtering
 
 ### Phase 4: Admin Audit
 
@@ -568,7 +614,7 @@ model User {
 - Multiple admin roles
 - Admin role assignment
 
-These capabilities are explicitly **not** part of Phase 2.
+These capabilities are explicitly **not** part of Phase 3.
 
 ## Security Invariants
 
@@ -589,18 +635,35 @@ Admin Phase 1 establishes the following security guarantees:
 
 - `src/application/admin/admin-authorization.ts`
 - `src/application/admin/admin-errors.ts`
+- `src/application/admin/list-users.ts`
+- `src/application/admin/disable-user.ts`
+- `src/application/admin/enable-user.ts`
+- `src/application/admin/delete-user.ts`
+- `src/application/admin/analyze-user-delete-impact.ts`
 
 ### Routes
 
 - `src/app/(admin)/layout.tsx`
 - `src/app/(admin)/admin/page.tsx`
 
+### UI
+
+- `src/features/admin/UserListTable.tsx`
+- `src/features/admin/UserStatus.tsx`
+- `src/features/admin/UserActions.tsx`
+- `src/features/admin/DisableUserDialog.tsx`
+- `src/features/admin/EnableUserDialog.tsx`
+- `src/features/admin/DeleteUserDialog.tsx`
+- `src/features/admin/DeleteImpactPreview.tsx`
+
 ### Tests
 
 - `tests/integration/admin/admin-authorization.test.ts`
+- `tests/integration/admin/admin-ui-authorization.test.ts`
 - `tests/integration/admin/workspace-protection.test.ts`
 - `tests/integration/admin/helpers.ts`
 - `tests/unit/application/admin/admin-configuration.test.ts`
+- `tests/unit/features/admin/`
 - `tests/e2e/admin.spec.ts`
 
 ### Configuration
@@ -609,14 +672,10 @@ Admin Phase 1 establishes the following security guarantees:
 
 ## Next Steps
 
-Future Admin phases will build upon this authorization foundation:
+Future Admin phases will build upon this authorization and dashboard foundation:
 
-1. Admin dashboard UI
-2. User listing
-3. User status management (`disabledAt`)
-4. User disable/enable
-5. User delete with workspace cascade
-6. Admin audit trail
+1. Admin audit trail
+2. Admin activity history
 
 Each phase will:
 

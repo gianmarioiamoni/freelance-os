@@ -1,6 +1,7 @@
 // playwright.config.ts
 import { defineConfig, devices } from "@playwright/test";
 
+import { E2E_ADMIN_GOOGLE_EMAIL } from "./tests/e2e/helpers/admin-env";
 import { requireTestDatabaseUrl } from "./tests/integration/test-database-url";
 
 const testDatabaseUrl = requireTestDatabaseUrl();
@@ -49,6 +50,7 @@ export default defineConfig({
       AI_E2E_MOCK: "true",
       BETTER_AUTH_URL: betterAuthUrl,
       BETTER_AUTH_SECRET: betterAuthSecret,
+      ADMIN_GOOGLE_EMAIL: E2E_ADMIN_GOOGLE_EMAIL,
       ...(useProductionWebServer ? { AUTH_E2E_RUNTIME: "true" } : {}),
     },
   },

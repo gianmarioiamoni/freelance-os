@@ -26,6 +26,12 @@ describe("enableUser", () => {
   it("should enable a disabled user", async () => {
     const mockUser = {
       id: mockTargetUserId,
+      name: "Test User",
+      email: "test@example.com",
+      emailVerified: false,
+      image: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
       disabledAt: new Date(),
       deletedAt: null,
     };
@@ -34,15 +40,8 @@ describe("enableUser", () => {
     const updateSpy = vi
       .spyOn(prisma.user, "update")
       .mockResolvedValue({
-        id: mockTargetUserId,
-        name: "Test",
-        email: "test@example.com",
-        emailVerified: false,
-        image: null,
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        ...mockUser,
         disabledAt: null,
-        deletedAt: null,
       });
 
     await enableUser(mockTargetUserId);
@@ -64,6 +63,12 @@ describe("enableUser", () => {
   it("should throw UserDeletedError when user is deleted", async () => {
     const mockUser = {
       id: mockTargetUserId,
+      name: "Test User",
+      email: "test@example.com",
+      emailVerified: false,
+      image: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
       disabledAt: new Date(),
       deletedAt: new Date(),
     };
@@ -76,6 +81,12 @@ describe("enableUser", () => {
   it("should throw UserNotDisabledError when user is not disabled", async () => {
     const mockUser = {
       id: mockTargetUserId,
+      name: "Test User",
+      email: "test@example.com",
+      emailVerified: false,
+      image: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
       disabledAt: null,
       deletedAt: null,
     };
@@ -90,21 +101,20 @@ describe("enableUser", () => {
   it("should require admin authorization", async () => {
     const mockUser = {
       id: mockTargetUserId,
+      name: "Test User",
+      email: "test@example.com",
+      emailVerified: false,
+      image: null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
       disabledAt: new Date(),
       deletedAt: null,
     };
 
     vi.spyOn(prisma.user, "findUnique").mockResolvedValue(mockUser);
     vi.spyOn(prisma.user, "update").mockResolvedValue({
-      id: mockTargetUserId,
-      name: "Test",
-      email: "test@example.com",
-      emailVerified: false,
-      image: null,
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      ...mockUser,
       disabledAt: null,
-      deletedAt: null,
     });
 
     await enableUser(mockTargetUserId);

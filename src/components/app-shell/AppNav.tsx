@@ -10,11 +10,16 @@ import type { JSX } from "react";
 type AppNavProps = {
   onNavigate?: () => void;
   unreadAlertCount?: number;
+  isAdmin?: boolean;
 };
 
-export function AppNav({ onNavigate, unreadAlertCount = 0 }: AppNavProps): JSX.Element {
+export function AppNav({
+  onNavigate,
+  unreadAlertCount = 0,
+  isAdmin = false,
+}: AppNavProps): JSX.Element {
   const pathname = usePathname();
-  const navigationItems = buildNavigationItems(unreadAlertCount);
+  const navigationItems = buildNavigationItems(unreadAlertCount, isAdmin);
 
   return (
     <ul className="flex flex-col gap-1">

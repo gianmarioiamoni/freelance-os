@@ -7,6 +7,7 @@ import {
   FileText,
   LayoutDashboard,
   Settings,
+  ShieldAlert,
   type LucideIcon,
 } from "lucide-react";
 
@@ -17,8 +18,11 @@ export type NavigationItem = {
   badge?: number;
 };
 
-export function buildNavigationItems(unreadAlertCount: number): NavigationItem[] {
-  return [
+export function buildNavigationItems(
+  unreadAlertCount: number,
+  isAdmin: boolean = false,
+): NavigationItem[] {
+  const items: NavigationItem[] = [
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { href: "/clients", label: "Clients", icon: Building2 },
     { href: "/contracts", label: "Contracts", icon: FileText },
@@ -32,6 +36,12 @@ export function buildNavigationItems(unreadAlertCount: number): NavigationItem[]
     },
     { href: "/settings", label: "Settings", icon: Settings },
   ];
+
+  if (isAdmin) {
+    items.push({ href: "/admin", label: "Admin", icon: ShieldAlert });
+  }
+
+  return items;
 }
 
 export function isNavigationItemActive(

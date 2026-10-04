@@ -8,6 +8,7 @@ type AppShellProps = {
   children: ReactNode;
   workspaceName: string;
   unreadAlertCount: number;
+  isAdmin: boolean;
 };
 
 export function AppShell({
@@ -15,6 +16,7 @@ export function AppShell({
   children,
   workspaceName,
   unreadAlertCount,
+  isAdmin,
 }: AppShellProps): JSX.Element {
   return (
     <div className="flex min-h-svh flex-col">
@@ -24,9 +26,14 @@ export function AppShell({
       >
         Skip to content
       </a>
-      <AppHeader accountLabel={accountLabel} workspaceName={workspaceName} unreadAlertCount={unreadAlertCount} />
+      <AppHeader
+        accountLabel={accountLabel}
+        workspaceName={workspaceName}
+        unreadAlertCount={unreadAlertCount}
+        isAdmin={isAdmin}
+      />
       <div className="flex min-w-0 flex-1">
-        <AppSidebar unreadAlertCount={unreadAlertCount} />
+        <AppSidebar unreadAlertCount={unreadAlertCount} isAdmin={isAdmin} />
         <main id="main-content" className="min-w-0 flex-1 px-4 py-6 md:px-8">
           {children}
         </main>

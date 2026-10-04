@@ -4,6 +4,7 @@ import { requireAdminAuthorization } from "@/application/admin/admin-authorizati
 import { SignOutButton } from "@/features/auth/SignOutButton";
 import { ErrorState } from "@/components/states/ErrorState";
 import { getServerAuthSession } from "@/infrastructure/auth/session";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import type { JSX, ReactNode } from "react";
 
@@ -30,9 +31,12 @@ export default async function AdminLayout({
     <div className="flex min-h-svh flex-col">
       <header className="sticky top-0 z-40 border-b bg-background">
         <div className="flex h-14 items-center justify-between px-4">
-          <p className="text-sm font-semibold tracking-tight">
+          <Link
+            href="/dashboard"
+            className="text-sm font-semibold tracking-tight outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
             FreelanceOS Admin
-          </p>
+          </Link>
           <SignOutButton />
         </div>
       </header>

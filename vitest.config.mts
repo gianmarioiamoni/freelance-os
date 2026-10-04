@@ -12,8 +12,17 @@ export default defineConfig({
       "server-only": path.resolve(rootDir, "tests/integration/stubs/server-only.ts"),
     },
   },
+  oxc: {
+    jsx: {
+      runtime: "automatic",
+    },
+  },
   test: {
     environment: "node",
-    include: ["tests/unit/**/*.test.ts"],
+    include: [
+      "tests/unit/**/*.test.ts",
+      "tests/unit/features/admin/**/*.test.tsx",
+    ],
+    setupFiles: ["./tests/unit/setup.ts"],
   },
 });

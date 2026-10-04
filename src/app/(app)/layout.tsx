@@ -1,5 +1,6 @@
 // src/app/(app)/layout.tsx
 import { SIGN_IN_PATH } from "@/application/auth/route-access";
+import { isAuthenticatedUserAdmin } from "@/application/admin/admin-authorization";
 import { getAuthorizedWorkspace } from "@/application/workspace/get-authorized-workspace";
 import { getAccountDisplayLabel } from "@/components/app-shell/account-label";
 import { AppShell } from "@/components/app-shell/AppShell";
@@ -43,6 +44,7 @@ export default async function AppLayout({
   }
 
   const unreadAlertCount = await loadUnreadNotificationCount();
+  const isAdmin = await isAuthenticatedUserAdmin();
 
   return (
     <AppShell
@@ -52,6 +54,7 @@ export default async function AppLayout({
         session.user.email,
       )}
       unreadAlertCount={unreadAlertCount}
+      isAdmin={isAdmin}
     >
       {children}
     </AppShell>
