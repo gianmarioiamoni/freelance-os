@@ -7,7 +7,6 @@ import {
 } from "./helpers/first-workspace";
 
 const OVERVIEW_PROMPT = "Come sto andando questo mese?";
-const UNAVAILABLE_QUESTION = "Is the provider down?";
 
 async function openWorkspace(page: Page, prefix: string): Promise<void> {
   await registerAndCreateFirstWorkspace(page, {

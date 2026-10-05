@@ -111,7 +111,7 @@ describe("Time Tracking view selector (P1-02)", () => {
       const dailyPage = await TimeTrackingPage({
         searchParams: Promise.resolve({ date: "2026-10-15" }),
       });
-      const { container: dailyContainer } = render(dailyPage);
+      render(dailyPage);
       
       const dailyButtons = dailyContainer.querySelectorAll('a, span');
       const dailyActive = Array.from(dailyButtons).find(
@@ -123,7 +123,7 @@ describe("Time Tracking view selector (P1-02)", () => {
       const weeklyPage = await TimeTrackingPage({
         searchParams: Promise.resolve({ view: "week", start: "2026-10-07" }),
       });
-      const { container: weeklyContainer } = render(weeklyPage);
+      render(weeklyPage);
       
       const weeklyButtons = weeklyContainer.querySelectorAll('a, span');
       const weeklyActive = Array.from(weeklyButtons).find(
@@ -165,14 +165,14 @@ describe("Time Tracking view selector (P1-02)", () => {
       const dailyPage = await TimeTrackingPage({
         searchParams: Promise.resolve({ date: "2026-10-15" }),
       });
-      const { container: dailyContainer } = render(dailyPage);
+      render(dailyPage);
       expect(screen.getByTestId("time-entry-list")).toBeDefined();
 
       // Weekly view from URL (different render)
       const weeklyPage = await TimeTrackingPage({
         searchParams: Promise.resolve({ view: "week" }),
       });
-      const { container: weeklyContainer } = render(weeklyPage);
+      render(weeklyPage);
       expect(screen.getByTestId("weekly-timesheet")).toBeDefined();
     });
   });

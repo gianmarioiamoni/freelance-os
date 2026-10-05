@@ -2,6 +2,7 @@
 import { SIGN_IN_PATH } from "@/application/auth/route-access";
 import { requireAdminAuthorization } from "@/application/admin/admin-authorization";
 import { SignOutButton } from "@/features/auth/SignOutButton";
+import { BrandMark } from "@/features/landing/BrandMark";
 import { ErrorState } from "@/components/states/ErrorState";
 import { getServerAuthSession } from "@/infrastructure/auth/session";
 import Link from "next/link";
@@ -33,8 +34,9 @@ export default async function AdminLayout({
         <div className="flex h-14 items-center justify-between px-4">
           <Link
             href="/dashboard"
-            className="text-sm font-semibold tracking-tight outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="inline-flex items-center gap-2 text-sm font-semibold tracking-tight outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
+            <BrandMark />
             FreelanceOS Admin
           </Link>
           <SignOutButton />
