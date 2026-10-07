@@ -344,6 +344,18 @@ describe("serializeReportPdf", () => {
       /getContractReport|getHoursByClient|getRevenueOverview/,
     );
   });
+
+  it("embeds Roboto via VFS and never opens node_modules TTF paths", async () => {
+    const serializer = readFileSync("src/features/reporting/report-pdf.ts", "utf8");
+    expect(serializer).toContain('pdfmake/build/vfs_fonts');
+    expect(serializer).toContain("virtualfs.writeFileSync");
+    expect(serializer).toContain("setLocalAccessPolicy(() => false)");
+    expect(serializer).not.toContain("pdfmake/fonts/Roboto");
+    expect(serializer).not.toMatch(/ALLOWED_FONT_PATHS|readFileSync/);
+
+    const buffer = await serializeReportPdf(source());
+    expect(buffer.subarray(0, 5).toString("utf8")).toBe("%PDF-");
+  });
 });
 
 describe("reportPdfFilename", () => {

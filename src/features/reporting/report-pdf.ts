@@ -2,7 +2,7 @@
 import "server-only";
 
 import pdfmake from "pdfmake";
-import Roboto from "pdfmake/fonts/Roboto";
+import vfsFonts from "pdfmake/build/vfs_fonts";
 
 import type { ContractReport } from "@/application/reporting/reporting-service";
 import {
@@ -14,9 +14,26 @@ import { getCalendarDateKey } from "@/lib/analytics-periods";
 export type { ReportPdfSource } from "@/features/reporting/report-pdf-definition";
 export { buildReportPdfDocDefinition } from "@/features/reporting/report-pdf-definition";
 
-const ALLOWED_FONT_PATHS = new Set(
-  Object.values(Roboto.Roboto).filter((value): value is string => typeof value === "string"),
-);
+type PdfMakeVirtualFs = {
+  writeFileSync(filename: string, content: Buffer): void;
+};
+
+type PdfMakeRuntime = typeof pdfmake & {
+  virtualfs: PdfMakeVirtualFs;
+};
+
+const pdfMakeRuntime = pdfmake as PdfMakeRuntime;
+
+/**
+ * Virtual filenames for Roboto faces embedded via pdfmake's VFS (base64 in JS).
+ * Avoids absolute node_modules TTF paths that are missing on Vercel/serverless.
+ */
+const ROBOTO_VFS_FILES = {
+  normal: "Roboto-Regular.ttf",
+  bold: "Roboto-Medium.ttf",
+  italics: "Roboto-Italic.ttf",
+  bolditalics: "Roboto-MediumItalic.ttf",
+} as const;
 
 let fontsConfigured = false;
 
@@ -30,7 +47,7 @@ let fontsConfigured = false;
 export async function serializeReportPdf(source: ReportPdfSource): Promise<Buffer> {
   ensurePdfFonts();
   const definition = buildReportPdfDocDefinition(source);
-  const pdf = pdfmake.createPdf(definition);
+  const pdf = pdfMakeRuntime.createPdf(definition);
   const buffer = await pdf.getBuffer();
   return Buffer.isBuffer(buffer) ? buffer : Buffer.from(buffer);
 }
@@ -63,10 +80,31 @@ function ensurePdfFonts(): void {
     return;
   }
 
-  pdfmake.setFonts(Roboto);
-  pdfmake.setUrlAccessPolicy(() => false);
-  pdfmake.setLocalAccessPolicy((filePath) => ALLOWED_FONT_PATHS.has(filePath));
+  for (const filename of Object.values(ROBOTO_VFS_FILES)) {
+    const base64 = resolveEmbeddedFontBase64(filename);
+    pdfMakeRuntime.virtualfs.writeFileSync(filename, Buffer.from(base64, "base64"));
+  }
+
+  pdfMakeRuntime.setFonts({
+    Roboto: {
+      normal: ROBOTO_VFS_FILES.normal,
+      bold: ROBOTO_VFS_FILES.bold,
+      italics: ROBOTO_VFS_FILES.italics,
+      bolditalics: ROBOTO_VFS_FILES.bolditalics,
+    },
+  });
+  pdfMakeRuntime.setUrlAccessPolicy(() => false);
+  // Fonts are served exclusively from the in-memory VFS — never from the filesystem.
+  pdfMakeRuntime.setLocalAccessPolicy(() => false);
   fontsConfigured = true;
+}
+
+function resolveEmbeddedFontBase64(filename: string): string {
+  const base64 = vfsFonts[filename];
+  if (typeof base64 !== "string" || base64.length === 0) {
+    throw new Error(`Missing embedded PDF font: ${filename}`);
+  }
+  return base64;
 }
 
 function sanitizeFilenameToken(value: string): string {
