@@ -8,6 +8,7 @@ describe("buildNavigationItems - Admin visibility", () => {
 
     expect(items.find((item) => item.href === "/admin")).toBeUndefined();
     expect(items.some((item) => item.label === "Admin")).toBe(false);
+    expect(items.some((item) => item.label === "Invoices")).toBe(true);
   });
 
   it("shows the Admin item for the configured Admin", () => {

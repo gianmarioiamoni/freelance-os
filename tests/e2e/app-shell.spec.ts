@@ -9,6 +9,7 @@ const APPLICATION_NAV_LINKS = [
   "Contracts",
   "Time Tracking",
   "Reports",
+  "Invoices",
   "Alerts",
   "Settings",
 ] as const;

@@ -6,6 +6,7 @@ import {
   Clock,
   FileText,
   LayoutDashboard,
+  Receipt,
   Settings,
   ShieldAlert,
   type LucideIcon,
@@ -28,6 +29,7 @@ export function buildNavigationItems(
     { href: "/contracts", label: "Contracts", icon: FileText },
     { href: "/time-tracking", label: "Time Tracking", icon: Clock },
     { href: "/reports", label: "Reports", icon: BarChart3 },
+    { href: "/invoices", label: "Invoices", icon: Receipt },
     {
       href: "/alerts",
       label: "Alerts",
