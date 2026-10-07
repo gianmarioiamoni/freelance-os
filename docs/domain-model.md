@@ -1,7 +1,7 @@
 # FreelanceOS - Domain Model + Business Rules
 
 **Status:** Draft domain baseline  
-**Scope:** MVP (R1 baseline). R2 domain additions: `docs/release/r2-decision-pack.md`, `docs/release/r2-architecture-delta.md`. R2 planning baseline: `docs/release/r2-epic-map.md`. R2 is in planning and is not production-ready.
+**Scope:** MVP (R1 baseline). R2 domain additions: `docs/release/r2-decision-pack.md`, `docs/release/r2-architecture-delta.md`. R2 planning baseline: `docs/release/r2-epic-map.md`. R2.1 PRODUCTION-READY / FROZEN. R2.2 workspace revenue visibility recorded as CONDITIONAL GO (`docs/release/r2.2-certification.md`).
 
 ## 1. Domain Objective
 
@@ -27,6 +27,9 @@ The model must preserve historical correctness and provide deterministic results
 - **Forecast Revenue** *(R2)* - deterministic linear projection of Accrued Revenue: Accrued / elapsedFraction on the certified current period only. Elapsed includes today. elapsed=0 or Accrued=0 ⇒ 0. Historical/custom ⇒ null. Derived, not persisted. Not ML/AI.
 - **Invoice Tracking** *(R2)* - operational record of an invoiced amount and date for a Contract. Not a fiscal invoice. One Contract has many Invoices; one Invoice has exactly one Contract.
 - **Payment** *(R2)* - operational payment event against an Invoice Tracking record. Status is derived (UNPAID / PARTIAL / PAID / MISMATCH). PAYMENT_OVERDUE is independent.
+- **Invoiced** *(R2.2)* - workspace-period sum of ACTIVE Invoice amounts, grouped by Invoice currency. No FX. No mixed-currency total.
+- **Paid** *(R2.2)* - workspace-period sum of Payment amounts against those invoices, grouped by currency. No FX. No mixed-currency total.
+- **Outstanding** *(R2.2)* - presentation of remaining unpaid portion per currency from authoritative invoice/payment aggregates. Not a new persisted formula. No FX. No mixed-currency total.
 - **allocatedMinutes** *(R2)* - optional Contract-level total time budget in minutes. Distinct from `monthlyContractedMinutes`. Null = no allocation / no status / no alert. 0 = valid zero allocation / no status / no alert (8-C). Positive: `<80%` NORMAL, `80–100%` WARNING, `>100%` EXCEEDED.
 - **PIVA Balance** *(external)* - system that owns costs, profitability, and fiscality / accounting. Not part of the FreelanceOS domain.
 
@@ -263,6 +266,15 @@ COMPLETE WITH NON-BLOCKING FINDING
 (`docs/release/r2-e03-payment-tracking.md`). E04 is CERTIFIED
 (`docs/release/r2-e04-forecasting-allocation.md`). E05 is CERTIFIED
 (`docs/release/r2-e05-advanced-reporting-export.md`; P-E05-00…P-E05-06).
+
+**R2.2 supersession (2026-10-08):** Workspace-level `RevenueOverview`
+exposes Accrued / Expected / Forecast (unchanged AnalyticsService
+ownership) plus Invoiced / Paid / Outstanding from
+`WorkspaceInvoiceService`. Workspace `/invoices` is a discoverability
+surface over existing Invoice Tracking; creation and payment remain
+Contract-scoped. Excel/PDF export present reporting DTOs only; they do
+not redefine revenue or payment arithmetic. Canonical certification:
+`docs/release/r2.2-certification.md` (CONDITIONAL GO).
 
 ## 13. Capacity Model
 

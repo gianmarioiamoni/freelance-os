@@ -1,7 +1,7 @@
 # FreelanceOS - System Architecture
 
 **Status:** Architecture Baseline - Authentication, workspace, testing/CI, UI foundation, client management, contract management, time tracking, analytics/dashboard, reporting, alert evaluation with in-app notification center, and MVP Integration COMPLETE / CLOSED (EPIC-003, EPIC-004, EPIC-005, EPIC-006, EPIC-101, EPIC-102, EPIC-103, EPIC-104, EPIC-105, EPIC-106, MVP-INTEGRATION). MVP QA Gate PASS WITH FINDINGS. Documentation Gate COMPLETE. UX Gate PASS WITH FINDINGS. UX Polish COMPLETE. EPIC-107 Public Landing COMPLETE. MASTER_PLAN §34 - READY FOR RELEASE (`docs/release/production-validation.md`). MASTER_PLAN §35 - GRANTED (`docs/release/production-certification.md`). D-005 PROVIDED. Hosted production is `https://freelance-os-timeplan.vercel.app`. Mail transport is Gmail SMTP / Nodemailer. Custom domain was not purchased. Public `/` landing; authenticated Dashboard at `/dashboard`. Production readiness: RELEASE GRANTED.  
-**Scope:** MVP (R1 baseline). R2 domain delta: `docs/release/r2-architecture-delta.md`. R2 planning baseline: `docs/release/r2-epic-map.md`. R1 remains FROZEN. R2 is in planning and is not production-ready.  
+**Scope:** MVP (R1 baseline). R2 domain delta: `docs/release/r2-architecture-delta.md`. R2 planning baseline: `docs/release/r2-epic-map.md`. R1 remains FROZEN. R2.1 PRODUCTION-READY / FROZEN. **R2.2 Revenue Operations Visibility** implemented and recorded as **CONDITIONAL GO** (`docs/release/r2.2-certification.md`; plan `docs/release/r2.2-discovery-plan.md`).  
 **Architectural style:** Modular Monolith  
 **Primary runtime:** Next.js / TypeScript  
 **Persistence:** PostgreSQL via Prisma ORM
@@ -1088,7 +1088,23 @@ Custom Range is not a `Link`. JS validation is the authority; the form is
 remains a picker affordance. Annual Overview stays current-year and is
 not period-filtered or Client/Contract-filtered. Native CSV export is
 `GET /reports/export` with the same parser and workspace authorization.
+R2.2 adds server-only Excel (`GET /reports/export/excel`, `xlsx`) and PDF
+(`GET /reports/export/pdf`, `pdfmake`) of Revenue, Hours by Client, and
+Contract Report from the same reporting DTOs — no recalculation in the
+serializers. Reports UI exposes CSV / Excel / PDF controls; Excel/PDF
+buttons are client download controls against those routes.
 No new timezone logic; `getDateRangePeriod` / `resolvePeriod` unchanged.
+
+### R2.2 workspace revenue / invoices / assistant (summary)
+
+- `WorkspaceInvoiceService` provides workspace-scoped invoice summary
+  (Invoiced / Paid / Outstanding by currency, overdue count) and listing.
+- `ReportingService.getRevenueOverview` publishes Accrued / Expected /
+  Forecast (AnalyticsService) plus invoice metrics (WorkspaceInvoiceService).
+- Top-level routes: `/invoices` (workspace invoice access), `/assistant`
+  (AI ask surface). Reports no longer embeds `AnalyticsAskBox`; it links
+  to `/assistant`.
+- Certification / residuals: `docs/release/r2.2-certification.md`.
 
 Performance: a baseline has been measured at the EPIC-104 reference
 volume (100 clients, 50 contracts, 1000 time entries, 13 months). The
