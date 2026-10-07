@@ -170,11 +170,6 @@ describe("Monthly Timesheet Integration", () => {
       validFrom: "2026-01-01",
       validTo: "2026-06-30",
     });
-    const contract2 = await addHourlyContract(context, client.id, { 
-      rate: "100",
-      validFrom: "2026-07-01",
-      validTo: "2026-12-31",
-    });
 
     await createTimeEntry(
       context,
@@ -231,12 +226,6 @@ describe("Monthly Timesheet Integration", () => {
       currency: "EUR",
       validFrom: "2026-01-01",
       validTo: "2026-06-30",
-    });
-    const contractUsd = await addHourlyContract(context, client.id, {
-      rate: "100",
-      currency: "USD",
-      validFrom: "2026-07-01",
-      validTo: "2026-12-31",
     });
 
     await createTimeEntry(
