@@ -1,4 +1,5 @@
 // src/components/dashboard/Dashboard.tsx
+import type { RevenueOverview } from "@/application/reporting/reporting-service";
 import { MonthlyAnalytics } from "@/components/dashboard/MonthlyAnalytics";
 import { ClientAllocation } from "@/components/dashboard/ClientAllocation";
 import { ContractUtilization } from "@/components/dashboard/ContractUtilization";
@@ -12,11 +13,13 @@ import type { JSX } from "react";
 
 type DashboardProps = {
   analytics: MonthlyAnalyticsType;
+  revenueOverview: RevenueOverview;
   hasActiveClients: boolean;
 };
 
 export function Dashboard({
   analytics,
+  revenueOverview,
   hasActiveClients,
 }: DashboardProps): JSX.Element {
   const hasTimeEntries = analytics.totalMinutes > 0;
@@ -32,7 +35,7 @@ export function Dashboard({
       {hasTimeEntries ? (
         <div className="grid gap-6 lg:grid-cols-3">
           <div className="lg:col-span-3">
-            <MonthlyAnalytics analytics={analytics} />
+            <MonthlyAnalytics analytics={analytics} revenueOverview={revenueOverview} />
           </div>
           <div className="lg:col-span-2">
             <ClientAllocation allocations={analytics.clientAllocations} />

@@ -16,6 +16,10 @@ import {
   optionalAnalyticsFilter,
 } from "@/application/analytics/analytics-filter";
 import type { AnalyticsService } from "@/application/analytics/analytics-service";
+import type {
+  CurrencyAmount,
+  WorkspaceInvoiceService,
+} from "@/application/invoices/workspace-invoice-service";
 import type { WorkspaceContext } from "@/application/workspace/workspace-context";
 import {
   getTodayPeriod,
@@ -77,6 +81,27 @@ export type AnnualOverviewReport = {
   months: MonthlyAnalytics[];
 };
 
+/**
+ * Unified revenue overview for dashboard/reporting (R2.2-E01-P02).
+ *
+ * Accrued/Expected/Forecast remain AnalyticsService-owned.
+ * Invoiced/Paid/Outstanding come from WorkspaceInvoiceService.
+ * Currencies are never mixed or converted.
+ */
+export type RevenueOverview = {
+  period: AnalyticsPeriod;
+  periodKind: ReportingPeriodKind;
+  accrued: AccruedRevenue;
+  expected: ExpectedRevenue;
+  forecast: ForecastRevenue | null;
+  invoiced: CurrencyAmount[];
+  paid: CurrencyAmount[];
+  outstanding: CurrencyAmount[];
+  overdueCount: number;
+};
+
+const EMPTY_INVOICE_AMOUNTS: CurrencyAmount[] = [];
+
 // ---------------------------------------------------------------------------
 // Reporting service
 // ---------------------------------------------------------------------------
@@ -89,17 +114,22 @@ export type AnnualOverviewReport = {
  *   using `Workspace.timezone` (BR-105-014).
  * - Propagate optional workspace-scoped Client/Contract filters.
  * - Orchestrate shared analytics calls - AnalyticsService owns ALL arithmetic.
+ * - Orchestrate invoice revenue metrics via WorkspaceInvoiceService (R2.2-E01).
  * - Fail closed for invalid input (BR-105-010).
  *
  * Non-goals:
  * - No percentage, average, capacity, or utilization arithmetic here.
  * - No pro-rata formula here - it lives in AnalyticsService.
  * - No Accrued / Expected / Forecast / allocation formula here - AnalyticsService is the owner.
+ * - No invoice/payment arithmetic here - WorkspaceInvoiceService is the owner.
  * - No rollover or expiry semantics (OBD-012 open).
  * - No FX or mixed-currency total.
  */
 export class ReportingService {
-  constructor(private readonly analytics: AnalyticsService) {}
+  constructor(
+    private readonly analytics: AnalyticsService,
+    private readonly invoices: WorkspaceInvoiceService | null = null,
+  ) {}
 
   /**
    * Resolves a period-kind request into an `AnalyticsPeriod` using the
@@ -133,6 +163,50 @@ export class ReportingService {
       throw new ReportingError("Invalid custom period: startDate must be <= endDate");
     }
     return period;
+  }
+
+  /**
+   * Returns Accrued, Expected, Forecast, Invoiced, Paid, and Outstanding for a period.
+   * Accrued/Expected formulas remain unchanged in AnalyticsService.
+   * Invoice metrics are delegated to WorkspaceInvoiceService.
+   */
+  async getRevenueOverview(
+    context: WorkspaceContext,
+    request: PeriodKindRequest,
+    now: Date = new Date(),
+  ): Promise<RevenueOverview> {
+    const period = this.resolvePeriod(request, context.timezone, now);
+
+    const [accrued, expected, forecast, invoiceSummary] = await Promise.all([
+      this.analytics.getAccruedRevenue(context, period),
+      this.analytics.getExpectedRevenue(context, period),
+      this.analytics.getForecastRevenue(context, period),
+      this.invoices
+        ? this.invoices.getWorkspaceInvoiceSummary(context, {
+            period: {
+              startDate: period.startDate,
+              endDate: period.endDate,
+            },
+          })
+        : Promise.resolve({
+            invoicedByCurrency: EMPTY_INVOICE_AMOUNTS,
+            paidByCurrency: EMPTY_INVOICE_AMOUNTS,
+            outstandingByCurrency: EMPTY_INVOICE_AMOUNTS,
+            overdueCount: 0,
+          }),
+    ]);
+
+    return {
+      period,
+      periodKind: request,
+      accrued,
+      expected,
+      forecast,
+      invoiced: invoiceSummary.invoicedByCurrency,
+      paid: invoiceSummary.paidByCurrency,
+      outstanding: invoiceSummary.outstandingByCurrency,
+      overdueCount: invoiceSummary.overdueCount,
+    };
   }
 
   /**

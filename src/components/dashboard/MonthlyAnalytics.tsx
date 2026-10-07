@@ -1,15 +1,20 @@
 // src/components/dashboard/MonthlyAnalytics.tsx
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { AnalyticsService } from "@/application/analytics/analytics-service";
+import type { RevenueOverview } from "@/application/reporting/reporting-service";
 import type { MonthlyAnalytics } from "@/domain/analytics-types";
 import { RevenueSummary } from "@/features/reporting/RevenueSummary";
 import type { JSX } from "react";
 
 type MonthlyAnalyticsProps = {
   analytics: MonthlyAnalytics;
+  revenueOverview: RevenueOverview;
 };
 
-export function MonthlyAnalytics({ analytics }: MonthlyAnalyticsProps): JSX.Element {
+export function MonthlyAnalytics({
+  analytics,
+  revenueOverview,
+}: MonthlyAnalyticsProps): JSX.Element {
   const totalHours = AnalyticsService.formatDuration(analytics.totalMinutes);
   const billableHours = AnalyticsService.formatDuration(analytics.billableMinutes);
   const nonBillableHours = AnalyticsService.formatDuration(analytics.nonBillableMinutes);
@@ -67,7 +72,14 @@ export function MonthlyAnalytics({ analytics }: MonthlyAnalyticsProps): JSX.Elem
           </div>
         </dl>
         <div className="mt-6 border-t pt-4">
-          <RevenueSummary accrued={analytics.accrued} forecast={analytics.forecast} />
+          <RevenueSummary
+            accrued={revenueOverview.accrued}
+            expected={revenueOverview.expected}
+            forecast={revenueOverview.forecast}
+            invoiced={revenueOverview.invoiced}
+            paid={revenueOverview.paid}
+            outstanding={revenueOverview.outstanding}
+          />
         </div>
       </CardContent>
     </Card>

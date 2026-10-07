@@ -2,6 +2,7 @@
 import { AnalyticsService } from "@/application/analytics/analytics-service";
 import { listClients } from "@/application/clients/list-clients";
 import { listContracts } from "@/application/contracts/list-contracts";
+import { WorkspaceInvoiceService } from "@/application/invoices/workspace-invoice-service";
 import { ReportingService } from "@/application/reporting/reporting-service";
 import { AnalyticsAskBox } from "@/components/ai/AnalyticsAskBox";
 import { ErrorState } from "@/components/states/ErrorState";
@@ -49,20 +50,31 @@ export default async function ReportsPage({
     repositories.analytics,
     repositories.members,
   );
-  const reportingService = new ReportingService(analyticsService);
+  const invoiceService = new WorkspaceInvoiceService(
+    repositories.invoices,
+    repositories.payments,
+  );
+  const reportingService = new ReportingService(analyticsService, invoiceService);
 
   const now = new Date();
   const currentYear = getReportingCalendarYear(context.timezone, now);
 
   try {
-    const [hoursByClient, contractReport, annualOverview, clients, contracts] =
-      await Promise.all([
-        reportingService.getHoursByClient(context, periodKind, now, entityFilter),
-        reportingService.getContractReport(context, periodKind, now, entityFilter),
-        reportingService.getAnnualOverview(context, currentYear, now),
-        listClients(context, repositories.clients),
-        listContracts(context, repositories.contracts),
-      ]);
+    const [
+      hoursByClient,
+      contractReport,
+      revenueOverview,
+      annualOverview,
+      clients,
+      contracts,
+    ] = await Promise.all([
+      reportingService.getHoursByClient(context, periodKind, now, entityFilter),
+      reportingService.getContractReport(context, periodKind, now, entityFilter),
+      reportingService.getRevenueOverview(context, periodKind, now),
+      reportingService.getAnnualOverview(context, currentYear, now),
+      listClients(context, repositories.clients),
+      listContracts(context, repositories.contracts),
+    ]);
     const filterOptions = toReportFilterOptions(clients, contracts);
 
     const periodLabel =
@@ -103,9 +115,12 @@ export default async function ReportsPage({
             Revenue
           </h2>
           <RevenueSummary
-            accrued={contractReport.accrued}
-            expected={contractReport.expected}
-            forecast={contractReport.forecast}
+            accrued={revenueOverview.accrued}
+            expected={revenueOverview.expected}
+            forecast={revenueOverview.forecast}
+            invoiced={revenueOverview.invoiced}
+            paid={revenueOverview.paid}
+            outstanding={revenueOverview.outstanding}
           />
         </section>
 

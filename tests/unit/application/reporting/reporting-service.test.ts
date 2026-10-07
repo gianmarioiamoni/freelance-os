@@ -2,6 +2,7 @@
 import { describe, expect, it, vi } from "vitest";
 
 import type { AnalyticsService } from "@/application/analytics/analytics-service";
+import type { WorkspaceInvoiceService } from "@/application/invoices/workspace-invoice-service";
 import { ReportingService } from "@/application/reporting/reporting-service";
 import type { WorkspaceContext } from "@/application/workspace/workspace-context";
 import type {
@@ -90,6 +91,20 @@ function analyticsStub(overrides: Partial<AnalyticsService> = {}): AnalyticsServ
     } satisfies MonthlyAnalytics),
     ...overrides,
   } as unknown as AnalyticsService;
+}
+
+function invoiceStub(
+  overrides: Partial<WorkspaceInvoiceService> = {},
+): WorkspaceInvoiceService {
+  return {
+    getWorkspaceInvoiceSummary: vi.fn().mockResolvedValue({
+      invoicedByCurrency: [{ currency: "EUR", amount: "2000.0000" }],
+      paidByCurrency: [{ currency: "EUR", amount: "800.0000" }],
+      outstandingByCurrency: [{ currency: "EUR", amount: "1200.0000" }],
+      overdueCount: 1,
+    }),
+    ...overrides,
+  } as unknown as WorkspaceInvoiceService;
 }
 
 describe("ReportingService revenue mapping", () => {
@@ -282,5 +297,102 @@ describe("ReportingService revenue mapping", () => {
     expect(analytics.getAccruedRevenue).not.toHaveBeenCalled();
     expect(analytics.getExpectedRevenue).not.toHaveBeenCalled();
     expect(analytics.listContractAllocations).not.toHaveBeenCalled();
+  });
+});
+
+describe("ReportingService.getRevenueOverview", () => {
+  it("exposes Accrued, Expected, Invoiced, Paid, and Outstanding without mixing currencies", async () => {
+    const analytics = analyticsStub();
+    const invoices = invoiceStub({
+      getWorkspaceInvoiceSummary: vi.fn().mockResolvedValue({
+        invoicedByCurrency: [
+          { currency: "EUR", amount: "1000.0000" },
+          { currency: "USD", amount: "500.0000" },
+        ],
+        paidByCurrency: [{ currency: "EUR", amount: "400.0000" }],
+        outstandingByCurrency: [
+          { currency: "EUR", amount: "600.0000" },
+          { currency: "USD", amount: "500.0000" },
+        ],
+        overdueCount: 2,
+      }),
+    });
+    const reporting = new ReportingService(analytics, invoices);
+
+    const overview = await reporting.getRevenueOverview(context, {
+      kind: "custom",
+      startDate: period.startDate,
+      endDate: period.endDate,
+    });
+
+    expect(overview.accrued).toEqual(accrued);
+    expect(overview.expected).toEqual(expected);
+    expect(overview.forecast).toBeNull();
+    expect(overview.invoiced).toEqual([
+      { currency: "EUR", amount: "1000.0000" },
+      { currency: "USD", amount: "500.0000" },
+    ]);
+    expect(overview.paid).toEqual([{ currency: "EUR", amount: "400.0000" }]);
+    expect(overview.outstanding).toEqual([
+      { currency: "EUR", amount: "600.0000" },
+      { currency: "USD", amount: "500.0000" },
+    ]);
+    expect(overview.overdueCount).toBe(2);
+    expect(analytics.getAccruedRevenue).toHaveBeenCalledWith(context, period);
+    expect(analytics.getExpectedRevenue).toHaveBeenCalledWith(context, period);
+    expect(invoices.getWorkspaceInvoiceSummary).toHaveBeenCalledWith(context, {
+      period: {
+        startDate: period.startDate,
+        endDate: period.endDate,
+      },
+    });
+  });
+
+  it("returns empty invoice metrics for empty workspace", async () => {
+    const analytics = analyticsStub({
+      getAccruedRevenue: vi.fn().mockResolvedValue({
+        ...accrued,
+        byCurrency: [],
+        byContract: [],
+      }),
+      getExpectedRevenue: vi.fn().mockResolvedValue({
+        ...expected,
+        byCurrency: [],
+        byContract: [],
+      }),
+    });
+    const invoices = invoiceStub({
+      getWorkspaceInvoiceSummary: vi.fn().mockResolvedValue({
+        invoicedByCurrency: [],
+        paidByCurrency: [],
+        outstandingByCurrency: [],
+        overdueCount: 0,
+      }),
+    });
+    const reporting = new ReportingService(analytics, invoices);
+
+    const overview = await reporting.getRevenueOverview(context, {
+      kind: "custom",
+      startDate: period.startDate,
+      endDate: period.endDate,
+    });
+
+    expect(overview.accrued.byCurrency).toEqual([]);
+    expect(overview.expected.byCurrency).toEqual([]);
+    expect(overview.invoiced).toEqual([]);
+    expect(overview.paid).toEqual([]);
+    expect(overview.outstanding).toEqual([]);
+    expect(overview.overdueCount).toBe(0);
+  });
+
+  it("leaves Accrued and Expected unchanged from AnalyticsService", async () => {
+    const analytics = analyticsStub();
+    const invoices = invoiceStub();
+    const reporting = new ReportingService(analytics, invoices);
+
+    const overview = await reporting.getRevenueOverview(context, { kind: "month" });
+
+    expect(overview.accrued).toBe(accrued);
+    expect(overview.expected).toBe(expected);
   });
 });

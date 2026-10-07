@@ -22,6 +22,7 @@ export default defineConfig({
     include: [
       "tests/unit/**/*.test.ts",
       "tests/unit/features/admin/**/*.test.tsx",
+      "tests/unit/features/reporting/**/*.test.tsx",
     ],
     setupFiles: ["./tests/unit/setup.ts"],
   },

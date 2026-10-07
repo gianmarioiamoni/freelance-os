@@ -1,6 +1,8 @@
 // src/app/(app)/dashboard/page.tsx
 import { AnalyticsService } from "@/application/analytics/analytics-service";
 import { listClients } from "@/application/clients/list-clients";
+import { WorkspaceInvoiceService } from "@/application/invoices/workspace-invoice-service";
+import { ReportingService } from "@/application/reporting/reporting-service";
 import { Dashboard } from "@/components/dashboard/Dashboard";
 import { ErrorState } from "@/components/states/ErrorState";
 import { createRepositories } from "@/infrastructure/persistence/create-repositories";
@@ -15,17 +17,24 @@ export default async function DashboardPage(): Promise<JSX.Element> {
     const repositories = createRepositories();
     const analyticsService = new AnalyticsService(
       repositories.analytics,
-      repositories.members
+      repositories.members,
     );
+    const invoiceService = new WorkspaceInvoiceService(
+      repositories.invoices,
+      repositories.payments,
+    );
+    const reportingService = new ReportingService(analyticsService, invoiceService);
 
-    const [analytics, activeClients] = await Promise.all([
+    const [analytics, revenueOverview, activeClients] = await Promise.all([
       analyticsService.getCurrentMonthAnalytics(context),
+      reportingService.getRevenueOverview(context, { kind: "month" }),
       listClients(context, repositories.clients, "ACTIVE"),
     ]);
 
     return (
       <Dashboard
         analytics={analytics}
+        revenueOverview={revenueOverview}
         hasActiveClients={activeClients.length > 0}
       />
     );
