@@ -125,6 +125,9 @@ function repositories(seed: {
         return tracking === "VOID" ? row.voidedAt !== null : row.voidedAt === null;
       });
     },
+    async listInvoicesForWorkspace() {
+      return [];
+    },
     async updateInvoice() {
       throw new Error("not used");
     },

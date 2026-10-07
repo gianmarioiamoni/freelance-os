@@ -136,6 +136,9 @@ function repositories(seed: {
         (row) => row.workspaceId === workspaceId && row.contractId === contractId,
       );
     },
+    async listInvoicesForWorkspace() {
+      return [];
+    },
     async updateInvoice() {
       throw new Error("not used");
     },

@@ -264,6 +264,9 @@ function createFakeRepositories(
     async listInvoicesForContract() {
       return [];
     },
+    async listInvoicesForWorkspace() {
+      return [];
+    },
     async updateInvoice() {
       throw new Error("not used");
     },

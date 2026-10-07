@@ -91,6 +91,30 @@ export function createInvoiceRepository(db: PrismaExecutor): InvoiceRepository {
       });
     },
 
+    listInvoicesForWorkspace(
+      workspaceId: string,
+      filter?: { tracking?: InvoiceTrackingFilter; period?: { startDate: Date; endDate: Date } },
+    ) {
+      return withPersistenceErrors(async () => {
+        const rows = await db.invoice.findMany({
+          where: {
+            workspaceId,
+            ...trackingWhere(filter?.tracking),
+            ...(filter?.period
+              ? {
+                  invoiceDate: {
+                    gte: filter.period.startDate,
+                    lte: filter.period.endDate,
+                  },
+                }
+              : {}),
+          },
+          orderBy: [{ invoiceDate: "asc" }, { createdAt: "asc" }],
+        });
+        return rows.map(mapInvoice);
+      });
+    },
+
     async updateInvoice(
       workspaceId: string,
       invoiceId: string,

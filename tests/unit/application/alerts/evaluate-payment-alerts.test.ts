@@ -108,6 +108,7 @@ function createRepos(options: {
     getInvoice: vi.fn().mockResolvedValue(options.invoice ?? null),
     lockInvoice: vi.fn(),
     listInvoicesForContract: vi.fn(),
+    listInvoicesForWorkspace: vi.fn().mockResolvedValue([]),
     updateInvoice: vi.fn(),
     voidInvoice: vi.fn(),
     existsForContract: vi.fn(),

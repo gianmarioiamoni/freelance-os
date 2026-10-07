@@ -88,6 +88,7 @@ function createMemoryDependencies(
       getInvoice: unused,
       lockInvoice: unused,
       listInvoicesForContract: unused,
+      listInvoicesForWorkspace: unused,
       updateInvoice: unused,
       voidInvoice: unused,
       existsForContract: unused,

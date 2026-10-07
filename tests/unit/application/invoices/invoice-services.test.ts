@@ -178,6 +178,9 @@ function createFakeRepositories(
         return tracking === "VOID" ? row.voidedAt !== null : row.voidedAt === null;
       });
     },
+    async listInvoicesForWorkspace() {
+      return [];
+    },
     async updateInvoice(workspaceId, invoiceId, input) {
       calls.update = { workspaceId, invoiceId, input };
       const index = invoices.findIndex(

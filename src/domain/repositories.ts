@@ -123,6 +123,14 @@ export type ContractRepository = {
   ): Promise<ContractRecord | null>;
 };
 
+export type WorkspaceInvoiceFilter = {
+  tracking?: InvoiceTrackingFilter;
+  period?: {
+    startDate: Date;
+    endDate: Date;
+  };
+};
+
 export type InvoiceRepository = {
   createInvoice(
     workspaceId: string,
@@ -140,6 +148,10 @@ export type InvoiceRepository = {
     workspaceId: string,
     contractId: string,
     tracking?: InvoiceTrackingFilter,
+  ): Promise<InvoiceRecord[]>;
+  listInvoicesForWorkspace(
+    workspaceId: string,
+    filter?: WorkspaceInvoiceFilter,
   ): Promise<InvoiceRecord[]>;
   updateInvoice(
     workspaceId: string,
