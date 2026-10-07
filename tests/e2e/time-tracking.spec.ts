@@ -234,11 +234,13 @@ test("should verify contract details are presentation-only", async ({ page }) =>
   
   await expect(contractSelectElement.locator('option').filter({ hasText: "Hourly" })).toHaveCount(1, { timeout: 5000 });
 
-  // Verify these are presentation-only (no calculated billing amounts)
-  await expect(page.getByText("Revenue")).not.toBeVisible();
-  await expect(page.getByText("Invoice")).not.toBeVisible();
-  await expect(page.getByText("Total revenue")).not.toBeVisible();
-  await expect(page.getByText("Invoice amount")).not.toBeVisible();
+  // Verify these are presentation-only (no calculated billing amounts).
+  // Use exact text so the top-level "Invoices" nav label is not matched.
+  const main = page.locator("#main-content");
+  await expect(main.getByText("Revenue", { exact: true })).not.toBeVisible();
+  await expect(main.getByText("Invoice", { exact: true })).not.toBeVisible();
+  await expect(main.getByText("Total revenue", { exact: true })).not.toBeVisible();
+  await expect(main.getByText("Invoice amount", { exact: true })).not.toBeVisible();
 
   // Complete time entry creation to verify no calculations occur
   const contractSelect = page.getByLabel("Contract");

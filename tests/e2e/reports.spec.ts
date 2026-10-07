@@ -37,6 +37,8 @@ import { submitAndFollowActionRedirect } from "./helpers/server-action";
 
 async function waitForReportsPage(page: Page): Promise<void> {
   await expect(page.getByRole("heading", { level: 1, name: /reports/i })).toBeVisible();
+  // next start: App Router Link/router soft-nav needs hydration after hard goto.
+  await page.waitForLoadState("networkidle");
 }
 
 function expectCustomPeriodSearch(page: Page, start: string, end: string): void {
