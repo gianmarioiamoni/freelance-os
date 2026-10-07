@@ -7,6 +7,8 @@ import {
   reportPdfFilename,
   serializeReportPdf,
 } from "@/features/reporting/report-pdf";
+import { serializeMonthlyTimesheetPdf } from "@/features/reporting/monthly-timesheet-pdf";
+import { monthlyTimesheetFilename } from "@/features/reporting/monthly-timesheet-export";
 import {
   parseReportEntityFilterParam,
   parseReportPeriodParam,
@@ -45,6 +47,30 @@ export async function GET(request: Request): Promise<Response> {
   const now = new Date();
 
   try {
+    // Monthly Timesheet export when month + clientId selected
+    if (periodParam.kind === "month" && entityFilter.clientId) {
+      const timesheet = await reportingService.getMonthlyTimesheet(
+        context,
+        periodKind,
+        entityFilter.clientId,
+        repositories.clients,
+        repositories.timeEntries,
+        now,
+      );
+
+      const buffer = await serializeMonthlyTimesheetPdf(timesheet);
+      const filename = monthlyTimesheetFilename(timesheet, "pdf");
+
+      return new Response(new Uint8Array(buffer), {
+        status: 200,
+        headers: {
+          "Content-Type": "application/pdf",
+          "Content-Disposition": `attachment; filename="${filename}"`,
+        },
+      });
+    }
+
+    // Legacy report PDF for other periods/filters
     const [hoursByClient, contractReport, revenueOverview] = await Promise.all([
       reportingService.getHoursByClient(context, periodKind, now, entityFilter),
       reportingService.getContractReport(context, periodKind, now, entityFilter),

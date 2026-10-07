@@ -6,6 +6,8 @@ import {
   reportCsvFilename,
   serializeReportCsv,
 } from "@/features/reporting/report-csv";
+import { serializeMonthlyTimesheetCsv } from "@/features/reporting/monthly-timesheet-csv";
+import { monthlyTimesheetFilename } from "@/features/reporting/monthly-timesheet-export";
 import {
   parseReportEntityFilterParam,
   parseReportPeriodParam,
@@ -36,6 +38,30 @@ export async function GET(request: Request): Promise<Response> {
   const now = new Date();
 
   try {
+    // Monthly Timesheet export when month + clientId selected
+    if (periodParam.kind === "month" && entityFilter.clientId) {
+      const timesheet = await reportingService.getMonthlyTimesheet(
+        context,
+        periodKind,
+        entityFilter.clientId,
+        repositories.clients,
+        repositories.timeEntries,
+        now,
+      );
+
+      const csv = serializeMonthlyTimesheetCsv(timesheet);
+      const filename = monthlyTimesheetFilename(timesheet, "csv");
+      
+      return new Response(csv, {
+        status: 200,
+        headers: {
+          "Content-Type": "text/csv; charset=utf-8",
+          "Content-Disposition": `attachment; filename="${filename}"`,
+        },
+      });
+    }
+
+    // Legacy report CSV for other periods/filters
     const [hoursByClient, contractReport] = await Promise.all([
       reportingService.getHoursByClient(context, periodKind, now, entityFilter),
       reportingService.getContractReport(context, periodKind, now, entityFilter),

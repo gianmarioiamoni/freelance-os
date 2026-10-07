@@ -7,6 +7,8 @@ import {
   reportXlsxFilename,
   serializeReportXlsx,
 } from "@/features/reporting/report-xlsx";
+import { serializeMonthlyTimesheetXlsx } from "@/features/reporting/monthly-timesheet-xlsx";
+import { monthlyTimesheetFilename } from "@/features/reporting/monthly-timesheet-export";
 import {
   parseReportEntityFilterParam,
   parseReportPeriodParam,
@@ -45,6 +47,31 @@ export async function GET(request: Request): Promise<Response> {
   const now = new Date();
 
   try {
+    // Monthly Timesheet export when month + clientId selected
+    if (periodParam.kind === "month" && entityFilter.clientId) {
+      const timesheet = await reportingService.getMonthlyTimesheet(
+        context,
+        periodKind,
+        entityFilter.clientId,
+        repositories.clients,
+        repositories.timeEntries,
+        now,
+      );
+
+      const buffer = serializeMonthlyTimesheetXlsx(timesheet);
+      const filename = monthlyTimesheetFilename(timesheet, "xlsx");
+
+      return new Response(new Uint8Array(buffer), {
+        status: 200,
+        headers: {
+          "Content-Type":
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          "Content-Disposition": `attachment; filename="${filename}"`,
+        },
+      });
+    }
+
+    // Legacy report Excel for other periods/filters
     const [hoursByClient, contractReport, revenueOverview] = await Promise.all([
       reportingService.getHoursByClient(context, periodKind, now, entityFilter),
       reportingService.getContractReport(context, periodKind, now, entityFilter),
