@@ -18,14 +18,38 @@ describe("buildNavigationItems - Invoices", () => {
     );
   });
 
-  it("places Invoices after Reports and before Alerts", () => {
+  it("places Invoices after Reports and before AI Assistant", () => {
     const hrefs = buildNavigationItems(0, false).map((item) => item.href);
     const reportsIndex = hrefs.indexOf("/reports");
     const invoicesIndex = hrefs.indexOf("/invoices");
-    const alertsIndex = hrefs.indexOf("/alerts");
+    const assistantIndex = hrefs.indexOf("/assistant");
 
     expect(invoicesIndex).toBe(reportsIndex + 1);
-    expect(alertsIndex).toBe(invoicesIndex + 1);
+    expect(assistantIndex).toBe(invoicesIndex + 1);
+  });
+});
+
+describe("buildNavigationItems - AI Assistant", () => {
+  it("includes AI Assistant for authenticated workspace users", () => {
+    const items = buildNavigationItems(0, false);
+    const assistant = items.find((item) => item.label === "AI Assistant");
+
+    expect(assistant).toEqual(
+      expect.objectContaining({
+        href: "/assistant",
+        label: "AI Assistant",
+      }),
+    );
+  });
+
+  it("places AI Assistant after Invoices and before Alerts", () => {
+    const hrefs = buildNavigationItems(0, false).map((item) => item.href);
+    const invoicesIndex = hrefs.indexOf("/invoices");
+    const assistantIndex = hrefs.indexOf("/assistant");
+    const alertsIndex = hrefs.indexOf("/alerts");
+
+    expect(assistantIndex).toBe(invoicesIndex + 1);
+    expect(alertsIndex).toBe(assistantIndex + 1);
   });
 });
 
@@ -47,6 +71,11 @@ describe("isNavigationItemActive", () => {
 
   it("should mark /invoices as active for the Invoices item", () => {
     expect(isNavigationItemActive("/invoices", "/invoices")).toBe(true);
+  });
+
+  it("should mark /assistant as active for the AI Assistant item", () => {
+    expect(isNavigationItemActive("/assistant", "/assistant")).toBe(true);
+    expect(isNavigationItemActive("/reports", "/assistant")).toBe(false);
   });
 
   it("should keep Contracts active on nested invoice detail and payment routes", () => {

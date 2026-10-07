@@ -34,16 +34,31 @@ test.describe("AI analytics UX", () => {
     await expect(page.getByRole("heading", { name: /dashboard/i })).toBeVisible();
   });
 
-  test("Reports has AI Analytics in visually distinct area", async ({ page }) => {
+  test("Reports links to AI Assistant; ask box lives on /assistant", async ({
+    page,
+  }) => {
     await openWorkspace(page, "ai-reports");
     await page.getByRole("link", { name: "Reports" }).click();
     await expect(page).toHaveURL(/\/reports/);
     await expect(page.getByRole("heading", { level: 1, name: /reports/i })).toBeVisible();
 
-    const aiSection = page.getByRole("region", { name: "AI Analytics Assistant" });
-    await expect(aiSection).toBeVisible();
-    await expectAskBox(page);
+    await expect(
+      page.getByRole("heading", { name: "Ask about your analytics" }),
+    ).toHaveCount(0);
+    await expect(
+      page.getByRole("region", { name: "AI Assistant" }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("link", { name: "Ask AI Assistant" }),
+    ).toHaveAttribute("href", "/assistant");
     await expect(page.getByRole("navigation", { name: "Report period" })).toBeVisible();
+
+    await page.getByRole("link", { name: "Ask AI Assistant" }).click();
+    await expect(page).toHaveURL(/\/assistant/);
+    await expect(
+      page.getByRole("heading", { level: 1, name: "AI Assistant" }),
+    ).toBeVisible();
+    await expectAskBox(page);
 
     await page.getByRole("button", { name: OVERVIEW_PROMPT }).click();
     await expect(page.getByLabel("Question")).toHaveValue(OVERVIEW_PROMPT);
@@ -54,8 +69,5 @@ test.describe("AI analytics UX", () => {
 
     await expect(answer.getByText("0h", { exact: false })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Sources" })).toHaveCount(0);
-
-    await expect(page.getByRole("navigation", { name: "Report period" })).toBeVisible();
-    await expect(page.getByRole("heading", { level: 1, name: /reports/i })).toBeVisible();
   });
 });

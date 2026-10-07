@@ -70,6 +70,7 @@ describe("AI Assistant page", () => {
     expect(source).toContain("@/components/ai/AnalyticsAskBox");
     expect(source).not.toMatch(/workspaceId|membership/);
     expect(source).not.toMatch(/askWorkspaceQuestion\(/);
+    expect(source).not.toMatch(/surface=["']assistant["']/);
   });
 
   it("renders existing AI outcome states through AiOutcomePanel", () => {

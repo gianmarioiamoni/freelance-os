@@ -9,6 +9,7 @@ import {
   Receipt,
   Settings,
   ShieldAlert,
+  Sparkles,
   type LucideIcon,
 } from "lucide-react";
 
@@ -30,6 +31,7 @@ export function buildNavigationItems(
     { href: "/time-tracking", label: "Time Tracking", icon: Clock },
     { href: "/reports", label: "Reports", icon: BarChart3 },
     { href: "/invoices", label: "Invoices", icon: Receipt },
+    { href: "/assistant", label: "AI Assistant", icon: Sparkles },
     {
       href: "/alerts",
       label: "Alerts",

@@ -68,8 +68,8 @@ export function AnalyticsAskBox({ surface }: AnalyticsAskBoxProps): JSX.Element 
           Ask about your analytics
         </h2>
         <p className="text-sm text-muted-foreground">
-          Ask a question about figures already shown on this page. AI does not
-          calculate new totals.
+          Ask a question about this workspace&apos;s available analytics data.
+          AI does not calculate new totals.
         </p>
       </CardHeader>
       <CardContent className="grid gap-4">

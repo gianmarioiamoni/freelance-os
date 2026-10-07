@@ -4,7 +4,6 @@ import { listClients } from "@/application/clients/list-clients";
 import { listContracts } from "@/application/contracts/list-contracts";
 import { WorkspaceInvoiceService } from "@/application/invoices/workspace-invoice-service";
 import { ReportingService } from "@/application/reporting/reporting-service";
-import { AnalyticsAskBox } from "@/components/ai/AnalyticsAskBox";
 import { ErrorState } from "@/components/states/ErrorState";
 import { createRepositories } from "@/infrastructure/persistence/create-repositories";
 import { getCurrentWorkspaceContext } from "@/infrastructure/workspace/current-workspace";
@@ -12,6 +11,7 @@ import { AnnualOverviewTable } from "@/features/reporting/AnnualOverviewTable";
 import { ContractReportTable } from "@/features/reporting/ContractReportTable";
 import { HoursByClientTable } from "@/features/reporting/HoursByClientTable";
 import { PeriodSelector } from "@/features/reporting/PeriodSelector";
+import { ReportAssistantLink } from "@/features/reporting/ReportAssistantLink";
 import { ReportCsvExportLink } from "@/features/reporting/ReportCsvExportLink";
 import { ReportEntityFilters } from "@/features/reporting/ReportEntityFilters";
 import { toReportFilterOptions } from "@/features/reporting/report-filter-options";
@@ -94,15 +94,7 @@ export default async function ReportsPage({
           <ReportCsvExportLink period={periodParam} filter={entityFilter} />
         </header>
 
-        <section
-          aria-labelledby="ai-analytics-heading"
-          className="rounded-lg border-2 border-primary/20 bg-primary/5 p-6"
-        >
-          <h2 id="ai-analytics-heading" className="sr-only">
-            AI Analytics Assistant
-          </h2>
-          <AnalyticsAskBox surface="reports" />
-        </section>
+        <ReportAssistantLink />
 
         <PeriodSelector current={periodParam} filter={entityFilter} />
         <ReportEntityFilters
@@ -163,15 +155,7 @@ export default async function ReportsPage({
         <header className="grid gap-1">
           <h1>Reports</h1>
         </header>
-        <section
-          aria-labelledby="ai-analytics-heading"
-          className="rounded-lg border-2 border-primary/20 bg-primary/5 p-6"
-        >
-          <h2 id="ai-analytics-heading" className="sr-only">
-            AI Analytics Assistant
-          </h2>
-          <AnalyticsAskBox surface="reports" />
-        </section>
+        <ReportAssistantLink />
         <PeriodSelector current={periodParam} filter={entityFilter} />
         <ErrorState
           title="Unable to load report"

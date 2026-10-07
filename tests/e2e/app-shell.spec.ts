@@ -10,6 +10,7 @@ const APPLICATION_NAV_LINKS = [
   "Time Tracking",
   "Reports",
   "Invoices",
+  "AI Assistant",
   "Alerts",
   "Settings",
 ] as const;
