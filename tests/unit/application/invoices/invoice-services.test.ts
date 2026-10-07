@@ -248,6 +248,12 @@ function createFakeRepositories(
         (row) => row.workspaceId === workspaceId && row.invoiceId === invoiceId,
       );
     },
+    async listPaymentsForInvoices(workspaceId, invoiceIds) {
+      const idSet = new Set(invoiceIds);
+      return payments.filter(
+        (row) => row.workspaceId === workspaceId && idSet.has(row.invoiceId),
+      );
+    },
     async updatePayment() {
       throw new Error("not used");
     },

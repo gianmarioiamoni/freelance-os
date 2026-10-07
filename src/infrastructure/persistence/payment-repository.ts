@@ -47,6 +47,23 @@ export function createPaymentRepository(db: PrismaExecutor): PaymentRepository {
       });
     },
 
+    listPaymentsForInvoices(workspaceId: string, invoiceIds: readonly string[]) {
+      return withPersistenceErrors(async () => {
+        if (invoiceIds.length === 0) {
+          return [];
+        }
+
+        const rows = await db.payment.findMany({
+          where: {
+            workspaceId,
+            invoiceId: { in: [...invoiceIds] },
+          },
+          orderBy: [{ paymentDate: "asc" }, { createdAt: "asc" }],
+        });
+        return rows.map(mapPayment);
+      });
+    },
+
     async updatePayment(
       workspaceId: string,
       paymentId: string,

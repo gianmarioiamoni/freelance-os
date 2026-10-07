@@ -24,6 +24,8 @@ describe("ReportingService.getRevenueOverview (integration)", () => {
     const invoices = new WorkspaceInvoiceService(
       repositories.invoices,
       repositories.payments,
+      repositories.clients,
+      repositories.contracts,
     );
     reporting = new ReportingService(analytics, invoices);
 

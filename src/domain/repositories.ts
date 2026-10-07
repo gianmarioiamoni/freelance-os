@@ -123,12 +123,24 @@ export type ContractRepository = {
   ): Promise<ContractRecord | null>;
 };
 
+/**
+ * Persistence filter for workspace invoice listing / summary.
+ * amountStatus and overdue are application-layer filters (need payments).
+ */
 export type WorkspaceInvoiceFilter = {
   tracking?: InvoiceTrackingFilter;
   period?: {
     startDate: Date;
     endDate: Date;
   };
+  clientId?: string;
+  contractId?: string;
+};
+
+/** Invoice row with workspace-safe client identity for list views. */
+export type InvoiceWorkspaceListRecord = InvoiceRecord & {
+  clientId: string;
+  clientName: string;
 };
 
 export type InvoiceRepository = {
@@ -152,7 +164,7 @@ export type InvoiceRepository = {
   listInvoicesForWorkspace(
     workspaceId: string,
     filter?: WorkspaceInvoiceFilter,
-  ): Promise<InvoiceRecord[]>;
+  ): Promise<InvoiceWorkspaceListRecord[]>;
   updateInvoice(
     workspaceId: string,
     invoiceId: string,
@@ -174,6 +186,10 @@ export type PaymentRepository = {
   listPaymentsForInvoice(
     workspaceId: string,
     invoiceId: string,
+  ): Promise<PaymentRecord[]>;
+  listPaymentsForInvoices(
+    workspaceId: string,
+    invoiceIds: readonly string[],
   ): Promise<PaymentRecord[]>;
   updatePayment(
     workspaceId: string,

@@ -53,6 +53,8 @@ export default async function ReportsPage({
   const invoiceService = new WorkspaceInvoiceService(
     repositories.invoices,
     repositories.payments,
+    repositories.clients,
+    repositories.contracts,
   );
   const reportingService = new ReportingService(analyticsService, invoiceService);
 

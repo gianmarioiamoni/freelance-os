@@ -6,7 +6,11 @@ import type {
   InvoiceTrackingFilter,
   UpdateInvoiceInput,
 } from "@/domain/persistence-types";
-import type { InvoiceRepository } from "@/domain/repositories";
+import type {
+  InvoiceRepository,
+  InvoiceWorkspaceListRecord,
+  WorkspaceInvoiceFilter,
+} from "@/domain/repositories";
 import { withPersistenceErrors } from "@/infrastructure/persistence/map-prisma-error";
 import { mapInvoice } from "@/infrastructure/persistence/mappers";
 import type { PrismaExecutor } from "@/infrastructure/persistence/prisma-executor";
@@ -93,7 +97,7 @@ export function createInvoiceRepository(db: PrismaExecutor): InvoiceRepository {
 
     listInvoicesForWorkspace(
       workspaceId: string,
-      filter?: { tracking?: InvoiceTrackingFilter; period?: { startDate: Date; endDate: Date } },
+      filter?: WorkspaceInvoiceFilter,
     ) {
       return withPersistenceErrors(async () => {
         const rows = await db.invoice.findMany({
@@ -108,10 +112,28 @@ export function createInvoiceRepository(db: PrismaExecutor): InvoiceRepository {
                   },
                 }
               : {}),
+            ...(filter?.contractId ? { contractId: filter.contractId } : {}),
+            ...(filter?.clientId
+              ? { contract: { clientId: filter.clientId, workspaceId } }
+              : {}),
           },
-          orderBy: [{ invoiceDate: "asc" }, { createdAt: "asc" }],
+          include: {
+            contract: {
+              select: {
+                clientId: true,
+                client: { select: { companyName: true } },
+              },
+            },
+          },
+          // Workspace operational list: newest invoice first (contract-scoped lists stay ascending).
+          orderBy: [{ invoiceDate: "desc" }, { createdAt: "desc" }],
         });
-        return rows.map(mapInvoice);
+
+        return rows.map((row): InvoiceWorkspaceListRecord => ({
+          ...mapInvoice(row),
+          clientId: row.contract.clientId,
+          clientName: row.contract.client.companyName,
+        }));
       });
     },
 

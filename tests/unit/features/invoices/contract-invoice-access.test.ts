@@ -149,6 +149,9 @@ function repositories(seed: {
     async listPaymentsForInvoice() {
       return [];
     },
+    async listPaymentsForInvoices() {
+      return [];
+    },
     async updatePayment() {
       throw new Error("not used");
     },

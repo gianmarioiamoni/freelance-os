@@ -117,6 +117,7 @@ function createRepos(options: {
     createPayment: vi.fn(),
     getPayment: vi.fn(),
     listPaymentsForInvoice: vi.fn().mockResolvedValue(options.payments ?? []),
+    listPaymentsForInvoices: vi.fn().mockResolvedValue(options.payments ?? []),
     updatePayment: vi.fn(),
     deletePayment: vi.fn(),
   };

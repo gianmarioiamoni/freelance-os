@@ -16,7 +16,12 @@ describe("WorkspaceInvoiceService (integration)", () => {
   beforeEach(async () => {
     await prisma.$executeRawUnsafe("TRUNCATE TABLE \"Workspace\" CASCADE");
 
-    service = new WorkspaceInvoiceService(repositories.invoices, repositories.payments);
+    service = new WorkspaceInvoiceService(
+      repositories.invoices,
+      repositories.payments,
+      repositories.clients,
+      repositories.contracts,
+    );
 
     // Workspace A
     const workspaceA = await createFirstWorkspace(

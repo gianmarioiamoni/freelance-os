@@ -97,6 +97,7 @@ function createMemoryDependencies(
       createPayment: unused,
       getPayment: unused,
       listPaymentsForInvoice: unused,
+      listPaymentsForInvoices: unused,
       updatePayment: unused,
       deletePayment: unused,
     },

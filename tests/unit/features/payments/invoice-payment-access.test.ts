@@ -176,6 +176,12 @@ function repositories(seed: {
             : left.createdAt.getTime() - right.createdAt.getTime();
         });
     },
+    async listPaymentsForInvoices(workspaceId, invoiceIds) {
+      const idSet = new Set(invoiceIds);
+      return payments.filter(
+        (row) => row.workspaceId === workspaceId && idSet.has(row.invoiceId),
+      );
+    },
     async updatePayment() {
       throw new Error("not used");
     },

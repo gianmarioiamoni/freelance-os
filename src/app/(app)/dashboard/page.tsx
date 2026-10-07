@@ -22,6 +22,8 @@ export default async function DashboardPage(): Promise<JSX.Element> {
     const invoiceService = new WorkspaceInvoiceService(
       repositories.invoices,
       repositories.payments,
+      repositories.clients,
+      repositories.contracts,
     );
     const reportingService = new ReportingService(analyticsService, invoiceService);
 
