@@ -8,8 +8,8 @@ import type { MonthlyTimesheetReport } from "@/application/reporting/reporting-s
 describe("MonthlyTimesheetTable", () => {
   const mockReport: MonthlyTimesheetReport = {
     period: {
-      start: new Date("2026-10-01T00:00:00.000Z"),
-      end: new Date("2026-10-31T23:59:59.999Z"),
+      startDate: new Date("2026-10-01T00:00:00.000Z"),
+      endDate: new Date("2026-10-31T23:59:59.999Z"),
     },
     periodKind: { kind: "month" },
     clientId: "client-1",
@@ -18,8 +18,8 @@ describe("MonthlyTimesheetTable", () => {
     billableMinutes: 900,
     accrued: {
       period: {
-        start: new Date("2026-10-01T00:00:00.000Z"),
-        end: new Date("2026-10-31T23:59:59.999Z"),
+        startDate: new Date("2026-10-01T00:00:00.000Z"),
+        endDate: new Date("2026-10-31T23:59:59.999Z"),
       },
       timezone: "Europe/Rome",
       byCurrency: [

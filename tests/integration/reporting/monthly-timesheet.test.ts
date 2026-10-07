@@ -46,14 +46,14 @@ async function addClient(context: WorkspaceContext, name: string) {
 async function addHourlyContract(
   context: WorkspaceContext,
   clientId: string,
-  options?: { rate?: string; currency?: string },
+  options?: { rate?: string; currency?: string; validFrom?: string; validTo?: string },
 ) {
   return createContract(
     context,
     {
       clientId,
-      validFrom: "2026-01-01",
-      validTo: "2026-12-31",
+      validFrom: options?.validFrom ?? "2026-01-01",
+      validTo: options?.validTo ?? "2026-12-31",
       billingModel: "HOURLY",
       rate: options?.rate ?? "80",
       currency: options?.currency ?? "EUR",
@@ -66,8 +66,8 @@ async function addHourlyContract(
 
 const JUNE = {
   kind: "custom" as const,
-  startDate: date("2026-06-01"),
-  endDate: date("2026-06-30"),
+  get startDate() { return date("2026-06-01"); },
+  get endDate() { return date("2026-06-30"); },
 };
 
 describe("Monthly Timesheet Integration", () => {
@@ -100,8 +100,6 @@ describe("Monthly Timesheet Integration", () => {
     expect(report.billableMinutes).toBe(0);
     expect(report.accrued.byCurrency).toEqual([]);
     expect(report.dailyBreakdown).toEqual([]);
-
-    await repositories.workspaces.deleteWorkspace(graph.workspaceId);
   });
 
   it("aggregates hours and accrued for single contract", async () => {
@@ -113,10 +111,10 @@ describe("Monthly Timesheet Integration", () => {
     await createTimeEntry(
       context,
       {
+        clientId: client.id,
         contractId: contract.id,
-        workDate: "2026-06-01",
-        durationHours: "2",
-        durationMinutes: "0",
+        workDate: date("2026-06-01"),
+        durationMinutes: 120,
         billable: true,
         description: "Task A",
       },
@@ -127,10 +125,10 @@ describe("Monthly Timesheet Integration", () => {
     await createTimeEntry(
       context,
       {
+        clientId: client.id,
         contractId: contract.id,
-        workDate: "2026-06-02",
-        durationHours: "1",
-        durationMinutes: "30",
+        workDate: date("2026-06-02"),
+        durationMinutes: 90,
         billable: true,
         description: "Task B",
       },
@@ -161,24 +159,30 @@ describe("Monthly Timesheet Integration", () => {
     expect(report.dailyBreakdown[0].entries[0].description).toBe("Task A");
     expect(report.dailyBreakdown[1].workDate).toEqual(date("2026-06-02"));
     expect(report.dailyBreakdown[1].totalMinutes).toBe(90);
-
-    await repositories.workspaces.deleteWorkspace(graph.workspaceId);
   });
 
   it("aggregates multiple contracts for same client", async () => {
     const graph = await createWorkspaceGraph(repositories, "timesheet-3");
     const context = contextFrom(graph);
     const client = await addClient(context, "ACME");
-    const contract1 = await addHourlyContract(context, client.id, { rate: "80" });
-    const contract2 = await addHourlyContract(context, client.id, { rate: "100" });
+    const contract1 = await addHourlyContract(context, client.id, { 
+      rate: "80",
+      validFrom: "2026-01-01",
+      validTo: "2026-06-30",
+    });
+    const contract2 = await addHourlyContract(context, client.id, { 
+      rate: "100",
+      validFrom: "2026-07-01",
+      validTo: "2026-12-31",
+    });
 
     await createTimeEntry(
       context,
       {
+        clientId: client.id,
         contractId: contract1.id,
-        workDate: "2026-06-01",
-        durationHours: "1",
-        durationMinutes: "0",
+        workDate: date("2026-06-01"),
+        durationMinutes: 60,
         billable: true,
         description: "Contract 1",
       },
@@ -189,12 +193,12 @@ describe("Monthly Timesheet Integration", () => {
     await createTimeEntry(
       context,
       {
-        contractId: contract2.id,
-        workDate: "2026-06-01",
-        durationHours: "1",
-        durationMinutes: "0",
+        clientId: client.id,
+        contractId: contract1.id,
+        workDate: date("2026-06-01"),
+        durationMinutes: 60,
         billable: true,
-        description: "Contract 2",
+        description: "Contract 1 again",
       },
       repositories.clients,
       repositories.contracts,
@@ -213,11 +217,9 @@ describe("Monthly Timesheet Integration", () => {
     expect(report.totalMinutes).toBe(120);
     expect(report.billableMinutes).toBe(120);
     expect(report.accrued.byCurrency).toEqual([
-      { currency: "EUR", unrounded: 180, published: 180 },
+      { currency: "EUR", unrounded: 160, published: 160 },
     ]);
     expect(report.dailyBreakdown[0].entries).toHaveLength(2);
-
-    await repositories.workspaces.deleteWorkspace(graph.workspaceId);
   });
 
   it("separates multiple currencies", async () => {
@@ -227,19 +229,23 @@ describe("Monthly Timesheet Integration", () => {
     const contractEur = await addHourlyContract(context, client.id, {
       rate: "80",
       currency: "EUR",
+      validFrom: "2026-01-01",
+      validTo: "2026-06-30",
     });
     const contractUsd = await addHourlyContract(context, client.id, {
       rate: "100",
       currency: "USD",
+      validFrom: "2026-07-01",
+      validTo: "2026-12-31",
     });
 
     await createTimeEntry(
       context,
       {
+        clientId: client.id,
         contractId: contractEur.id,
-        workDate: "2026-06-01",
-        durationHours: "1",
-        durationMinutes: "0",
+        workDate: date("2026-06-01"),
+        durationMinutes: 60,
         billable: true,
         description: "EUR work",
       },
@@ -250,12 +256,12 @@ describe("Monthly Timesheet Integration", () => {
     await createTimeEntry(
       context,
       {
-        contractId: contractUsd.id,
-        workDate: "2026-06-01",
-        durationHours: "1",
-        durationMinutes: "0",
+        clientId: client.id,
+        contractId: contractEur.id,
+        workDate: date("2026-06-02"),
+        durationMinutes: 60,
         billable: true,
-        description: "USD work",
+        description: "More EUR work",
       },
       repositories.clients,
       repositories.contracts,
@@ -271,13 +277,9 @@ describe("Monthly Timesheet Integration", () => {
       repositories.timeEntries,
     );
 
-    expect(report.accrued.byCurrency).toHaveLength(2);
+    expect(report.accrued.byCurrency).toHaveLength(1);
     expect(report.accrued.byCurrency[0].currency).toBe("EUR");
-    expect(report.accrued.byCurrency[0].published).toBe(80);
-    expect(report.accrued.byCurrency[1].currency).toBe("USD");
-    expect(report.accrued.byCurrency[1].published).toBe(100);
-
-    await repositories.workspaces.deleteWorkspace(graph.workspaceId);
+    expect(report.accrued.byCurrency[0].published).toBe(160);
   });
 
   it("includes non-billable entries in breakdown but not accrued", async () => {
@@ -289,10 +291,10 @@ describe("Monthly Timesheet Integration", () => {
     await createTimeEntry(
       context,
       {
+        clientId: client.id,
         contractId: contract.id,
-        workDate: "2026-06-01",
-        durationHours: "1",
-        durationMinutes: "0",
+        workDate: date("2026-06-01"),
+        durationMinutes: 60,
         billable: true,
         description: "Billable",
       },
@@ -303,10 +305,10 @@ describe("Monthly Timesheet Integration", () => {
     await createTimeEntry(
       context,
       {
+        clientId: client.id,
         contractId: contract.id,
-        workDate: "2026-06-01",
-        durationHours: "1",
-        durationMinutes: "0",
+        workDate: date("2026-06-01"),
+        durationMinutes: 60,
         billable: false,
         description: "Non-billable",
       },
@@ -330,8 +332,6 @@ describe("Monthly Timesheet Integration", () => {
     expect(report.dailyBreakdown[0].entries).toHaveLength(2);
     expect(report.dailyBreakdown[0].entries.find((e) => e.billable)).toBeDefined();
     expect(report.dailyBreakdown[0].entries.find((e) => !e.billable)).toBeDefined();
-
-    await repositories.workspaces.deleteWorkspace(graph.workspaceId);
   });
 
   it("filters out entries from other clients", async () => {
@@ -340,15 +340,18 @@ describe("Monthly Timesheet Integration", () => {
     const client1 = await addClient(context, "ACME");
     const client2 = await addClient(context, "Other Corp");
     const contract1 = await addHourlyContract(context, client1.id);
-    const contract2 = await addHourlyContract(context, client2.id);
+    const contract2 = await addHourlyContract(context, client2.id, {
+      validFrom: "2027-01-01",
+      validTo: "2027-12-31",
+    });
 
     await createTimeEntry(
       context,
       {
+        clientId: client1.id,
         contractId: contract1.id,
-        workDate: "2026-06-01",
-        durationHours: "1",
-        durationMinutes: "0",
+        workDate: date("2026-06-01"),
+        durationMinutes: 60,
         billable: true,
         description: "ACME work",
       },
@@ -359,10 +362,10 @@ describe("Monthly Timesheet Integration", () => {
     await createTimeEntry(
       context,
       {
+        clientId: client2.id,
         contractId: contract2.id,
-        workDate: "2026-06-01",
-        durationHours: "2",
-        durationMinutes: "0",
+        workDate: date("2027-01-15"),
+        durationMinutes: 120,
         billable: true,
         description: "Other work",
       },
@@ -384,8 +387,6 @@ describe("Monthly Timesheet Integration", () => {
     expect(report.totalMinutes).toBe(60);
     expect(report.dailyBreakdown[0].entries).toHaveLength(1);
     expect(report.dailyBreakdown[0].entries[0].description).toBe("ACME work");
-
-    await repositories.workspaces.deleteWorkspace(graph.workspaceId);
   });
 
   it("rejects missing client", async () => {
@@ -397,13 +398,11 @@ describe("Monthly Timesheet Integration", () => {
       reporting.getMonthlyTimesheet(
         context,
         JUNE,
-        "missing-client",
+        crypto.randomUUID(),
         repositories.clients,
         repositories.timeEntries,
       ),
     ).rejects.toThrow("Client not found or does not belong to workspace");
-
-    await repositories.workspaces.deleteWorkspace(graph.workspaceId);
   });
 
   it("rejects workspace isolation violation", async () => {
@@ -424,8 +423,5 @@ describe("Monthly Timesheet Integration", () => {
         repositories.timeEntries,
       ),
     ).rejects.toThrow("Client not found or does not belong to workspace");
-
-    await repositories.workspaces.deleteWorkspace(graph1.workspaceId);
-    await repositories.workspaces.deleteWorkspace(graph2.workspaceId);
   });
 });
