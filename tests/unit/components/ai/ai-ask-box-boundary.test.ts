@@ -16,6 +16,7 @@ describe("AI ask-box client boundary", () => {
       "src/components/ai/GuidedPromptList.tsx",
       "src/components/ai/AiOutcomePanel.tsx",
       "src/features/ai/create-ask-action-input.ts",
+      "src/app/(app)/assistant/page.tsx",
     ];
 
     for (const filePath of files) {
