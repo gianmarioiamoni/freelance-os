@@ -23,6 +23,7 @@ export default defineConfig({
       "tests/unit/**/*.test.ts",
       "tests/unit/features/admin/**/*.test.tsx",
       "tests/unit/features/reporting/**/*.test.tsx",
+      "tests/unit/features/invoices/**/*.test.tsx",
     ],
     setupFiles: ["./tests/unit/setup.ts"],
   },
