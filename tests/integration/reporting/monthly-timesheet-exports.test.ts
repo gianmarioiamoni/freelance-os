@@ -320,7 +320,7 @@ describe("Monthly Timesheet Export Validation", () => {
     const context1 = contextFrom(graph1);
     const context2 = contextFrom(graph2);
 
-    const client1 = await addClient(context1, "Client WS1");
+    await addClient(context1, "Client WS1");
     const client2 = await addClient(context2, "Client WS2");
 
     const { reporting } = services();

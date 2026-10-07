@@ -9,7 +9,6 @@ import type { MonthlyTimesheetExportDataset } from "@/features/reporting/monthly
 import {
   formatTimesheetDate,
   formatTimesheetHours,
-  formatTimesheetCurrency,
 } from "@/features/reporting/monthly-timesheet-export";
 
 type PdfMakeVirtualFs = {
