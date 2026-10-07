@@ -8,6 +8,7 @@ import {
   periodHrefFromState,
   reportExcelExportHrefFromState,
   reportExportHrefFromState,
+  reportPdfExportHrefFromState,
   toReportingPeriodKind,
 } from "@/features/reporting/reporting-types";
 
@@ -267,6 +268,22 @@ describe("reportExcelExportHrefFromState", () => {
       ),
     ).toBe(
       `/reports/export/excel?period=year&clientId=${clientId}&contractId=${contractId}`,
+    );
+  });
+});
+
+describe("reportPdfExportHrefFromState", () => {
+  const clientId = "11111111-1111-4111-8111-111111111111";
+  const contractId = "22222222-2222-4222-8222-222222222222";
+
+  it("reuses the reports query string on the pdf export path", () => {
+    expect(
+      reportPdfExportHrefFromState(
+        { kind: "year" },
+        { clientId, contractId },
+      ),
+    ).toBe(
+      `/reports/export/pdf?period=year&clientId=${clientId}&contractId=${contractId}`,
     );
   });
 });

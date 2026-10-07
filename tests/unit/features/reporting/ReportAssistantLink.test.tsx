@@ -43,5 +43,6 @@ describe("Reports page AI separation", () => {
     expect(source).toContain("AnnualOverviewTable");
     expect(source).toContain("ReportCsvExportLink");
     expect(source).toContain("ReportExcelExportButton");
+    expect(source).toContain("ReportPdfExportButton");
   });
 });

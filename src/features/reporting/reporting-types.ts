@@ -173,6 +173,20 @@ export function reportExcelExportHrefFromState(
   );
 }
 
+/**
+ * PDF download href for the current report view-state.
+ * Same query params as CSV/Excel; only the export path differs.
+ */
+export function reportPdfExportHrefFromState(
+  period: ReportPeriodParam,
+  filter?: ReportEntityFilterParam,
+): string {
+  return periodHrefFromState(period, filter).replace(
+    /^\/reports\?/,
+    "/reports/export/pdf?",
+  );
+}
+
 function appendEntityFilterParams(
   href: string,
   filter?: ReportEntityFilterParam,

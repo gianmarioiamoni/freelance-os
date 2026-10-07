@@ -14,6 +14,7 @@ import { PeriodSelector } from "@/features/reporting/PeriodSelector";
 import { ReportAssistantLink } from "@/features/reporting/ReportAssistantLink";
 import { ReportCsvExportLink } from "@/features/reporting/ReportCsvExportLink";
 import { ReportExcelExportButton } from "@/features/reporting/ReportExcelExportButton";
+import { ReportPdfExportButton } from "@/features/reporting/ReportPdfExportButton";
 import { ReportEntityFilters } from "@/features/reporting/ReportEntityFilters";
 import { toReportFilterOptions } from "@/features/reporting/report-filter-options";
 import { RevenueSummary } from "@/features/reporting/RevenueSummary";
@@ -98,6 +99,7 @@ export default async function ReportsPage({
           >
             <ReportCsvExportLink period={periodParam} filter={entityFilter} />
             <ReportExcelExportButton period={periodParam} filter={entityFilter} />
+            <ReportPdfExportButton period={periodParam} filter={entityFilter} />
           </nav>
         </header>
 
