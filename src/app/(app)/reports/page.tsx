@@ -13,6 +13,7 @@ import { HoursByClientTable } from "@/features/reporting/HoursByClientTable";
 import { PeriodSelector } from "@/features/reporting/PeriodSelector";
 import { ReportAssistantLink } from "@/features/reporting/ReportAssistantLink";
 import { ReportCsvExportLink } from "@/features/reporting/ReportCsvExportLink";
+import { ReportExcelExportButton } from "@/features/reporting/ReportExcelExportButton";
 import { ReportEntityFilters } from "@/features/reporting/ReportEntityFilters";
 import { toReportFilterOptions } from "@/features/reporting/report-filter-options";
 import { RevenueSummary } from "@/features/reporting/RevenueSummary";
@@ -91,7 +92,13 @@ export default async function ReportsPage({
           <p className="text-muted-foreground">
             Operational reporting - {periodLabel}
           </p>
-          <ReportCsvExportLink period={periodParam} filter={entityFilter} />
+          <nav
+            aria-label="Report exports"
+            className="flex flex-wrap items-center gap-x-4 gap-y-1 justify-self-start"
+          >
+            <ReportCsvExportLink period={periodParam} filter={entityFilter} />
+            <ReportExcelExportButton period={periodParam} filter={entityFilter} />
+          </nav>
         </header>
 
         <ReportAssistantLink />

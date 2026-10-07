@@ -6,6 +6,7 @@ import {
   parseReportPeriodParam,
   periodHref,
   periodHrefFromState,
+  reportExcelExportHrefFromState,
   reportExportHrefFromState,
   toReportingPeriodKind,
 } from "@/features/reporting/reporting-types";
@@ -250,6 +251,22 @@ describe("reportExportHrefFromState", () => {
       ),
     ).toBe(
       `/reports/export?period=custom&start=2026-01-01&end=2026-03-31&clientId=${clientId}&contractId=${contractId}`,
+    );
+  });
+});
+
+describe("reportExcelExportHrefFromState", () => {
+  const clientId = "11111111-1111-4111-8111-111111111111";
+  const contractId = "22222222-2222-4222-8222-222222222222";
+
+  it("reuses the reports query string on the excel export path", () => {
+    expect(
+      reportExcelExportHrefFromState(
+        { kind: "year" },
+        { clientId, contractId },
+      ),
+    ).toBe(
+      `/reports/export/excel?period=year&clientId=${clientId}&contractId=${contractId}`,
     );
   });
 });
