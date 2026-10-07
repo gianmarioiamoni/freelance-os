@@ -100,6 +100,52 @@ export type RevenueOverview = {
   overdueCount: number;
 };
 
+/**
+ * Monthly timesheet report for a client (R2.2-STABILIZATION-03).
+ *
+ * Primary reporting experience answering:
+ * "How many hours did I work for this client this month,
+ * how were those hours distributed across the days,
+ * and how much should I invoice?"
+ *
+ * Reuses authoritative billing calculation (calculateAccruedRevenue).
+ * Currencies remain strictly separated; no FX or mixed totals.
+ * Contract validity behavior unchanged from existing AnalyticsService.
+ */
+export type MonthlyTimesheetReport = {
+  period: AnalyticsPeriod;
+  periodKind: ReportingPeriodKind;
+  clientId: string;
+  clientName: string;
+  totalMinutes: number;
+  billableMinutes: number;
+  accrued: AccruedRevenue;
+  dailyBreakdown: TimesheetDayDetail[];
+};
+
+/**
+ * Daily breakdown for a timesheet report.
+ * TimeEntry details are provided for expandable UI display.
+ */
+export type TimesheetDayDetail = {
+  workDate: Date;
+  totalMinutes: number;
+  billableMinutes: number;
+  entries: TimesheetEntryDetail[];
+};
+
+/**
+ * TimeEntry detail for expandable daily rows.
+ * Reuses existing TimeEntry fields; no new domain semantics.
+ */
+export type TimesheetEntryDetail = {
+  id: string;
+  contractId: string;
+  durationMinutes: number;
+  description: string | null;
+  billable: boolean;
+};
+
 const EMPTY_INVOICE_AMOUNTS: CurrencyAmount[] = [];
 
 // ---------------------------------------------------------------------------
@@ -163,6 +209,89 @@ export class ReportingService {
       throw new ReportingError("Invalid custom period: startDate must be <= endDate");
     }
     return period;
+  }
+
+  /**
+   * Monthly timesheet report for a selected client and month (R2.2-STABILIZATION-03).
+   *
+   * Returns daily breakdown with expandable TimeEntry detail and authoritative
+   * accrued revenue (reuses calculateAccruedRevenue; no billing duplication).
+   *
+   * Fails closed if clientId is missing or does not belong to the workspace.
+   * Contract validity behavior unchanged (existing AnalyticsService semantics).
+   * Multiple contracts for one client are aggregated per existing billing logic.
+   * Multiple currencies remain strictly separated.
+   */
+  async getMonthlyTimesheet(
+    context: WorkspaceContext,
+    request: PeriodKindRequest,
+    clientId: string,
+    clientRepository: { getClient(workspaceId: string, clientId: string): Promise<{ id: string; companyName: string } | null> },
+    timeEntryRepository: { listTimeEntriesForPeriod(workspaceId: string, startDate: Date, endDate: Date): Promise<Array<{ id: string; clientId: string; contractId: string; workDate: Date; durationMinutes: number; description: string | null; billable: boolean }>> },
+    now: Date = new Date(),
+  ): Promise<MonthlyTimesheetReport> {
+    if (!clientId || typeof clientId !== "string" || clientId.length === 0) {
+      throw new ReportingError("Client ID is required for timesheet report");
+    }
+
+    const period = this.resolvePeriod(request, context.timezone, now);
+    const filter: AnalyticsFilter = { clientId };
+
+    const [client, accrued, dailyAnalytics, entries] = await Promise.all([
+      clientRepository.getClient(context.workspaceId, clientId),
+      this.analytics.getAccruedRevenue(context, period, filter),
+      this.analytics.getDailyAnalytics(context, period),
+      timeEntryRepository.listTimeEntriesForPeriod(context.workspaceId, period.startDate, period.endDate),
+    ]);
+
+    if (!client) {
+      throw new ReportingError("Client not found or does not belong to workspace");
+    }
+
+    const clientEntries = entries.filter((e) => e.clientId === clientId);
+    const entriesByDate = new Map<string, typeof clientEntries>();
+    for (const entry of clientEntries) {
+      const dateKey = entry.workDate.toISOString().slice(0, 10);
+      const dayEntries = entriesByDate.get(dateKey) ?? [];
+      dayEntries.push(entry);
+      entriesByDate.set(dateKey, dayEntries);
+    }
+
+    const clientDailyAnalytics = dailyAnalytics.filter(
+      (day) => day.clientBreakdown.some((c) => c.clientId === clientId)
+    );
+
+    const dailyBreakdown: TimesheetDayDetail[] = clientDailyAnalytics.map((day) => {
+      const clientBreakdown = day.clientBreakdown.find((c) => c.clientId === clientId);
+      const dateKey = day.workDate.toISOString().slice(0, 10);
+      const dayEntries = entriesByDate.get(dateKey) ?? [];
+      return {
+        workDate: day.workDate,
+        totalMinutes: clientBreakdown?.totalMinutes ?? 0,
+        billableMinutes: clientBreakdown?.billableMinutes ?? 0,
+        entries: dayEntries.map((e) => ({
+          id: e.id,
+          contractId: e.contractId,
+          durationMinutes: e.durationMinutes,
+          description: e.description,
+          billable: e.billable,
+        })),
+      };
+    });
+
+    const totalMinutes = dailyBreakdown.reduce((sum, day) => sum + day.totalMinutes, 0);
+    const billableMinutes = dailyBreakdown.reduce((sum, day) => sum + day.billableMinutes, 0);
+
+    return {
+      period,
+      periodKind: request,
+      clientId,
+      clientName: client.companyName,
+      totalMinutes,
+      billableMinutes,
+      accrued,
+      dailyBreakdown,
+    };
   }
 
   /**
