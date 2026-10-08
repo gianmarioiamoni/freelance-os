@@ -54,7 +54,9 @@ export type ValidatedContractCreateInput = ValidatedContractWriteFields & {
   clientId: string;
 };
 
-export type ValidatedContractUpdateInput = ValidatedContractWriteFields;
+export type ValidatedContractUpdateInput = ValidatedContractWriteFields & {
+  existingAllocatedMinutes?: number | null;
+};
 
 function parseWriteFields(input: ContractWriteFields): ValidatedContractWriteFields {
   const validFrom = parseCalendarDate(input.validFrom, "validFrom");
@@ -103,6 +105,21 @@ export function parseContractCreateInput(
 
 export function parseContractUpdateInput(
   input: ContractUpdateInput,
+  existingAllocatedMinutes?: number | null,
 ): ValidatedContractUpdateInput {
-  return parseWriteFields(input);
+  const parsed = parseWriteFields(input);
+
+  // Preserve existing explicit allocatedMinutes if input field was not provided
+  const inputHasAllocatedMinutes = input.allocatedMinutes !== undefined;
+  const finalAllocatedMinutes = inputHasAllocatedMinutes
+    ? parsed.allocatedMinutes
+    : existingAllocatedMinutes !== undefined && existingAllocatedMinutes !== null
+      ? existingAllocatedMinutes
+      : parsed.allocatedMinutes;
+
+  return {
+    ...parsed,
+    allocatedMinutes: finalAllocatedMinutes,
+    existingAllocatedMinutes,
+  };
 }

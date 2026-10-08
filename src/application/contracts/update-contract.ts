@@ -24,8 +24,6 @@ export async function updateContract(
   input: ContractUpdateInput,
   runInTransaction: RunInTransaction,
 ): Promise<ContractRecord> {
-  const validated = parseContractUpdateInput(input);
-
   return runInTransaction(async (repositories) => {
     const existing = await repositories.contracts.lockContract(
       context.workspaceId,
@@ -35,6 +33,9 @@ export async function updateContract(
     if (!existing) {
       throw new ContractNotFoundError();
     }
+
+    // Parse input with existing allocatedMinutes for preservation logic
+    const validated = parseContractUpdateInput(input, existing.allocatedMinutes);
 
     const client = await repositories.clients.getClient(
       context.workspaceId,
