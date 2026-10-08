@@ -49,6 +49,7 @@ const mockMonthlyAnalytics: MonthlyHoursAnalytics = {
       percentage: 50,
     },
   ],
+  monthlyHoursAllocations: [],
   contractUtilizations: [
     {
       contractId: "contract-1",

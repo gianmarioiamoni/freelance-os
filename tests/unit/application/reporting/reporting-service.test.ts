@@ -84,6 +84,7 @@ function analyticsStub(overrides: Partial<AnalyticsService> = {}): AnalyticsServ
       nonBillableMinutes: 0,
       billablePercentage: 100,
       clientAllocations: allocations,
+      monthlyHoursAllocations: [],
       contractUtilizations: utilizations,
       accrued,
       expected,

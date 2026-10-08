@@ -1,7 +1,7 @@
 // src/components/dashboard/Dashboard.tsx
 import type { RevenueOverview } from "@/application/reporting/reporting-service";
 import { MonthlyAnalytics } from "@/components/dashboard/MonthlyAnalytics";
-import { ClientAllocation } from "@/components/dashboard/ClientAllocation";
+import { MonthlyHours } from "@/components/dashboard/MonthlyHours";
 import { ContractUtilization } from "@/components/dashboard/ContractUtilization";
 import { PageHeader } from "@/components/page/PageHeader";
 import { EmptyState } from "@/components/states/EmptyState";
@@ -38,7 +38,7 @@ export function Dashboard({
             <MonthlyAnalytics analytics={analytics} revenueOverview={revenueOverview} />
           </div>
           <div className="lg:col-span-2">
-            <ClientAllocation allocations={analytics.clientAllocations} />
+            <MonthlyHours allocations={analytics.monthlyHoursAllocations} />
           </div>
           <div className="lg:col-span-1">
             <ContractUtilization utilizations={analytics.contractUtilizations} />

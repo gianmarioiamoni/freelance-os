@@ -7,6 +7,7 @@ import type {
   ClientAllocation,
   ContractAllocationFact,
   ContractUtilization,
+  MonthlyHoursAllocation,
   ExpectedContractFact,
 } from "@/domain/analytics-types";
 import type { TimeEntryRecord } from "@/domain/persistence-types";
@@ -56,10 +57,11 @@ export function createAnalyticsRepository(db: PrismaExecutor): AnalyticsReposito
           totalMinutes
         );
 
-        // Get client allocations and contract utilizations
-        const [clientAllocations, contractUtilizations] = await Promise.all([
+        // Get client allocations, contract utilizations, and monthly hours allocations
+        const [clientAllocations, contractUtilizations, monthlyHoursAllocations] = await Promise.all([
           getClientAllocations(db, workspaceId, period, totalMinutes),
           getContractUtilizations(db, workspaceId, period),
+          getMonthlyHoursAllocations(db, workspaceId, period),
         ]);
 
         return {
@@ -70,6 +72,7 @@ export function createAnalyticsRepository(db: PrismaExecutor): AnalyticsReposito
           billablePercentage,
           clientAllocations,
           contractUtilizations,
+          monthlyHoursAllocations,
         };
       });
     },
@@ -691,4 +694,79 @@ async function getContractUtilizations(
       };
     })
     .sort((a, b) => b.consumedMinutes - a.consumedMinutes);
+}
+
+// Helper function to get monthly hours allocations.
+// Shows worked hours vs monthly allocation target for each contract.
+// Monthly allocation is derived from allocatedMinutes or monthlyContractedMinutes.
+async function getMonthlyHoursAllocations(
+  db: PrismaExecutor,
+  workspaceId: string,
+  period: AnalyticsPeriod,
+  filter?: AnalyticsFilter,
+): Promise<MonthlyHoursAllocation[]> {
+  // Get contracts with in-period consumption
+  const contractConsumption = await db.timeEntry.groupBy({
+    by: ["contractId"],
+    where: {
+      workspaceId,
+      workDate: {
+        gte: period.startDate,
+        lte: period.endDate,
+      },
+      ...timeEntryEntityWhere(filter),
+    },
+    _sum: { durationMinutes: true },
+  });
+
+  if (contractConsumption.length === 0) {
+    return [];
+  }
+
+  // Fetch contract details with allocation and capacity
+  const contracts = await db.contract.findMany({
+    where: {
+      workspaceId,
+      id: { in: contractConsumption.map(c => c.contractId) },
+      ...contractEntityWhere(filter),
+    },
+    include: {
+      client: { select: { companyName: true, status: true } },
+    },
+  });
+
+  const consumptionMap = new Map(
+    contractConsumption.map(c => [c.contractId, c._sum.durationMinutes ?? 0])
+  );
+
+  return contracts
+    .map(contract => {
+      const workedMinutes = consumptionMap.get(contract.id) ?? 0;
+
+      // Determine monthly allocation target:
+      // 1. If allocatedMinutes is set, use it as monthly allocation
+      // 2. Otherwise, use monthlyContractedMinutes
+      // 3. If neither is set, allocatedMinutes is null (no denominator)
+      const allocatedMinutes = 
+        contract.allocatedMinutes !== null 
+          ? contract.allocatedMinutes 
+          : contract.monthlyContractedMinutes;
+
+      // Calculate percentage: workedMinutes / allocatedMinutes × 100
+      const percentage = AnalyticsService.calculateAllocationPercentage(
+        workedMinutes,
+        allocatedMinutes ?? 0,
+      );
+
+      return {
+        contractId: contract.id,
+        clientName: contract.client.companyName,
+        isArchived: contract.client.status === "ARCHIVED",
+        workedMinutes,
+        allocatedMinutes,
+        percentage,
+      };
+    })
+    .filter(allocation => allocation.allocatedMinutes !== null) // Only show contracts with allocation
+    .sort((a, b) => b.workedMinutes - a.workedMinutes);
 }

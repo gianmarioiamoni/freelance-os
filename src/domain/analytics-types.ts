@@ -29,6 +29,7 @@ export type MonthlyHoursAnalytics = {
   billablePercentage: number | null; // null when totalMinutes is 0
   clientAllocations: ClientAllocation[];
   contractUtilizations: ContractUtilization[];
+  monthlyHoursAllocations: MonthlyHoursAllocation[];
 };
 
 /**
@@ -52,6 +53,19 @@ export type ClientAllocation = {
   totalMinutes: number;
   billableMinutes: number;
   percentage: number | null; // percentage of total period time, null when total is 0
+};
+
+/**
+ * Monthly hours allocation per contract within a period.
+ * Shows worked hours against monthly allocation target.
+ */
+export type MonthlyHoursAllocation = {
+  contractId: string;
+  clientName: string;
+  isArchived: boolean;
+  workedMinutes: number;
+  allocatedMinutes: number | null; // monthly allocation target (from allocatedMinutes or monthlyContractedMinutes)
+  percentage: number | null; // workedMinutes / allocatedMinutes × 100, null when allocatedMinutes is null or 0
 };
 
 /**

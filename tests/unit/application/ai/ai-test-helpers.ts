@@ -83,6 +83,7 @@ export function monthlyAnalyticsFixture(
         percentage: 100,
       },
     ],
+    monthlyHoursAllocations: [],
     contractUtilizations: [
       {
         contractId: "contract-1",

@@ -6,6 +6,7 @@ import { serializeMonthlyTimesheetPdf } from "@/features/reporting/monthly-times
 import {
   formatTimesheetHours,
   formatTimesheetDate,
+  formatTimesheetCurrency,
   monthlyTimesheetFilename,
   type MonthlyTimesheetExportDataset,
 } from "@/features/reporting/monthly-timesheet-export";
