@@ -57,15 +57,15 @@ export type ClientAllocation = {
 
 /**
  * Monthly hours allocation per contract within a period.
- * Shows worked hours against monthly allocation target.
+ * Shows worked hours against monthly contracted capacity.
  */
 export type MonthlyHoursAllocation = {
   contractId: string;
   clientName: string;
   isArchived: boolean;
   workedMinutes: number;
-  allocatedMinutes: number | null; // monthly allocation target (from allocatedMinutes or monthlyContractedMinutes)
-  percentage: number | null; // workedMinutes / allocatedMinutes × 100, null when allocatedMinutes is null or 0
+  allocatedMinutes: number | null; // monthly contracted capacity (monthlyContractedMinutes)
+  percentage: number | null; // workedMinutes / monthlyContractedMinutes × 100, null when monthlyContractedMinutes is null or 0
 };
 
 /**

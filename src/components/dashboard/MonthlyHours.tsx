@@ -20,8 +20,8 @@ export function MonthlyHours({ allocations }: MonthlyHoursProps): JSX.Element {
         </CardHeader>
         <CardContent>
           <EmptyState
-            title="No monthly allocation set"
-            description="Set monthly contracted hours or allocated minutes for contracts to track monthly hours."
+            title="No monthly capacity set"
+            description="Set monthly contracted hours for contracts to track monthly hours."
           />
         </CardContent>
       </Card>

@@ -743,16 +743,11 @@ async function getMonthlyHoursAllocations(
     .map(contract => {
       const workedMinutes = consumptionMap.get(contract.id) ?? 0;
 
-      // Determine monthly allocation target:
-      // 1. If allocatedMinutes is set, use it as monthly allocation
-      // 2. Otherwise, use monthlyContractedMinutes
-      // 3. If neither is set, allocatedMinutes is null (no denominator)
-      const allocatedMinutes = 
-        contract.allocatedMinutes !== null 
-          ? contract.allocatedMinutes 
-          : contract.monthlyContractedMinutes;
+      // Monthly allocation is monthlyContractedMinutes only.
+      // allocatedMinutes is total contract budget, not monthly allocation.
+      const allocatedMinutes = contract.monthlyContractedMinutes;
 
-      // Calculate percentage: workedMinutes / allocatedMinutes × 100
+      // Calculate percentage: workedMinutes / monthlyContractedMinutes × 100
       const percentage = AnalyticsService.calculateAllocationPercentage(
         workedMinutes,
         allocatedMinutes ?? 0,
@@ -767,6 +762,6 @@ async function getMonthlyHoursAllocations(
         percentage,
       };
     })
-    .filter(allocation => allocation.allocatedMinutes !== null) // Only show contracts with allocation
+    .filter(allocation => allocation.allocatedMinutes !== null) // Only show contracts with monthlyContractedMinutes
     .sort((a, b) => b.workedMinutes - a.workedMinutes);
 }
