@@ -63,6 +63,7 @@ describe("Analytics Product Decisions Verification", () => {
         rate: "120.0000",
         currency: "EUR",
         monthlyContractedMinutes: 3600,
+        allocatedMinutes: 10000, // Total budget for cumulative utilization
         validFrom: currentMonthDay(1),
         validTo: null,
       });
@@ -130,9 +131,9 @@ describe("Analytics Product Decisions Verification", () => {
       expect(analytics.contractUtilizations).toHaveLength(2);
       
       const archivedUtilization = analytics.contractUtilizations.find(c => c.clientName === "Will Be Archived Ltd")!;
-      expect(archivedUtilization.consumedMinutes).toBe(420);
-      expect(archivedUtilization.contractedMinutes).toBe(3600);
-      expect(archivedUtilization.utilizationPercentage).toBeCloseTo(11.67, 2);
+      expect(archivedUtilization.consumedMinutes).toBe(420); // Cumulative consumption
+      expect(archivedUtilization.contractedMinutes).toBe(10000); // Total budget (allocatedMinutes)
+      expect(archivedUtilization.utilizationPercentage).toBe(4.2); // 420/10000 = 4.2%
     });
 
     it("distinguishes archived clients visually in analytics results", async () => {
@@ -199,6 +200,7 @@ describe("Analytics Product Decisions Verification", () => {
         rate: "100.0000",
         currency: "EUR",
         monthlyContractedMinutes: 2400, // 40 hours
+        allocatedMinutes: 5000, // Total budget for cumulative utilization
         validFrom: currentMonthDay(1),
         validTo: null,
       });
@@ -235,14 +237,12 @@ describe("Analytics Product Decisions Verification", () => {
       expect(analytics.nonBillableMinutes).toBe(240); // 4 hours non-billable
       expect(analytics.billablePercentage).toBeCloseTo(71.43, 2); // 600/840
 
-      // Verify utilization uses ALL time (billable + non-billable)
+      // Verify utilization uses ALL time (billable + non-billable) - cumulative
       expect(analytics.contractUtilizations).toHaveLength(1);
       const utilization = analytics.contractUtilizations[0];
-      expect(utilization.consumedMinutes).toBe(840); // ALL tracked time
-      // Pro-rata: contract starts day 1, ongoing → full period overlap → 2400.
-      expect(utilization.contractedMinutes).toBeCloseTo(2400, 0);
-      expect(utilization.utilizationPercentage).toBeCloseTo(35, 0); // 840/2400 = 35%
-      // BR-105-016: isOngoing ≡ validTo === null. This contract has validTo: null → true.
+      expect(utilization.consumedMinutes).toBe(840); // ALL tracked time (cumulative)
+      expect(utilization.contractedMinutes).toBe(5000); // Total budget (allocatedMinutes)
+      expect(utilization.utilizationPercentage).toBe(16.8); // 840/5000 = 16.8%
       expect(utilization.isOngoing).toBe(true);
     });
 
@@ -263,6 +263,7 @@ describe("Analytics Product Decisions Verification", () => {
         rate: "800.0000",
         currency: "EUR",
         monthlyContractedMinutes: 4800, // 80 hours
+        allocatedMinutes: 8000, // Total budget for cumulative utilization
         validFrom: currentMonthDay(1),
         validTo: null,
       });
@@ -293,10 +294,10 @@ describe("Analytics Product Decisions Verification", () => {
       // Billable percentage should be low
       expect(analytics.billablePercentage).toBe(20); // 120/600 = 20%
 
-      // But utilization percentage should include ALL time
+      // But utilization percentage should include ALL time (cumulative against total budget)
       const utilization = analytics.contractUtilizations[0];
-      expect(utilization.consumedMinutes).toBe(600); // All time
-      expect(utilization.utilizationPercentage).toBe(12.5); // 600/4800 = 12.5%
+      expect(utilization.consumedMinutes).toBe(600); // All time (cumulative)
+      expect(utilization.utilizationPercentage).toBe(7.5); // 600/8000 = 7.5%
 
       // These should be different values
       expect(analytics.billablePercentage).not.toBe(utilization.utilizationPercentage);
@@ -489,6 +490,7 @@ describe("Analytics Product Decisions Verification", () => {
         rate: "100.0000",
         currency: "EUR",
         monthlyContractedMinutes: 4800,
+        allocatedMinutes: 10000, // Total budget for cumulative utilization
         validFrom: currentMonthDay(1), // first day of the current month
         validTo: monthOffsetDay(3, 28), // a finite end well after the current month
       });
@@ -509,8 +511,8 @@ describe("Analytics Product Decisions Verification", () => {
       const utilization = analytics.contractUtilizations[0];
       
       expect(utilization.isOngoing).toBe(false); // Finite contract
-      expect(utilization.contractedMinutes).toBe(4800);
-      expect(utilization.utilizationPercentage).toBe(10); // 480/4800 = 10%
+      expect(utilization.contractedMinutes).toBe(10000); // Total budget (allocatedMinutes)
+      expect(utilization.utilizationPercentage).toBe(4.8); // 480/10000 = 4.8%
     });
 
     it("displays unlimited contracts (validTo = null) as ongoing", async () => {
@@ -580,6 +582,7 @@ describe("Analytics Product Decisions Verification", () => {
         rate: "100.0000",
         currency: "EUR",
         monthlyContractedMinutes: 2400, // 40 hours
+        allocatedMinutes: 5000, // Total budget for cumulative utilization
         validFrom: currentMonthDay(1),
         validTo: monthOffsetDay(1, 28), // ends inside the next month
       });
@@ -624,8 +627,8 @@ describe("Analytics Product Decisions Verification", () => {
 
       const finiteUtilization = analytics.contractUtilizations.find(u => u.clientName === "Finite Client")!;
       expect(finiteUtilization.isOngoing).toBe(false);
-      expect(finiteUtilization.contractedMinutes).toBe(2400);
-      expect(finiteUtilization.utilizationPercentage).toBe(12.5); // 300/2400
+      expect(finiteUtilization.contractedMinutes).toBe(5000); // Total budget (allocatedMinutes)
+      expect(finiteUtilization.utilizationPercentage).toBe(6); // 300/5000 = 6%
 
       const unlimitedUtilization = analytics.contractUtilizations.find(u => u.clientName === "Unlimited Client")!;
       expect(unlimitedUtilization.isOngoing).toBe(true);
