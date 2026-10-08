@@ -41,7 +41,8 @@ function expectInvalidField(
 }
 
 describe("parseContractCreateInput", () => {
-  it("accepts valid create input", () => {
+  it("accepts valid create input and derives allocatedMinutes", () => {
+    // 10h/month × 6 months = 60h = 3600min
     expect(parseContractCreateInput(validCreateInput)).toEqual({
       clientId: "client-1",
       validFrom: calendarDate("2026-01-01"),
@@ -50,7 +51,7 @@ describe("parseContractCreateInput", () => {
       rate: "80.5",
       currency: "EUR",
       monthlyContractedMinutes: 600,
-      allocatedMinutes: null,
+      allocatedMinutes: 3600, // derived: 600min/month × 6 months
       paymentTermsDays: 30,
       paymentTermsNote: "Net 30",
     });
@@ -194,37 +195,46 @@ describe("parseContractCreateInput", () => {
     });
   });
 
-  it("accepts null, zero, and positive allocatedMinutes", () => {
+  it("derives allocatedMinutes when null, preserves explicit values", () => {
+    // null input → derives from monthly capacity + duration
     expect(
       parseContractCreateInput({
         ...validCreateInput,
         allocatedMinutes: null,
       }).allocatedMinutes,
-    ).toBeNull();
+    ).toBe(3600); // derived: 600min/month × 6 months
+
+    // empty string → derives
     expect(
       parseContractCreateInput({
         ...validCreateInput,
         allocatedMinutes: "",
       }).allocatedMinutes,
-    ).toBeNull();
+    ).toBe(3600);
+
+    // explicit zero → preserved
     expect(
       parseContractCreateInput({
         ...validCreateInput,
         allocatedMinutes: "0",
       }).allocatedMinutes,
     ).toBe(0);
+
     expect(
       parseContractCreateInput({
         ...validCreateInput,
         allocatedMinutes: 0,
       }).allocatedMinutes,
     ).toBe(0);
+
+    // explicit value → preserved
     expect(
       parseContractCreateInput({
         ...validCreateInput,
         allocatedMinutes: "4800",
       }).allocatedMinutes,
     ).toBe(4800);
+
     expect(
       parseContractCreateInput({
         ...validCreateInput,

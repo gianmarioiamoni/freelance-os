@@ -11,6 +11,7 @@ import {
   parseRequiredText,
 } from "@/application/contracts/contract-field-parsers";
 import { assertValidContractPeriod } from "@/application/contracts/contract-validity";
+import { deriveContractAllocatedMinutes } from "@/domain/contract-budget";
 import { InvalidContractInputError } from "@/domain/contract-errors";
 import type { BillingModel } from "@/domain/persistence-types";
 
@@ -65,16 +66,27 @@ function parseWriteFields(input: ContractWriteFields): ValidatedContractWriteFie
   const validTo = parseCalendarDate(input.validTo, "validTo");
   assertValidContractPeriod(validFrom, validTo);
 
+  const monthlyContractedMinutes = parseMonthlyContractedHours(
+    input.monthlyContractedHours,
+  );
+  const explicitAllocatedMinutes = parseAllocatedMinutes(input.allocatedMinutes);
+
+  // Derive allocatedMinutes: explicit value wins, otherwise calculate from monthly capacity + duration
+  const allocatedMinutes = deriveContractAllocatedMinutes(
+    validFrom,
+    validTo,
+    monthlyContractedMinutes,
+    explicitAllocatedMinutes,
+  );
+
   return {
     validFrom,
     validTo,
     billingModel: parseBillingModel(input.billingModel),
     rate: parseRate(input.rate),
     currency: parseCurrency(input.currency),
-    monthlyContractedMinutes: parseMonthlyContractedHours(
-      input.monthlyContractedHours,
-    ),
-    allocatedMinutes: parseAllocatedMinutes(input.allocatedMinutes),
+    monthlyContractedMinutes,
+    allocatedMinutes,
     paymentTermsDays: parsePaymentTermsDays(input.paymentTermsDays),
     paymentTermsNote: parsePaymentTermsNote(input.paymentTermsNote),
   };
