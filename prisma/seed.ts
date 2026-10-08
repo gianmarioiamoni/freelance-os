@@ -249,6 +249,7 @@ async function seed(): Promise<void> {
       billingModel: "HOURLY",
       rate: "80.0000",
       currency: "EUR",
+      allocatedMinutes: 30000, // 500h total contract budget
       monthlyContractedMinutes: 8000,
       paymentTermsDays: 30,
     },
@@ -260,6 +261,7 @@ async function seed(): Promise<void> {
       billingModel: "HOURLY",
       rate: "80.0000",
       currency: "EUR",
+      allocatedMinutes: 30000, // 500h total contract budget
       monthlyContractedMinutes: 8000,
       paymentTermsDays: 30,
     },
@@ -276,6 +278,7 @@ async function seed(): Promise<void> {
       billingModel: "DAILY",
       rate: "500.0000",
       currency: "EUR",
+      allocatedMinutes: 48000, // 800h total contract budget (ongoing)
       monthlyContractedMinutes: 8000,
       paymentTermsDays: 30,
     },
@@ -287,6 +290,7 @@ async function seed(): Promise<void> {
       billingModel: "DAILY",
       rate: "500.0000",
       currency: "EUR",
+      allocatedMinutes: 48000, // 800h total contract budget (ongoing)
       monthlyContractedMinutes: 8000,
       paymentTermsDays: 30,
     },
@@ -303,6 +307,7 @@ async function seed(): Promise<void> {
       billingModel: "HOURLY",
       rate: "65.0000",
       currency: "EUR",
+      allocatedMinutes: 36000, // 600h total contract budget (ongoing)
       monthlyContractedMinutes: 6000,
       paymentTermsDays: 15,
     },
@@ -314,6 +319,7 @@ async function seed(): Promise<void> {
       billingModel: "HOURLY",
       rate: "65.0000",
       currency: "EUR",
+      allocatedMinutes: 36000, // 600h total contract budget (ongoing)
       monthlyContractedMinutes: 6000,
       paymentTermsDays: 15,
     },
@@ -330,6 +336,7 @@ async function seed(): Promise<void> {
       billingModel: "HOURLY",
       rate: "50.0000",
       currency: "EUR",
+      allocatedMinutes: 24000, // 400h total contract budget (archived)
       monthlyContractedMinutes: 4000,
     },
     update: {
@@ -340,6 +347,7 @@ async function seed(): Promise<void> {
       billingModel: "HOURLY",
       rate: "50.0000",
       currency: "EUR",
+      allocatedMinutes: 24000, // 400h total contract budget (archived)
       monthlyContractedMinutes: 4000,
     },
   });
