@@ -528,38 +528,35 @@ async function getClientAllocations(
     .sort((a, b) => b.totalMinutes - a.totalMinutes);
 }
 
-// Helper function to get contract utilizations per PD-104-002, BR-105-016,
-// BR-105-017, BR-105-018.
-//
-// Relevance-driven contract list (BR-105-018):
-//   A contract is relevant if its [validFrom, validTo) interval overlaps the
-//   period, OR it has consumption in the period. The union ensures that neither
-//   a zero-consumption valid contract nor historical anomalous entries disappear.
-//
-// Pro-rata capacity (BR-105-017):
-//   contractedMinutes is the pro-rated value for the reporting period.
-//   null when monthlyContractedMinutes is null (no denominator invented).
-//
-// isOngoing (BR-105-016): validTo === null. Independent from capacity.
-//
-// isOutOfValidity (BR-105-018):
-//   true when any consumed time falls outside [validFrom, validTo).
+// Helper function to get contract utilizations showing cumulative budget consumption.
+// Shows lifetime consumption from contract.validFrom to now (or validTo) against allocatedMinutes.
+// Contracts without allocatedMinutes are shown but without utilization percentage.
 async function getContractUtilizations(
   db: PrismaExecutor,
   workspaceId: string,
   period: AnalyticsPeriod,
   filter?: AnalyticsFilter,
 ): Promise<ContractUtilization[]> {
-  // 1. Contracts with validity overlap with the period (validTo is exclusive).
-  //    For ongoing contracts (validTo === null), treat as infinitely valid - OR filter applied.
-  const validityOverlapContracts = await db.contract.findMany({
+  // Get all contracts that have any consumption in the lifetime
+  // First, get contracts with consumption
+  const contractConsumption = await db.timeEntry.groupBy({
+    by: ["contractId"],
     where: {
       workspaceId,
-      validFrom: { lte: period.endDate },
-      OR: [
-        { validTo: null },
-        { validTo: { gt: period.startDate } },
-      ],
+      ...timeEntryEntityWhere(filter),
+    },
+    _sum: { durationMinutes: true },
+  });
+
+  if (contractConsumption.length === 0) {
+    return [];
+  }
+
+  // Get contract details
+  const contracts = await db.contract.findMany({
+    where: {
+      workspaceId,
+      id: { in: contractConsumption.map(c => c.contractId) },
       ...contractEntityWhere(filter),
     },
     include: {
@@ -567,118 +564,58 @@ async function getContractUtilizations(
     },
   });
 
-  // 2. Contracts with in-period consumption (may not overlap validity - historical data).
-  const contractConsumption = await db.timeEntry.groupBy({
-    by: ["contractId"],
-    where: {
-      workspaceId,
-      workDate: {
-        gte: period.startDate,
-        lte: period.endDate,
-      },
-      ...timeEntryEntityWhere(filter),
-    },
-    _sum: { durationMinutes: true },
-  });
-
-  // Build a map of in-period consumption by contractId.
-  const consumptionMap = new Map(
-    contractConsumption.map(c => [c.contractId, c._sum.durationMinutes ?? 0])
-  );
-
-  // Collect the union of contract IDs from both relevance criteria.
-  const validityContractIds = new Set(validityOverlapContracts.map(c => c.id));
-  const consumptionOnlyContractIds = contractConsumption
-    .map(c => c.contractId)
-    .filter(id => !validityContractIds.has(id));
-
-  // 3. Fetch contracts present in consumption but not in the validity-overlap set.
-  const extraContracts =
-    consumptionOnlyContractIds.length > 0
-      ? await db.contract.findMany({
-          where: {
-            workspaceId,
-            id: { in: consumptionOnlyContractIds },
-            ...contractEntityWhere(filter),
-          },
-          include: { client: { select: { companyName: true, status: true } } },
-        })
-      : [];
-
-  const allContracts = [...validityOverlapContracts, ...extraContracts];
-
-  if (allContracts.length === 0) {
+  if (contracts.length === 0) {
     return [];
   }
 
-  // 4. For each contract with in-period consumption, detect whether any time entry
-  //    falls outside [validFrom, validTo) - the definition of out-of-validity (BR-105-018).
-  //    We check by querying the count of entries outside validity for each contract.
-  //
-  //    Strategy: for each contract that has consumption in the period, check whether
-  //    any workDate in the period is before validFrom or >= validTo.
-  //    We do this as a single groupBy to avoid N+1 queries.
-  const contractIdsWithConsumption = Array.from(consumptionMap.keys());
-  const outOfValidityContractIds = new Set<string>();
+  // For each contract, calculate cumulative consumption from validFrom to now (or validTo)
+  const cumulativeConsumption = await Promise.all(
+    contracts.map(async contract => {
+      // Determine the end date for cumulative calculation
+      // Use validTo if defined, otherwise use the period end date (today for current month dashboard)
+      const cumulativeEndDate = contract.validTo 
+        ? (contract.validTo < period.endDate ? contract.validTo : period.endDate)
+        : period.endDate;
 
-  if (contractIdsWithConsumption.length > 0) {
-    // For each contract, we need to check if there are entries where:
-    //   workDate < validFrom  OR  (validTo IS NOT NULL AND workDate >= validTo)
-    // We do a per-contract check using individual aggregate queries batched via Promise.all.
-    const oovChecks = await Promise.all(
-      allContracts
-        .filter(c => consumptionMap.has(c.id))
-        .map(async contract => {
-          // Build the "out-of-validity" where clause for this contract.
-          // A time entry is out-of-validity when workDate < validFrom OR (validTo IS NOT NULL AND workDate >= validTo).
-          const outOfValidityConditions = contract.validTo === null
-            ? [{ workDate: { lt: contract.validFrom } }]
-            : [
-                { workDate: { lt: contract.validFrom } },
-                { workDate: { gte: contract.validTo } },
-              ];
+      const result = await db.timeEntry.aggregate({
+        where: {
+          workspaceId,
+          contractId: contract.id,
+          workDate: {
+            gte: contract.validFrom,
+            lte: cumulativeEndDate,
+          },
+          ...timeEntryEntityWhere(filter),
+        },
+        _sum: {
+          durationMinutes: true,
+        },
+      });
 
-          const count = await db.timeEntry.count({
-            where: {
-              workspaceId,
-              contractId: contract.id,
-              workDate: { gte: period.startDate, lte: period.endDate },
-              OR: outOfValidityConditions,
-            },
-          });
-          return { contractId: contract.id, isOov: count > 0 };
-        }),
-    );
+      return {
+        contractId: contract.id,
+        cumulativeMinutes: result._sum.durationMinutes ?? 0,
+      };
+    })
+  );
 
-    for (const { contractId, isOov } of oovChecks) {
-      if (isOov) outOfValidityContractIds.add(contractId);
-    }
-  }
+  const consumptionMap = new Map(
+    cumulativeConsumption.map(c => [c.contractId, c.cumulativeMinutes])
+  );
 
-  return allContracts
+  return contracts
     .map(contract => {
       const consumedMinutes = consumptionMap.get(contract.id) ?? 0;
-
-      // isOngoing: validTo === null (BR-105-016, independent from capacity).
       const isOngoing = contract.validTo === null;
+      
+      // Use allocatedMinutes as total contract budget
+      const contractedMinutes = contract.allocatedMinutes;
 
-      // Pro-rata contractedMinutes for this period (BR-105-017).
-      const proRataContractedMinutes = AnalyticsService.calculateProRataCapacity(
-        contract.monthlyContractedMinutes,
-        contract.validFrom,
-        contract.validTo,
-        period,
-      );
-
-      // utilizationPercentage: null when capacity is null or 0 (BR-104-011).
+      // Calculate utilization percentage
       const utilizationPercentage = AnalyticsService.calculateUtilizationPercentage(
         consumedMinutes,
-        proRataContractedMinutes,
+        contractedMinutes,
       );
-
-      // isOutOfValidity: true when any in-period workDate is outside [validFrom, validTo)
-      // (BR-105-018). Determined by the per-contract count query above.
-      const isOutOfValidity = outOfValidityContractIds.has(contract.id);
 
       return {
         contractId: contract.id,
@@ -688,9 +625,9 @@ async function getContractUtilizations(
         validTo: contract.validTo,
         isOngoing,
         consumedMinutes,
-        contractedMinutes: proRataContractedMinutes,
+        contractedMinutes,
         utilizationPercentage,
-        isOutOfValidity,
+        isOutOfValidity: false, // Not applicable for cumulative budget view
       };
     })
     .sort((a, b) => b.consumedMinutes - a.consumedMinutes);

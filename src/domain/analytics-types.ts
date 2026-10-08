@@ -69,19 +69,10 @@ export type MonthlyHoursAllocation = {
 };
 
 /**
- * Contract utilization within a period.
- *
- * BR-105-016: `isOngoing ≡ validTo === null`; `unlimited ≡ contractedMinutes === null`.
- * The two properties are independent. A contract can be ongoing with finite capacity,
- * or finite with null (unlimited) capacity.
- *
- * BR-105-017: `contractedMinutes` is the pro-rata capacity for the reporting period,
- * derived from `monthlyContractedMinutes` × (overlapDays / periodDays). Null when
- * `monthlyContractedMinutes === null` (no capacity denominator invented).
- *
- * BR-105-018: A contract is included if it is relevant to the period (validity overlap
- * or in-period consumption). Time recorded outside a contract's validity is retained in
- * `consumedMinutes` and flagged via `isOutOfValidity`.
+ * Contract utilization showing cumulative consumption of total contract budget.
+ * 
+ * Displays lifetime consumption from contract.validFrom up to now (or validTo if finite).
+ * Uses allocatedMinutes as total contract budget, not monthly capacity.
  */
 export type ContractUtilization = {
   contractId: string;
@@ -92,22 +83,23 @@ export type ContractUtilization = {
   validFrom: Date;
   /** Contract validity end (exclusive). null means the contract is ongoing. */
   validTo: Date | null;
-  /** True when validTo === null (BR-105-016). Independent from contractedMinutes. */
+  /** True when validTo === null. Independent from allocatedMinutes. */
   isOngoing: boolean;
+  /** Cumulative minutes worked on this contract from validFrom to now (or validTo). */
   consumedMinutes: number;
   /**
-   * Pro-rated contracted minutes for the reporting period (BR-105-017).
-   * null when monthlyContractedMinutes is null (unlimited capacity - no denominator invented).
+   * Total contract budget in minutes (allocatedMinutes).
+   * null when allocatedMinutes is null (no total budget defined).
    */
   contractedMinutes: number | null;
   /**
-   * Utilization percentage (consumedMinutes / contractedMinutes × 100).
-   * null when contractedMinutes is null or 0 (BR-104-011).
+   * Utilization percentage (cumulativeConsumed / allocatedMinutes × 100).
+   * null when allocatedMinutes is null or 0.
    */
   utilizationPercentage: number | null;
   /**
-   * True when any consumed time falls outside the contract's [validFrom, validTo) validity
-   * interval (BR-105-018). Such time is retained in consumedMinutes and flagged here.
+   * Legacy field for backward compatibility with reporting.
+   * Always false for cumulative budget utilization.
    */
   isOutOfValidity: boolean;
 };
