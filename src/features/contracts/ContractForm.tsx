@@ -5,7 +5,6 @@ import { Field } from "@/components/forms/Field";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ContractAllocationField } from "@/features/contracts/ContractAllocationField";
 import { ContractClientField } from "@/features/contracts/ContractClientField";
 import {
   CONTRACT_SELECT_CLASS_NAME,
@@ -52,7 +51,7 @@ export function ContractForm({
     <form
       key={
         state
-          ? `${state.field ?? "form"}:${state.error}:${values.clientId}:${values.billingModel}:${values.currency}`
+          ? `${state.field ?? "form"}:${state.error}:${values.clientId}:${values.billingModel}:${values.currency}:${values.commitmentMode}`
           : "pristine"
       }
       className="grid gap-4"
@@ -143,24 +142,42 @@ export function ContractForm({
         </select>
       </Field>
       <Field
-        label="Monthly contracted hours"
-        htmlFor="monthlyContractedHours"
-        hint="Optional. Leave empty for no monthly limit."
-        error={fieldError("monthlyContractedHours")}
+        label="Commitment mode"
+        htmlFor="commitmentMode"
+        error={fieldError("commitmentMode")}
+      >
+        <select
+          name="commitmentMode"
+          required
+          defaultValue={values.commitmentMode}
+          disabled={isPending}
+          className={CONTRACT_SELECT_CLASS_NAME}
+        >
+          <option value="" disabled>
+            Select commitment mode
+          </option>
+          <option value="PERCENTAGE">Percentage</option>
+          <option value="TOTAL_HOURS">Total hours</option>
+        </select>
+      </Field>
+      <Field
+        label={values.commitmentMode === "TOTAL_HOURS" ? "Total contract hours" : "Commitment percentage"}
+        htmlFor="commitmentValue"
+        hint={
+          values.commitmentMode === "TOTAL_HOURS"
+            ? "Total hours available for this contract period."
+            : "Percentage commitment (0-100+). For ongoing contracts, this determines monthly quota."
+        }
+        error={fieldError("commitmentValue")}
       >
         <Input
-          name="monthlyContractedHours"
+          name="commitmentValue"
           type="text"
           inputMode="decimal"
-          defaultValue={values.monthlyContractedHours}
+          defaultValue={values.commitmentValue}
           disabled={isPending}
         />
       </Field>
-      <ContractAllocationField
-        value={values.allocatedMinutes}
-        error={fieldError("allocatedMinutes")}
-        isPending={isPending}
-      />
       <Field
         label="Payment terms (days)"
         htmlFor="paymentTermsDays"

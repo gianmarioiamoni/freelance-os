@@ -15,8 +15,8 @@ export type ContractFormValues = {
   billingModel: string;
   rate: string;
   currency: string;
-  monthlyContractedHours: string;
-  allocatedMinutes: string;
+  commitmentMode: string;
+  commitmentValue: string;
   paymentTermsDays: string;
   paymentTermsNote: string;
 };
@@ -39,8 +39,8 @@ export const EMPTY_CONTRACT_FORM_VALUES: ContractFormValues = {
   billingModel: "",
   rate: "",
   currency: "",
-  monthlyContractedHours: "",
-  allocatedMinutes: "",
+  commitmentMode: "",
+  commitmentValue: "",
   paymentTermsDays: "",
   paymentTermsNote: "",
 };
@@ -52,9 +52,8 @@ export const CONTRACT_FIELD_ERROR_MESSAGES: Record<ContractInputField, string> =
   billingModel: "Select hourly or daily billing.",
   rate: "Enter a rate greater than 0 with at most 4 decimal places.",
   currency: "Select a valid currency.",
-  monthlyContractedHours:
-    "Enter monthly contracted hours that convert exactly to minutes.",
-  allocatedMinutes: "Enter allocation as a whole number of minutes, or leave empty.",
+  commitmentMode: "Select percentage or total hours.",
+  commitmentValue: "Enter a valid commitment value.",
   paymentTermsDays: "Enter payment terms as a whole number of days.",
   paymentTermsNote: "Enter a payment terms note with at most 4000 characters.",
 };
@@ -79,8 +78,8 @@ export function readContractFormValues(formData: FormData): ContractFormValues {
     billingModel: String(formData.get("billingModel") ?? ""),
     rate: String(formData.get("rate") ?? ""),
     currency: String(formData.get("currency") ?? ""),
-    monthlyContractedHours: String(formData.get("monthlyContractedHours") ?? ""),
-    allocatedMinutes: String(formData.get("allocatedMinutes") ?? ""),
+    commitmentMode: String(formData.get("commitmentMode") ?? ""),
+    commitmentValue: String(formData.get("commitmentValue") ?? ""),
     paymentTermsDays: String(formData.get("paymentTermsDays") ?? ""),
     paymentTermsNote: String(formData.get("paymentTermsNote") ?? ""),
   };
@@ -105,6 +104,19 @@ export function toContractFormValues(
   contract: ContractRecord,
   currencyFallback: string,
 ): ContractFormValues {
+  const commitmentMode = contract.commitmentMode || "PERCENTAGE";
+  let commitmentValue = "";
+  
+  if (commitmentMode === "PERCENTAGE") {
+    commitmentValue = contract.commitmentPercentage !== null 
+      ? String(contract.commitmentPercentage) 
+      : "";
+  } else if (commitmentMode === "TOTAL_HOURS") {
+    commitmentValue = contract.allocatedMinutes !== null 
+      ? formatHoursFromMinutes(contract.allocatedMinutes) 
+      : "";
+  }
+
   return {
     clientId: contract.clientId,
     validFrom: formatCalendarDate(contract.validFrom),
@@ -112,12 +124,8 @@ export function toContractFormValues(
     billingModel: contract.billingModel,
     rate: contract.rate,
     currency: contract.currency || currencyFallback,
-    monthlyContractedHours:
-      contract.monthlyContractedMinutes === null
-        ? ""
-        : formatHoursFromMinutes(contract.monthlyContractedMinutes),
-    allocatedMinutes:
-      contract.allocatedMinutes === null ? "" : String(contract.allocatedMinutes),
+    commitmentMode,
+    commitmentValue,
     paymentTermsDays:
       contract.paymentTermsDays === null
         ? ""
@@ -146,8 +154,8 @@ function toContractWriteFields(values: ContractFormValues) {
     billingModel: values.billingModel,
     rate: values.rate,
     currency: values.currency,
-    monthlyContractedHours: values.monthlyContractedHours,
-    allocatedMinutes: values.allocatedMinutes,
+    commitmentMode: values.commitmentMode,
+    commitmentValue: values.commitmentValue,
     paymentTermsDays: values.paymentTermsDays,
     paymentTermsNote: values.paymentTermsNote,
   };

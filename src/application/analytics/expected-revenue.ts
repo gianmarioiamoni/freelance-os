@@ -23,20 +23,21 @@ function parseLiveRate(rate: string): number {
  *
  * HOURLY + commitmentPercentage → liveRate × (proRataMinutes / 60)
  * DAILY → null
+ * 0% commitment → undefined (excluded)
  * Overlap 0 with commitment present → 0, not null
  */
 export function expectedAmountForContract(
   contract: ExpectedContractFact,
   period: AnalyticsPeriod,
   calculateProRataCapacity: CalculateProRataCapacity,
-): number | null {
+): number | null | undefined {
   if (contract.billingModel !== "HOURLY") {
     return null;
   }
 
-  // No capacity = no expected revenue
+  // No capacity = no expected revenue (skip entirely)
   if (contract.commitmentPercentage === 0) {
-    return null;
+    return undefined; // Signal to filter out entirely
   }
 
   const proRataMinutes = calculateProRataCapacity(
@@ -46,8 +47,12 @@ export function expectedAmountForContract(
     period,
   );
 
-  if (proRataMinutes === null || proRataMinutes === 0) {
+  if (proRataMinutes === null) {
     return null;
+  }
+
+  if (proRataMinutes === 0) {
+    return 0; // Zero overlap but contract exists
   }
 
   return parseLiveRate(contract.rate) * (proRataMinutes / 60);
@@ -80,6 +85,11 @@ export function calculateExpectedRevenue(
         calculateProRataCapacity,
       );
 
+      // undefined = exclude entirely (0% commitment)
+      if (unrounded === undefined) {
+        return undefined;
+      }
+
       if (unrounded !== null) {
         currencyUnrounded.set(
           contract.currency,
@@ -93,7 +103,8 @@ export function calculateExpectedRevenue(
         unrounded,
         published: unrounded === null ? null : publishMonetaryAmount(unrounded),
       };
-    });
+    })
+    .filter((entry): entry is ExpectedByContract => entry !== undefined);
 
   const byCurrency = [...currencyUnrounded.entries()]
     .sort(([left], [right]) => left.localeCompare(right))

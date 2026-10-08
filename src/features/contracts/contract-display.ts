@@ -98,16 +98,6 @@ export function formatHoursFromMinutes(minutes: number): string {
   return String(parseFloat(hours.toFixed(10)));
 }
 
-export function displayMonthlyContractedHours(
-  minutes: number | null,
-): string {
-  if (minutes === null) {
-    return "No monthly limit";
-  }
-
-  const hours = formatHoursFromMinutes(minutes);
-  return `${hours} ${hours === "1" ? "hour" : "hours"}`;
-}
 
 export function displayPaymentTerms(
   days: number | null,

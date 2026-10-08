@@ -170,7 +170,8 @@ export function minimizeContract(row: ContractRecord) {
     currency: row.currency,
     validFrom: toIso(row.validFrom),
     validTo: row.validTo ? toIso(row.validTo) : null,
-    monthlyContractedMinutes: row.monthlyContractedMinutes,
+    commitmentMode: row.commitmentMode,
+    commitmentPercentage: row.commitmentPercentage,
     allocatedMinutes: row.allocatedMinutes,
   };
 }

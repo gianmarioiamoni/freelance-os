@@ -4,11 +4,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatClientStatus } from "@/features/clients/client-status";
 import type { ContractApplicability } from "@/application/contracts/contract-validity";
 import {
-  displayMonthlyContractedHours,
   displayPaymentTerms,
   formatApplicabilityLabel,
   formatBillingModel,
   formatCalendarDate,
+  formatHoursFromMinutes,
   formatRateWithCurrency,
   formatWorkspaceInstantDate,
 } from "@/features/contracts/contract-display";
@@ -61,9 +61,25 @@ export function ContractDetail({
       value: formatRateWithCurrency(contract.rate, contract.currency),
     },
     {
-      label: "Monthly contracted hours",
-      value: displayMonthlyContractedHours(contract.monthlyContractedMinutes),
+      label: "Commitment mode",
+      value: contract.commitmentMode === "TOTAL_HOURS" ? "Total hours" : "Percentage",
     },
+    ...(contract.commitmentMode === "PERCENTAGE"
+      ? [
+          {
+            label: "Commitment percentage",
+            value: `${contract.commitmentPercentage}%`,
+          },
+        ]
+      : []),
+    ...(contract.allocatedMinutes !== null
+      ? [
+          {
+            label: "Total contract hours",
+            value: `${formatHoursFromMinutes(contract.allocatedMinutes)} hours`,
+          },
+        ]
+      : []),
     {
       label: "Payment terms",
       value: displayPaymentTerms(
