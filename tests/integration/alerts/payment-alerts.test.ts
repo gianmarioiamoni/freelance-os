@@ -43,6 +43,8 @@ async function seedInvoice(
       billingModel: "HOURLY",
       rate: "80",
       currency: "EUR",
+      commitmentMode: "PERCENTAGE",
+      commitmentValue: "60",
       paymentTermsDays: overrides.paymentTermsDays,
     },
     repositories.clients,

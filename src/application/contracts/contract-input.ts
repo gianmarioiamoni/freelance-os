@@ -1,24 +1,25 @@
 // src/application/contracts/contract-input.ts
 import {
-  parseAllocatedMinutes,
   parseBillingModel,
   parseCalendarDate,
+  parseCommitmentMode,
+  parseCommitmentValue,
   parseCurrency,
-  parseMonthlyContractedHours,
   parsePaymentTermsDays,
   parsePaymentTermsNote,
   parseRate,
   parseRequiredText,
 } from "@/application/contracts/contract-field-parsers";
 import { assertValidContractPeriod } from "@/application/contracts/contract-validity";
-import { deriveContractAllocatedMinutes } from "@/domain/contract-budget";
+import {
+  calculateAllocatedMinutes,
+  calculateCommitmentPercentage,
+  type CommitmentMode,
+} from "@/domain/contract-commitment";
 import { InvalidContractInputError } from "@/domain/contract-errors";
 import type { BillingModel } from "@/domain/persistence-types";
 
-export {
-  MONTHLY_MINUTES_MAX,
-  PAYMENT_TERMS_NOTE_MAX_LENGTH,
-} from "@/application/contracts/contract-field-parsers";
+export { PAYMENT_TERMS_NOTE_MAX_LENGTH } from "@/application/contracts/contract-field-parsers";
 
 export type ContractWriteFields = {
   validFrom: string;
@@ -26,8 +27,8 @@ export type ContractWriteFields = {
   billingModel: string;
   rate: string;
   currency: string;
-  monthlyContractedHours?: string | number | null;
-  allocatedMinutes?: string | number | null;
+  commitmentMode: string;
+  commitmentValue: string | number; // percentage or total hours depending on mode
   paymentTermsDays?: string | number | null;
   paymentTermsNote?: string | null;
 };
@@ -44,7 +45,8 @@ export type ValidatedContractWriteFields = {
   billingModel: BillingModel;
   rate: string;
   currency: string;
-  monthlyContractedMinutes: number | null;
+  commitmentMode: CommitmentMode;
+  commitmentPercentage: number;
   allocatedMinutes: number | null;
   paymentTermsDays: number | null;
   paymentTermsNote: string | null;
@@ -54,9 +56,7 @@ export type ValidatedContractCreateInput = ValidatedContractWriteFields & {
   clientId: string;
 };
 
-export type ValidatedContractUpdateInput = ValidatedContractWriteFields & {
-  existingAllocatedMinutes?: number | null;
-};
+export type ValidatedContractUpdateInput = ValidatedContractWriteFields;
 
 function parseWriteFields(input: ContractWriteFields): ValidatedContractWriteFields {
   const validFrom = parseCalendarDate(input.validFrom, "validFrom");
@@ -68,17 +68,26 @@ function parseWriteFields(input: ContractWriteFields): ValidatedContractWriteFie
   const validTo = parseCalendarDate(input.validTo, "validTo");
   assertValidContractPeriod(validFrom, validTo);
 
-  const monthlyContractedMinutes = parseMonthlyContractedHours(
-    input.monthlyContractedHours,
-  );
-  const explicitAllocatedMinutes = parseAllocatedMinutes(input.allocatedMinutes);
+  const commitmentMode = parseCommitmentMode(input.commitmentMode);
+  const commitmentValue = parseCommitmentValue(input.commitmentValue);
 
-  // Derive allocatedMinutes: explicit value wins, otherwise calculate from monthly capacity + duration
-  const allocatedMinutes = deriveContractAllocatedMinutes(
+  // Calculate canonical commitmentPercentage
+  const commitmentPercentage = calculateCommitmentPercentage(
+    commitmentMode,
+    commitmentValue,
     validFrom,
     validTo,
-    monthlyContractedMinutes,
-    explicitAllocatedMinutes,
+  );
+
+  if (commitmentPercentage === null) {
+    throw new InvalidContractInputError("commitmentValue");
+  }
+
+  // Calculate derived allocatedMinutes
+  const allocatedMinutes = calculateAllocatedMinutes(
+    commitmentPercentage,
+    validFrom,
+    validTo,
   );
 
   return {
@@ -87,7 +96,8 @@ function parseWriteFields(input: ContractWriteFields): ValidatedContractWriteFie
     billingModel: parseBillingModel(input.billingModel),
     rate: parseRate(input.rate),
     currency: parseCurrency(input.currency),
-    monthlyContractedMinutes,
+    commitmentMode,
+    commitmentPercentage,
     allocatedMinutes,
     paymentTermsDays: parsePaymentTermsDays(input.paymentTermsDays),
     paymentTermsNote: parsePaymentTermsNote(input.paymentTermsNote),
@@ -105,21 +115,6 @@ export function parseContractCreateInput(
 
 export function parseContractUpdateInput(
   input: ContractUpdateInput,
-  existingAllocatedMinutes?: number | null,
 ): ValidatedContractUpdateInput {
-  const parsed = parseWriteFields(input);
-
-  // Preserve existing explicit allocatedMinutes if input field was not provided
-  const inputHasAllocatedMinutes = input.allocatedMinutes !== undefined;
-  const finalAllocatedMinutes = inputHasAllocatedMinutes
-    ? parsed.allocatedMinutes
-    : existingAllocatedMinutes !== undefined && existingAllocatedMinutes !== null
-      ? existingAllocatedMinutes
-      : parsed.allocatedMinutes;
-
-  return {
-    ...parsed,
-    allocatedMinutes: finalAllocatedMinutes,
-    existingAllocatedMinutes,
-  };
+  return parseWriteFields(input);
 }

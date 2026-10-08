@@ -249,8 +249,9 @@ async function seed(): Promise<void> {
       billingModel: "HOURLY",
       rate: "80.0000",
       currency: "EUR",
-      allocatedMinutes: 30000, // 500h total contract budget
-      monthlyContractedMinutes: 8000,
+      commitmentMode: "PERCENTAGE",
+      commitmentPercentage: "48.08", // 500h / 1040h capacity
+      allocatedMinutes: 30000, // derived: 48.08% × 130 working days × 8h × 60
       paymentTermsDays: 30,
     },
     update: {
@@ -261,8 +262,9 @@ async function seed(): Promise<void> {
       billingModel: "HOURLY",
       rate: "80.0000",
       currency: "EUR",
-      allocatedMinutes: 30000, // 500h total contract budget
-      monthlyContractedMinutes: 8000,
+      commitmentMode: "PERCENTAGE",
+      commitmentPercentage: "48.08",
+      allocatedMinutes: 30000,
       paymentTermsDays: 30,
     },
   });
@@ -278,8 +280,9 @@ async function seed(): Promise<void> {
       billingModel: "DAILY",
       rate: "500.0000",
       currency: "EUR",
-      allocatedMinutes: 48000, // 800h total contract budget (ongoing)
-      monthlyContractedMinutes: 8000,
+      commitmentMode: "PERCENTAGE",
+      commitmentPercentage: "60.00", // ongoing: explicit 60%
+      allocatedMinutes: null, // ongoing: no finite lifetime budget
       paymentTermsDays: 30,
     },
     update: {
@@ -290,8 +293,9 @@ async function seed(): Promise<void> {
       billingModel: "DAILY",
       rate: "500.0000",
       currency: "EUR",
-      allocatedMinutes: 48000, // 800h total contract budget (ongoing)
-      monthlyContractedMinutes: 8000,
+      commitmentMode: "PERCENTAGE",
+      commitmentPercentage: "60.00",
+      allocatedMinutes: null,
       paymentTermsDays: 30,
     },
   });
@@ -307,8 +311,9 @@ async function seed(): Promise<void> {
       billingModel: "HOURLY",
       rate: "65.0000",
       currency: "EUR",
-      allocatedMinutes: 36000, // 600h total contract budget (ongoing)
-      monthlyContractedMinutes: 6000,
+      commitmentMode: "PERCENTAGE",
+      commitmentPercentage: "50.00", // ongoing: explicit 50%
+      allocatedMinutes: null, // ongoing: no finite lifetime budget
       paymentTermsDays: 15,
     },
     update: {
@@ -319,8 +324,9 @@ async function seed(): Promise<void> {
       billingModel: "HOURLY",
       rate: "65.0000",
       currency: "EUR",
-      allocatedMinutes: 36000, // 600h total contract budget (ongoing)
-      monthlyContractedMinutes: 6000,
+      commitmentMode: "PERCENTAGE",
+      commitmentPercentage: "50.00",
+      allocatedMinutes: null,
       paymentTermsDays: 15,
     },
   });
@@ -336,8 +342,9 @@ async function seed(): Promise<void> {
       billingModel: "HOURLY",
       rate: "50.0000",
       currency: "EUR",
-      allocatedMinutes: 24000, // 400h total contract budget (archived)
-      monthlyContractedMinutes: 4000,
+      commitmentMode: "PERCENTAGE",
+      commitmentPercentage: "19.23", // 400h / 2080h capacity
+      allocatedMinutes: 24000, // derived: 19.23% × 260 working days × 8h × 60
     },
     update: {
       workspaceId: WORKSPACE_ID,
@@ -347,8 +354,9 @@ async function seed(): Promise<void> {
       billingModel: "HOURLY",
       rate: "50.0000",
       currency: "EUR",
-      allocatedMinutes: 24000, // 400h total contract budget (archived)
-      monthlyContractedMinutes: 4000,
+      commitmentMode: "PERCENTAGE",
+      commitmentPercentage: "19.23",
+      allocatedMinutes: 24000,
     },
   });
 

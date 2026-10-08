@@ -95,72 +95,8 @@ export function parseCurrency(value: string | undefined): string {
   return currency;
 }
 
-export function parseMonthlyContractedHours(
-  value: string | number | null | undefined,
-): number | null {
-  if (value == null) {
-    return null;
-  }
-
-  const raw = typeof value === "number" ? String(value) : value.trim();
-
-  if (raw.length === 0) {
-    return null;
-  }
-
-  if (!HOURS_PATTERN.test(raw)) {
-    throw new InvalidContractInputError("monthlyContractedHours");
-  }
-
-  const [integerPart = "0", fractionPart = ""] = raw.split(".");
-  const scale = BigInt(fractionPart.length);
-  const numerator = BigInt(`${integerPart}${fractionPart}`);
-
-  if (numerator <= BigInt(0)) {
-    throw new InvalidContractInputError("monthlyContractedHours");
-  }
-
-  const minutesNumerator = numerator * BigInt(60);
-  const denominator = BigInt(10) ** scale;
-
-  if (minutesNumerator % denominator !== BigInt(0)) {
-    throw new InvalidContractInputError("monthlyContractedHours");
-  }
-
-  const minutes = minutesNumerator / denominator;
-
-  if (minutes > BigInt(MONTHLY_MINUTES_MAX)) {
-    throw new InvalidContractInputError("monthlyContractedHours");
-  }
-
-  return Number(minutes);
-}
-
-export function parseAllocatedMinutes(
-  value: string | number | null | undefined,
-): number | null {
-  if (value == null) {
-    return null;
-  }
-
-  const raw = typeof value === "number" ? String(value) : value.trim();
-
-  if (raw.length === 0) {
-    return null;
-  }
-
-  if (!PAYMENT_DAYS_PATTERN.test(raw)) {
-    throw new InvalidContractInputError("allocatedMinutes");
-  }
-
-  const minutes = Number(raw);
-
-  if (!Number.isSafeInteger(minutes) || minutes > MONTHLY_MINUTES_MAX) {
-    throw new InvalidContractInputError("allocatedMinutes");
-  }
-
-  return minutes;
-}
+// Removed: parseMonthlyContractedHours, parseAllocatedMinutes
+// Use commitmentMode/commitmentPercentage/allocatedMinutes (derived) instead
 
 export function parsePaymentTermsDays(
   value: string | number | null | undefined,
@@ -206,4 +142,32 @@ export function parsePaymentTermsNote(
   }
 
   return trimmed;
+}
+
+export function parseCommitmentMode(
+  value: string,
+): "PERCENTAGE" | "TOTAL_HOURS" {
+  if (value === "PERCENTAGE" || value === "TOTAL_HOURS") {
+    return value;
+  }
+
+  throw new InvalidContractInputError("commitmentMode");
+}
+
+export function parseCommitmentValue(
+  value: string | number,
+): number {
+  const raw = typeof value === "string" ? value.trim() : String(value);
+
+  if (raw === "") {
+    throw new InvalidContractInputError("commitmentValue");
+  }
+
+  const parsed = Number(raw);
+
+  if (!Number.isFinite(parsed) || parsed < 0) {
+    throw new InvalidContractInputError("commitmentValue");
+  }
+
+  return parsed;
 }

@@ -38,8 +38,8 @@ async function createWorkspaceContext(suffix: string): Promise<WorkspaceContext>
 
 async function setupClientAndContract(
   context: WorkspaceContext,
-  /** monthlyContractedHours: null means unlimited (no alert); number = hours per month */
-  monthlyContractedHours: number | null = null,
+  /** totalHours: null = ongoing (no lifetime budget / no alert); number = TOTAL_HOURS lifetime budget */
+  totalHours: number | null = null,
   validFrom = "2026-01-01",
   validTo = "2026-12-31",
 ) {
@@ -51,15 +51,27 @@ async function setupClientAndContract(
 
   const contract = await createContract(
     context,
-    {
-      clientId: client.id,
-      validFrom,
-      validTo,
-      billingModel: "HOURLY" as const,
-      rate: "75",
-      currency: "EUR",
-      monthlyContractedHours: monthlyContractedHours !== null ? String(monthlyContractedHours) : null,
-    },
+    totalHours === null
+      ? {
+          clientId: client.id,
+          validFrom,
+          validTo: null,
+          billingModel: "HOURLY" as const,
+          rate: "75",
+          currency: "EUR",
+          commitmentMode: "PERCENTAGE",
+          commitmentValue: "60",
+        }
+      : {
+          clientId: client.id,
+          validFrom,
+          validTo,
+          billingModel: "HOURLY" as const,
+          rate: "75",
+          currency: "EUR",
+          commitmentMode: "TOTAL_HOURS",
+          commitmentValue: String(totalHours),
+        },
     repositories.clients,
     repositories.contracts,
   );

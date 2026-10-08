@@ -52,7 +52,9 @@ describe("Analytics Product Decisions Verification", () => {
         billingModel: "HOURLY",
         rate: "100.0000",
         currency: "EUR",
-        monthlyContractedMinutes: 4800,
+        commitmentMode: "PERCENTAGE",
+        commitmentPercentage: 60,
+        allocatedMinutes: null,
         validFrom: currentMonthDay(1),
         validTo: null,
       });
@@ -62,7 +64,8 @@ describe("Analytics Product Decisions Verification", () => {
         billingModel: "HOURLY",
         rate: "120.0000",
         currency: "EUR",
-        monthlyContractedMinutes: 3600,
+        commitmentMode: "PERCENTAGE",
+        commitmentPercentage: 60,
         allocatedMinutes: 10000, // Total budget for cumulative utilization
         validFrom: currentMonthDay(1),
         validTo: null,
@@ -154,7 +157,9 @@ describe("Analytics Product Decisions Verification", () => {
         billingModel: "HOURLY",
         rate: "100.0000",
         currency: "EUR",
-        monthlyContractedMinutes: null,
+        commitmentMode: "PERCENTAGE",
+        commitmentPercentage: 60,
+        allocatedMinutes: null,
         validFrom: currentMonthDay(1),
         validTo: null,
       });
@@ -199,7 +204,8 @@ describe("Analytics Product Decisions Verification", () => {
         billingModel: "HOURLY",
         rate: "100.0000",
         currency: "EUR",
-        monthlyContractedMinutes: 2400, // 40 hours
+        commitmentMode: "PERCENTAGE",
+        commitmentPercentage: 60,
         allocatedMinutes: 5000, // Total budget for cumulative utilization
         validFrom: currentMonthDay(1),
         validTo: null,
@@ -262,7 +268,8 @@ describe("Analytics Product Decisions Verification", () => {
         billingModel: "DAILY",
         rate: "800.0000",
         currency: "EUR",
-        monthlyContractedMinutes: 4800, // 80 hours
+        commitmentMode: "PERCENTAGE",
+        commitmentPercentage: 60,
         allocatedMinutes: 8000, // Total budget for cumulative utilization
         validFrom: currentMonthDay(1),
         validTo: null,
@@ -320,7 +327,9 @@ describe("Analytics Product Decisions Verification", () => {
         billingModel: "HOURLY",
         rate: "150.0000",
         currency: "EUR",
-        monthlyContractedMinutes: null, // Unlimited
+        commitmentMode: "PERCENTAGE",
+        commitmentPercentage: 60,
+        allocatedMinutes: null,
         validFrom: currentMonthDay(1),
         validTo: null,
       });
@@ -489,7 +498,8 @@ describe("Analytics Product Decisions Verification", () => {
         billingModel: "HOURLY",
         rate: "100.0000",
         currency: "EUR",
-        monthlyContractedMinutes: 4800,
+        commitmentMode: "PERCENTAGE",
+        commitmentPercentage: 60,
         allocatedMinutes: 10000, // Total budget for cumulative utilization
         validFrom: currentMonthDay(1), // first day of the current month
         validTo: monthOffsetDay(3, 28), // a finite end well after the current month
@@ -532,7 +542,9 @@ describe("Analytics Product Decisions Verification", () => {
         billingModel: "DAILY",
         rate: "800.0000",
         currency: "EUR",
-        monthlyContractedMinutes: null, // Unlimited
+        commitmentMode: "PERCENTAGE",
+        commitmentPercentage: 60,
+        allocatedMinutes: null,
         validFrom: currentMonthDay(1), // first day of the current month
         validTo: null, // Unlimited/ongoing
       });
@@ -581,7 +593,8 @@ describe("Analytics Product Decisions Verification", () => {
         billingModel: "HOURLY",
         rate: "100.0000",
         currency: "EUR",
-        monthlyContractedMinutes: 2400, // 40 hours
+        commitmentMode: "PERCENTAGE",
+        commitmentPercentage: 60,
         allocatedMinutes: 5000, // Total budget for cumulative utilization
         validFrom: currentMonthDay(1),
         validTo: monthOffsetDay(1, 28), // ends inside the next month
@@ -593,7 +606,9 @@ describe("Analytics Product Decisions Verification", () => {
         billingModel: "HOURLY",
         rate: "120.0000",
         currency: "EUR",
-        monthlyContractedMinutes: null,
+        commitmentMode: "PERCENTAGE",
+        commitmentPercentage: 60,
+        allocatedMinutes: null,
         validFrom: currentMonthDay(1),
         validTo: null, // No end date
       });

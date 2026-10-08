@@ -16,6 +16,7 @@ import { withPersistenceErrors } from "@/infrastructure/persistence/map-prisma-e
 import { mapTimeEntry } from "@/infrastructure/persistence/mappers";
 import type { PrismaExecutor } from "@/infrastructure/persistence/prisma-executor";
 import { AnalyticsService } from "@/application/analytics/analytics-service";
+import { getMonthlyContractedMinutes } from "@/domain/contract-commitment";
 
 export function createAnalyticsRepository(db: PrismaExecutor): AnalyticsRepository {
   return {
@@ -266,7 +267,7 @@ export function createAnalyticsRepository(db: PrismaExecutor): AnalyticsReposito
           billingModel: row.billingModel,
           rate: row.rate.toFixed(4),
           currency: row.currency,
-          monthlyContractedMinutes: row.monthlyContractedMinutes,
+          commitmentPercentage: row.commitmentPercentage.toNumber(),
           validFrom: row.validFrom,
           validTo: row.validTo,
         }));
@@ -537,8 +538,9 @@ async function getContractUtilizations(
   period: AnalyticsPeriod,
   filter?: AnalyticsFilter,
 ): Promise<ContractUtilization[]> {
-  // Get all contracts that have any consumption in the lifetime
-  // First, get contracts with consumption
+  // Include:
+  // - contracts with any TimeEntry consumption (incl. unlimited / allocatedMinutes null)
+  // - finite-budget contracts (allocatedMinutes set) even at 0 consumption, so alerts can resolve
   const contractConsumption = await db.timeEntry.groupBy({
     by: ["contractId"],
     where: {
@@ -548,16 +550,16 @@ async function getContractUtilizations(
     _sum: { durationMinutes: true },
   });
 
-  if (contractConsumption.length === 0) {
-    return [];
-  }
+  const consumedIds = contractConsumption.map((c) => c.contractId);
 
-  // Get contract details
   const contracts = await db.contract.findMany({
     where: {
       workspaceId,
-      id: { in: contractConsumption.map(c => c.contractId) },
       ...contractEntityWhere(filter),
+      OR: [
+        ...(consumedIds.length > 0 ? [{ id: { in: consumedIds } }] : []),
+        { allocatedMinutes: { not: null } },
+      ],
     },
     include: {
       client: { select: { companyName: true, status: true } },
@@ -635,7 +637,7 @@ async function getContractUtilizations(
 
 // Helper function to get monthly hours allocations.
 // Shows worked hours vs monthly allocation target for each contract.
-// Monthly allocation is derived from allocatedMinutes or monthlyContractedMinutes.
+// Monthly allocation is derived via getMonthlyContractedMinutes(commitmentPercentage, year, month).
 async function getMonthlyHoursAllocations(
   db: PrismaExecutor,
   workspaceId: string,
@@ -676,18 +678,28 @@ async function getMonthlyHoursAllocations(
     contractConsumption.map(c => [c.contractId, c._sum.durationMinutes ?? 0])
   );
 
+  // Extract year/month from period for monthly quota calculation
+  const periodStart = new Date(period.startDate);
+  const year = periodStart.getUTCFullYear();
+  const month = periodStart.getUTCMonth() + 1; // 1-indexed
+
   return contracts
+    .filter(contract => contract.commitmentPercentage.toNumber() > 0)
     .map(contract => {
       const workedMinutes = consumptionMap.get(contract.id) ?? 0;
 
-      // Monthly allocation is monthlyContractedMinutes only.
-      // allocatedMinutes is total contract budget, not monthly allocation.
-      const allocatedMinutes = contract.monthlyContractedMinutes;
+      // Compute monthly allocation from commitmentPercentage + working days in month
+      const commitmentPercentage = contract.commitmentPercentage.toNumber();
+      const allocatedMinutes = getMonthlyContractedMinutes(
+        commitmentPercentage,
+        year,
+        month,
+      );
 
-      // Calculate percentage: workedMinutes / monthlyContractedMinutes × 100
+      // Calculate percentage
       const percentage = AnalyticsService.calculateAllocationPercentage(
         workedMinutes,
-        allocatedMinutes ?? 0,
+        allocatedMinutes,
       );
 
       return {
@@ -699,6 +711,5 @@ async function getMonthlyHoursAllocations(
         percentage,
       };
     })
-    .filter(allocation => allocation.allocatedMinutes !== null) // Only show contracts with monthlyContractedMinutes
     .sort((a, b) => b.workedMinutes - a.workedMinutes);
 }

@@ -8,7 +8,7 @@ import type {
 } from "@/domain/analytics-types";
 
 export type CalculateProRataCapacity = (
-  monthlyContractedMinutes: number | null,
+  commitmentPercentage: number,
   validFrom: Date,
   validTo: Date | null,
   period: AnalyticsPeriod,
@@ -21,10 +21,9 @@ function parseLiveRate(rate: string): number {
 /**
  * Per-contract Expected amount from live commercial configuration.
  *
- * HOURLY + capacity → liveRate × (proRataMinutes / 60)
- * HOURLY + null capacity → null
+ * HOURLY + commitmentPercentage → liveRate × (proRataMinutes / 60)
  * DAILY → null
- * Overlap 0 with capacity present → 0, not null
+ * Overlap 0 with commitment present → 0, not null
  */
 export function expectedAmountForContract(
   contract: ExpectedContractFact,
@@ -35,14 +34,19 @@ export function expectedAmountForContract(
     return null;
   }
 
+  // No capacity = no expected revenue
+  if (contract.commitmentPercentage === 0) {
+    return null;
+  }
+
   const proRataMinutes = calculateProRataCapacity(
-    contract.monthlyContractedMinutes,
+    contract.commitmentPercentage,
     contract.validFrom,
     contract.validTo,
     period,
   );
 
-  if (proRataMinutes === null) {
+  if (proRataMinutes === null || proRataMinutes === 0) {
     return null;
   }
 
@@ -53,7 +57,7 @@ export function expectedAmountForContract(
  * Authoritative Expected Revenue (R2-E01 / P-E01-03).
  *
  * Independent of TimeEntry, Accrued snapshots, Invoice, Payment, and Forecast.
- * Uses live Contract billingModel, rate, currency, monthlyContractedMinutes,
+ * Uses live Contract billingModel, rate, currency, commitmentPercentage,
  * and [validFrom, validTo). Pro-rata capacity is PD-105-005.
  */
 export function calculateExpectedRevenue(

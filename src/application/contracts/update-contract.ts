@@ -34,8 +34,8 @@ export async function updateContract(
       throw new ContractNotFoundError();
     }
 
-    // Parse input with existing allocatedMinutes for preservation logic
-    const validated = parseContractUpdateInput(input, existing.allocatedMinutes);
+    // Parse and validate input - commitment is recalculated from new input
+    const validated = parseContractUpdateInput(input);
 
     const client = await repositories.clients.getClient(
       context.workspaceId,
@@ -67,7 +67,18 @@ export async function updateContract(
       return await repositories.contracts.updateContract(
         context.workspaceId,
         contractId,
-        validated,
+        {
+          validFrom: validated.validFrom,
+          validTo: validated.validTo,
+          billingModel: validated.billingModel,
+          rate: validated.rate,
+          currency: validated.currency,
+          commitmentMode: validated.commitmentMode,
+          commitmentPercentage: validated.commitmentPercentage,
+          allocatedMinutes: validated.allocatedMinutes,
+          paymentTermsDays: validated.paymentTermsDays,
+          paymentTermsNote: validated.paymentTermsNote,
+        },
       );
     } catch (error) {
       if (error instanceof RecordNotFoundError) {

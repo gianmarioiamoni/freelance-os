@@ -6,8 +6,8 @@ export type ContractInputField =
   | "billingModel"
   | "rate"
   | "currency"
-  | "monthlyContractedHours"
-  | "allocatedMinutes"
+  | "commitmentMode"
+  | "commitmentValue"
   | "paymentTermsDays"
   | "paymentTermsNote";
 

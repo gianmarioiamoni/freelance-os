@@ -39,6 +39,9 @@ export async function createWorkspaceGraph(
     billingModel: "HOURLY",
     rate: "80.0000",
     currency: "EUR",
+    commitmentMode: "PERCENTAGE",
+    commitmentPercentage: 60,
+    allocatedMinutes: null,
   });
 
   return {

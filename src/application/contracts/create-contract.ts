@@ -40,7 +40,19 @@ export async function createContract(
   );
 
   try {
-    return await contracts.createContract(context.workspaceId, validated);
+    return await contracts.createContract(context.workspaceId, {
+      clientId: validated.clientId,
+      validFrom: validated.validFrom,
+      validTo: validated.validTo,
+      billingModel: validated.billingModel,
+      rate: validated.rate,
+      currency: validated.currency,
+      commitmentMode: validated.commitmentMode,
+      commitmentPercentage: validated.commitmentPercentage,
+      allocatedMinutes: validated.allocatedMinutes,
+      paymentTermsDays: validated.paymentTermsDays,
+      paymentTermsNote: validated.paymentTermsNote,
+    });
   } catch (error) {
     if (error instanceof ConstraintViolationError) {
       throw new OverlappingContractError();

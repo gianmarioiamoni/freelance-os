@@ -59,6 +59,8 @@ export type ClientRecord = {
   updatedAt: Date;
 };
 
+export type CommitmentMode = "PERCENTAGE" | "TOTAL_HOURS";
+
 export type ContractRecord = {
   id: string;
   workspaceId: string;
@@ -68,7 +70,8 @@ export type ContractRecord = {
   billingModel: BillingModel;
   rate: string;
   currency: string;
-  monthlyContractedMinutes: number | null;
+  commitmentMode: CommitmentMode;
+  commitmentPercentage: number;
   allocatedMinutes: number | null;
   paymentTermsDays: number | null;
   paymentTermsNote: string | null;
@@ -202,8 +205,9 @@ export type CreateContractInput = {
   billingModel: BillingModel;
   rate: string;
   currency: string;
-  monthlyContractedMinutes?: number | null;
-  allocatedMinutes?: number | null;
+  commitmentMode: CommitmentMode;
+  commitmentPercentage: number;
+  allocatedMinutes: number | null;
   paymentTermsDays?: number | null;
   paymentTermsNote?: string | null;
 };
@@ -214,8 +218,9 @@ export type UpdateContractInput = {
   billingModel: BillingModel;
   rate: string;
   currency: string;
-  monthlyContractedMinutes?: number | null;
-  allocatedMinutes?: number | null;
+  commitmentMode: CommitmentMode;
+  commitmentPercentage: number;
+  allocatedMinutes: number | null;
   paymentTermsDays?: number | null;
   paymentTermsNote?: string | null;
 };

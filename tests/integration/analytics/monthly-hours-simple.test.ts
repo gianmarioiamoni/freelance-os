@@ -54,7 +54,8 @@ describe("Monthly Hours Allocations - Simple", () => {
         billingModel: "HOURLY",
         rate: "80",
         currency: "EUR",
-        monthlyContractedHours: "96", // 5760 minutes
+        commitmentMode: "PERCENTAGE",
+        commitmentValue: "54.55", // 5760 minutes
       },
       repositories.clients,
       repositories.contracts,
@@ -112,7 +113,8 @@ describe("Monthly Hours Allocations - Simple", () => {
         billingModel: "HOURLY",
         rate: "90",
         currency: "USD",
-        monthlyContractedHours: "48", // 2880 minutes
+        commitmentMode: "PERCENTAGE",
+        commitmentValue: "27.27", // 2880 minutes
       },
       repositories.clients,
       repositories.contracts,
@@ -185,7 +187,8 @@ describe("Monthly Hours Allocations - Simple", () => {
         billingModel: "HOURLY",
         rate: "95",
         currency: "EUR",
-        monthlyContractedHours: "40", // 2400 minutes
+        commitmentMode: "PERCENTAGE",
+        commitmentValue: "22.73", // 2400 minutes
       },
       repositories.clients,
       repositories.contracts,
@@ -273,7 +276,8 @@ describe("Monthly Hours Allocations - Simple", () => {
         billingModel: "DAILY",
         rate: "500",
         currency: "USD",
-        // No monthlyContractedHours
+        commitmentMode: "PERCENTAGE",
+        commitmentValue: "0", // No capacity
       },
       repositories.clients,
       repositories.contracts,

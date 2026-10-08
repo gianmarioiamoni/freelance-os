@@ -64,8 +64,8 @@ export type MonthlyHoursAllocation = {
   clientName: string;
   isArchived: boolean;
   workedMinutes: number;
-  allocatedMinutes: number | null; // monthly contracted capacity (monthlyContractedMinutes)
-  percentage: number | null; // workedMinutes / monthlyContractedMinutes × 100, null when monthlyContractedMinutes is null or 0
+  allocatedMinutes: number | null; // monthly contracted capacity (computed from commitmentPercentage + month working days)
+  percentage: number | null; // workedMinutes / allocatedMinutes × 100, null when allocatedMinutes is null or 0
 };
 
 /**
@@ -205,7 +205,7 @@ export type ExpectedContractFact = {
   billingModel: "HOURLY" | "DAILY";
   rate: string;
   currency: string;
-  monthlyContractedMinutes: number | null;
+  commitmentPercentage: number;
   validFrom: Date;
   validTo: Date | null;
 };

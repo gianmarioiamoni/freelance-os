@@ -29,6 +29,11 @@ enum BillingModel {
   DAILY
 }
 
+enum CommitmentMode {
+  PERCENTAGE
+  TOTAL_HOURS
+}
+
 enum AlertType {
   CONTRACT_WARNING
   CONTRACT_EXCEEDED
@@ -113,24 +118,27 @@ model Client {
 }
 
 model Contract {
-  id                       String       @id @default(uuid()) @db.Uuid
-  workspaceId              String       @db.Uuid
-  clientId                 String       @db.Uuid
-  validFrom                DateTime     @db.Date
-  validTo                  DateTime?    @db.Date
-  billingModel             BillingModel
+  id                    String          @id @default(uuid()) @db.Uuid
+  workspaceId           String          @db.Uuid
+  clientId              String          @db.Uuid
+  validFrom             DateTime        @db.Date
+  validTo               DateTime?       @db.Date
+  billingModel          BillingModel
   /// Positive monetary rate. CHECK (rate > 0) is enforced in SQL.
-  rate                     Decimal      @db.Decimal(19, 4)
-  currency                 String       @db.Char(3)
-  monthlyContractedMinutes Int?
-  /// Optional total Contract time budget in minutes. Null = no allocation.
-  /// Zero is valid and distinct from null. CHECK (allocatedMinutes IS NULL OR
-  /// allocatedMinutes >= 0) is enforced in SQL.
-  allocatedMinutes         Int?
-  paymentTermsDays         Int?
-  paymentTermsNote         String?      @db.Text
-  createdAt                DateTime     @default(now()) @db.Timestamptz(6)
-  updatedAt                DateTime     @updatedAt @db.Timestamptz(6)
+  rate                  Decimal         @db.Decimal(19, 4)
+  currency              String          @db.Char(3)
+  /// Contract commitment mode: how the commitment is specified.
+  commitmentMode        CommitmentMode
+  /// Canonical commitment representation as percentage (0-100+).
+  /// CHECK (commitmentPercentage >= 0) is enforced in SQL.
+  commitmentPercentage  Decimal         @db.Decimal(5, 2)
+  /// Derived total contract budget in minutes. Null for ongoing contracts.
+  /// CHECK (allocatedMinutes IS NULL OR allocatedMinutes >= 0) is enforced in SQL.
+  allocatedMinutes      Int?
+  paymentTermsDays      Int?
+  paymentTermsNote      String?         @db.Text
+  createdAt             DateTime        @default(now()) @db.Timestamptz(6)
+  updatedAt             DateTime        @updatedAt @db.Timestamptz(6)
 
   workspace   Workspace   @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
   client      Client      @relation(fields: [workspaceId, clientId], references: [workspaceId, id], onDelete: Restrict)

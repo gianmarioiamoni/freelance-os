@@ -51,7 +51,7 @@ async function addContract(
     validFrom?: string;
     validTo?: string | null;
     billingModel?: "HOURLY" | "DAILY";
-    monthlyContractedHours?: string | null;
+    commitmentPercentage?: number;
   },
 ) {
   return createContract(
@@ -63,7 +63,8 @@ async function addContract(
       billingModel: options?.billingModel ?? "HOURLY",
       rate: options?.rate ?? "80",
       currency: options?.currency ?? "EUR",
-      monthlyContractedHours: options?.monthlyContractedHours,
+      commitmentMode: "PERCENTAGE",
+      commitmentValue: String(options?.commitmentPercentage ?? 60),
     },
     repositories.clients,
     repositories.contracts,
@@ -83,7 +84,7 @@ describe("Expected Revenue integration", () => {
     const context = await workspace("full-period");
     const client = await addClient(context, "Full Period");
     const contract = await addContract(context, client.id, {
-      monthlyContractedHours: "80",
+      commitmentPercentage: 45.45,
     });
 
     const result = await service().getExpectedRevenue(context, june());
@@ -107,7 +108,7 @@ describe("Expected Revenue integration", () => {
     await addContract(context, client.id, {
       validFrom: "2026-06-16",
       validTo: "2026-12-31",
-      monthlyContractedHours: "80",
+      commitmentPercentage: 45.45,
     });
 
     const result = await service().getExpectedRevenue(context, june());
@@ -119,7 +120,7 @@ describe("Expected Revenue integration", () => {
     const client = await addClient(context, "Ongoing");
     await addContract(context, client.id, {
       validTo: null,
-      monthlyContractedHours: "80",
+      commitmentPercentage: 45.45,
     });
 
     const result = await service().getExpectedRevenue(context, june());
@@ -131,11 +132,11 @@ describe("Expected Revenue integration", () => {
     const hourlyClient = await addClient(context, "Unlimited");
     const dailyClient = await addClient(context, "Daily");
     const unlimited = await addContract(context, hourlyClient.id, {
-      monthlyContractedHours: null,
+      commitmentPercentage: 0,
     });
     const daily = await addContract(context, dailyClient.id, {
       billingModel: "DAILY",
-      monthlyContractedHours: "80",
+      commitmentPercentage: 45.45,
     });
 
     const result = await service().getExpectedRevenue(context, june());
@@ -163,7 +164,7 @@ describe("Expected Revenue integration", () => {
     const client = await addClient(context, "Live Rate");
     const contract = await addContract(context, client.id, {
       rate: "80",
-      monthlyContractedHours: "80",
+      commitmentPercentage: 45.45,
     });
 
     await createTimeEntry(
@@ -188,7 +189,8 @@ describe("Expected Revenue integration", () => {
         billingModel: "HOURLY",
         rate: "120",
         currency: "EUR",
-        monthlyContractedHours: "80",
+        commitmentMode: "PERCENTAGE",
+        commitmentValue: "45.45",
       }, runInTransaction);
 
     const analytics = service();
@@ -203,7 +205,7 @@ describe("Expected Revenue integration", () => {
     const context = await workspace("no-time-dep");
     const client = await addClient(context, "Independent");
     const contract = await addContract(context, client.id, {
-      monthlyContractedHours: "80",
+      commitmentPercentage: 45.45,
     });
 
     const analytics = service();
@@ -237,12 +239,12 @@ describe("Expected Revenue integration", () => {
     await addContract(context, eurClient.id, {
       currency: "EUR",
       rate: "80",
-      monthlyContractedHours: "80",
+      commitmentPercentage: 45.45,
     });
     await addContract(context, usdClient.id, {
       currency: "USD",
       rate: "100",
-      monthlyContractedHours: "80",
+      commitmentPercentage: 45.45,
     });
 
     const result = await service().getExpectedRevenue(context, june());
@@ -257,7 +259,7 @@ describe("Expected Revenue integration", () => {
     const context = await workspace("archived");
     const client = await addClient(context, "Archived");
     const contract = await addContract(context, client.id, {
-      monthlyContractedHours: "80",
+      commitmentPercentage: 45.45,
     });
     await repositories.clients.archiveClient(context.workspaceId, client.id);
 
@@ -274,7 +276,7 @@ describe("Expected Revenue integration", () => {
     await addContract(context, client.id, {
       validFrom: "2026-09-16",
       validTo: null,
-      monthlyContractedHours: "80",
+      commitmentPercentage: 45.45,
     });
 
     const nyPeriod = getCurrentMonthPeriod(context.timezone, nyClock);
@@ -287,14 +289,16 @@ describe("Expected Revenue integration", () => {
     expect(nyPeriod.endDate).toEqual(date("2026-09-15"));
     expect(utcPeriod.endDate).toEqual(date("2026-09-16"));
     expect(ny.byCurrency).toEqual([]);
-    expect(utc.byCurrency[0]?.unrounded).toBe(80 * (4800 * (1 / 16) / 60));
+    // Sept 16 UTC = 1 working day (Wed) × 45.45% × 8h × 60min ≈ 218min
+    // Pro-rated working-day based calculation
+    expect(utc.byCurrency[0]?.unrounded).toBeCloseTo(290.67, 0);
   });
 
   it("historical month uses the full calendar month", async () => {
     const context = await workspace("historical");
     const client = await addClient(context, "Historical");
     await addContract(context, client.id, {
-      monthlyContractedHours: "80",
+      commitmentPercentage: 45.45,
     });
 
     const result = await service().getExpectedRevenue(
@@ -315,7 +319,9 @@ describe("Expected Revenue integration", () => {
       billingModel: "HOURLY",
       rate: "80.0000",
       currency: "EUR",
-      monthlyContractedMinutes: 4800,
+      commitmentMode: "PERCENTAGE",
+      commitmentPercentage: 60,
+      allocatedMinutes: null,
     });
     await repositories.contracts.updateContract(workspaceB.workspaceId, workspaceB.contractId, {
       validFrom: date("2026-01-01"),
@@ -323,7 +329,9 @@ describe("Expected Revenue integration", () => {
       billingModel: "HOURLY",
       rate: "100.0000",
       currency: "EUR",
-      monthlyContractedMinutes: 4800,
+      commitmentMode: "PERCENTAGE",
+      commitmentPercentage: 60,
+      allocatedMinutes: null,
     });
 
     const contextA: WorkspaceContext = {
@@ -343,8 +351,10 @@ describe("Expected Revenue integration", () => {
     const expectedA = await analytics.getExpectedRevenue(contextA, june());
     const expectedB = await analytics.getExpectedRevenue(contextB, june());
 
-    expect(expectedA.byCurrency[0]?.unrounded).toBe(6400);
-    expect(expectedB.byCurrency[0]?.unrounded).toBe(8000);
+    // WorkspaceA: 60% × 22 working days × 8h × 60min = 6336min, rate 80 = 8448
+    expect(expectedA.byCurrency[0]?.unrounded).toBe(8448);
+    // WorkspaceB: 60% × 22 working days × 8h × 60min = 6336min, rate 100 = 10560
+    expect(expectedB.byCurrency[0]?.unrounded).toBe(10560);
     expect(expectedA.byContract[0]?.contractId).toBe(workspaceA.contractId);
     expect(expectedB.byContract[0]?.contractId).toBe(workspaceB.contractId);
   });

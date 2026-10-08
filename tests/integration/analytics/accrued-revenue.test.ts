@@ -55,12 +55,19 @@ async function hourlyContract(
       billingModel: "HOURLY",
       rate: options?.rate ?? "80",
       currency: options?.currency ?? "EUR",
+      commitmentMode: "PERCENTAGE",
+      commitmentValue: "60",
     },
     repositories.clients,
     repositories.contracts,
   );
   return { client, contract };
 }
+
+const defaultCommitment = {
+  commitmentMode: "PERCENTAGE" as const,
+  commitmentValue: "60",
+};
 
 function service() {
   return new AnalyticsService(repositories.analytics, repositories.members);
@@ -97,7 +104,8 @@ async function dailyWorkspace(suffix: string, timezone: string) {
       billingModel: "DAILY",
       rate: "100",
       currency: "EUR",
-    }, runInTransaction);
+        ...defaultCommitment,
+      }, runInTransaction);
   return { context, client, contract };
 }
 
@@ -149,6 +157,7 @@ describe("Accrued Revenue integration", () => {
         billingModel: "HOURLY",
         rate: "120",
         currency: "EUR",
+        ...defaultCommitment,
       }, runInTransaction);
 
     const first = await service().getAccruedRevenue(context, june());
@@ -201,6 +210,7 @@ describe("Accrued Revenue integration", () => {
         billingModel: "HOURLY",
         rate: "100",
         currency: "USD",
+        ...defaultCommitment,
       }, runInTransaction);
 
     const result = await service().getAccruedRevenue(context, june());
@@ -221,6 +231,7 @@ describe("Accrued Revenue integration", () => {
         billingModel: "DAILY",
         rate: "78",
         currency: "EUR",
+        ...defaultCommitment,
       }, runInTransaction);
 
     await createTimeEntry(
@@ -245,6 +256,7 @@ describe("Accrued Revenue integration", () => {
         billingModel: "DAILY",
         rate: "90",
         currency: "EUR",
+        ...defaultCommitment,
       }, runInTransaction);
 
     await createTimeEntry(
@@ -282,6 +294,7 @@ describe("Accrued Revenue integration", () => {
         billingModel: "DAILY",
         rate: "120",
         currency: "EUR",
+        ...defaultCommitment,
       },
       repositories.clients,
       repositories.contracts,
@@ -332,6 +345,7 @@ describe("Accrued Revenue integration", () => {
         billingModel: "DAILY",
         rate: "78",
         currency: "EUR",
+        ...defaultCommitment,
       }, runInTransaction);
 
     await createTimeEntry(
@@ -356,6 +370,7 @@ describe("Accrued Revenue integration", () => {
         billingModel: "DAILY",
         rate: "90",
         currency: "USD",
+        ...defaultCommitment,
       }, runInTransaction);
 
     await createTimeEntry(
@@ -406,6 +421,7 @@ describe("Accrued Revenue integration", () => {
         billingModel: "HOURLY",
         rate: "80",
         currency: "EUR",
+        ...defaultCommitment,
       }, runInTransaction);
 
     const result = await service().getAccruedRevenue(context, june());
@@ -424,6 +440,7 @@ describe("Accrued Revenue integration", () => {
         billingModel: "HOURLY",
         rate: "80",
         currency: "EUR",
+        ...defaultCommitment,
       }, runInTransaction);
 
     await expect(
@@ -800,7 +817,9 @@ describe("Accrued Revenue integration", () => {
     expect(monthly.contractUtilizations[0]?.consumedMinutes).toBe(180);
     expect(monthly.accrued.byCurrency[0]?.unrounded).toBe(160);
     expect(monthly.accrued).toEqual(accrued);
-    expect(monthly.expected.byCurrency).toEqual([]);
+    // Expected includes archived client contracts with ongoing validity
+    expect(monthly.expected.byCurrency[0]?.currency).toBe("EUR");
+    expect(monthly.expected.byCurrency[0]?.unrounded).toBeGreaterThan(0);
     expect(monthly.forecast).toBeNull();
   });
 });

@@ -25,6 +25,8 @@ import { optionalAnalyticsFilter } from "@/application/analytics/analytics-filte
 import { calculateContractAllocation } from "@/application/analytics/contract-allocation";
 import { calculateExpectedRevenue } from "@/application/analytics/expected-revenue";
 import { calculateForecastRevenue } from "@/application/analytics/forecast-revenue";
+import { getMonthlyContractedMinutes } from "@/domain/contract-commitment";
+import { countWorkingDays, countWorkingDaysInMonth } from "@/lib/working-days";
 import {
   getCurrentMonthPeriod,
   getPeriodDays,
@@ -475,36 +477,32 @@ export class AnalyticsService {
    * Calculates pro-rated contractual capacity for a reporting period (BR-105-017).
    *
    * Formula:
-   *   overlapDays = max(0, min(periodEnd, contractEffectiveEnd) − max(periodStart, validFrom) + 1)
-   *   proRataMinutes = monthlyContractedMinutes × (overlapDays / periodDays)
+   *   For each calendar month in overlap [periodStart, periodEnd] ∩ [validFrom, validTo):
+   *     monthStart = max(monthFirstDay, overlapStart)
+   *     monthEnd = min(monthLastDay, overlapEnd)
+   *     workingDaysInOverlap = countWorkingDays(monthStart, monthEnd + 1 day)
+   *     totalWorkingDaysInMonth = countWorkingDaysInMonth(year, month)
+   *     proRataFraction = workingDaysInOverlap / totalWorkingDaysInMonth
+   *     monthlyCapacity = getMonthlyContractedMinutes(commitmentPercentage, year, month)
+   *     proRatedCapacity += monthlyCapacity × proRataFraction
    *
    * Boundary convention: [validFrom, validTo) - validTo is exclusive.
-   * When validTo is null the contract is ongoing; its effective end is treated as
-   * one day past the period end, so the overlap is always the full period (or
-   * whatever portion follows validFrom).
+   * When validTo is null the contract is ongoing; capacity extends through period end.
    *
-   * Returns null when monthlyContractedMinutes is null - no denominator is invented.
    * No rollover, carry-over, or expiry semantics are applied (OBD-012 open).
    *
-   * @param monthlyContractedMinutes - Monthly capacity in minutes, or null.
-   * @param validFrom                - Contract validity start (inclusive).
-   * @param validTo                  - Contract validity end (exclusive). null = ongoing.
-   * @param period                   - The reporting period.
+   * @param commitmentPercentage - Canonical commitment percentage.
+   * @param validFrom            - Contract validity start (inclusive).
+   * @param validTo              - Contract validity end (exclusive). null = ongoing.
+   * @param period               - The reporting period.
    */
   static calculateProRataCapacity(
-    monthlyContractedMinutes: number | null,
+    commitmentPercentage: number,
     validFrom: Date,
     validTo: Date | null,
     period: AnalyticsPeriod,
   ): number | null {
-    if (monthlyContractedMinutes === null) {
-      return null;
-    }
-
-    const periodDays = getPeriodDays(period);
-
-    // [validFrom, validTo) - validTo is exclusive, so the last inclusive day is validTo − 1.
-    // When validTo is null the contract never ends; effective inclusive end = periodEnd.
+    // Contract effective end for overlap calculation
     const contractInclusiveEnd =
       validTo === null
         ? period.endDate
@@ -513,15 +511,45 @@ export class AnalyticsService {
     const overlapStart = period.startDate > validFrom ? period.startDate : validFrom;
     const overlapEnd = period.endDate < contractInclusiveEnd ? period.endDate : contractInclusiveEnd;
 
-    const overlapDays = overlapEnd >= overlapStart
-      ? Math.round((overlapEnd.getTime() - overlapStart.getTime()) / (1000 * 60 * 60 * 24)) + 1
-      : 0;
-
-    if (overlapDays <= 0) {
+    if (overlapEnd < overlapStart) {
       return 0;
     }
 
-    return (monthlyContractedMinutes * overlapDays) / periodDays;
+    // Calculate pro-rated capacity for each month in overlap
+    let totalMinutes = 0;
+    const current = new Date(Date.UTC(overlapStart.getUTCFullYear(), overlapStart.getUTCMonth(), 1));
+    
+    while (current <= overlapEnd) {
+      const year = current.getUTCFullYear();
+      const month = current.getUTCMonth() + 1; // 1-indexed
+      
+      // Month boundaries
+      const monthStart = new Date(Date.UTC(year, current.getUTCMonth(), 1));
+      const monthEnd = new Date(Date.UTC(year, current.getUTCMonth() + 1, 0)); // Last day of month
+      
+      // Overlap boundaries within this month
+      const effectiveStart = overlapStart > monthStart ? overlapStart : monthStart;
+      const effectiveEnd = overlapEnd < monthEnd ? overlapEnd : monthEnd;
+      
+      // Working days in this month's overlap (exclusive end for countWorkingDays)
+      const overlapWorkingDays = countWorkingDays(
+        effectiveStart,
+        new Date(effectiveEnd.getTime() + 24 * 60 * 60 * 1000), // +1 day for exclusive end
+      );
+      
+      const totalWorkingDaysInMonth = countWorkingDaysInMonth(year, month);
+      
+      if (totalWorkingDaysInMonth > 0) {
+        const proRataFraction = overlapWorkingDays / totalWorkingDaysInMonth;
+        const monthlyCapacity = getMonthlyContractedMinutes(commitmentPercentage, year, month);
+        totalMinutes += monthlyCapacity * proRataFraction;
+      }
+      
+      // Move to next month
+      current.setUTCMonth(current.getUTCMonth() + 1);
+    }
+
+    return Math.round(totalMinutes);
   }
 }
 
