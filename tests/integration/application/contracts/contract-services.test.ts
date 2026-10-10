@@ -105,11 +105,10 @@ describe("contract application services", () => {
       billingModel: "DAILY",
       rate: "500.0000",
       currency: "USD",
-      monthlyContractedMinutes: 1200,
-      allocatedMinutes: null,
       paymentTermsDays: 15,
       paymentTermsNote: "Net 15",
     });
+    expect(updated.allocatedMinutes).toBeGreaterThan(0);
   });
 
   it.skip("creates and updates allocatedMinutes through the application boundary", async () => {

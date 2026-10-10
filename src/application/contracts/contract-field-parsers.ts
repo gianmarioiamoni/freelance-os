@@ -11,7 +11,6 @@ export const MONTHLY_MINUTES_MAX = 2_147_483_647;
 
 const CALENDAR_DATE_PATTERN = /^(\d{4})-(\d{2})-(\d{2})$/;
 const RATE_PATTERN = /^(?:0|[1-9]\d{0,14})(?:\.\d{1,4})?$/;
-const HOURS_PATTERN = /^(?:0|[1-9]\d*)(?:\.\d+)?$/;
 const PAYMENT_DAYS_PATTERN = /^\d+$/;
 const BILLING_MODELS = new Set<BillingModel>(["HOURLY", "DAILY"]);
 const SUPPORTED_CURRENCIES = new Set(listSupportedCurrencies());

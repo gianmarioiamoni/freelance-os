@@ -4,10 +4,6 @@ import { describe, expect, it } from "vitest";
 import { parseContractCreateInput } from "@/application/contracts/contract-input";
 import { InvalidContractInputError } from "@/domain/contract-errors";
 
-function date(value: string): Date {
-  return new Date(`${value}T00:00:00.000Z`);
-}
-
 const baseInput = {
   clientId: "client-1",
   validFrom: "2026-09-21",

@@ -24,9 +24,9 @@ const UNKNOWN_ID = "00000000-0000-4000-8000-000000000099";
 
 const workspaceInput = {
   timezone: "Europe/Rome",
-  currency: "",
-      commitmentMode: "PERCENTAGE" as const,
-      commitmentValue: "60"
+  currency: "EUR",
+  commitmentMode: "PERCENTAGE" as const,
+  commitmentValue: "60"
 } as const;
 
 async function createWorkspaceContext(suffix: string): Promise<WorkspaceContext> {
@@ -61,7 +61,7 @@ async function setupClientAndContract(context: WorkspaceContext, validFrom = "20
       validTo,
       billingModel: "HOURLY" as const,
       rate: "75",
-      currency: "",
+      currency: "EUR",
       commitmentMode: "PERCENTAGE" as const,
       commitmentValue: "60"
     },

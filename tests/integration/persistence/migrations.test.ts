@@ -26,6 +26,7 @@ describe("migration-based test schema", () => {
       "20260923235000_add_allocation_alerts",
       "20261003192057_add_user_lifecycle_fields",
       "20261004193000_add_admin_action_audit",
+      "20261008021638_contract_commitment_model",
     ]);
   });
 
@@ -63,7 +64,7 @@ describe("migration-based test schema", () => {
     ]);
   });
 
-  it("keeps EPIC-002 composite workspace foreign keys", async () => {
+  it("removed EPIC-002 composite workspace foreign keys in commitment migration", async () => {
     const constraints = await prisma.$queryRaw<Array<{ conname: string }>>`
       SELECT conname
       FROM pg_constraint
@@ -75,11 +76,8 @@ describe("migration-based test schema", () => {
       ORDER BY conname
     `;
 
-    expect(constraints.map((row) => row.conname)).toEqual([
-      "Alert_workspaceId_clientId_fkey",
-      "Alert_workspaceId_contractId_fkey",
-      "Notification_workspaceId_alertId_fkey",
-    ]);
+    // Migration 20261008021638 dropped these composite FKs
+    expect(constraints.map((row) => row.conname)).toEqual([]);
   });
 
   it("creates Invoice tracking table with snapshot and VOID columns", async () => {
