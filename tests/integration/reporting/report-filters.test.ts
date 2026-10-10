@@ -55,8 +55,8 @@ async function addHourlyContract(
       billingModel: "HOURLY",
       rate: options?.rate ?? "80",
       currency: "EUR",
-      monthlyContractedHours: "80",
-      allocatedMinutes: options?.allocatedMinutes,
+      commitmentMode: "PERCENTAGE" as const,
+      commitmentValue: "60",
     },
     repositories.clients,
     repositories.contracts,
@@ -88,7 +88,9 @@ describe("ReportingService entity filters", () => {
       billingModel: "HOURLY",
       rate: "80.0000",
       currency: "EUR",
-      monthlyContractedMinutes: 4800,
+      commitmentMode: "PERCENTAGE",
+      commitmentPercentage: 60,
+      allocatedMinutes: null,
     });
     await createTimeEntry(
       context,
@@ -124,14 +126,14 @@ describe("ReportingService entity filters", () => {
       billingModel: "HOURLY",
       rate: "80.0000",
       currency: "EUR",
-      monthlyContractedMinutes: 4800,
-      allocatedMinutes: 1000,
+      commitmentMode: "PERCENTAGE",
+      commitmentPercentage: 60,
+      allocatedMinutes: null,
     });
 
     const otherClient = await addClient(context, "Other Client");
     const otherContract = await addHourlyContract(context, otherClient.id, {
       rate: "100",
-      allocatedMinutes: 2000,
     });
 
     await createTimeEntry(
@@ -191,7 +193,9 @@ describe("ReportingService entity filters", () => {
       billingModel: "HOURLY",
       rate: "80.0000",
       currency: "EUR",
-      monthlyContractedMinutes: 4800,
+      commitmentMode: "PERCENTAGE",
+      commitmentPercentage: 60,
+      allocatedMinutes: null,
     });
     const otherClient = await addClient(context, "Mismatch Client");
     await createTimeEntry(
@@ -238,7 +242,9 @@ describe("ReportingService entity filters", () => {
       billingModel: "HOURLY",
       rate: "80.0000",
       currency: "EUR",
-      monthlyContractedMinutes: 4800,
+      commitmentMode: "PERCENTAGE",
+      commitmentPercentage: 60,
+      allocatedMinutes: null,
     });
     await repositories.contracts.updateContract(foreign.workspaceId, foreign.contractId, {
       validFrom: date("2026-01-01"),
@@ -246,7 +252,9 @@ describe("ReportingService entity filters", () => {
       billingModel: "HOURLY",
       rate: "120.0000",
       currency: "EUR",
-      monthlyContractedMinutes: 4800,
+      commitmentMode: "PERCENTAGE",
+      commitmentPercentage: 60,
+      allocatedMinutes: null,
     });
 
     await createTimeEntry(
@@ -301,7 +309,9 @@ describe("ReportingService entity filters", () => {
       billingModel: "HOURLY",
       rate: "80.0000",
       currency: "EUR",
-      monthlyContractedMinutes: 4800,
+      commitmentMode: "PERCENTAGE",
+      commitmentPercentage: 60,
+      allocatedMinutes: null,
     });
     await createTimeEntry(
       context,
@@ -346,12 +356,12 @@ describe("ReportingService entity filters", () => {
       billingModel: "HOURLY",
       rate: "80.0000",
       currency: "EUR",
-      monthlyContractedMinutes: 4800,
-      allocatedMinutes: 1000,
+      commitmentMode: "PERCENTAGE",
+      commitmentPercentage: 60,
+      allocatedMinutes: null,
     });
     const otherClient = await addClient(context, "Contract-only Other");
     const otherContract = await addHourlyContract(context, otherClient.id, {
-      allocatedMinutes: 500,
     });
 
     await createTimeEntry(
@@ -414,7 +424,9 @@ describe("ReportingService entity filters", () => {
       billingModel: "HOURLY",
       rate: "80.0000",
       currency: "EUR",
-      monthlyContractedMinutes: 4800,
+      commitmentMode: "PERCENTAGE",
+      commitmentPercentage: 60,
+      allocatedMinutes: null,
     });
     await createTimeEntry(
       context,
@@ -455,7 +467,9 @@ describe("ReportingService entity filters", () => {
       billingModel: "HOURLY",
       rate: "80.0000",
       currency: "EUR",
-      monthlyContractedMinutes: 4800,
+      commitmentMode: "PERCENTAGE",
+      commitmentPercentage: 60,
+      allocatedMinutes: null,
     });
 
     await createTimeEntry(
@@ -520,11 +534,12 @@ describe("ReportingService entity filters", () => {
       billingModel: "HOURLY",
       rate: "80.0000",
       currency: "EUR",
-      allocatedMinutes: 1000,
+      commitmentMode: "PERCENTAGE",
+      commitmentPercentage: 60,
+      allocatedMinutes: 250560,
     });
     const otherClient = await addClient(context, "Alloc Other");
     const otherContract = await addHourlyContract(context, otherClient.id, {
-      allocatedMinutes: 500,
     });
 
     await createTimeEntry(
@@ -563,7 +578,6 @@ describe("ReportingService entity filters", () => {
     expect(report.contractAllocations).toEqual([
       expect.objectContaining({
         contractId: graph.contractId,
-        allocatedMinutes: 1000,
         consumedMinutes: 200,
         remainingMinutes: 800,
         allocationStatus: "NORMAL",

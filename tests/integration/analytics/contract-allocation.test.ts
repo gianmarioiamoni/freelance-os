@@ -38,7 +38,8 @@ describe("Contract allocation consumption", () => {
     const client = await createClient(context, { companyName: "Alloc Client" }, repositories.clients);
     const contract = await createContract(
       context,
-      { ...contractFields, clientId: client.id, allocatedMinutes: "1000" },
+      { ...contractFields, clientId: client.id, commitmentMode: "TOTAL_HOURS" as const,
+        commitmentValue: "16.67" },
       repositories.clients,
       repositories.contracts,
     );
@@ -89,7 +90,7 @@ describe("Contract allocation consumption", () => {
     const client = await createClient(context, { companyName: "Empty" }, repositories.clients);
     const contract = await createContract(
       context,
-      { ...contractFields, clientId: client.id, allocatedMinutes: 0 },
+      { ...contractFields, clientId: client.id, commitmentMode: "TOTAL_HOURS", commitmentValue: "0" },
       repositories.clients,
       repositories.contracts,
     );
@@ -111,7 +112,9 @@ describe("Contract allocation consumption", () => {
       billingModel: "HOURLY",
       rate: "80.0000",
       currency: "EUR",
-      allocatedMinutes: 480,
+      commitmentMode: "PERCENTAGE",
+      commitmentPercentage: 60,
+      allocatedMinutes: 105408,
     });
     await repositories.contracts.updateContract(workspaceB.workspaceId, workspaceB.contractId, {
       validFrom: date("2026-01-01"),
@@ -119,7 +122,9 @@ describe("Contract allocation consumption", () => {
       billingModel: "HOURLY",
       rate: "80.0000",
       currency: "EUR",
-      allocatedMinutes: 480,
+      commitmentMode: "PERCENTAGE",
+      commitmentPercentage: 60,
+      allocatedMinutes: 105408,
     });
 
     await repositories.timeEntries.recordTimeEntry(workspaceA.workspaceId, {

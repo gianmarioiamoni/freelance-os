@@ -52,7 +52,9 @@ describe("ReportingService.getRevenueOverview (integration)", () => {
       billingModel: "HOURLY",
       rate: "100.0000",
       currency: "EUR",
-      monthlyContractedMinutes: 9600,
+      commitmentMode: "PERCENTAGE",
+      commitmentPercentage: 60,
+      allocatedMinutes: null,
       paymentTermsDays: 30,
     });
     contractAId = contractA.id;

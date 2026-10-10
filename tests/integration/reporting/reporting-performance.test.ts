@@ -114,7 +114,9 @@ describe("P105-06 performance baseline - §15 fixture volume", () => {
             billingModel: "HOURLY",
             rate: "100.0000",
             currency: "EUR",
-            monthlyContractedMinutes: 4800,
+            commitmentMode: "PERCENTAGE",
+      commitmentPercentage: 60,
+      allocatedMinutes: null,
           },
         );
         contractIds.push(contract.id);

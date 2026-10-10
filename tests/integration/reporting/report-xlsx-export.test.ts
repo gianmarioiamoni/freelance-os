@@ -57,7 +57,7 @@ async function addClient(context: WorkspaceContext, name: string) {
 async function addHourlyContract(
   context: WorkspaceContext,
   clientId: string,
-  options?: { rate?: string; currency?: string; allocatedMinutes?: number },
+  options?: { rate?: string; currency?: string; commitmentValue?: string },
 ) {
   return createContract(
     context,
@@ -68,8 +68,8 @@ async function addHourlyContract(
       billingModel: "HOURLY",
       rate: options?.rate ?? "80",
       currency: options?.currency ?? "EUR",
-      monthlyContractedHours: "80",
-      allocatedMinutes: options?.allocatedMinutes,
+      commitmentMode: "PERCENTAGE" as const,
+      commitmentValue: options?.commitmentValue ?? "60",
     },
     repositories.clients,
     repositories.contracts,
@@ -130,7 +130,9 @@ describe("report XLSX export dataset", () => {
       billingModel: "HOURLY",
       rate: "80.0000",
       currency: "EUR",
-      monthlyContractedMinutes: 4800,
+      commitmentMode: "PERCENTAGE",
+    commitmentPercentage: 60,
+    allocatedMinutes: null,
     });
     await createTimeEntry(
       context,
@@ -197,7 +199,9 @@ describe("report XLSX export dataset", () => {
       billingModel: "HOURLY",
       rate: "80.0000",
       currency: "EUR",
-      monthlyContractedMinutes: 4800,
+      commitmentMode: "PERCENTAGE",
+    commitmentPercentage: 60,
+    allocatedMinutes: null,
     });
     const otherClient = await addClient(context, "XLSX Other");
     const otherContract = await addHourlyContract(context, otherClient.id);
@@ -259,7 +263,9 @@ describe("report XLSX export dataset", () => {
       billingModel: "HOURLY",
       rate: "80.0000",
       currency: "EUR",
-      monthlyContractedMinutes: 4800,
+      commitmentMode: "PERCENTAGE",
+    commitmentPercentage: 60,
+    allocatedMinutes: null,
     });
     await createTimeEntry(
       contextA,
@@ -303,7 +309,9 @@ describe("report XLSX export dataset", () => {
       billingModel: "HOURLY",
       rate: "80.0000",
       currency: "EUR",
-      monthlyContractedMinutes: 4800,
+      commitmentMode: "PERCENTAGE",
+    commitmentPercentage: 60,
+    allocatedMinutes: null,
     });
     const usdClient = await addClient(context, "USD Client");
     const usdContract = await addHourlyContract(context, usdClient.id, {
@@ -353,7 +361,9 @@ describe("report XLSX export dataset", () => {
       billingModel: "HOURLY",
       rate: "80.0000",
       currency: "EUR",
-      monthlyContractedMinutes: 4800,
+      commitmentMode: "PERCENTAGE",
+    commitmentPercentage: 60,
+    allocatedMinutes: null,
     });
     await createTimeEntry(
       context,

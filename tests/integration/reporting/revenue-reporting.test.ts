@@ -46,7 +46,8 @@ async function addContract(
     validFrom?: string;
     validTo?: string | null;
     billingModel?: "HOURLY" | "DAILY";
-    monthlyContractedHours?: string | null;
+    commitmentMode?: "PERCENTAGE" | "TOTAL_HOURS";
+    commitmentValue?: string;
   },
 ) {
   return createContract(
@@ -58,7 +59,8 @@ async function addContract(
       billingModel: options?.billingModel ?? "HOURLY",
       rate: options?.rate ?? "80",
       currency: options?.currency ?? "EUR",
-      monthlyContractedHours: options?.monthlyContractedHours,
+      commitmentMode: options?.commitmentMode ?? ("PERCENTAGE" as const),
+      commitmentValue: options?.commitmentValue ?? "60",
     },
     repositories.clients,
     repositories.contracts,
@@ -81,7 +83,8 @@ describe("ReportingService revenue integration", () => {
     const context = await workspace("hourly");
     const client = await addClient(context, "Hourly");
     const contract = await addContract(context, client.id, {
-      monthlyContractedHours: "80",
+      commitmentMode: "PERCENTAGE",
+      commitmentValue: "60",
     });
     await createTimeEntry(
       context,
@@ -124,7 +127,8 @@ describe("ReportingService revenue integration", () => {
     const contract = await addContract(context, client.id, {
       billingModel: "DAILY",
       rate: "400",
-      monthlyContractedHours: "80",
+      commitmentMode: "PERCENTAGE",
+      commitmentValue: "60",
     });
     await createTimeEntry(
       context,
@@ -156,11 +160,12 @@ describe("ReportingService revenue integration", () => {
     ]);
   });
 
-  it("publishes Expected null when monthlyContractedMinutes is null", async () => {
+  it("publishes Expected null when commitment is 0%", async () => {
     const context = await workspace("unlimited");
     const client = await addClient(context, "Unlimited");
     const contract = await addContract(context, client.id, {
-      monthlyContractedHours: null,
+      commitmentMode: "PERCENTAGE",
+      commitmentValue: "0",
     });
     await createTimeEntry(
       context,
@@ -198,7 +203,8 @@ describe("ReportingService revenue integration", () => {
     await addContract(context, client.id, {
       validFrom: "2026-06-16",
       validTo: "2026-12-31",
-      monthlyContractedHours: "80",
+      commitmentMode: "PERCENTAGE",
+      commitmentValue: "60",
     });
 
     const report = await services().reporting.getContractReport(context, JUNE);
@@ -213,12 +219,14 @@ describe("ReportingService revenue integration", () => {
     const eur = await addContract(context, eurClient.id, {
       currency: "EUR",
       rate: "80",
-      monthlyContractedHours: "80",
+      commitmentMode: "PERCENTAGE",
+      commitmentValue: "60",
     });
     const usd = await addContract(context, usdClient.id, {
       currency: "USD",
       rate: "100",
-      monthlyContractedHours: "80",
+      commitmentMode: "PERCENTAGE",
+      commitmentValue: "60",
     });
     await createTimeEntry(
       context,
@@ -278,7 +286,9 @@ describe("ReportingService revenue integration", () => {
       billingModel: "HOURLY",
       rate: "80.0000",
       currency: "EUR",
-      monthlyContractedMinutes: 4800,
+      commitmentMode: "PERCENTAGE",
+    commitmentPercentage: 60,
+    allocatedMinutes: null,
     });
     await repositories.contracts.updateContract(workspaceB.workspaceId, workspaceB.contractId, {
       validFrom: date("2026-01-01"),
@@ -286,7 +296,9 @@ describe("ReportingService revenue integration", () => {
       billingModel: "HOURLY",
       rate: "100.0000",
       currency: "EUR",
-      monthlyContractedMinutes: 4800,
+      commitmentMode: "PERCENTAGE",
+    commitmentPercentage: 60,
+    allocatedMinutes: null,
     });
 
     const contextA: WorkspaceContext = {
@@ -332,7 +344,8 @@ describe("ReportingService revenue integration", () => {
     const context = await workspace("hours-only");
     const client = await addClient(context, "Hours");
     const contract = await addContract(context, client.id, {
-      monthlyContractedHours: "80",
+      commitmentMode: "PERCENTAGE",
+      commitmentValue: "60",
     });
     await createTimeEntry(
       context,

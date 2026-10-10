@@ -531,7 +531,8 @@ export class AnalyticsService {
       const effectiveStart = overlapStart > monthStart ? overlapStart : monthStart;
       const effectiveEnd = overlapEnd < monthEnd ? overlapEnd : monthEnd;
       
-      // Working days in this month's overlap (exclusive end for countWorkingDays)
+      // Working days in this month's overlap
+      // Note: period.endDate is inclusive, but countWorkingDays expects exclusive end
       const overlapWorkingDays = countWorkingDays(
         effectiveStart,
         new Date(effectiveEnd.getTime() + 24 * 60 * 60 * 1000), // +1 day for exclusive end

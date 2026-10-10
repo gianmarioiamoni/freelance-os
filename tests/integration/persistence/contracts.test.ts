@@ -41,6 +41,8 @@ describe("contract temporal integrity", () => {
         billingModel: "HOURLY",
         rate: "80.0000",
         currency: "EUR",
+        commitmentMode: "TOTAL_HOURS",
+        commitmentPercentage: 0,
         allocatedMinutes: 0,
       },
     );
@@ -59,6 +61,8 @@ describe("contract temporal integrity", () => {
         billingModel: "HOURLY",
         rate: "80.0000",
         currency: "EUR",
+      commitmentMode: "PERCENTAGE",
+      commitmentPercentage: 60,
         allocatedMinutes: 4800,
       },
     );
@@ -74,6 +78,8 @@ describe("contract temporal integrity", () => {
         billingModel: "HOURLY",
         rate: "80.0000",
         currency: "EUR",
+      commitmentMode: "PERCENTAGE",
+      commitmentPercentage: 60,
         allocatedMinutes: null,
       },
     );
@@ -92,6 +98,8 @@ describe("contract temporal integrity", () => {
         billingModel: "HOURLY",
         rate: "80.0000",
         currency: "EUR",
+      commitmentMode: "PERCENTAGE",
+      commitmentPercentage: 60,
         allocatedMinutes: 120,
       }),
     ).rejects.toBeInstanceOf(RecordNotFoundError);
@@ -114,6 +122,9 @@ describe("contract temporal integrity", () => {
       billingModel: "DAILY",
       rate: "500.0000",
       currency: "EUR",
+      commitmentMode: "PERCENTAGE",
+      commitmentPercentage: 60,
+      allocatedMinutes: null,
     });
 
     expect(next.id).not.toBe(graph.contractId);
@@ -131,6 +142,9 @@ describe("contract temporal integrity", () => {
         billingModel: "HOURLY",
         rate: "90.0000",
         currency: "EUR",
+      commitmentMode: "PERCENTAGE",
+      commitmentPercentage: 60,
+      allocatedMinutes: null,
       }),
     ).rejects.toBeInstanceOf(ConstraintViolationError);
   });
@@ -145,6 +159,9 @@ describe("contract temporal integrity", () => {
       billingModel: "HOURLY",
       rate: "95.0000",
       currency: "EUR",
+      commitmentMode: "PERCENTAGE",
+      commitmentPercentage: 60,
+      allocatedMinutes: null,
     });
 
     await expect(
@@ -155,6 +172,9 @@ describe("contract temporal integrity", () => {
         billingModel: "HOURLY",
         rate: "100.0000",
         currency: "EUR",
+      commitmentMode: "PERCENTAGE",
+      commitmentPercentage: 60,
+      allocatedMinutes: null,
       }),
     ).rejects.toBeInstanceOf(ConstraintViolationError);
   });
@@ -174,6 +194,9 @@ describe("contract temporal integrity", () => {
       billingModel: "HOURLY",
       rate: "70.0000",
       currency: "EUR",
+      commitmentMode: "PERCENTAGE",
+      commitmentPercentage: 60,
+      allocatedMinutes: null,
     });
 
     expect(otherClientContract.clientId).toBe(otherClient.id);
@@ -192,7 +215,9 @@ describe("contract temporal integrity", () => {
       billingModel: "DAILY",
       rate: "500.0000",
       currency: "USD",
-      monthlyContractedMinutes: 1200,
+      commitmentMode: "PERCENTAGE",
+      commitmentPercentage: 60,
+      allocatedMinutes: null,
       paymentTermsDays: 15,
       paymentTermsNote: "Net 15",
     });
@@ -204,7 +229,6 @@ describe("contract temporal integrity", () => {
       billingModel: "DAILY",
       rate: "500.0000",
       currency: "USD",
-      monthlyContractedMinutes: 1200,
       paymentTermsDays: 15,
       paymentTermsNote: "Net 15",
     });
@@ -226,6 +250,9 @@ describe("contract temporal integrity", () => {
         billingModel: "HOURLY",
         rate: "1.0000",
         currency: "EUR",
+      commitmentMode: "PERCENTAGE",
+      commitmentPercentage: 60,
+      allocatedMinutes: null,
       }),
     ).rejects.toBeInstanceOf(RecordNotFoundError);
 
@@ -247,6 +274,9 @@ describe("contract temporal integrity", () => {
       billingModel: "HOURLY",
       rate: "90.0000",
       currency: "EUR",
+      commitmentMode: "PERCENTAGE",
+      commitmentPercentage: 60,
+      allocatedMinutes: null,
     });
 
     await expect(
@@ -256,6 +286,9 @@ describe("contract temporal integrity", () => {
         billingModel: "HOURLY",
         rate: "90.0000",
         currency: "EUR",
+      commitmentMode: "PERCENTAGE",
+      commitmentPercentage: 60,
+      allocatedMinutes: null,
       }),
     ).rejects.toBeInstanceOf(ConstraintViolationError);
   });
@@ -271,6 +304,9 @@ describe("contract temporal integrity", () => {
         billingModel: "HOURLY",
         rate: "90.0000",
         currency: "EUR",
+      commitmentMode: "PERCENTAGE",
+      commitmentPercentage: 60,
+      allocatedMinutes: null,
       }),
       repositories.contracts.createContract(graph.workspaceId, {
         clientId: graph.clientId,
@@ -279,6 +315,9 @@ describe("contract temporal integrity", () => {
         billingModel: "DAILY",
         rate: "500.0000",
         currency: "EUR",
+      commitmentMode: "PERCENTAGE",
+      commitmentPercentage: 60,
+      allocatedMinutes: null,
       }),
     ]);
 
@@ -309,6 +348,9 @@ describe("contract temporal integrity", () => {
       billingModel: "DAILY",
       rate: "99.0000",
       currency: "USD",
+      commitmentMode: "PERCENTAGE",
+      commitmentPercentage: 60,
+      allocatedMinutes: null,
     });
     const persisted = await repositories.timeEntries.getTimeEntry(graph.workspaceId, timeEntry.id);
 

@@ -107,6 +107,9 @@ describe("repository persistence", () => {
       billingModel: "DAILY",
       rate: "500.1234",
       currency: "EUR",
+      commitmentMode: "PERCENTAGE",
+      commitmentPercentage: 60,
+      allocatedMinutes: null,
     });
 
     const persisted = await repositories.timeEntries.getTimeEntry(graph.workspaceId, timeEntry.id);

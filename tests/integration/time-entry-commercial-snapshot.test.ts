@@ -48,6 +48,8 @@ async function setupHourlyContract(
       billingModel: "HOURLY",
       rate,
       currency,
+      commitmentMode: "PERCENTAGE" as const,
+      commitmentValue: "60",
     },
     repositories.clients,
     repositories.contracts,
@@ -152,6 +154,8 @@ describe("TimeEntry commercial snapshot", () => {
         billingModel: "DAILY",
         rate: "100",
         currency: "USD",
+    commitmentMode: "PERCENTAGE",
+    commitmentValue: "60",
       }, runInTransaction);
 
     const persistedFirst = await getTimeEntry(context, first.id, repositories.timeEntries);
@@ -190,6 +194,8 @@ describe("TimeEntry commercial snapshot", () => {
         billingModel: "DAILY",
         rate: "78",
         currency: "EUR",
+        commitmentMode: "PERCENTAGE" as const,
+        commitmentValue: "60",
       }, runInTransaction);
 
     const morning = await createTimeEntry(
@@ -214,6 +220,8 @@ describe("TimeEntry commercial snapshot", () => {
         billingModel: "DAILY",
         rate: "90",
         currency: "EUR",
+        commitmentMode: "PERCENTAGE" as const,
+        commitmentValue: "60",
       }, runInTransaction);
 
     const afternoon = await createTimeEntry(

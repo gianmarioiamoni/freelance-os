@@ -75,7 +75,8 @@ function contractRecord(overrides: Partial<ContractRecord> = {}): ContractRecord
     billingModel: "HOURLY",
     rate: "80.0000",
     currency: "EUR",
-    monthlyContractedMinutes: null,
+    commitmentMode: "PERCENTAGE",
+    commitmentPercentage: 60,
     allocatedMinutes: null,
     paymentTermsDays: null,
     paymentTermsNote: null,
@@ -92,14 +93,18 @@ const validCreateInput = {
   billingModel: "HOURLY",
   rate: "80",
   currency: "EUR",
+  commitmentMode: "PERCENTAGE" as const,
+  commitmentValue: "60",
 };
 
 const validUpdateInput = {
   validFrom: "2026-01-01",
   validTo: "2026-08-01",
-  billingModel: "DAILY",
+  billingModel: "DAILY" as const,
   rate: "500",
   currency: "USD",
+  commitmentMode: "PERCENTAGE" as const,
+  commitmentValue: "50",
 };
 
 function invoiceRecord(overrides: Partial<InvoiceRecord> = {}): InvoiceRecord {
@@ -180,7 +185,8 @@ function createFakeRepositories(
         billingModel: input.billingModel,
         rate: input.rate,
         currency: input.currency,
-        monthlyContractedMinutes: input.monthlyContractedMinutes ?? null,
+        commitmentMode: input.commitmentMode,
+        commitmentPercentage: input.commitmentPercentage,
         allocatedMinutes: input.allocatedMinutes ?? null,
         paymentTermsDays: input.paymentTermsDays ?? null,
         paymentTermsNote: input.paymentTermsNote ?? null,
@@ -224,7 +230,8 @@ function createFakeRepositories(
         billingModel: input.billingModel,
         rate: input.rate,
         currency: input.currency,
-        monthlyContractedMinutes: input.monthlyContractedMinutes ?? null,
+        commitmentMode: input.commitmentMode,
+        commitmentPercentage: input.commitmentPercentage,
         allocatedMinutes: input.allocatedMinutes ?? null,
         paymentTermsDays: input.paymentTermsDays ?? null,
         paymentTermsNote: input.paymentTermsNote ?? null,

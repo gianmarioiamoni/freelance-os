@@ -27,6 +27,9 @@ describe("foreign key and workspace constraints", () => {
         billingModel: "HOURLY",
         rate: "60.0000",
         currency: "EUR",
+      commitmentMode: "PERCENTAGE",
+      commitmentPercentage: 60,
+      allocatedMinutes: null,
       }),
     ).rejects.toBeInstanceOf(ForeignKeyViolationError);
 

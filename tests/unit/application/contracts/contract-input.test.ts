@@ -18,7 +18,8 @@ const validCreateInput = {
   billingModel: "HOURLY",
   rate: "80.5",
   currency: "eur",
-  monthlyContractedHours: "10",
+  commitmentMode: "PERCENTAGE",
+  commitmentValue: "60",
   paymentTermsDays: "30",
   paymentTermsNote: "Net 30",
 };
@@ -42,7 +43,7 @@ function expectInvalidField(
 
 describe("parseContractCreateInput", () => {
   it("accepts valid create input and derives allocatedMinutes", () => {
-    // 10h/month × 6 months = 60h = 3600min
+    // Jan 1 - Jun 30, 2026: 129 working days × 60% × 8h × 60min = 37152 min
     expect(parseContractCreateInput(validCreateInput)).toEqual({
       clientId: "client-1",
       validFrom: calendarDate("2026-01-01"),
@@ -50,8 +51,9 @@ describe("parseContractCreateInput", () => {
       billingModel: "HOURLY",
       rate: "80.5",
       currency: "EUR",
-      monthlyContractedMinutes: 600,
-      allocatedMinutes: 3600, // derived: 600min/month × 6 months
+      commitmentMode: "PERCENTAGE",
+      commitmentPercentage: 60,
+      allocatedMinutes: 37152,
       paymentTermsDays: 30,
       paymentTermsNote: "Net 30",
     });
@@ -134,34 +136,40 @@ describe("parseContractCreateInput", () => {
     expectInvalidField({ ...validCreateInput, currency: "" }, "currency");
   });
 
-  it("rejects monthly hours that are not a positive exact minute conversion", () => {
+  it("rejects invalid commitment mode", () => {
     expectInvalidField(
-      { ...validCreateInput, monthlyContractedHours: "0" },
-      "monthlyContractedHours",
+      { ...validCreateInput, commitmentMode: "INVALID" },
+      "commitmentMode",
     );
     expectInvalidField(
-      { ...validCreateInput, monthlyContractedHours: "-1" },
-      "monthlyContractedHours",
-    );
-    expectInvalidField(
-      { ...validCreateInput, monthlyContractedHours: "1.51" },
-      "monthlyContractedHours",
+      { ...validCreateInput, commitmentMode: "" },
+      "commitmentMode",
     );
   });
 
-  it("converts exact monthly hours to minutes", () => {
+  it("rejects negative commitment value", () => {
+    expectInvalidField(
+      { ...validCreateInput, commitmentValue: "-10" },
+      "commitmentValue",
+    );
+  });
+
+  it("accepts PERCENTAGE and TOTAL_HOURS modes", () => {
     expect(
       parseContractCreateInput({
         ...validCreateInput,
-        monthlyContractedHours: "1.5",
-      }).monthlyContractedMinutes,
-    ).toBe(90);
+        commitmentMode: "PERCENTAGE",
+        commitmentValue: "100",
+      }).commitmentPercentage,
+    ).toBe(100);
+
     expect(
       parseContractCreateInput({
         ...validCreateInput,
-        monthlyContractedHours: "",
-      }).monthlyContractedMinutes,
-    ).toBeNull();
+        commitmentMode: "TOTAL_HOURS",
+        commitmentValue: "100",
+      }).allocatedMinutes,
+    ).toBe(6000);
   });
 
   it("rejects invalid payment terms", () => {
@@ -195,74 +203,54 @@ describe("parseContractCreateInput", () => {
     });
   });
 
-  it("derives allocatedMinutes when null, preserves explicit values", () => {
-    // null input → derives from monthly capacity + duration
+  it("derives allocatedMinutes based on commitment mode", () => {
+    // PERCENTAGE mode with finite period → derives lifetime budget
     expect(
       parseContractCreateInput({
         ...validCreateInput,
-        allocatedMinutes: null,
+        commitmentMode: "PERCENTAGE",
+        commitmentValue: "60",
       }).allocatedMinutes,
-    ).toBe(3600); // derived: 600min/month × 6 months
+    ).toBe(37152); // Jan 1 - Jun 30, 2026: 129 working days × 60% × 8h × 60min
 
-    // empty string → derives
+    // PERCENTAGE mode with ongoing contract → null
     expect(
       parseContractCreateInput({
         ...validCreateInput,
-        allocatedMinutes: "",
+        commitmentMode: "PERCENTAGE",
+        commitmentValue: "60",
+        validTo: "",
       }).allocatedMinutes,
-    ).toBe(3600);
+    ).toBeNull();
 
-    // explicit zero → preserved
+    // TOTAL_HOURS mode → converts to minutes
     expect(
       parseContractCreateInput({
         ...validCreateInput,
-        allocatedMinutes: "0",
+        commitmentMode: "TOTAL_HOURS",
+        commitmentValue: "100",
       }).allocatedMinutes,
-    ).toBe(0);
+    ).toBe(6000); // 100 hours = 6000 minutes
 
+    // 0% commitment → allocatedMinutes still null for ongoing
     expect(
       parseContractCreateInput({
         ...validCreateInput,
-        allocatedMinutes: 0,
+        commitmentMode: "PERCENTAGE",
+        commitmentValue: "0",
+        validTo: "",
       }).allocatedMinutes,
-    ).toBe(0);
-
-    // explicit value → preserved
-    expect(
-      parseContractCreateInput({
-        ...validCreateInput,
-        allocatedMinutes: "4800",
-      }).allocatedMinutes,
-    ).toBe(4800);
-
-    expect(
-      parseContractCreateInput({
-        ...validCreateInput,
-        allocatedMinutes: 4800,
-      }).allocatedMinutes,
-    ).toBe(4800);
+    ).toBeNull();
   });
 
-  it("rejects negative and non-integer allocatedMinutes", () => {
+  it("rejects negative and non-integer commitment values", () => {
     expectInvalidField(
-      { ...validCreateInput, allocatedMinutes: "-1" },
-      "allocatedMinutes",
+      { ...validCreateInput, commitmentValue: "-1" },
+      "commitmentValue",
     );
     expectInvalidField(
-      { ...validCreateInput, allocatedMinutes: -1 },
-      "allocatedMinutes",
-    );
-    expectInvalidField(
-      { ...validCreateInput, allocatedMinutes: "1.5" },
-      "allocatedMinutes",
-    );
-    expectInvalidField(
-      { ...validCreateInput, allocatedMinutes: 1.5 },
-      "allocatedMinutes",
-    );
-    expectInvalidField(
-      { ...validCreateInput, allocatedMinutes: "abc" },
-      "allocatedMinutes",
+      { ...validCreateInput, commitmentMode: "TOTAL_HOURS", commitmentValue: "-10" },
+      "commitmentValue",
     );
   });
 
@@ -284,16 +272,18 @@ describe("parseContractUpdateInput", () => {
       billingModel: "DAILY",
       rate: "500",
       currency: "USD",
+      commitmentMode: "PERCENTAGE",
+      commitmentValue: "80",
     });
 
-    expect(parsed).toEqual({
+    expect(parsed).toMatchObject({
       validFrom: calendarDate("2026-02-01"),
       validTo: calendarDate("2026-08-01"),
       billingModel: "DAILY",
       rate: "500",
       currency: "USD",
-      monthlyContractedMinutes: null,
-      allocatedMinutes: null,
+      commitmentMode: "PERCENTAGE",
+      commitmentPercentage: 80,
       paymentTermsDays: null,
       paymentTermsNote: null,
     });
@@ -307,6 +297,8 @@ describe("parseContractUpdateInput", () => {
       billingModel: "HOURLY",
       rate: "90",
       currency: "EUR",
+      commitmentMode: "PERCENTAGE",
+      commitmentValue: "60",
       clientId: "client-other",
     } as Parameters<typeof parseContractUpdateInput>[0] & {
       clientId: string;

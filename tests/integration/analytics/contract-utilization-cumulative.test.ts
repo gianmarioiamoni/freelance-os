@@ -55,7 +55,8 @@ describe("Contract Utilization - Cumulative Budget", () => {
         billingModel: "HOURLY",
         rate: "80",
         currency: "EUR",
-        allocatedMinutes: "6000", // 100h total budget
+        commitmentMode: "TOTAL_HOURS" as const,
+        commitmentValue: "100", // 100h total budget
       },
       repositories.clients,
       repositories.contracts,
@@ -130,7 +131,8 @@ describe("Contract Utilization - Cumulative Budget", () => {
         billingModel: "HOURLY",
         rate: "90",
         currency: "USD",
-        allocatedMinutes: "2880", // 48h total budget
+        commitmentMode: "TOTAL_HOURS" as const,
+        commitmentValue: "48", // 48h total budget
       },
       repositories.clients,
       repositories.contracts,
@@ -203,7 +205,8 @@ describe("Contract Utilization - Cumulative Budget", () => {
         billingModel: "HOURLY",
         rate: "95",
         currency: "EUR",
-        allocatedMinutes: "2400", // 40h total budget
+        commitmentMode: "TOTAL_HOURS" as const,
+        commitmentValue: "40", // 40h total budget
       },
       repositories.clients,
       repositories.contracts,
@@ -291,7 +294,8 @@ describe("Contract Utilization - Cumulative Budget", () => {
         billingModel: "HOURLY",
         rate: "100",
         currency: "USD",
-        allocatedMinutes: "12000", // 200h total budget
+        commitmentMode: "TOTAL_HOURS" as const,
+        commitmentValue: "200", // 200h total budget
       },
       repositories.clients,
       repositories.contracts,
@@ -412,7 +416,8 @@ describe("Contract Utilization - Cumulative Budget", () => {
         billingModel: "DAILY",
         rate: "500",
         currency: "USD",
-        // No allocatedMinutes
+        commitmentMode: "PERCENTAGE",
+        commitmentValue: "100",
       },
       repositories.clients,
       repositories.contracts,
@@ -470,7 +475,8 @@ describe("Contract Utilization - Cumulative Budget", () => {
         billingModel: "HOURLY",
         rate: "85",
         currency: "EUR",
-        allocatedMinutes: "2880", // 48h total budget
+        commitmentMode: "TOTAL_HOURS" as const,
+        commitmentValue: "48", // 48h total budget
       },
       repositories.clients,
       repositories.contracts,

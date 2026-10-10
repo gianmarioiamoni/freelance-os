@@ -55,8 +55,8 @@ async function addHourlyContract(
       billingModel: "HOURLY",
       rate: options?.rate ?? "80",
       currency: "EUR",
-      monthlyContractedHours: "80",
-      allocatedMinutes: options?.allocatedMinutes,
+      commitmentMode: "PERCENTAGE" as const,
+      commitmentValue: "60",
     },
     repositories.clients,
     repositories.contracts,
@@ -105,7 +105,9 @@ describe("report CSV export dataset", () => {
       billingModel: "HOURLY",
       rate: "80.0000",
       currency: "EUR",
-      monthlyContractedMinutes: 4800,
+      commitmentMode: "PERCENTAGE",
+      commitmentPercentage: 60,
+      allocatedMinutes: null,
     });
     await createTimeEntry(
       context,
@@ -145,12 +147,12 @@ describe("report CSV export dataset", () => {
       billingModel: "HOURLY",
       rate: "80.0000",
       currency: "EUR",
-      monthlyContractedMinutes: 4800,
-      allocatedMinutes: 1000,
+      commitmentMode: "PERCENTAGE",
+      commitmentPercentage: 60,
+      allocatedMinutes: null,
     });
     const otherClient = await addClient(context, "CSV Other");
     const otherContract = await addHourlyContract(context, otherClient.id, {
-      allocatedMinutes: 500,
     });
 
     await createTimeEntry(
@@ -210,7 +212,9 @@ describe("report CSV export dataset", () => {
       billingModel: "HOURLY",
       rate: "80.0000",
       currency: "EUR",
-      monthlyContractedMinutes: 4800,
+      commitmentMode: "PERCENTAGE",
+      commitmentPercentage: 60,
+      allocatedMinutes: null,
     });
     const otherClient = await addClient(context, "CSV Contract Other");
     const otherContract = await addHourlyContract(context, otherClient.id);
@@ -267,7 +271,9 @@ describe("report CSV export dataset", () => {
       billingModel: "HOURLY",
       rate: "80.0000",
       currency: "EUR",
-      monthlyContractedMinutes: 4800,
+      commitmentMode: "PERCENTAGE",
+      commitmentPercentage: 60,
+      allocatedMinutes: null,
     });
     const otherClient = await addClient(context, "CSV Mismatch");
     await createTimeEntry(
@@ -310,7 +316,9 @@ describe("report CSV export dataset", () => {
       billingModel: "HOURLY",
       rate: "80.0000",
       currency: "EUR",
-      monthlyContractedMinutes: 4800,
+      commitmentMode: "PERCENTAGE",
+      commitmentPercentage: 60,
+      allocatedMinutes: null,
     });
     await createTimeEntry(
       context,
@@ -363,7 +371,9 @@ describe("report CSV export dataset", () => {
       billingModel: "HOURLY",
       rate: "80.0000",
       currency: "EUR",
-      monthlyContractedMinutes: 4800,
+      commitmentMode: "PERCENTAGE",
+      commitmentPercentage: 60,
+      allocatedMinutes: null,
     });
     await createTimeEntry(
       context,

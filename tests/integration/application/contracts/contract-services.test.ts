@@ -91,7 +91,8 @@ describe("contract application services", () => {
         billingModel: "DAILY",
         rate: "500",
         currency: "USD",
-        monthlyContractedHours: "20",
+      commitmentMode: "PERCENTAGE" as const,
+      commitmentValue: "60",
         paymentTermsDays: "15",
         paymentTermsNote: "Net 15",
       },
@@ -121,7 +122,8 @@ describe("contract application services", () => {
 
     const created = await createContract(
       context,
-      { ...createInput, clientId: client.id, allocatedMinutes: "4800" },
+      { ...createInput, clientId: client.id, commitmentMode: "TOTAL_HOURS" as const,
+        commitmentValue: "80" },
       repositories.clients,
       repositories.contracts,
     );
@@ -133,7 +135,6 @@ describe("contract application services", () => {
       created.id,
       {
         ...createInput,
-        allocatedMinutes: 0,
       },
       runInTransaction,
     );
@@ -145,7 +146,8 @@ describe("contract application services", () => {
       created.id,
       {
         ...createInput,
-        allocatedMinutes: null,
+        commitmentMode: "PERCENTAGE",
+        commitmentValue: "100",
       },
       runInTransaction,
     );
@@ -191,6 +193,8 @@ describe("contract application services", () => {
           billingModel: "HOURLY",
           rate: "1",
           currency: "EUR",
+      commitmentMode: "PERCENTAGE" as const,
+      commitmentValue: "60",
         },
         runInTransaction,
       ),
@@ -272,6 +276,8 @@ describe("contract application services", () => {
         billingModel: "HOURLY",
         rate: "95",
         currency: "EUR",
+      commitmentMode: "PERCENTAGE" as const,
+      commitmentValue: "60",
       },
       runInTransaction,
     );
@@ -353,6 +359,8 @@ describe("contract application services", () => {
           billingModel: "HOURLY",
           rate: "90",
           currency: "EUR",
+      commitmentMode: "PERCENTAGE" as const,
+      commitmentValue: "60",
         },
         runInTransaction,
       ),

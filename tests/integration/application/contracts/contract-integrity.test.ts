@@ -28,12 +28,15 @@ const workspaceInput = {
   currency: "EUR",
 } as const;
 
-const createInput = {
+const createInput: ContractCreateInput = {
+  clientId: "", // Will be set per test
   validFrom: "2026-01-01",
   validTo: "2026-07-01",
-  billingModel: "HOURLY" as const,
+  billingModel: "HOURLY",
   rate: "80",
   currency: "EUR",
+  commitmentMode: "PERCENTAGE",
+  commitmentValue: "60",
 };
 
 async function createWorkspaceContext(suffix: string): Promise<WorkspaceContext> {
@@ -78,6 +81,8 @@ describe("contract application integrity", () => {
           billingModel: "HOURLY",
           rate: "80",
           currency: "EUR",
+          commitmentMode: "PERCENTAGE",
+          commitmentValue: "60",
         },
         runInTransaction,
       ),
@@ -118,7 +123,8 @@ describe("contract application integrity", () => {
         billingModel: "DAILY",
         rate: "500",
         currency: "USD",
-        monthlyContractedHours: "10",
+        commitmentMode: "PERCENTAGE",
+        commitmentValue: "60",
         paymentTermsDays: "30",
         paymentTermsNote: "Net 30",
         clientId: clientB.id,
@@ -135,7 +141,9 @@ describe("contract application integrity", () => {
       billingModel: "DAILY",
       rate: "500.0000",
       currency: "USD",
-      monthlyContractedMinutes: 600,
+      commitmentMode: "PERCENTAGE",
+      commitmentPercentage: 60,
+      allocatedMinutes: null,
       paymentTermsDays: 30,
       paymentTermsNote: "Net 30",
     });
@@ -194,6 +202,8 @@ describe("contract application integrity", () => {
         billingModel: "HOURLY",
         rate: "95",
         currency: "EUR",
+        commitmentMode: "PERCENTAGE",
+        commitmentValue: "60",
       },
       runInTransaction,
     );

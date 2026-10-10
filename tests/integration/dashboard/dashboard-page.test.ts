@@ -68,7 +68,9 @@ describe("Dashboard Analytics Integration", () => {
       billingModel: "HOURLY",
       rate: "100.0000",
       currency: "EUR",
-      monthlyContractedMinutes: 4800, // 80 hours
+      commitmentMode: "PERCENTAGE",
+      commitmentPercentage: 60,
+      allocatedMinutes: null, // 80 hours
       validFrom: monthOffsetDay(-1, 1), // first day of the previous month
       validTo: null, // Ongoing
     });
@@ -78,7 +80,9 @@ describe("Dashboard Analytics Integration", () => {
       billingModel: "DAILY",
       rate: "800.0000",
       currency: "EUR",
-      monthlyContractedMinutes: null, // Unlimited
+      commitmentMode: "PERCENTAGE",
+      commitmentPercentage: 60,
+      allocatedMinutes: null, // Unlimited
       validFrom: currentMonthDay(1), // first day of the current month
       validTo: monthOffsetDay(3, 28), // a finite end well after the current month
     });
@@ -157,7 +161,7 @@ describe("Dashboard Analytics Integration", () => {
 
     const betaUtilization = analytics.contractUtilizations.find(c => c.clientName === "Beta Ltd")!;
     expect(betaUtilization.consumedMinutes).toBe(360);
-    expect(betaUtilization.contractedMinutes).toBeNull(); // Unlimited contract (monthlyContractedMinutes: null)
+    expect(betaUtilization.contractedMinutes).toBeNull(); // Unlimited contract (ongoing, validTo === null)
     // BR-105-016: isOngoing ≡ validTo === null. contract2 has finite validTo → not ongoing.
     expect(betaUtilization.isOngoing).toBe(false);
     expect(betaUtilization.utilizationPercentage).toBeNull();

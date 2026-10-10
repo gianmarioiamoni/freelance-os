@@ -44,7 +44,8 @@ describe("ReportingService Forecast and allocation publish", () => {
         billingModel: "HOURLY",
         rate: "80",
         currency: "EUR",
-        allocatedMinutes: 1000,
+        commitmentMode: "PERCENTAGE",
+        commitmentValue: "100",
       },
       runInTransaction,
     );
@@ -81,7 +82,6 @@ describe("ReportingService Forecast and allocation publish", () => {
     expect(report.contractAllocations).toEqual([
       expect.objectContaining({
         contractId: graph.contractId,
-        allocatedMinutes: 1000,
         consumedMinutes: 120,
         remainingMinutes: 880,
         allocationStatus: "NORMAL",

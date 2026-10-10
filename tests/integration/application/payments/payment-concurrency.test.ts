@@ -17,6 +17,8 @@ import { date, prisma, repositories, runInTransaction } from "../../persistence/
 const workspaceInput = {
   timezone: "Europe/Rome",
   currency: "EUR",
+      commitmentMode: "PERCENTAGE" as const,
+      commitmentValue: "60"
 } as const;
 
 function createHold() {
@@ -58,6 +60,8 @@ async function seedInvoice(context: WorkspaceContext, suffix: string) {
       billingModel: "HOURLY",
       rate: "80",
       currency: "EUR",
+      commitmentMode: "PERCENTAGE" as const,
+      commitmentValue: "60"
     },
     repositories.clients,
     repositories.contracts,

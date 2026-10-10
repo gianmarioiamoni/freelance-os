@@ -27,6 +27,8 @@ import { repositories, runInTransaction } from "../../persistence/helpers";
 const workspaceInput = {
   timezone: "Europe/Rome",
   currency: "EUR",
+      commitmentMode: "PERCENTAGE" as const,
+      commitmentValue: "60",
 } as const;
 
 async function createWorkspaceContext(suffix: string): Promise<WorkspaceContext> {
@@ -57,6 +59,8 @@ async function seedContract(
       billingModel: "HOURLY",
       rate: "80",
       currency: "EUR",
+      commitmentMode: "PERCENTAGE" as const,
+      commitmentValue: "60",
       paymentTermsDays,
     },
     repositories.clients,

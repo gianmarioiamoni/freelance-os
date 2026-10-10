@@ -235,7 +235,7 @@ describe("AnalyticsService", () => {
             billingModel: "HOURLY",
             rate: "80.0000",
             currency: "EUR",
-            monthlyContractedMinutes: 4800,
+            commitmentPercentage: 60,
             validFrom: new Date("2026-01-01T00:00:00.000Z"),
             validTo: new Date("2027-01-01T00:00:00.000Z"),
           },
@@ -244,16 +244,16 @@ describe("AnalyticsService", () => {
             billingModel: "DAILY",
             rate: "400.0000",
             currency: "USD",
-            monthlyContractedMinutes: 4800,
+            commitmentPercentage: 60,
             validFrom: new Date("2026-01-01T00:00:00.000Z"),
             validTo: new Date("2027-01-01T00:00:00.000Z"),
           },
           {
-            contractId: "contract-unlimited",
+            contractId: "contract-usd-hourly",
             billingModel: "HOURLY",
-            rate: "100.0000",
-            currency: "GBP",
-            monthlyContractedMinutes: null,
+            rate: "90.0000",
+            currency: "USD",
+            commitmentPercentage: 50,
             validFrom: new Date("2026-01-01T00:00:00.000Z"),
             validTo: new Date("2027-01-01T00:00:00.000Z"),
           },
@@ -277,7 +277,8 @@ describe("AnalyticsService", () => {
       expect(result.accrued.byCurrency.find((row) => row.currency === "EUR")?.unrounded).toBe(80);
       expect(result.accrued.byCurrency.find((row) => row.currency === "USD")?.unrounded).toBe(90);
       expect(result.expected.byCurrency).toEqual([
-        { currency: "EUR", unrounded: 6400, published: 6400 },
+        { currency: "EUR", unrounded: 8448, published: 8448 },
+        { currency: "USD", unrounded: 7920, published: 7920 },
       ]);
       expect(result.expected.byContract.find((row) => row.contractId === "contract-daily")).toEqual({
         contractId: "contract-daily",
@@ -285,11 +286,12 @@ describe("AnalyticsService", () => {
         unrounded: null,
         published: null,
       });
-      expect(result.expected.byContract.find((row) => row.contractId === "contract-unlimited")).toEqual({
-        contractId: "contract-unlimited",
-        currency: "GBP",
-        unrounded: null,
-        published: null,
+      // Sep 2026: 22 working days × 50% × 8h × 60min = 5280 minutes × $90/60 = $7920
+      expect(result.expected.byContract.find((row) => row.contractId === "contract-usd-hourly")).toEqual({
+        contractId: "contract-usd-hourly",
+        currency: "USD",
+        unrounded: 7920,
+        published: 7920,
       });
       expect(result.accrued).not.toHaveProperty("total");
       expect(result.expected).not.toHaveProperty("total");

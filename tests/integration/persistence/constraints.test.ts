@@ -40,6 +40,9 @@ describe("database value constraints", () => {
         billingModel: "HOURLY",
         rate: "0",
         currency: "EUR",
+      commitmentMode: "PERCENTAGE",
+      commitmentPercentage: 60,
+      allocatedMinutes: null,
       }),
     ).rejects.toBeInstanceOf(ConstraintViolationError);
 
@@ -51,6 +54,9 @@ describe("database value constraints", () => {
         billingModel: "HOURLY",
         rate: "-10.0000",
         currency: "EUR",
+      commitmentMode: "PERCENTAGE",
+      commitmentPercentage: 60,
+      allocatedMinutes: null,
       }),
     ).rejects.toBeInstanceOf(ConstraintViolationError);
   });
@@ -66,7 +72,9 @@ describe("database value constraints", () => {
         billingModel: "HOURLY",
         rate: "80.0000",
         currency: "EUR",
-        allocatedMinutes: -1,
+      commitmentMode: "PERCENTAGE",
+      commitmentPercentage: 60,
+              allocatedMinutes: -1,
       }),
     ).rejects.toBeInstanceOf(ConstraintViolationError);
   });

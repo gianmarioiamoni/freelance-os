@@ -64,6 +64,8 @@ async function seedContract(context: WorkspaceContext, suffix: string) {
       billingModel: "HOURLY",
       rate: "80",
       currency: "EUR",
+      commitmentMode: "PERCENTAGE" as const,
+      commitmentValue: "60",
     },
     repositories.clients,
     repositories.contracts,
@@ -101,7 +103,7 @@ describe("invoice concurrency", () => {
     const currencySide = updateContract(
       context,
       contract.id,
-      { ...contractUpdate, currency: "USD" },
+      { ...contractUpdate, currency: "USD", commitmentMode: "PERCENTAGE", commitmentValue: "100" },
       runInTransaction,
     );
     await waitForLockWaiter();
@@ -138,6 +140,9 @@ describe("invoice concurrency", () => {
         billingModel: "HOURLY",
         rate: "80",
         currency: "USD",
+      commitmentMode: "PERCENTAGE",
+      commitmentPercentage: 60,
+      allocatedMinutes: null,
       });
     });
 

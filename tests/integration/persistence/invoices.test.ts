@@ -74,7 +74,10 @@ describe("invoice persistence", () => {
       billingModel: "HOURLY",
       rate: "80.0000",
       currency: "EUR",
-      paymentTermsDays: 30,
+      commitmentMode: "PERCENTAGE",
+      commitmentPercentage: 60,
+      allocatedMinutes: null,
+            paymentTermsDays: 30,
     });
 
     const invoice = await createInvoiceOnGraph(graph.workspaceId, graph.contractId, {
@@ -89,7 +92,10 @@ describe("invoice persistence", () => {
       billingModel: "DAILY",
       rate: "99.0000",
       currency: "USD",
-      paymentTermsDays: 7,
+      commitmentMode: "PERCENTAGE",
+      commitmentPercentage: 60,
+      allocatedMinutes: null,
+            paymentTermsDays: 7,
     });
 
     const persisted = await repositories.invoices.getInvoice(graph.workspaceId, invoice.id);

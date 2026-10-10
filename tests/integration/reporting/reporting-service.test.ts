@@ -137,7 +137,9 @@ describe("ReportingService integration", () => {
       billingModel: "HOURLY",
       rate: "100.0000",
       currency: "EUR",
-      monthlyContractedMinutes: 4800,
+      commitmentMode: "PERCENTAGE",
+    commitmentPercentage: 60,
+    allocatedMinutes: null,
     });
     await repositories.timeEntries.recordTimeEntry(otherGraph.workspaceId, {
       userId: otherGraph.userId,
@@ -187,7 +189,9 @@ describe("ReportingService integration", () => {
       billingModel: "HOURLY",
       rate: "100.0000",
       currency: "EUR",
-      monthlyContractedMinutes: 4800, // 80h/month
+      commitmentMode: "PERCENTAGE",
+    commitmentPercentage: 60,
+    allocatedMinutes: null, // 80h/month
     });
 
     await repositories.timeEntries.recordTimeEntry(context.workspaceId, {
@@ -235,7 +239,9 @@ describe("ReportingService integration", () => {
       billingModel: "DAILY",
       rate: "800.0000",
       currency: "EUR",
-      monthlyContractedMinutes: null, // unlimited - no capacity denominator
+      commitmentMode: "PERCENTAGE",
+      commitmentPercentage: 60,
+      allocatedMinutes: null, // unlimited - no capacity denominator
     });
 
     await repositories.timeEntries.recordTimeEntry(context.workspaceId, {
@@ -280,7 +286,9 @@ describe("ReportingService integration", () => {
       billingModel: "HOURLY",
       rate: "100.0000",
       currency: "EUR",
-      monthlyContractedMinutes: 4800, // finite capacity - ongoing does NOT mean unlimited
+      commitmentMode: "PERCENTAGE",
+    commitmentPercentage: 60,
+    allocatedMinutes: null, // finite capacity - ongoing does NOT mean unlimited
     });
 
     await repositories.timeEntries.recordTimeEntry(context.workspaceId, {
@@ -328,7 +336,9 @@ describe("ReportingService integration", () => {
       billingModel: "DAILY",
       rate: "800.0000",
       currency: "EUR",
-      monthlyContractedMinutes: null, // unlimited
+      commitmentMode: "PERCENTAGE",
+      commitmentPercentage: 60,
+      allocatedMinutes: null, // unlimited
     });
 
     await repositories.timeEntries.recordTimeEntry(context.workspaceId, {
@@ -373,7 +383,9 @@ describe("ReportingService integration", () => {
       billingModel: "HOURLY",
       rate: "100.0000",
       currency: "EUR",
-      monthlyContractedMinutes: 4800,
+      commitmentMode: "PERCENTAGE",
+    commitmentPercentage: 60,
+    allocatedMinutes: null,
     });
 
     await repositories.timeEntries.recordTimeEntry(context.workspaceId, {
@@ -416,7 +428,9 @@ describe("ReportingService integration", () => {
       billingModel: "HOURLY",
       rate: "100.0000",
       currency: "EUR",
-      monthlyContractedMinutes: 4800,
+      commitmentMode: "PERCENTAGE",
+    commitmentPercentage: 60,
+    allocatedMinutes: null,
     });
 
     await repositories.timeEntries.recordTimeEntry(context.workspaceId, {
@@ -462,7 +476,9 @@ describe("ReportingService integration", () => {
       billingModel: "HOURLY",
       rate: "100.0000",
       currency: "EUR",
-      monthlyContractedMinutes: 4800,
+      commitmentMode: "PERCENTAGE",
+    commitmentPercentage: 60,
+    allocatedMinutes: null,
     });
     // No time entries recorded.
 
@@ -501,7 +517,9 @@ describe("ReportingService integration", () => {
       billingModel: "HOURLY",
       rate: "100.0000",
       currency: "EUR",
-      monthlyContractedMinutes: 4800,
+      commitmentMode: "PERCENTAGE",
+    commitmentPercentage: 60,
+    allocatedMinutes: null,
     });
 
     // Time recorded in Sep - outside validity. Retained and flagged (BR-105-018).
@@ -553,7 +571,9 @@ describe("ReportingService integration", () => {
       billingModel: "HOURLY",
       rate: "100.0000",
       currency: "EUR",
-      monthlyContractedMinutes: 4800,
+      commitmentMode: "PERCENTAGE",
+    commitmentPercentage: 60,
+    allocatedMinutes: null,
     });
 
     const clientB = await repositories.clients.createClient(context.workspaceId, {
@@ -566,7 +586,9 @@ describe("ReportingService integration", () => {
       billingModel: "HOURLY",
       rate: "100.0000",
       currency: "EUR",
-      monthlyContractedMinutes: 3000,
+      commitmentMode: "PERCENTAGE",
+    commitmentPercentage: 60,
+    allocatedMinutes: null,
     });
 
     await repositories.timeEntries.recordTimeEntry(context.workspaceId, {
@@ -638,7 +660,9 @@ describe("ReportingService integration", () => {
       billingModel: "HOURLY",
       rate: "100.0000",
       currency: "EUR",
-      monthlyContractedMinutes: 4800,
+      commitmentMode: "PERCENTAGE",
+    commitmentPercentage: 60,
+    allocatedMinutes: null,
     });
 
     // Aug period (31 days): zero consumption.
@@ -701,7 +725,9 @@ describe("ReportingService integration", () => {
       billingModel: "HOURLY",
       rate: "100.0000",
       currency: "EUR",
-      monthlyContractedMinutes: 4800,
+      commitmentMode: "PERCENTAGE",
+    commitmentPercentage: 60,
+    allocatedMinutes: null,
     });
 
     // Record time for the archived client inside the period.
@@ -759,7 +785,9 @@ describe("ReportingService integration", () => {
       billingModel: "HOURLY",
       rate: "100.0000",
       currency: "EUR",
-      monthlyContractedMinutes: 4800,
+      commitmentMode: "PERCENTAGE",
+    commitmentPercentage: 60,
+    allocatedMinutes: null,
     });
 
     // Contract with null capacity, valid over the period - no time entries.
@@ -773,7 +801,9 @@ describe("ReportingService integration", () => {
       billingModel: "DAILY",
       rate: "800.0000",
       currency: "EUR",
-      monthlyContractedMinutes: null, // unlimited
+      commitmentMode: "PERCENTAGE",
+      commitmentPercentage: 60,
+      allocatedMinutes: null, // unlimited
     });
 
     // No time entries recorded for either contract.
@@ -828,7 +858,9 @@ describe("ReportingService integration", () => {
       billingModel: "HOURLY",
       rate: "100.0000",
       currency: "EUR",
-      monthlyContractedMinutes: 4800,
+      commitmentMode: "PERCENTAGE",
+    commitmentPercentage: 60,
+    allocatedMinutes: null,
     });
     await repositories.timeEntries.recordTimeEntry(context.workspaceId, {
       userId: context.userId,

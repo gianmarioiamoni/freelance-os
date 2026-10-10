@@ -48,7 +48,9 @@ describe("WorkspaceInvoiceService (integration)", () => {
       billingModel: "HOURLY",
       rate: "100.0000",
       currency: "EUR",
-      monthlyContractedMinutes: 9600,
+      commitmentMode: "PERCENTAGE",
+    commitmentPercentage: 60,
+    allocatedMinutes: null,
       paymentTermsDays: 30,
     });
     contractAId = contractA.id;
@@ -78,7 +80,9 @@ describe("WorkspaceInvoiceService (integration)", () => {
       billingModel: "HOURLY",
       rate: "150.0000",
       currency: "USD",
-      monthlyContractedMinutes: 9600,
+      commitmentMode: "PERCENTAGE",
+    commitmentPercentage: 60,
+    allocatedMinutes: null,
       paymentTermsDays: 30,
     });
     contractBId = contractB.id;
@@ -156,7 +160,9 @@ describe("WorkspaceInvoiceService (integration)", () => {
           billingModel: "HOURLY",
           rate: "120.0000",
           currency: "USD",
-          monthlyContractedMinutes: 9600,
+          commitmentMode: "PERCENTAGE",
+    commitmentPercentage: 60,
+    allocatedMinutes: null,
           paymentTermsDays: 30,
         },
       );

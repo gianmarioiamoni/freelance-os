@@ -21,7 +21,9 @@ const UNKNOWN_ID = "00000000-0000-4000-8000-000000000099";
 
 const workspaceInput = {
   timezone: "Europe/Rome",
-  currency: "EUR",
+  currency: "",
+      commitmentMode: "PERCENTAGE" as const,
+      commitmentValue: "60"
 } as const;
 
 async function createWorkspaceContext(suffix: string): Promise<WorkspaceContext> {
@@ -56,7 +58,9 @@ async function setupClientAndContract(context: WorkspaceContext, validFrom = "20
       validTo,
       billingModel: "HOURLY" as const,
       rate: "85",
-      currency: "EUR",
+      currency: "",
+      commitmentMode: "PERCENTAGE" as const,
+      commitmentValue: "60"
     },
     repositories.clients,
     repositories.contracts,
@@ -522,7 +526,9 @@ describe("time tracking security and authorization", () => {
           validTo: "2026-12-31",
           billingModel: "HOURLY" as const,
           rate: "80",
-          currency: "EUR",
+          currency: "",
+      commitmentMode: "PERCENTAGE" as const,
+      commitmentValue: "60"
         },
         repositories.clients,
         repositories.contracts,

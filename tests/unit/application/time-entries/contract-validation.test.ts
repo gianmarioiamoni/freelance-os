@@ -54,7 +54,8 @@ function contractRecord(overrides: Partial<ContractRecord> = {}): ContractRecord
     billingModel: "HOURLY",
     rate: "100.00",
     currency: "EUR",
-    monthlyContractedMinutes: 9600, // 160 hours
+    commitmentMode: "PERCENTAGE",
+    commitmentPercentage: 60,
     allocatedMinutes: null,
     paymentTermsDays: 30,
     paymentTermsNote: null,

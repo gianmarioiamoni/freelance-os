@@ -79,6 +79,9 @@ describe("Analytics timezone propagation - F-105-004 (BR-105-014)", () => {
       billingModel: "HOURLY",
       rate: "100.0000",
       currency: "USD",
+      commitmentMode: "PERCENTAGE",
+      commitmentPercentage: 80,
+      allocatedMinutes: null,
     });
     await repositories.timeEntries.recordTimeEntry(workspace.id, {
       userId,

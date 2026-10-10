@@ -85,7 +85,9 @@ describe("Analytics Workspace Isolation", () => {
         billingModel: "HOURLY",
         rate: "100.0000",
         currency: "EUR",
-        monthlyContractedMinutes: 4800,
+        commitmentMode: "PERCENTAGE",
+      commitmentPercentage: 60,
+      allocatedMinutes: null,
         validFrom: currentMonthDay(1),
         validTo: null,
       });

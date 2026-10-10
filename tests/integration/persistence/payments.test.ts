@@ -112,7 +112,10 @@ describe("payment persistence", () => {
       billingModel: "HOURLY",
       rate: "80.0000",
       currency: "USD",
-    });
+      commitmentMode: "PERCENTAGE",
+      commitmentPercentage: 60,
+      allocatedMinutes: null,
+          });
 
     const persisted = await repositories.payments.getPayment(graph.workspaceId, payment.id);
     const contract = await repositories.contracts.getContract(
