@@ -58,7 +58,7 @@ export default async function TimeTrackingPage({
   searchParams,
 }: TimeTrackingPageProps): Promise<JSX.Element> {
   const params = await searchParams;
-  const view = params.view === "week" ? "week" : "day";
+  const view = params.view === "day" ? "day" : "week";
   const selectedDate = parseDate(params.date || params.start);
   
   if (view === "week") {
