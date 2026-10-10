@@ -7,7 +7,7 @@
  *   → Dashboard → Reports → Alerts → mark-as-read → badge clears
  *
  * Design decisions:
- *   - monthlyContractedHours=2, timeEntry=2h → 100% utilisation → alert fires
+ *   - commitmentPercentage=100 with 2h entry → 100% utilisation → alert fires
  *   - Fresh user per run (uniqueE2EEmail) - no shared state
  *   - No waitForTimeout / arbitrary sleeps
  *   - All assertions use locator-based expect calls
@@ -32,8 +32,7 @@ import {
 const WORKSPACE_NAME = "MVP Journey Workspace";
 const CLIENT_NAME = "MVP Journey Client";
 const CONTRACT_RATE = "100";
-// 2 contracted hours: one 2h entry = exactly 100% → CONTRACT_WARNING + CONTRACT_EXCEEDED
-const CONTRACT_MONTHLY_HOURS = "2";
+// 100% commitment: one 2h entry → alert fires
 const ENTRY_HOURS = "2";
 const ENTRY_MINUTES = "0";
 const ENTRY_DESCRIPTION = "Integration test entry";
@@ -86,7 +85,7 @@ test(
     await createContract(page, {
       rate: CONTRACT_RATE,
       validFrom: firstDayOfCurrentMonth(),
-      monthlyContractedHours: CONTRACT_MONTHLY_HOURS,
+      totalHours: ENTRY_HOURS,
     });
     await expect(page).toHaveURL(/\/contracts\/[0-9a-f-]{36}$/);
 

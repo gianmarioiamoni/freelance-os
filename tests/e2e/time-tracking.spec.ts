@@ -57,6 +57,8 @@ test("should complete authenticated time tracking journey", async ({ page }) => 
   await page.getByLabel("Valid to").fill("2026-12-31");
   await page.getByLabel("Billing model").selectOption("HOURLY");
   await page.getByLabel("Rate").fill(CONTRACT_RATE);
+  await page.getByLabel("Commitment mode").selectOption("PERCENTAGE");
+  await page.getByLabel("Commitment percentage").fill("100");
   await page.getByRole("button", { name: "Create contract" }).click();
 
   // Should redirect to contract detail page
@@ -219,6 +221,8 @@ test("should verify contract details are presentation-only", async ({ page }) =>
   await page.getByLabel("Valid to").fill("2026-12-31");
   await page.getByLabel("Billing model").selectOption("HOURLY");
   await page.getByLabel("Rate").fill("100");
+  await page.getByLabel("Commitment mode").selectOption("PERCENTAGE");
+  await page.getByLabel("Commitment percentage").fill("100");
   await page.getByRole("button", { name: "Create contract" }).click();
   await expect(page).toHaveURL(/\/contracts\/[0-9a-f-]{36}$/);
 
@@ -278,6 +282,8 @@ test("should verify quick-add uses normal creation path", async ({ page }) => {
   await page.getByLabel("Valid to").fill("2026-12-31");
   await page.getByLabel("Billing model").selectOption("HOURLY");
   await page.getByLabel("Rate").fill("80");
+  await page.getByLabel("Commitment mode").selectOption("PERCENTAGE");
+  await page.getByLabel("Commitment percentage").fill("100");
   await page.getByRole("button", { name: "Create contract" }).click();
   await expect(page).toHaveURL(/\/contracts\/[0-9a-f-]{36}$/);
 
@@ -326,6 +332,8 @@ test("should enforce workspace isolation in browser", async ({ page }) => {
   await page.getByLabel("Valid to").fill("2026-12-31");
   await page.getByLabel("Billing model").selectOption("HOURLY");
   await page.getByLabel("Rate").fill("90");
+  await page.getByLabel("Commitment mode").selectOption("PERCENTAGE");
+  await page.getByLabel("Commitment percentage").fill("100");
   await page.getByRole("button", { name: "Create contract" }).click();
   await expect(page).toHaveURL(/\/contracts\/[0-9a-f-]{36}$/);
 
@@ -421,6 +429,8 @@ test("should maintain immutability constraints in edit form", async ({ page }) =
   await page.getByLabel("Valid to").fill("2026-12-31");
   await page.getByLabel("Billing model").selectOption("HOURLY");
   await page.getByLabel("Rate").fill("95");
+  await page.getByLabel("Commitment mode").selectOption("PERCENTAGE");
+  await page.getByLabel("Commitment percentage").fill("100");
   await page.getByRole("button", { name: "Create contract" }).click();
   await expect(page).toHaveURL(/\/contracts\/[0-9a-f-]{36}$/);
 

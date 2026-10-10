@@ -37,8 +37,8 @@ export async function createContract(
     rate: string;
     validFrom?: string;
     validTo?: string;
-    monthlyContractedHours?: string;
-    allocatedMinutes?: string;
+    commitmentPercentage?: string;
+    totalHours?: string;
   },
 ): Promise<void> {
   await page.getByRole("link", { name: "New contract" }).click();
@@ -52,13 +52,17 @@ export async function createContract(
   await page.getByLabel("Billing model").selectOption("HOURLY");
   await page.getByLabel("Rate").fill(options.rate);
   await page.getByLabel("Currency").selectOption("EUR");
-  if (options.monthlyContractedHours) {
-    await page
-      .getByLabel("Monthly contracted hours")
-      .fill(options.monthlyContractedHours);
-  }
-  if (options.allocatedMinutes !== undefined) {
-    await page.getByLabel("Allocated minutes").fill(options.allocatedMinutes);
+
+  if (options.totalHours !== undefined) {
+    await page.getByLabel("Commitment mode").selectOption("TOTAL_HOURS");
+    await page.getByLabel("Total contract hours").fill(options.totalHours);
+  } else if (options.commitmentPercentage !== undefined) {
+    await page.getByLabel("Commitment mode").selectOption("PERCENTAGE");
+    await page.getByLabel("Commitment percentage").fill(options.commitmentPercentage);
+  } else {
+    // Default: 100% percentage
+    await page.getByLabel("Commitment mode").selectOption("PERCENTAGE");
+    await page.getByLabel("Commitment percentage").fill("100");
   }
 
   await submitAndFollowActionRedirect(
@@ -76,8 +80,8 @@ export async function createClientWithContract(
     rate: string;
     validFrom?: string;
     validTo?: string;
-    monthlyContractedHours?: string;
-    allocatedMinutes?: string;
+    commitmentPercentage?: string;
+    totalHours?: string;
   },
 ): Promise<string> {
   const clientUrl = await createClient(page, options.companyName);

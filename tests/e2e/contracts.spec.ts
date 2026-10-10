@@ -74,6 +74,8 @@ test("should create, edit, and isolate workspace contracts", async ({
   await page.getByLabel("Billing model").selectOption("HOURLY");
   await page.getByLabel("Rate").fill("0");
   await page.getByLabel("Currency").selectOption("EUR");
+  await page.getByLabel("Commitment mode").selectOption("PERCENTAGE");
+  await page.getByLabel("Commitment percentage").fill("100");
   await page.getByRole("button", { name: "Create contract" }).click();
   await expect(
     page.getByText("Enter a rate greater than 0 with at most 4 decimal places."),
@@ -89,6 +91,8 @@ test("should create, edit, and isolate workspace contracts", async ({
   await page.getByLabel("Billing model").selectOption("HOURLY");
   await page.getByLabel("Rate").fill("80");
   await page.getByLabel("Currency").selectOption("EUR");
+  await page.getByLabel("Commitment mode").selectOption("PERCENTAGE");
+  await page.getByLabel("Commitment percentage").fill("100");
   await submitAndFollowActionRedirect(
     page,
     page.getByRole("button", { name: "Create contract" }),
@@ -139,6 +143,8 @@ test("should create, edit, and isolate workspace contracts", async ({
   await page.getByLabel("Billing model").selectOption("DAILY");
   await page.getByLabel("Rate").fill("500");
   await page.getByLabel("Currency").selectOption("EUR");
+  await page.getByLabel("Commitment mode").selectOption("PERCENTAGE");
+  await page.getByLabel("Commitment percentage").fill("100");
   await submitAndFollowActionRedirect(
     page,
     page.getByRole("button", { name: "Create contract" }),
@@ -160,6 +166,8 @@ test("should create, edit, and isolate workspace contracts", async ({
   await page.getByLabel("Billing model").selectOption("HOURLY");
   await page.getByLabel("Rate").fill("90");
   await page.getByLabel("Currency").selectOption("EUR");
+  await page.getByLabel("Commitment mode").selectOption("PERCENTAGE");
+  await page.getByLabel("Commitment percentage").fill("100");
   await page.getByRole("button", { name: "Create contract" }).click();
   await expect(
     page.getByText("This period overlaps another contract for this client."),

@@ -19,19 +19,18 @@ import {
 // ---------------------------------------------------------------------------
 
 const CLIENT_NAME = "Alert E2E Client";
-// 10 contracted hours = 600 min; threshold 80% = 480 min
-// We log 9h = 540 min → 90% → CONTRACT_WARNING fires
-const CONTRACT_HOURS = "10";
-const ABOVE_THRESHOLD_HOURS = "9"; // 9h = 540 min → 90%
+// Commitment 5% (~8h/month), log 8h → 100% → CONTRACT_WARNING and EXCEEDED fire
+const COMMITMENT_PERCENTAGE = "5"; 
+const ABOVE_THRESHOLD_HOURS = "8"; // 8h logged → 100%
 
 /**
- * Creates client + contract with monthlyContractedHours, returns to caller.
+ * Creates client + contract with PERCENTAGE commitment mode.
  * Contract valid 2026-01-01 / 2026-12-31, HOURLY, 75 EUR/h.
  */
 async function setupClientAndContract(
   page: Page,
   clientName: string = CLIENT_NAME,
-  contractedHours: string = CONTRACT_HOURS,
+  commitmentPercentage: string = COMMITMENT_PERCENTAGE,
 ) {
   await page.goto("/clients/new");
   await page.getByLabel("Company name").fill(clientName);
@@ -44,7 +43,8 @@ async function setupClientAndContract(
   await page.getByLabel("Valid to").fill("2026-12-31");
   await page.getByLabel("Billing model").selectOption("HOURLY");
   await page.getByLabel("Rate").fill("75");
-  await page.getByLabel("Monthly contracted hours").fill(contractedHours);
+  await page.getByLabel("Commitment mode").selectOption("PERCENTAGE");
+  await page.locator('input[name="commitmentValue"]').fill(commitmentPercentage);
   await page.getByRole("button", { name: "Create contract" }).click();
   await expect(page).toHaveURL(/\/contracts\/[0-9a-f-]{36}$/);
 }
@@ -121,8 +121,8 @@ test("primary journey: TimeEntry above threshold → /alerts → unread → mark
     workspaceName: "Alerts Primary Workspace",
   });
 
-  // Setup contract with contracted hours so threshold can be crossed
-  await setupClientAndContract(page, CLIENT_NAME, CONTRACT_HOURS);
+  // Setup contract with commitment percentage so threshold can be crossed
+  await setupClientAndContract(page, CLIENT_NAME, COMMITMENT_PERCENTAGE);
 
   // Create time entry above 80% threshold (9h = 90%)
   await createTimeEntry(page, CLIENT_NAME, ABOVE_THRESHOLD_HOURS);
@@ -184,7 +184,7 @@ test("alerts page shows unread count when notifications are unread", async ({
     workspaceName: "Alerts Badge Workspace",
   });
 
-  await setupClientAndContract(page, CLIENT_NAME, CONTRACT_HOURS);
+  await setupClientAndContract(page, CLIENT_NAME, COMMITMENT_PERCENTAGE);
   await createTimeEntry(page, CLIENT_NAME, ABOVE_THRESHOLD_HOURS);
 
   await page.goto("/alerts");
@@ -211,7 +211,7 @@ test("alerts page meets basic accessibility requirements", async ({ page }) => {
     workspaceName: "Alerts A11y Workspace",
   });
 
-  await setupClientAndContract(page, CLIENT_NAME, CONTRACT_HOURS);
+  await setupClientAndContract(page, CLIENT_NAME, COMMITMENT_PERCENTAGE);
   await createTimeEntry(page, CLIENT_NAME, ABOVE_THRESHOLD_HOURS);
 
   await page.goto("/alerts");
@@ -265,7 +265,7 @@ test("workspace isolation: user B cannot see user A notifications on /alerts", a
     name: "User A",
     workspaceName: "Workspace A",
   });
-  await setupClientAndContract(pageA, "Client A", CONTRACT_HOURS);
+  await setupClientAndContract(pageA, "Client A", COMMITMENT_PERCENTAGE);
   await createTimeEntry(pageA, "Client A", ABOVE_THRESHOLD_HOURS);
 
   // Verify user A sees notification
@@ -307,7 +307,7 @@ test("repeated reload of /alerts does not duplicate notifications", async ({
     workspaceName: "No Dup Workspace",
   });
 
-  await setupClientAndContract(page, CLIENT_NAME, CONTRACT_HOURS);
+  await setupClientAndContract(page, CLIENT_NAME, COMMITMENT_PERCENTAGE);
   await createTimeEntry(page, CLIENT_NAME, ABOVE_THRESHOLD_HOURS);
 
   await page.goto("/alerts");

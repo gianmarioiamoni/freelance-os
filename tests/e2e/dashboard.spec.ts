@@ -24,7 +24,7 @@ async function createTestTimeEntries(page: Page): Promise<void> {
   await createClientWithContract(page, {
     companyName: "ACME Corp",
     rate: "100",
-    monthlyContractedHours: "80",
+    commitmentPercentage: "100",
   });
 
   await createTimeEntry(page, {
@@ -185,7 +185,7 @@ test.describe("Dashboard Analytics E2E Journey", () => {
     const clientUrl = await createClientWithContract(page, {
       companyName: "Beta Ltd",
       rate: "120",
-      monthlyContractedHours: "60",
+      commitmentPercentage: "100",
     });
 
     await createTimeEntry(page, {
@@ -248,7 +248,7 @@ test.describe("Dashboard Analytics E2E Journey", () => {
       companyName: "Finite Corp",
       rate: "100",
       validTo: endOfYear,
-      monthlyContractedHours: "40",
+      commitmentPercentage: "50",
     });
 
     // Client with an uncapped contract (no monthly contracted hours)

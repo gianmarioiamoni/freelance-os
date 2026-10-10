@@ -187,7 +187,7 @@ test.describe("custom period selector", () => {
     await createClientWithContract(page, {
       companyName: "Custom Period Client",
       rate: "100",
-      monthlyContractedHours: "40",
+      commitmentPercentage: "50",
     });
     await createTimeEntry(page, {
       clientName: "Custom Period Client",
@@ -464,7 +464,7 @@ test.describe("tabular report sections", () => {
     await createClientWithContract(page, {
       companyName: "Acme Reporting",
       rate: "100",
-      monthlyContractedHours: "80",
+      commitmentPercentage: "100",
     });
     await createTimeEntry(page, {
       clientName: "Acme Reporting",
@@ -519,7 +519,7 @@ test.describe("tabular report sections", () => {
     await createClientWithContract(page, {
       companyName: "Unlimited Corp",
       rate: "150",
-      // monthlyContractedHours omitted → null capacity
+      // commitmentPercentage omitted → defaults to 100%
     });
     await createTimeEntry(page, {
       clientName: "Unlimited Corp",
@@ -557,7 +557,7 @@ test.describe("tabular report sections", () => {
     const clientUrl = await createClientWithContract(page, {
       companyName: "Archived Reporting Client",
       rate: "100",
-      monthlyContractedHours: "60",
+      commitmentPercentage: "75",
     });
     await createTimeEntry(page, {
       clientName: "Archived Reporting Client",
@@ -666,7 +666,7 @@ test.describe("accessibility", () => {
     await createClientWithContract(page, {
       companyName: "Caption Client",
       rate: "100",
-      monthlyContractedHours: "40",
+      commitmentPercentage: "50",
     });
     await createTimeEntry(page, {
       clientName: "Caption Client",
@@ -749,8 +749,7 @@ test.describe("entity filters", () => {
     const clientUrl = await createClientWithContract(page, {
       companyName: "Filter Client",
       rate: "100",
-      monthlyContractedHours: "40",
-      allocatedMinutes: "1000",
+      totalHours: "16.67",
     });
     const contractUrl = page.url();
     const clientId = new URL(clientUrl).pathname.split("/").pop()!;
@@ -858,8 +857,7 @@ test.describe("CSV export", () => {
     const clientUrl = await createClientWithContract(page, {
       companyName: "CSV Filter Client",
       rate: "100",
-      monthlyContractedHours: "40",
-      allocatedMinutes: "1000",
+      totalHours: "16.67",
     });
     const contractUrl = page.url();
     const clientId = new URL(clientUrl).pathname.split("/").pop()!;

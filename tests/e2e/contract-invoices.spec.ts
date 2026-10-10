@@ -38,6 +38,8 @@ test("should create, edit, void, and isolate contract invoices", async ({
   await page.getByLabel("Billing model").selectOption("HOURLY");
   await page.getByLabel("Rate").fill("80");
   await page.getByLabel("Currency").selectOption("EUR");
+  await page.getByLabel("Commitment mode").selectOption("PERCENTAGE");
+  await page.getByLabel("Commitment percentage").fill("100");
   await page.getByLabel("Payment terms (days)").fill("30");
   await submitAndFollowActionRedirect(
     page,
@@ -165,6 +167,8 @@ test("should create, edit, void, and isolate contract invoices", async ({
   await page.getByLabel("Billing model").selectOption("DAILY");
   await page.getByLabel("Rate").fill("500");
   await page.getByLabel("Currency").selectOption("EUR");
+  await page.getByLabel("Commitment mode").selectOption("PERCENTAGE");
+  await page.getByLabel("Commitment percentage").fill("100");
   await submitAndFollowActionRedirect(
     page,
     page.getByRole("button", { name: "Create contract" }),

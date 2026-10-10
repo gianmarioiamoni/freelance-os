@@ -37,6 +37,8 @@ test("should record, edit, delete, and freeze payments on an invoice", async ({
   await page.getByLabel("Billing model").selectOption("HOURLY");
   await page.getByLabel("Rate").fill("80");
   await page.getByLabel("Currency").selectOption("EUR");
+  await page.getByLabel("Commitment mode").selectOption("PERCENTAGE");
+  await page.getByLabel("Commitment percentage").fill("100");
   await page.getByLabel("Payment terms (days)").fill("30");
   await submitAndFollowActionRedirect(
     page,

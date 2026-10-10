@@ -18,7 +18,7 @@ async function setupDashboardWithData(page: Page): Promise<void> {
   await createClientWithContract(page, {
     companyName: "Test Client",
     rate: "100",
-    monthlyContractedHours: "80",
+    commitmentPercentage: "100",
   });
 
   await createTimeEntry(page, {
