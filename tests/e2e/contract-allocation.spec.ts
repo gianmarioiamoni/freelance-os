@@ -36,21 +36,21 @@ test("should create, edit, clear, and zero contract allocation", async ({
   
   // Test invalid commitment value (negative)
   await page.getByLabel("Commitment mode").selectOption("TOTAL_HOURS");
-  await page.getByLabel("Total contract hours").fill("-1");
+  await page.locator('input[name="commitmentValue"]').fill("-1");
   await page.getByRole("button", { name: "Create contract" }).click();
   await expect(
     page.getByText("Enter a valid commitment value."),
   ).toBeVisible();
 
-  // Test invalid commitment value (decimal hours)
-  await page.getByLabel("Total contract hours").fill("1.5");
+  // Test invalid commitment value (non-numeric)
+  await page.locator('input[name="commitmentValue"]').fill("abc");
   await page.getByRole("button", { name: "Create contract" }).click();
   await expect(
     page.getByText("Enter a valid commitment value."),
   ).toBeVisible();
 
-  // Create contract with 1000 minutes = 16.67 hours
-  await page.getByLabel("Total contract hours").fill("16.67");
+  // Create contract with 1000 minutes = ~16.67 hours → use 17h (slightly over)
+  await page.locator('input[name="commitmentValue"]').fill("17");
   await submitAndFollowActionRedirect(
     page,
     page.getByRole("button", { name: "Create contract" }),
@@ -59,26 +59,27 @@ test("should create, edit, clear, and zero contract allocation", async ({
 
   await expect(page.getByText("80 EUR")).toBeVisible();
   await expect(page.getByRole("heading", { name: "Time allocation" })).toBeVisible();
-  await expect(page.getByText("1000 minutes", { exact: true }).first()).toBeVisible();
+  // 17h = 1020 minutes
+  await expect(page.getByText("1020 minutes", { exact: true }).first()).toBeVisible();
   await expect(page.getByText("0 minutes", { exact: true })).toBeVisible();
   await expect(page.getByText("Normal", { exact: true })).toBeVisible();
   await expect(page.getByText("Allocation not configured")).toHaveCount(0);
 
-  // Edit to 2000 minutes = 33.33 hours
+  // Edit to 34h = 2040 minutes
   await page.getByRole("link", { name: "Edit" }).click();
-  await expect(page.getByLabel("Total contract hours")).toHaveValue("16.67");
-  await page.getByLabel("Total contract hours").fill("33.33");
+  await expect(page.locator('input[name="commitmentValue"]')).toHaveValue("17");
+  await page.locator('input[name="commitmentValue"]').fill("34");
   await submitAndFollowActionRedirect(
     page,
     page.getByRole("button", { name: "Save changes" }),
     /\/contracts\/[0-9a-f-]{36}$/,
   );
-  await expect(page.getByText("2000 minutes").first()).toBeVisible();
+  await expect(page.getByText("2040 minutes").first()).toBeVisible();
   await expect(page.getByText("Normal", { exact: true })).toBeVisible();
 
   // Edit to 0 hours
   await page.getByRole("link", { name: "Edit" }).click();
-  await page.getByLabel("Total contract hours").fill("0");
+  await page.locator('input[name="commitmentValue"]').fill("0");
   await submitAndFollowActionRedirect(
     page,
     page.getByRole("button", { name: "Save changes" }),
@@ -92,7 +93,7 @@ test("should create, edit, clear, and zero contract allocation", async ({
   // Clear allocation by switching to PERCENTAGE with empty value
   await page.getByRole("link", { name: "Edit" }).click();
   await page.getByLabel("Commitment mode").selectOption("PERCENTAGE");
-  await page.getByLabel("Commitment percentage").fill("");
+  await page.locator('input[name="commitmentValue"]').fill("");
   await submitAndFollowActionRedirect(
     page,
     page.getByRole("button", { name: "Save changes" }),

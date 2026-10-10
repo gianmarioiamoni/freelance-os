@@ -55,14 +55,14 @@ export async function createContract(
 
   if (options.totalHours !== undefined) {
     await page.getByLabel("Commitment mode").selectOption("TOTAL_HOURS");
-    await page.getByLabel("Total contract hours").fill(options.totalHours);
+    await page.locator('input[name="commitmentValue"]').fill(options.totalHours);
   } else if (options.commitmentPercentage !== undefined) {
     await page.getByLabel("Commitment mode").selectOption("PERCENTAGE");
-    await page.getByLabel("Commitment percentage").fill(options.commitmentPercentage);
+    await page.locator('input[name="commitmentValue"]').fill(options.commitmentPercentage);
   } else {
     // Default: 100% percentage
     await page.getByLabel("Commitment mode").selectOption("PERCENTAGE");
-    await page.getByLabel("Commitment percentage").fill("100");
+    await page.locator('input[name="commitmentValue"]').fill("100");
   }
 
   await submitAndFollowActionRedirect(
