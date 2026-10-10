@@ -7,12 +7,14 @@ import {
 } from "@/application/invoices/workspace-invoice-service";
 import { ReportingService } from "@/application/reporting/reporting-service";
 import { AnalyticsService } from "@/application/analytics/analytics-service";
+import type { RevenueOverview } from "@/application/reporting/reporting-service";
 import { formatValidityInterval } from "@/features/contracts/contract-display";
 import {
   parseWorkspaceInvoiceViewState,
   toWorkspaceInvoiceListFilter,
   type WorkspaceInvoiceViewState,
 } from "@/features/invoices/workspace-invoice-filters";
+import { toReportingPeriodKind } from "@/features/reporting/reporting-types";
 import { createRepositories } from "@/infrastructure/persistence/create-repositories";
 import { getCurrentWorkspaceContext } from "@/infrastructure/workspace/current-workspace";
 
@@ -22,6 +24,7 @@ export type WorkspaceInvoicePageData = {
   clients: Array<{ id: string; label: string }>;
   contractLabels: Record<string, string>;
   periodLabel: string;
+  revenueOverview: RevenueOverview;
 };
 
 export async function loadWorkspaceInvoicesPageData(params: {
@@ -46,6 +49,7 @@ export async function loadWorkspaceInvoicesPageData(params: {
   );
   const reportingService = new ReportingService(analyticsService, invoiceService);
   const now = new Date();
+  const periodKind = toReportingPeriodKind(view.period);
   const listFilter = toWorkspaceInvoiceListFilter(
     view,
     reportingService.resolvePeriod.bind(reportingService),
@@ -53,10 +57,11 @@ export async function loadWorkspaceInvoicesPageData(params: {
     now,
   );
 
-  const [invoices, clients, contracts] = await Promise.all([
+  const [invoices, clients, contracts, revenueOverview] = await Promise.all([
     invoiceService.listInvoicesForWorkspace(context, listFilter, now),
     listClients(context, repositories.clients),
     listContracts(context, repositories.contracts),
+    reportingService.getRevenueOverview(context, periodKind, now),
   ]);
 
   const clientNameById = new Map(
@@ -80,6 +85,7 @@ export async function loadWorkspaceInvoicesPageData(params: {
     })),
     contractLabels,
     periodLabel: formatPeriodLabel(view),
+    revenueOverview,
   };
 }
 
