@@ -529,23 +529,35 @@ Consultare [`MASTER_PLAN.md`](./MASTER_PLAN.md) per pianificazione, stato releas
 
 ### Dashboard
 ![Dashboard](artifacts/portfolio/freelanceos/01-dashboard.png)
-Overview mensile con KPI, alert di sistema e attività recenti.
+Monthly KPIs, active alerts, and workspace activity overview with October 2026 data.
 
-### Time Tracking
-![Time Tracking](artifacts/portfolio/freelanceos/02-time-tracking-week.png)
-Vista settimanale delle time entry registrate con dettaglio durata, cliente e contratto.
+### Time Tracking - Weekly View
+![Time Tracking Week](artifacts/portfolio/freelanceos/02-time-tracking-week.png)
+Weekly time entries with client, contract, duration, and billable status.
+
+### Time Tracking - Daily View
+![Time Tracking Day](artifacts/portfolio/freelanceos/03-time-tracking-day.png)
+Detailed daily work tracking with individual entry management.
 
 ### Clienti
-![Clienti](artifacts/portfolio/freelanceos/03-clients.png)
-Gestione anagrafica clienti attivi con informazioni di contatto e stato.
+![Clienti](artifacts/portfolio/freelanceos/04-clients.png)
+Gestione anagrafica clienti con informazioni di contatto e stato.
 
 ### Contratti
-![Contratti](artifacts/portfolio/freelanceos/04-contracts.png)
-Overview contratti con billing model, tariffe e commitment percentage.
+![Contratti](artifacts/portfolio/freelanceos/05-contracts.png)
+Overview contratti con billing model, tariffe, commitment e progress indicators.
 
 ### Fatture e Pagamenti
-![Fatture](artifacts/portfolio/freelanceos/05-invoices.png)
-Tracking fatture emesse e pagamenti ricevuti con stato aggiornato.
+![Fatture](artifacts/portfolio/freelanceos/06-invoices.png)
+Invoice tracking con revenue summary e stati pagamento (paid, partial, overdue).
+
+### Reports
+![Reports](artifacts/portfolio/freelanceos/07-reports.png)
+Analytics e reports con breakdown ore per cliente ed export dati.
+
+### Notifiche
+![Notifications](artifacts/portfolio/freelanceos/08-notifications.png)
+Sistema notifiche per alert contratti, capacità e pagamenti.
 
 ## Licenza
 

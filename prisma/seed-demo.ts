@@ -228,7 +228,7 @@ const TIME_ENTRIES: TimeEntryInput[] = [
     billable: true,
   },
 
-  // TechVision - Daily contract (Jul 2026 - ongoing)
+  // TechVision - Daily contract (Jul-Oct 2026)
   {
     id: "22222222-2222-4222-8222-222222222811",
     userId: OWNER_USER_ID,
@@ -290,7 +290,109 @@ const TIME_ENTRIES: TimeEntryInput[] = [
     billable: true,
   },
 
-  // DigitalSphere - Hourly contract
+  // OCTOBER 2026 - Current month entries for dashboard visibility
+  {
+    id: "22222222-2222-4222-8222-222222222834",
+    userId: OWNER_USER_ID,
+    clientId: CLIENT_TECHVISION_ID,
+    contractId: CONTRACT_TECHVISION_D1_ID,
+    workDate: date("2026-10-01"),
+    durationMinutes: 480,
+    description: "October sprint planning and backlog refinement",
+    billable: true,
+  },
+  {
+    id: "22222222-2222-4222-8222-222222222835",
+    userId: OWNER_USER_ID,
+    clientId: CLIENT_TECHVISION_ID,
+    contractId: CONTRACT_TECHVISION_D1_ID,
+    workDate: date("2026-10-02"),
+    durationMinutes: 450,
+    description: "New feature implementation - user notifications system",
+    billable: true,
+  },
+  {
+    id: "22222222-2222-4222-8222-222222222836",
+    userId: MEMBER_USER_ID,
+    clientId: CLIENT_DIGITALSPHERE_ID,
+    contractId: CONTRACT_DIGITALSPHERE_ID,
+    workDate: date("2026-10-03"),
+    durationMinutes: 360,
+    description: "E-commerce checkout flow optimization",
+    billable: true,
+  },
+  {
+    id: "22222222-2222-4222-8222-222222222837",
+    userId: OWNER_USER_ID,
+    clientId: CLIENT_DIGITALSPHERE_ID,
+    contractId: CONTRACT_DIGITALSPHERE_ID,
+    workDate: date("2026-10-03"),
+    durationMinutes: 240,
+    description: "Database performance tuning and index optimization",
+    billable: true,
+  },
+  {
+    id: "22222222-2222-4222-8222-222222222838",
+    userId: OWNER_USER_ID,
+    clientId: CLIENT_INNOVATECH_ID,
+    contractId: CONTRACT_INNOVATECH_ID,
+    workDate: date("2026-10-04"),
+    durationMinutes: 420,
+    description: "Mobile API endpoints development and testing",
+    billable: true,
+  },
+  {
+    id: "22222222-2222-4222-8222-222222222839",
+    userId: OWNER_USER_ID,
+    clientId: CLIENT_TECHVISION_ID,
+    contractId: CONTRACT_TECHVISION_D1_ID,
+    workDate: date("2026-10-07"),
+    durationMinutes: 480,
+    description: "Weekly status meeting and code review session",
+    billable: true,
+  },
+  {
+    id: "22222222-2222-4222-8222-222222222840",
+    userId: MEMBER_USER_ID,
+    clientId: CLIENT_DIGITALSPHERE_ID,
+    contractId: CONTRACT_DIGITALSPHERE_ID,
+    workDate: date("2026-10-08"),
+    durationMinutes: 390,
+    description: "Payment gateway integration improvements",
+    billable: true,
+  },
+  {
+    id: "22222222-2222-4222-8222-222222222841",
+    userId: OWNER_USER_ID,
+    clientId: CLIENT_TECHVISION_ID,
+    contractId: CONTRACT_TECHVISION_D1_ID,
+    workDate: date("2026-10-09"),
+    durationMinutes: 480,
+    description: "Feature deployment and production monitoring",
+    billable: true,
+  },
+  {
+    id: "22222222-2222-4222-8222-222222222842",
+    userId: OWNER_USER_ID,
+    clientId: CLIENT_INNOVATECH_ID,
+    contractId: CONTRACT_INNOVATECH_ID,
+    workDate: date("2026-10-10"),
+    durationMinutes: 360,
+    description: "API documentation and developer guides",
+    billable: true,
+  },
+  {
+    id: "22222222-2222-4222-8222-222222222843",
+    userId: OWNER_USER_ID,
+    clientId: CLIENT_TECHVISION_ID,
+    contractId: CONTRACT_TECHVISION_D1_ID,
+    workDate: date("2026-10-10"),
+    durationMinutes: 120,
+    description: "Team sync and planning for next sprint",
+    billable: false,
+  },
+
+  // DigitalSphere - Historical entries
   {
     id: "22222222-2222-4222-8222-222222222817",
     userId: MEMBER_USER_ID,
@@ -372,7 +474,7 @@ const TIME_ENTRIES: TimeEntryInput[] = [
     billable: true,
   },
 
-  // InnovaTech - Hourly contract
+  // InnovaTech - Historical entries
   {
     id: "22222222-2222-4222-8222-222222222825",
     userId: OWNER_USER_ID,
@@ -1310,7 +1412,7 @@ async function seedDemo(): Promise<void> {
   console.log("  - 1 workspace with settings");
   console.log("  - 4 clients (3 active, 1 archived)");
   console.log("  - 5 contracts (hourly and daily rates)");
-  console.log(`  - ${TIME_ENTRIES.length} time entries`);
+  console.log(`  - ${TIME_ENTRIES.length} time entries (incl. current month for dashboard)`);
   console.log("  - 5 invoices (4 active, 1 voided)");
   console.log("  - 3 payments (1 full, 1 partial, 1 full)");
   console.log("  - 3 alerts (warning, capacity, payment overdue)");

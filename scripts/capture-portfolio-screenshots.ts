@@ -11,7 +11,7 @@ const DEMO_PASSWORD = "Demo2024!Secure";
 const BASE_URL = "http://localhost:3000";
 const OUTPUT_DIR = join(process.cwd(), "artifacts/portfolio/freelanceos");
 
-const VIEWPORT = { width: 1440, height: 1000 };
+const VIEWPORT = { width: 1600, height: 1000 };
 
 interface Screenshot {
   name: string;
@@ -24,38 +24,50 @@ const SCREENSHOTS: Screenshot[] = [
   {
     name: "01-dashboard.png",
     url: "/dashboard",
-    waitForSelector: '[data-testid="dashboard-content"], main',
+    waitForSelector: 'main',
     description: "Dashboard with KPIs, alerts, and activity overview",
   },
   {
     name: "02-time-tracking-week.png",
     url: "/time-tracking",
-    waitForSelector: '[data-testid="time-tracking-content"], main',
+    waitForSelector: 'main',
     description: "Time tracking weekly view with entries",
   },
   {
-    name: "03-clients.png",
+    name: "03-time-tracking-day.png",
+    url: "/time-tracking?view=day",
+    waitForSelector: 'main',
+    description: "Time tracking daily view with detailed entries",
+  },
+  {
+    name: "04-clients.png",
     url: "/clients",
-    waitForSelector: '[data-testid="clients-list"], main',
+    waitForSelector: 'main',
     description: "Clients list with active and archived clients",
   },
   {
-    name: "04-contracts.png",
+    name: "05-contracts.png",
     url: "/contracts",
-    waitForSelector: '[data-testid="contracts-list"], main',
+    waitForSelector: 'main',
     description: "Contracts overview with billing models and commitments",
   },
   {
-    name: "05-invoices.png",
+    name: "06-invoices.png",
     url: "/invoices",
-    waitForSelector: '[data-testid="invoices-list"], main',
+    waitForSelector: 'main',
     description: "Invoices and payments tracking",
   },
   {
-    name: "06-ai-assistant.png",
-    url: "/analytics",
-    waitForSelector: '[data-testid="analytics-content"], main',
-    description: "AI Assistant analytics interface",
+    name: "07-reports.png",
+    url: "/reports",
+    waitForSelector: 'main',
+    description: "Reports and analytics",
+  },
+  {
+    name: "08-notifications.png",
+    url: "/notifications",
+    waitForSelector: 'main',
+    description: "System notifications and alerts",
   },
 ];
 
@@ -100,16 +112,15 @@ async function captureScreenshot(
     if (screenshot.waitForSelector) {
       try {
         await page.waitForSelector(screenshot.waitForSelector, {
-          timeout: 5000,
+          timeout: 8000,
         });
       } catch {
-        // Fallback: wait for main content
-        await page.waitForSelector("main", { timeout: 5000 });
+        console.warn(`    Warning: Selector not found, continuing anyway`);
       }
     }
 
     // Additional wait for any animations/renders
-    await page.waitForTimeout(1000);
+    await page.waitForTimeout(2000);
 
     const outputPath = join(OUTPUT_DIR, screenshot.name);
     await page.screenshot({
