@@ -528,35 +528,35 @@ Consultare [`MASTER_PLAN.md`](./MASTER_PLAN.md) per pianificazione, stato releas
 ## Screenshots
 
 ### Dashboard
-![Dashboard](artifacts/portfolio/freelanceos/01-dashboard.png)
+<img width="1600" height="1000" alt="01-dashboard" src="https://github.com/user-attachments/assets/0e41a147-e8a9-44ef-81db-69223b53548d" />
 Monthly KPIs, active alerts, and workspace activity overview with October 2026 data.
 
 ### Time Tracking - Weekly View
-![Time Tracking Week](artifacts/portfolio/freelanceos/02-time-tracking-week.png)
+<img width="1600" height="1000" alt="02-time-tracking-week" src="https://github.com/user-attachments/assets/30aa7641-df6a-4888-b9bf-0d3e09091f21" />
 Weekly time entries with client, contract, duration, and billable status.
 
 ### Time Tracking - Daily View
-![Time Tracking Day](artifacts/portfolio/freelanceos/03-time-tracking-day.png)
+<img width="1600" height="1000" alt="03-time-tracking-day" src="https://github.com/user-attachments/assets/db3505e7-e473-4f2d-8e72-72a320d09b5c" />
 Detailed daily work tracking with individual entry management.
 
 ### Clienti
-![Clienti](artifacts/portfolio/freelanceos/04-clients.png)
+<img width="1600" height="1000" alt="04-clients" src="https://github.com/user-attachments/assets/bcfe7163-2d07-42c5-bbe2-bc85a24fa097" />
 Gestione anagrafica clienti con informazioni di contatto e stato.
 
 ### Contratti
-![Contratti](artifacts/portfolio/freelanceos/05-contracts.png)
+<img width="1600" height="1000" alt="05-contracts" src="https://github.com/user-attachments/assets/13fba588-e7a3-41f8-9d02-ad8209ef5b4f" />
 Overview contratti con billing model, tariffe, commitment e progress indicators.
 
 ### Fatture e Pagamenti
-![Fatture](artifacts/portfolio/freelanceos/06-invoices.png)
+<img width="1600" height="1000" alt="06-invoices" src="https://github.com/user-attachments/assets/2508b9b2-dacf-490c-9123-cd0b28e35942" />
 Invoice tracking con revenue summary e stati pagamento (paid, partial, overdue).
 
 ### Reports
-![Reports](artifacts/portfolio/freelanceos/07-reports.png)
+<img width="1600" height="1000" alt="07-reports" src="https://github.com/user-attachments/assets/93df763f-157f-4d91-84e8-1e8e5ae2aab1" />
 Analytics e reports con breakdown ore per cliente ed export dati.
 
 ### Notifiche
-![Notifications](artifacts/portfolio/freelanceos/08-notifications.png)
+<img width="1600" height="1000" alt="08-notifications" src="https://github.com/user-attachments/assets/c4ded0c7-cb82-422e-b316-d0ef6bd401be" />
 Sistema notifiche per alert contratti, capacità e pagamenti.
 
 ## Licenza
