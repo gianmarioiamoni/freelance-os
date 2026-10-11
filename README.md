@@ -525,6 +525,28 @@ La documentazione tecnica è disponibile nella directory `docs/`:
 
 Consultare [`MASTER_PLAN.md`](./MASTER_PLAN.md) per pianificazione, stato release e roadmap.
 
+## Screenshots
+
+### Dashboard
+![Dashboard](artifacts/portfolio/freelanceos/01-dashboard.png)
+Overview mensile con KPI, alert di sistema e attività recenti.
+
+### Time Tracking
+![Time Tracking](artifacts/portfolio/freelanceos/02-time-tracking-week.png)
+Vista settimanale delle time entry registrate con dettaglio durata, cliente e contratto.
+
+### Clienti
+![Clienti](artifacts/portfolio/freelanceos/03-clients.png)
+Gestione anagrafica clienti attivi con informazioni di contatto e stato.
+
+### Contratti
+![Contratti](artifacts/portfolio/freelanceos/04-contracts.png)
+Overview contratti con billing model, tariffe e commitment percentage.
+
+### Fatture e Pagamenti
+![Fatture](artifacts/portfolio/freelanceos/05-invoices.png)
+Tracking fatture emesse e pagamenti ricevuti con stato aggiornato.
+
 ## Licenza
 
 Questo progetto è privato. Consultare i termini di licenza concordati con il proprietario del repository.
