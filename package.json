@@ -23,7 +23,8 @@
     "db:reset": "prisma migrate reset",
     "db:reset-local": "tsx scripts/reset-local-database.ts",
     "db:reset-data": "tsx scripts/reset-database-data.ts",
-    "db:seed": "prisma db seed"
+    "db:seed": "prisma db seed",
+    "db:seed:demo": "tsx prisma/seed-demo.ts"
   },
   "pnpm": {
     "onlyBuiltDependencies": [

@@ -37,9 +37,13 @@ yarn-error.log*
 .env*
 !.env.example
 
+# demo credentials
+DEMO-CREDENTIALS.md
+
 # vercel
 .vercel
 
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+/artifacts/
