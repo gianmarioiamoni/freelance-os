@@ -8,6 +8,13 @@ import { formatPublishedAmounts } from "@/features/reporting/revenue-display";
 import Link from "next/link";
 import { type JSX, useState } from "react";
 
+function formatItalianDate(date: Date): string {
+  const day = String(date.getUTCDate()).padStart(2, "0");
+  const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+  const year = date.getUTCFullYear();
+  return `${day}-${month}-${year}`;
+}
+
 type MonthlyTimesheetTableProps = {
   report: MonthlyTimesheetReport;
 };
@@ -79,11 +86,8 @@ export function MonthlyTimesheetTable({
               <th scope="col" className="text-right py-2 pr-4 font-medium">
                 Worked
               </th>
-              <th scope="col" className="text-right py-2 pr-4 font-medium">
-                Billable
-              </th>
-              <th scope="col" className="text-center py-2 font-medium">
-                Details
+              <th scope="col" className="text-left py-2 pr-4 font-medium">
+                Description
               </th>
             </tr>
           </thead>
@@ -92,28 +96,34 @@ export function MonthlyTimesheetTable({
               const dateKey = day.workDate.toISOString();
               const isExpanded = expandedDates.has(dateKey);
               const totalHours = AnalyticsService.formatDuration(day.totalMinutes);
-              const billableHours = AnalyticsService.formatDuration(day.billableMinutes);
-              const dateDisplay = new Intl.DateTimeFormat("en-GB", {
-                day: "2-digit",
-                month: "short",
-              }).format(day.workDate);
+              const dateDisplay = formatItalianDate(day.workDate);
+
+              const combinedDescription = day.entries
+                .map((e) => e.description || "No description")
+                .join(" | ");
 
               return (
                 <>
                   <tr key={dateKey} className="border-b hover:bg-muted/50">
                     <td className="py-2 pr-4">{dateDisplay}</td>
                     <td className="text-right py-2 pr-4 tabular-nums">{totalHours}</td>
-                    <td className="text-right py-2 pr-4 tabular-nums">{billableHours}</td>
-                    <td className="text-center py-2">
-                      <button
-                        type="button"
-                        onClick={() => toggleDate(dateKey)}
-                        aria-expanded={isExpanded}
-                        aria-label={`${isExpanded ? "Collapse" : "Expand"} details for ${dateDisplay}`}
-                        className="px-2 py-1 text-sm font-medium text-primary hover:underline focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 rounded"
-                      >
-                        {isExpanded ? "▼" : "▶"}
-                      </button>
+                    <td className="py-2 pr-4">
+                      <div className="flex items-start gap-2">
+                        <button
+                          type="button"
+                          onClick={() => toggleDate(dateKey)}
+                          aria-expanded={isExpanded}
+                          aria-label={`${isExpanded ? "Collapse" : "Expand"} description for ${dateDisplay}`}
+                          className="flex-shrink-0 px-1 py-0.5 text-sm font-medium text-primary hover:underline focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 rounded"
+                        >
+                          {isExpanded ? "▼" : "▶"}
+                        </button>
+                        {!isExpanded && (
+                          <span className="text-sm truncate">
+                            {combinedDescription}
+                          </span>
+                        )}
+                      </div>
                     </td>
                   </tr>
                   {isExpanded &&
@@ -122,24 +132,13 @@ export function MonthlyTimesheetTable({
                         key={`${dateKey}-${entry.id}-${idx}`}
                         className="bg-muted/30 border-b last:border-0"
                       >
-                        <td className="py-2 pr-4 pl-8 text-muted-foreground text-xs">
-                          {entry.description || "No description"}
-                        </td>
-                        <td className="text-right py-2 pr-4 tabular-nums text-xs">
+                        <td className="py-2 pr-4 pl-8 text-xs text-muted-foreground"></td>
+                        <td className="py-2 pr-4 text-right text-xs tabular-nums">
                           {AnalyticsService.formatDuration(entry.durationMinutes)}
                         </td>
-                        <td className="text-right py-2 pr-4 text-xs">
-                          {entry.billable ? (
-                            <span className="inline-block px-2 py-0.5 text-xs font-medium bg-green-100 text-green-800 rounded">
-                              Billable
-                            </span>
-                          ) : (
-                            <span className="inline-block px-2 py-0.5 text-xs font-medium bg-gray-100 text-gray-600 rounded">
-                              Non-billable
-                            </span>
-                          )}
+                        <td className="py-2 pr-4 text-xs pl-8">
+                          {entry.description || "No description"}
                         </td>
-                        <td></td>
                       </tr>
                     ))}
                 </>
@@ -152,10 +151,7 @@ export function MonthlyTimesheetTable({
               <td className="text-right py-3 pr-4 tabular-nums">
                 {AnalyticsService.formatDuration(report.totalMinutes)}
               </td>
-              <td className="text-right py-3 pr-4 tabular-nums">
-                {AnalyticsService.formatDuration(report.billableMinutes)}
-              </td>
-              <td></td>
+              <td className="py-3 pr-4"></td>
             </tr>
           </tfoot>
         </table>

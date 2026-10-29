@@ -40,12 +40,11 @@ function toUTCDate(year: number, month: number, day: number): Date {
 }
 
 // ---------------------------------------------------------------------------
-// Current-period constructors (timezone-aware, ends today - BR-105-014/015)
+// Current-period constructors (timezone-aware - BR-105-014)
 // ---------------------------------------------------------------------------
 
 /**
  * Creates a one-day period for today in the given workspace timezone.
- * BR-105-015: current period ends today.
  * BR-105-014: boundary derived from Workspace.timezone, not the server clock.
  */
 export function getTodayPeriod(timezone: string, now: Date = new Date()): AnalyticsPeriod {
@@ -57,8 +56,8 @@ export function getTodayPeriod(timezone: string, now: Date = new Date()): Analyt
 /**
  * Creates a period for the current week (Monday → today) in the workspace timezone.
  * Week convention: Monday start, per PD-105-009.
- * BR-105-015: current week ends today.
  * BR-105-014: boundary derived from Workspace.timezone.
+ * Current week ends today (not end of week).
  */
 export function getCurrentWeekPeriod(timezone: string, now: Date = new Date()): AnalyticsPeriod {
   const { year, month, day } = getTodayInTimezone(timezone, now);
@@ -75,25 +74,25 @@ export function getCurrentWeekPeriod(timezone: string, now: Date = new Date()): 
 }
 
 /**
- * Creates a period for the current month (first-of-month → today) in the workspace timezone.
- * BR-105-015: current month ends today (replaces end-of-month semantics per F-104-017).
+ * Creates a period for the current month (first-of-month → end-of-month) in the workspace timezone.
  * BR-105-014: boundary derived from Workspace.timezone.
+ * Returns the full calendar month regardless of today's date.
  *
  * @deprecated Pass a timezone - the zero-argument overload is removed by P105-03.
  *             Kept for backward compatibility during the transition only; callers
  *             in production must pass `context.timezone`.
  */
 export function getCurrentMonthPeriod(timezone = "UTC", now: Date = new Date()): AnalyticsPeriod {
-  const { year, month, day } = getTodayInTimezone(timezone, now);
+  const { year, month } = getTodayInTimezone(timezone, now);
   const startDate = toUTCDate(year, month, 1);
-  const endDate = toUTCDate(year, month, day);
+  const endDate = new Date(Date.UTC(year, month, 0)); // last day of current month
   return { startDate, endDate };
 }
 
 /**
  * Creates a period for the current year (Jan 1 → today) in the workspace timezone.
- * BR-105-015: current year ends today.
  * BR-105-014: boundary derived from Workspace.timezone.
+ * Current year ends today (not end of year).
  */
 export function getCurrentYearPeriod(timezone: string, now: Date = new Date()): AnalyticsPeriod {
   const { year, month, day } = getTodayInTimezone(timezone, now);
@@ -118,7 +117,7 @@ export function getWeekStartFromDate(date: Date): Date {
 }
 
 // ---------------------------------------------------------------------------
-// Historical period constructors (natural end - BR-105-015)
+// Historical period constructors (natural end)
 // ---------------------------------------------------------------------------
 
 /**

@@ -10,7 +10,7 @@
 //   → getCurrentMonthPeriod(context.timezone)
 //   → period boundary follows workspace-local today, not UTC today
 //
-// Scenario (BR-105-014 / BR-105-015):
+// Scenario (BR-105-014):
 //   - Process/server clock pinned to 2026-09-16T01:00:00Z (UTC)
 //   - UTC date:              2026-09-16
 //   - America/New_York date: 2026-09-15  (UTC-4 EDT)

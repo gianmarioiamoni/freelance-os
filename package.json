@@ -37,6 +37,7 @@
     "@better-auth/prisma-adapter": "1.7.4",
     "@prisma/client": "6.19.3",
     "@tailwindcss/postcss": "4.3.3",
+    "@testing-library/dom": "^10.4.2",
     "better-auth": "1.7.4",
     "class-variance-authority": "0.7.1",
     "cn": "0.2.6",

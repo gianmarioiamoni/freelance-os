@@ -11,15 +11,14 @@ import { getCurrentMonthPeriod } from "@/lib/analytics-periods";
  * the same `getCurrentMonthPeriod()` the service uses, so fixtures move with
  * the clock.
  *
- * Timezone semantics: `getCurrentMonthPeriod` now ends on workspace-local
- * today (BR-105-015) and resolves boundaries from `Workspace.timezone`
- * (BR-105-014), both delivered in P105-03. These helpers call it with no
- * explicit timezone, which defaults to "UTC" - correct for integration
- * fixtures that are not asserting timezone-authority behavior (that is
- * tested separately in the P105-03 unit and integration suites).
+ * Timezone semantics: `getCurrentMonthPeriod` spans the full calendar month
+ * and resolves boundaries from `Workspace.timezone` (BR-105-014).
+ * These helpers call it with no explicit timezone, which defaults to "UTC" -
+ * correct for integration fixtures that are not asserting timezone-authority
+ * behavior (that is tested separately in the P105-03 unit and integration suites).
  *
  * Tests that fixture days after the 1st (e.g. day 15) must pin the clock
- * via `pinIntegrationClock()` so those days stay inside first-of-month→today.
+ * via `pinIntegrationClock()` so those days stay inside the current calendar month.
  */
 
 function currentMonthReference(): { year: number; month: number } {

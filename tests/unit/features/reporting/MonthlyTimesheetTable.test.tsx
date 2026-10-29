@@ -96,16 +96,14 @@ describe("MonthlyTimesheetTable", () => {
     expect(screen.getByText("3800 EUR, 1200 USD")).toBeInTheDocument();
   });
 
-  it("renders daily breakdown table", () => {
+  it("renders daily breakdown table with Italian date format", () => {
     render(<MonthlyTimesheetTable report={mockReport} />);
 
     expect(screen.getByText(/Daily Breakdown - Acme Corp/)).toBeInTheDocument();
-    expect(screen.getByText("01 Oct")).toBeInTheDocument();
-    expect(screen.getByText("02 Oct")).toBeInTheDocument();
+    expect(screen.getByText("01-10-2026")).toBeInTheDocument();
+    expect(screen.getByText("02-10-2026")).toBeInTheDocument();
     const eightHours = screen.getAllByText("8h");
-    const sevenHours = screen.getAllByText("7h");
-    expect(eightHours.length).toBeGreaterThan(0);
-    expect(sevenHours.length).toBeGreaterThan(0);
+    expect(eightHours.length).toBeGreaterThanOrEqual(2); // Two days with 8h each
   });
 
   it("renders monthly total in footer", () => {
@@ -117,7 +115,7 @@ describe("MonthlyTimesheetTable", () => {
   it("expands and collapses day details on click", () => {
     const { container } = render(<MonthlyTimesheetTable report={mockReport} />);
 
-    const expandButton = screen.getAllByRole("button", { name: /Expand details/ })[0];
+    const expandButton = screen.getAllByRole("button", { name: /Expand description/ })[0];
     
     expandButton.click();
 
@@ -125,10 +123,10 @@ describe("MonthlyTimesheetTable", () => {
     expect(detailRows.length).toBeGreaterThan(0);
   });
 
-  it("shows billable and non-billable badges", () => {
+  it("shows entry details when expanded", () => {
     const { container } = render(<MonthlyTimesheetTable report={mockReport} />);
 
-    const expandButton = screen.getAllByRole("button", { name: /Expand details/ })[1];
+    const expandButton = screen.getAllByRole("button", { name: /Expand description/ })[1];
     expandButton.click();
 
     const detailRows = container.querySelectorAll("[class*='bg-muted']");
@@ -147,7 +145,7 @@ describe("MonthlyTimesheetTable", () => {
   it("renders accessible expand/collapse controls", () => {
     render(<MonthlyTimesheetTable report={mockReport} />);
 
-    const expandButtons = screen.getAllByRole("button", { name: /Expand details/ });
+    const expandButtons = screen.getAllByRole("button", { name: /Expand description/ });
     expect(expandButtons).toHaveLength(2);
 
     expandButtons.forEach((button) => {
@@ -178,7 +176,7 @@ describe("MonthlyTimesheetTable", () => {
 
     const { container } = render(<MonthlyTimesheetTable report={reportWithEmptyDesc} />);
 
-    const expandButton = screen.getByRole("button", { name: /Expand details/ });
+    const expandButton = screen.getByRole("button", { name: /Expand description/ });
     expandButton.click();
 
     const detailRows = container.querySelectorAll("[class*='bg-muted']");

@@ -15,12 +15,11 @@ type CellScalar = string | number | boolean | null;
  * Monthly Timesheet Excel serializer (R2.2-STABILIZATION-06).
  *
  * Workbook structure:
- * - Sheet 1: Summary
- * - Sheet 2: Daily Breakdown
- * - Sheet 3: Entry Detail
+ * - Sheet 1: Summary (Client, Start, End, Hours)
+ * - Sheet 2: Detail (Date, Duration (hours), Description)
  *
+ * Operational data only - no financial information.
  * Consumes shared MonthlyTimesheetExportDataset.
- * No billing recalculation. No currency mixing.
  */
 export function serializeMonthlyTimesheetXlsx(
   dataset: MonthlyTimesheetExportDataset,
@@ -35,14 +34,8 @@ export function serializeMonthlyTimesheetXlsx(
 
   XLSX.utils.book_append_sheet(
     workbook,
-    buildDailySheet(dataset),
-    "Daily",
-  );
-
-  XLSX.utils.book_append_sheet(
-    workbook,
-    buildEntriesSheet(dataset),
-    "Entries",
+    buildDetailSheet(dataset),
+    "Detail",
   );
 
   return XLSX.write(workbook, {
@@ -54,69 +47,45 @@ export function serializeMonthlyTimesheetXlsx(
 function buildSummarySheet(
   dataset: MonthlyTimesheetExportDataset,
 ): XLSX.WorkSheet {
+  const headers = ["Client", "Start", "End", "Hours"] as const;
   const rows: CellScalar[][] = [
-    ["Monthly Timesheet Summary"],
-    [],
-    ["Client", dataset.clientName],
-    ["Period Start", formatTimesheetDate(dataset.period.startDate)],
-    ["Period End", formatTimesheetDate(dataset.period.endDate)],
-    [],
-    ["Total Hours", formatTimesheetHours(dataset.totalMinutes)],
-    ["Billable Hours", formatTimesheetHours(dataset.billableMinutes)],
-    [],
-    ["Amount to Invoice"],
+    [
+      dataset.clientName,
+      formatTimesheetDate(dataset.period.startDate),
+      formatTimesheetDate(dataset.period.endDate),
+      formatTimesheetHours(dataset.totalMinutes),
+    ],
   ];
 
-  if (dataset.accrued.byCurrency.length === 0) {
-    rows.push(["No billable work"]);
-  } else {
-    for (const row of dataset.accrued.byCurrency) {
-      rows.push([row.currency, row.published]);
-    }
-  }
-
-  const sheet = XLSX.utils.aoa_to_sheet(rows);
-  sheet["!cols"] = [{ wch: 20 }, { wch: 20 }];
-  return sheet;
-}
-
-function buildDailySheet(
-  dataset: MonthlyTimesheetExportDataset,
-): XLSX.WorkSheet {
-  const headers = ["Date", "Total Hours", "Billable Hours"] as const;
-  const rows: CellScalar[][] = [];
-
-  for (const day of dataset.dailyBreakdown) {
-    rows.push([
-      formatTimesheetDate(day.workDate),
-      formatTimesheetHours(day.totalMinutes),
-      formatTimesheetHours(day.billableMinutes),
-    ]);
-  }
-
   const sheet = XLSX.utils.aoa_to_sheet([Array.from(headers), ...rows]);
-  sheet["!cols"] = [{ wch: 12 }, { wch: 15 }, { wch: 15 }];
+  sheet["!cols"] = [{ wch: 30 }, { wch: 12 }, { wch: 12 }, { wch: 12 }];
   return sheet;
 }
 
-function buildEntriesSheet(
+function buildDetailSheet(
   dataset: MonthlyTimesheetExportDataset,
 ): XLSX.WorkSheet {
-  const headers = ["Date", "Duration", "Billable", "Description"] as const;
+  const headers = ["Date", "Duration (hours)", "Description"] as const;
   const rows: CellScalar[][] = [];
 
   for (const day of dataset.dailyBreakdown) {
     for (const entry of day.entries) {
       rows.push([
-        formatTimesheetDate(day.workDate),
+        formatTimesheetDateItalian(day.workDate),
         formatTimesheetHours(entry.durationMinutes),
-        entry.billable ? "Yes" : "No",
         entry.description ?? "",
       ]);
     }
   }
 
   const sheet = XLSX.utils.aoa_to_sheet([Array.from(headers), ...rows]);
-  sheet["!cols"] = [{ wch: 12 }, { wch: 12 }, { wch: 10 }, { wch: 50 }];
+  sheet["!cols"] = [{ wch: 14 }, { wch: 18 }, { wch: 60 }];
   return sheet;
+}
+
+function formatTimesheetDateItalian(date: Date): string {
+  const day = String(date.getUTCDate()).padStart(2, "0");
+  const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+  const year = date.getUTCFullYear();
+  return `${day}-${month}-${year}`;
 }

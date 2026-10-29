@@ -52,12 +52,17 @@ export function PeriodSelector({
       </ul>
 
       <div className="grid min-w-0 gap-2">
-        <span
-          className={isCustom ? PILL_ACTIVE : PILL_INACTIVE}
-          aria-current={isCustom ? "true" : undefined}
-        >
-          {PERIOD_LABELS.custom}
-        </span>
+        <div>
+          <span
+            className={isCustom ? PILL_ACTIVE : PILL_INACTIVE}
+            aria-current={isCustom ? "true" : undefined}
+          >
+            {PERIOD_LABELS.custom}
+          </span>
+          <span className="ml-2 text-sm text-muted-foreground">
+            Select a start and end date
+          </span>
+        </div>
         <CustomPeriodFields
           key={isCustom ? `${current.start}_${current.end}` : "preset"}
           defaultStart={isCustom ? current.start : undefined}

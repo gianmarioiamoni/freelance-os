@@ -129,6 +129,43 @@ describe("AnalyticsService", () => {
       );
     });
 
+    it("should use full calendar month period regardless of today", async () => {
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date("2026-09-16T10:00:00.000Z")); // Mid-month
+
+      const mockAnalyticsRepository: AnalyticsRepository = {
+        getMonthlyAnalytics: vi.fn().mockResolvedValue(mockMonthlyAnalytics),
+        getDailyAnalytics: vi.fn(),
+        getClientAllocations: vi.fn(),
+        getContractUtilizations: vi.fn(),
+        listTimeEntriesForPeriod: vi.fn().mockResolvedValue([]),
+        listExpectedContracts: vi.fn().mockResolvedValue([]),
+        getContractAllocationFact: vi.fn(),
+        listContractAllocationFacts: vi.fn(),
+      };
+
+      const mockMembersRepository: WorkspaceMemberRepository = {
+        getMember: vi.fn().mockResolvedValue(mockMembership),
+        addMember: vi.fn(),
+        listMembers: vi.fn(),
+        listMembershipsByUserId: vi.fn(),
+      };
+
+      const service = new AnalyticsService(mockAnalyticsRepository, mockMembersRepository);
+      await service.getCurrentMonthAnalytics(mockContext);
+
+      // Verify the period spans the full month (Sep 1-30)
+      expect(mockAnalyticsRepository.getMonthlyAnalytics).toHaveBeenCalledWith(
+        mockContext.workspaceId,
+        expect.objectContaining({
+          startDate: new Date("2026-09-01T00:00:00.000Z"),
+          endDate: new Date("2026-09-30T00:00:00.000Z"),
+        })
+      );
+
+      vi.useRealTimers();
+    });
+
     it("should reject unauthorized access", async () => {
       const mockAnalyticsRepository: AnalyticsRepository = {
         getMonthlyAnalytics: vi.fn(),

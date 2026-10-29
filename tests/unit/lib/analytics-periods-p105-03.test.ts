@@ -1,8 +1,8 @@
 // tests/unit/lib/analytics-periods-p105-03.test.ts
 //
 // P105-03 acceptance tests.
-// Proves BR-105-014 (Workspace.timezone is the sole authority) and
-// BR-105-015 (current-period end = today).
+// Proves BR-105-014 (Workspace.timezone is the sole authority).
+// Monthly period spans full calendar month regardless of today.
 //
 // Clock injection: vi.setSystemTime pins the "global now"; getTodayInTimezone
 // and all period constructors accept an optional `now` parameter so tests can
@@ -166,43 +166,43 @@ describe("getCurrentWeekPeriod - Monday start, ends today", () => {
 });
 
 // ---------------------------------------------------------------------------
-// getCurrentMonthPeriod - BR-105-014/015
+// getCurrentMonthPeriod - BR-105-014 (full calendar month)
 // ---------------------------------------------------------------------------
 
-describe("getCurrentMonthPeriod - first-of-month → today", () => {
-  it("mid-month: period is first-of-month → today", () => {
+describe("getCurrentMonthPeriod - first-of-month → end-of-month", () => {
+  it("mid-month: period spans full calendar month", () => {
     const now = new Date("2026-09-16T10:00:00.000Z");
     const period = getCurrentMonthPeriod("Europe/Rome", now);
 
     expect(period.startDate).toEqual(new Date("2026-09-01T00:00:00.000Z"));
-    expect(period.endDate).toEqual(new Date("2026-09-16T00:00:00.000Z"));
-    expect(getPeriodDays(period)).toBe(16);
+    expect(period.endDate).toEqual(new Date("2026-09-30T00:00:00.000Z"));
+    expect(getPeriodDays(period)).toBe(30);
   });
 
-  it("first of month: period is a single day", () => {
+  it("first of month: period spans full month", () => {
     const now = new Date("2026-09-01T06:00:00.000Z");
     const period = getCurrentMonthPeriod("UTC", now);
 
     expect(period.startDate).toEqual(new Date("2026-09-01T00:00:00.000Z"));
-    expect(period.endDate).toEqual(new Date("2026-09-01T00:00:00.000Z"));
-    expect(getPeriodDays(period)).toBe(1);
+    expect(period.endDate).toEqual(new Date("2026-09-30T00:00:00.000Z"));
+    expect(getPeriodDays(period)).toBe(30);
   });
 
-  it("timezone authority: workspace-local Sep 15, server UTC is Sep 16", () => {
+  it("timezone authority: workspace-local Sep 15, returns full September", () => {
     // 01:00 UTC Sep 16 → Sep 15 in America/New_York
     const now = new Date("2026-09-16T01:00:00.000Z");
     const period = getCurrentMonthPeriod("America/New_York", now);
 
     expect(period.startDate).toEqual(new Date("2026-09-01T00:00:00.000Z"));
-    expect(period.endDate).toEqual(new Date("2026-09-15T00:00:00.000Z")); // workspace today
+    expect(period.endDate).toEqual(new Date("2026-09-30T00:00:00.000Z"));
   });
 
-  it("January 1 is both start and end when workspace-local date is Jan 1", () => {
+  it("January returns full month", () => {
     const now = new Date("2026-01-01T12:00:00.000Z");
     const period = getCurrentMonthPeriod("UTC", now);
 
     expect(period.startDate).toEqual(new Date("2026-01-01T00:00:00.000Z"));
-    expect(period.endDate).toEqual(new Date("2026-01-01T00:00:00.000Z"));
+    expect(period.endDate).toEqual(new Date("2026-01-31T00:00:00.000Z"));
   });
 
   it("year boundary: UTC is Jan 1 2027 but workspace-local is still Dec 31 2026", () => {
@@ -258,7 +258,7 @@ describe("getCurrentYearPeriod - Jan 1 → today", () => {
 });
 
 // ---------------------------------------------------------------------------
-// Historical periods - BR-105-015: natural end unchanged
+// Historical periods - natural end unchanged
 // ---------------------------------------------------------------------------
 
 describe("getMonthPeriod - historical periods retain natural end", () => {
@@ -311,32 +311,32 @@ describe("getMonthPeriod - historical periods retain natural end", () => {
 // ---------------------------------------------------------------------------
 
 describe("timezone boundary conditions", () => {
-  it("exactly at midnight UTC: workspace-local and UTC agree", () => {
+  it("exactly at midnight UTC: full month returned", () => {
     const now = new Date("2026-09-16T00:00:00.000Z");
     const period = getCurrentMonthPeriod("UTC", now);
 
-    expect(period.endDate).toEqual(new Date("2026-09-16T00:00:00.000Z"));
+    expect(period.endDate).toEqual(new Date("2026-09-30T00:00:00.000Z"));
   });
 
-  it("one second before UTC midnight: UTC sees Sep 15, ahead-of-UTC workspace may see Sep 16", () => {
+  it("one second before UTC midnight: both return full September", () => {
     // 2026-09-15T23:59:59Z → still Sep 15 UTC, but Sep 16 in UTC+1
     const now = new Date("2026-09-15T23:59:59.000Z");
 
     const utcPeriod = getCurrentMonthPeriod("UTC", now);
     const romePeriod = getCurrentMonthPeriod("Europe/Rome", now); // UTC+1 in September = CEST UTC+2
 
-    expect(utcPeriod.endDate).toEqual(new Date("2026-09-15T00:00:00.000Z"));
-    // Europe/Rome is UTC+2 in Sep → 23:59 UTC = 01:59 Rome the next day
-    expect(romePeriod.endDate).toEqual(new Date("2026-09-16T00:00:00.000Z"));
+    expect(utcPeriod.endDate).toEqual(new Date("2026-09-30T00:00:00.000Z"));
+    // Both return full September
+    expect(romePeriod.endDate).toEqual(new Date("2026-09-30T00:00:00.000Z"));
   });
 
-  it("fake timers: vi.setSystemTime controls what getTodayInTimezone sees", () => {
+  it("fake timers: vi.setSystemTime controls month resolution", () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2026-09-16T12:00:00.000Z"));
 
     const period = getCurrentMonthPeriod("UTC");
 
-    expect(period.endDate).toEqual(new Date("2026-09-16T00:00:00.000Z"));
+    expect(period.endDate).toEqual(new Date("2026-09-30T00:00:00.000Z"));
   });
 
   it("Monday start does not cross year boundary in week spanning Dec 31", () => {
@@ -359,14 +359,14 @@ describe("timezone boundary conditions", () => {
 });
 
 // ---------------------------------------------------------------------------
-// getPeriodDays on "through today" partial periods
+// getPeriodDays on full month periods
 // ---------------------------------------------------------------------------
 
-describe("getPeriodDays on partial current periods", () => {
-  it("partial month day count is exact, not 30", () => {
-    // Sep 1–16 = 16 days
+describe("getPeriodDays on full month periods", () => {
+  it("full month day count for September", () => {
+    // Sep 1–30 = 30 days
     const period = getCurrentMonthPeriod("UTC", new Date("2026-09-16T12:00:00.000Z"));
-    expect(getPeriodDays(period)).toBe(16);
+    expect(getPeriodDays(period)).toBe(30);
   });
 
   it("partial year day count is exact", () => {

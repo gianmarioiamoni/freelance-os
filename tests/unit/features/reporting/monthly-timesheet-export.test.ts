@@ -1,5 +1,6 @@
 // tests/unit/features/reporting/monthly-timesheet-export.test.ts
 import { describe, it, expect } from "vitest";
+import * as XLSX from "xlsx";
 import { serializeMonthlyTimesheetCsv } from "@/features/reporting/monthly-timesheet-csv";
 import { serializeMonthlyTimesheetXlsx } from "@/features/reporting/monthly-timesheet-xlsx";
 import { serializeMonthlyTimesheetPdf } from "@/features/reporting/monthly-timesheet-pdf";
@@ -189,6 +190,50 @@ describe("Monthly Timesheet Export Dataset", () => {
 
       expect(Buffer.isBuffer(buffer)).toBe(true);
       expect(buffer.length).toBeGreaterThan(0);
+    });
+
+    it("contains only operational data, no financial data", () => {
+      const buffer = serializeMonthlyTimesheetXlsx(mockDataset);
+      const workbook = XLSX.read(buffer, { type: "buffer" });
+
+      // Verify exactly 2 sheets
+      expect(workbook.SheetNames).toHaveLength(2);
+      expect(workbook.SheetNames[0]).toBe("Summary");
+      expect(workbook.SheetNames[1]).toBe("Detail");
+
+      // Check Summary sheet structure
+      const summarySheet = workbook.Sheets["Summary"];
+      const summaryData = XLSX.utils.sheet_to_json(summarySheet, { header: 1 }) as unknown[][];
+      
+      // Headers should be: Client, Start, End, Hours
+      expect(summaryData[0]).toEqual(["Client", "Start", "End", "Hours"]);
+      
+      // Verify no financial columns
+      const summaryText = JSON.stringify(summaryData).toLowerCase();
+      expect(summaryText).not.toContain("revenue");
+      expect(summaryText).not.toContain("invoice");
+      expect(summaryText).not.toContain("amount");
+      expect(summaryText).not.toContain("eur");
+      expect(summaryText).not.toContain("usd");
+      expect(summaryText).not.toContain("billable");
+
+      // Check Detail sheet structure
+      const detailSheet = workbook.Sheets["Detail"];
+      const detailData = XLSX.utils.sheet_to_json(detailSheet, { header: 1 }) as unknown[][];
+      
+      // Headers should be: Date, Duration (hours), Description
+      expect(detailData[0]).toEqual(["Date", "Duration (hours)", "Description"]);
+      
+      // Verify dates in Italian format (gg-mm-aaaa)
+      expect(detailData[1]?.[0]).toMatch(/^\d{2}-\d{2}-\d{4}$/);
+      
+      // Verify no financial columns
+      const detailText = JSON.stringify(detailData).toLowerCase();
+      expect(detailText).not.toContain("billable");
+      expect(detailText).not.toContain("revenue");
+      expect(detailText).not.toContain("amount");
+      expect(detailText).not.toContain("eur");
+      expect(detailText).not.toContain("usd");
     });
   });
 

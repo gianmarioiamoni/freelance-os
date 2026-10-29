@@ -73,7 +73,7 @@ export class AnalyticsService {
   async getCurrentMonthAnalytics(context: WorkspaceContext): Promise<MonthlyAnalytics> {
     await this.requireMembership(context);
     // BR-105-014: resolve "today" from workspace timezone, not the server clock.
-    // BR-105-015: current month ends today, not the last day of the month.
+    // Monthly period spans the full calendar month.
     const period = getCurrentMonthPeriod(context.timezone);
     return this.getMonthlyAnalytics(context, period);
   }
