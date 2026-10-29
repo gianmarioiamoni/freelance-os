@@ -130,21 +130,30 @@ describe("ReportExcelExportButton", () => {
 
 describe("Reports page excel export wiring", () => {
   it("keeps CSV export and adds Excel without altering report sections", () => {
-    const source = readFileSync(
+    const pageSource = readFileSync(
       path.join(process.cwd(), "src/app/(app)/reports/page.tsx"),
       "utf8",
     );
+    const clientSource = readFileSync(
+      path.join(process.cwd(), "src/features/reporting/ReportsPageClient.tsx"),
+      "utf8",
+    );
 
-    expect(source).toContain("ReportCsvExportLink");
-    expect(source).toContain("ReportExcelExportButton");
-    expect(source).toContain("ReportPdfExportButton");
-    expect(source).toContain('aria-label="Report exports"');
-    expect(source).toContain("RevenueSummary");
-    expect(source).toContain("HoursByClientTable");
-    expect(source).toContain("ContractReportTable");
-    expect(source).toContain("AnnualOverviewTable");
-    expect(source).not.toContain("serializeReportXlsx");
-    expect(source).not.toContain("downloadReportExcel");
+    // Export components are in the client component
+    expect(clientSource).toContain("ReportCsvExportLink");
+    expect(clientSource).toContain("ReportExcelExportButton");
+    expect(clientSource).toContain("ReportPdfExportButton");
+    expect(clientSource).toContain('aria-label="Report exports"');
+    
+    // Report sections remain in both page and client
+    expect(clientSource).toContain("RevenueSummary");
+    expect(clientSource).toContain("HoursByClientTable");
+    expect(clientSource).toContain("ContractReportTable");
+    expect(clientSource).toContain("AnnualOverviewTable");
+    
+    // No direct serialization or download logic in page
+    expect(pageSource).not.toContain("serializeReportXlsx");
+    expect(pageSource).not.toContain("downloadReportExcel");
   });
 });
 

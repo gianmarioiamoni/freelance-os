@@ -6,7 +6,7 @@ import { EmptyState } from "@/components/states/EmptyState";
 import { Button } from "@/components/ui/button";
 import { formatPublishedAmounts } from "@/features/reporting/revenue-display";
 import Link from "next/link";
-import { type JSX, useState } from "react";
+import type { JSX } from "react";
 
 function formatItalianDate(date: Date): string {
   const day = String(date.getUTCDate()).padStart(2, "0");
@@ -22,8 +22,6 @@ type MonthlyTimesheetTableProps = {
 export function MonthlyTimesheetTable({
   report,
 }: MonthlyTimesheetTableProps): JSX.Element {
-  const [expandedDates, setExpandedDates] = useState<Set<string>>(new Set());
-
   if (report.dailyBreakdown.length === 0) {
     return (
       <EmptyState
@@ -36,18 +34,6 @@ export function MonthlyTimesheetTable({
         }
       />
     );
-  }
-
-  function toggleDate(dateKey: string): void {
-    setExpandedDates((prev) => {
-      const next = new Set(prev);
-      if (next.has(dateKey)) {
-        next.delete(dateKey);
-      } else {
-        next.add(dateKey);
-      }
-      return next;
-    });
   }
 
   return (
@@ -94,7 +80,6 @@ export function MonthlyTimesheetTable({
           <tbody>
             {report.dailyBreakdown.map((day) => {
               const dateKey = day.workDate.toISOString();
-              const isExpanded = expandedDates.has(dateKey);
               const totalHours = AnalyticsService.formatDuration(day.totalMinutes);
               const dateDisplay = formatItalianDate(day.workDate);
 
@@ -103,45 +88,13 @@ export function MonthlyTimesheetTable({
                 .join(" | ");
 
               return (
-                <>
-                  <tr key={dateKey} className="border-b hover:bg-muted/50">
-                    <td className="py-2 pr-4">{dateDisplay}</td>
-                    <td className="text-right py-2 pr-4 tabular-nums">{totalHours}</td>
-                    <td className="py-2 pr-4">
-                      <div className="flex items-start gap-2">
-                        <button
-                          type="button"
-                          onClick={() => toggleDate(dateKey)}
-                          aria-expanded={isExpanded}
-                          aria-label={`${isExpanded ? "Collapse" : "Expand"} description for ${dateDisplay}`}
-                          className="flex-shrink-0 px-1 py-0.5 text-sm font-medium text-primary hover:underline focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 rounded"
-                        >
-                          {isExpanded ? "▼" : "▶"}
-                        </button>
-                        {!isExpanded && (
-                          <span className="text-sm truncate">
-                            {combinedDescription}
-                          </span>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                  {isExpanded &&
-                    day.entries.map((entry, idx) => (
-                      <tr
-                        key={`${dateKey}-${entry.id}-${idx}`}
-                        className="bg-muted/30 border-b last:border-0"
-                      >
-                        <td className="py-2 pr-4 pl-8 text-xs text-muted-foreground"></td>
-                        <td className="py-2 pr-4 text-right text-xs tabular-nums">
-                          {AnalyticsService.formatDuration(entry.durationMinutes)}
-                        </td>
-                        <td className="py-2 pr-4 text-xs pl-8">
-                          {entry.description || "No description"}
-                        </td>
-                      </tr>
-                    ))}
-                </>
+                <tr key={dateKey} className="border-b hover:bg-muted/50">
+                  <td className="py-2 pr-4">{dateDisplay}</td>
+                  <td className="text-right py-2 pr-4 tabular-nums">{totalHours}</td>
+                  <td className="py-2 pr-4">
+                    <span className="text-sm">{combinedDescription}</span>
+                  </td>
+                </tr>
               );
             })}
           </tbody>

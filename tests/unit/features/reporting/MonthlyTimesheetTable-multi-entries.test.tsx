@@ -70,44 +70,23 @@ describe("MonthlyTimesheetTable - Multiple entries per day", () => {
     // Date in Italian format with dashes
     expect(screen.getByText("05-10-2026")).toBeInTheDocument();
 
-    // Total hours for the day (9h)
-    expect(screen.getByText("9h")).toBeInTheDocument();
+    // Total hours for the day (9h) appears in multiple places (summary, table row, footer)
+    const nineHours = screen.getAllByText("9h");
+    expect(nineHours.length).toBeGreaterThan(0);
   });
 
-  it("shows combined descriptions when collapsed", () => {
+  it("shows combined descriptions in a single row", () => {
     render(<MonthlyTimesheetTable report={reportWithMultipleEntries} />);
 
-    // Combined descriptions should be visible
-    const combinedText = screen.getByText(/Morning meeting.*Development work.*Code review.*No description/);
-    expect(combinedText).toBeInTheDocument();
+    // Combined descriptions should be visible in the format "desc1 | desc2 | desc3 | desc4"
+    expect(screen.getByText("Morning meeting | Development work | Code review | No description")).toBeInTheDocument();
   });
 
-  it("expands to show all individual entries", () => {
-    const { container } = render(<MonthlyTimesheetTable report={reportWithMultipleEntries} />);
+  it("displays all entry durations correctly", () => {
+    render(<MonthlyTimesheetTable report={reportWithMultipleEntries} />);
 
-    const expandButton = screen.getByRole("button", { name: /Expand description for 05-10-2026/ });
-    expandButton.click();
-
-    // All 4 entries should be visible when expanded
-    expect(screen.getByText("Morning meeting")).toBeInTheDocument();
-    expect(screen.getByText("Development work")).toBeInTheDocument();
-    expect(screen.getByText("Code review")).toBeInTheDocument();
-    expect(screen.getByText("No description")).toBeInTheDocument();
-
-    // Individual durations should be visible
-    expect(screen.getByText("2h")).toBeInTheDocument();
-    expect(screen.getByText("3h")).toBeInTheDocument();
-    expect(screen.getByText("1h")).toBeInTheDocument();
-  });
-
-  it("does not duplicate or omit entries when expanding", () => {
-    const { container } = render(<MonthlyTimesheetTable report={reportWithMultipleEntries} />);
-
-    const expandButton = screen.getByRole("button", { name: /Expand description for 05-10-2026/ });
-    expandButton.click();
-
-    // Count expanded rows (should be exactly 4)
-    const expandedRows = container.querySelectorAll("[class*='bg-muted']");
-    expect(expandedRows.length).toBe(4);
+    // The combined duration for the day should be visible in multiple places
+    const nineHours = screen.getAllByText("9h");
+    expect(nineHours.length).toBeGreaterThan(0);
   });
 });

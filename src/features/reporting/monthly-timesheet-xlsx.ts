@@ -58,7 +58,22 @@ function buildSummarySheet(
   ];
 
   const sheet = XLSX.utils.aoa_to_sheet([Array.from(headers), ...rows]);
+  
+  // Column widths
   sheet["!cols"] = [{ wch: 30 }, { wch: 12 }, { wch: 12 }, { wch: 12 }];
+  
+  // Apply header formatting
+  if (sheet["A1"]) sheet["A1"].s = { font: { bold: true }, alignment: { horizontal: "left" } };
+  if (sheet["B1"]) sheet["B1"].s = { font: { bold: true }, alignment: { horizontal: "left" } };
+  if (sheet["C1"]) sheet["C1"].s = { font: { bold: true }, alignment: { horizontal: "left" } };
+  if (sheet["D1"]) sheet["D1"].s = { font: { bold: true }, alignment: { horizontal: "right" } };
+  
+  // Apply data cell alignment
+  if (sheet["A2"]) sheet["A2"].s = { alignment: { horizontal: "left" } };
+  if (sheet["B2"]) sheet["B2"].s = { alignment: { horizontal: "left" } };
+  if (sheet["C2"]) sheet["C2"].s = { alignment: { horizontal: "left" } };
+  if (sheet["D2"]) sheet["D2"].s = { alignment: { horizontal: "right" } };
+  
   return sheet;
 }
 
@@ -79,7 +94,23 @@ function buildDetailSheet(
   }
 
   const sheet = XLSX.utils.aoa_to_sheet([Array.from(headers), ...rows]);
+  
+  // Column widths
   sheet["!cols"] = [{ wch: 14 }, { wch: 18 }, { wch: 60 }];
+  
+  // Apply header formatting
+  if (sheet["A1"]) sheet["A1"].s = { font: { bold: true }, alignment: { horizontal: "left" } };
+  if (sheet["B1"]) sheet["B1"].s = { font: { bold: true }, alignment: { horizontal: "right" } };
+  if (sheet["C1"]) sheet["C1"].s = { font: { bold: true }, alignment: { horizontal: "left" } };
+  
+  // Apply data cell alignment for duration column
+  for (let i = 2; i <= rows.length + 1; i++) {
+    const cellRef = `B${i}`;
+    if (sheet[cellRef]) {
+      sheet[cellRef].s = { alignment: { horizontal: "right" } };
+    }
+  }
+  
   return sheet;
 }
 

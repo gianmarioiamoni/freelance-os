@@ -112,25 +112,11 @@ describe("MonthlyTimesheetTable", () => {
     expect(screen.getByText("Monthly Total")).toBeInTheDocument();
   });
 
-  it("expands and collapses day details on click", () => {
-    const { container } = render(<MonthlyTimesheetTable report={mockReport} />);
+  it("shows combined descriptions in each row", () => {
+    render(<MonthlyTimesheetTable report={mockReport} />);
 
-    const expandButton = screen.getAllByRole("button", { name: /Expand description/ })[0];
-    
-    expandButton.click();
-
-    const detailRows = container.querySelectorAll("[class*='bg-muted']");
-    expect(detailRows.length).toBeGreaterThan(0);
-  });
-
-  it("shows entry details when expanded", () => {
-    const { container } = render(<MonthlyTimesheetTable report={mockReport} />);
-
-    const expandButton = screen.getAllByRole("button", { name: /Expand description/ })[1];
-    expandButton.click();
-
-    const detailRows = container.querySelectorAll("[class*='bg-muted']");
-    expect(detailRows.length).toBeGreaterThan(0);
+    expect(screen.getByText("Morning work | Afternoon work")).toBeInTheDocument();
+    expect(screen.getByText("Client meeting | Internal admin")).toBeInTheDocument();
   });
 
   it("shows empty state when no daily breakdown", () => {
@@ -142,18 +128,7 @@ describe("MonthlyTimesheetTable", () => {
     ).toBeInTheDocument();
   });
 
-  it("renders accessible expand/collapse controls", () => {
-    render(<MonthlyTimesheetTable report={mockReport} />);
-
-    const expandButtons = screen.getAllByRole("button", { name: /Expand description/ });
-    expect(expandButtons).toHaveLength(2);
-
-    expandButtons.forEach((button) => {
-      expect(button).toHaveAttribute("aria-expanded", "false");
-    });
-  });
-
-  it("shows entry description or fallback", () => {
+  it("shows fallback description when entry has no description", () => {
     const reportWithEmptyDesc: MonthlyTimesheetReport = {
       ...mockReport,
       dailyBreakdown: [
@@ -174,13 +149,9 @@ describe("MonthlyTimesheetTable", () => {
       ],
     };
 
-    const { container } = render(<MonthlyTimesheetTable report={reportWithEmptyDesc} />);
+    render(<MonthlyTimesheetTable report={reportWithEmptyDesc} />);
 
-    const expandButton = screen.getByRole("button", { name: /Expand description/ });
-    expandButton.click();
-
-    const detailRows = container.querySelectorAll("[class*='bg-muted']");
-    expect(detailRows.length).toBeGreaterThan(0);
+    expect(screen.getByText("No description")).toBeInTheDocument();
   });
 
   it("renders multi-currency amounts in summary", () => {

@@ -14,18 +14,20 @@ import {
 type ReportPdfExportButtonProps = {
   period: ReportPeriodParam;
   filter: ReportEntityFilterParam;
+  disabled?: boolean;
 };
 
 export function ReportPdfExportButton({
   period,
   filter,
+  disabled = false,
 }: ReportPdfExportButtonProps): JSX.Element {
   const [isExporting, setIsExporting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const href = reportPdfExportHrefFromState(period, filter);
 
   async function handleExport(): Promise<void> {
-    if (isExporting) {
+    if (isExporting || disabled) {
       return;
     }
 
@@ -48,7 +50,7 @@ export function ReportPdfExportButton({
         variant="link"
         size="sm"
         className="h-auto justify-self-start px-0 text-sm font-medium text-foreground"
-        disabled={isExporting}
+        disabled={isExporting || disabled}
         aria-busy={isExporting}
         aria-label={
           isExporting
