@@ -68,6 +68,7 @@ export async function updateContract(
         context.workspaceId,
         contractId,
         {
+          reference: validated.reference,
           validFrom: validated.validFrom,
           validTo: validated.validTo,
           billingModel: validated.billingModel,

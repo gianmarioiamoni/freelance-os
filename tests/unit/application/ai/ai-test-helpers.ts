@@ -150,6 +150,7 @@ export function contractRecord(
     id: "contract-1",
     workspaceId: "workspace-owned",
     clientId: "client-1",
+    reference: null,
     validFrom: new Date("2026-01-01T00:00:00.000Z"),
     validTo: null,
     billingModel: "HOURLY",

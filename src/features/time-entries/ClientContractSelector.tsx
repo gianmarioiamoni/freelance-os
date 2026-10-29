@@ -102,6 +102,10 @@ export function ClientContractSelector({
             {!clientId ? "Select a client first" : "Select a contract"}
           </option>
           {eligibleContracts.map((contract) => {
+            // Use reference as primary label, fallback to client name + dates
+            const primaryLabel = contract.reference || 
+              `Contract from ${new Date(contract.validFrom).toLocaleDateString()}`;
+            
             const rate = parseFloat(contract.rate.toString());
             const formattedRate = new Intl.NumberFormat('en-US', {
               style: 'currency',
@@ -110,7 +114,7 @@ export function ClientContractSelector({
             
             return (
               <option key={contract.id} value={contract.id}>
-                {formatBillingModel(contract.billingModel)} · {formattedRate} · {new Date(contract.validFrom).toLocaleDateString()} to {contract.validTo ? new Date(contract.validTo).toLocaleDateString() : "ongoing"}
+                {primaryLabel} · {formatBillingModel(contract.billingModel)} · {formattedRate}
               </option>
             );
           })}

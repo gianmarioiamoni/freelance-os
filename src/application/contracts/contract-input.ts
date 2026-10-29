@@ -21,7 +21,10 @@ import type { BillingModel } from "@/domain/persistence-types";
 
 export { PAYMENT_TERMS_NOTE_MAX_LENGTH } from "@/application/contracts/contract-field-parsers";
 
+export const CONTRACT_REFERENCE_MAX_LENGTH = 120;
+
 export type ContractWriteFields = {
+  reference?: string | null;
   validFrom: string;
   validTo?: string | null;
   billingModel: string;
@@ -40,6 +43,7 @@ export type ContractCreateInput = ContractWriteFields & {
 export type ContractUpdateInput = ContractWriteFields;
 
 export type ValidatedContractWriteFields = {
+  reference: string | null;
   validFrom: Date;
   validTo: Date | null;
   billingModel: BillingModel;
@@ -57,6 +61,17 @@ export type ValidatedContractCreateInput = ValidatedContractWriteFields & {
 };
 
 export type ValidatedContractUpdateInput = ValidatedContractWriteFields;
+
+function parseContractReference(value: string | null | undefined): string | null {
+  if (!value || value.trim() === "") {
+    return null;
+  }
+  const trimmed = value.trim();
+  if (trimmed.length > CONTRACT_REFERENCE_MAX_LENGTH) {
+    throw new InvalidContractInputError("reference");
+  }
+  return trimmed;
+}
 
 function parseWriteFields(input: ContractWriteFields): ValidatedContractWriteFields {
   const validFrom = parseCalendarDate(input.validFrom, "validFrom");
@@ -91,6 +106,7 @@ function parseWriteFields(input: ContractWriteFields): ValidatedContractWriteFie
   );
 
   return {
+    reference: parseContractReference(input.reference),
     validFrom,
     validTo,
     billingModel: parseBillingModel(input.billingModel),

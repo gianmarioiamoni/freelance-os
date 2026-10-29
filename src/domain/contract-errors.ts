@@ -1,6 +1,7 @@
 // src/domain/contract-errors.ts
 export type ContractInputField =
   | "clientId"
+  | "reference"
   | "validFrom"
   | "validTo"
   | "billingModel"

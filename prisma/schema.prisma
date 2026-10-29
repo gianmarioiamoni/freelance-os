@@ -121,6 +121,7 @@ model Contract {
   id                    String          @id @default(uuid()) @db.Uuid
   workspaceId           String          @db.Uuid
   clientId              String          @db.Uuid
+  reference             String?
   validFrom             DateTime        @db.Date
   validTo               DateTime?       @db.Date
   billingModel          BillingModel

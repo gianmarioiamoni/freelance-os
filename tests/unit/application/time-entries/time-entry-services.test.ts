@@ -58,6 +58,7 @@ function contractRecord(overrides: Partial<ContractRecord> = {}): ContractRecord
     id: "contract-1",
     workspaceId: context.workspaceId,
     clientId: "client-1",
+    reference: null,
     validFrom: calendarDate("2024-01-01"),
     validTo: null, // Open-ended
     billingModel: "HOURLY",

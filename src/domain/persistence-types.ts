@@ -65,6 +65,7 @@ export type ContractRecord = {
   id: string;
   workspaceId: string;
   clientId: string;
+  reference: string | null;
   validFrom: Date;
   validTo: Date | null;
   billingModel: BillingModel;
@@ -200,6 +201,7 @@ export type UpdateClientInput = {
 
 export type CreateContractInput = {
   clientId: string;
+  reference?: string | null;
   validFrom: Date;
   validTo?: Date | null;
   billingModel: BillingModel;
@@ -213,6 +215,7 @@ export type CreateContractInput = {
 };
 
 export type UpdateContractInput = {
+  reference?: string | null;
   validFrom: Date;
   validTo?: Date | null;
   billingModel: BillingModel;

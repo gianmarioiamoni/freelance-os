@@ -42,6 +42,7 @@ export async function createContract(
   try {
     return await contracts.createContract(context.workspaceId, {
       clientId: validated.clientId,
+      reference: validated.reference,
       validFrom: validated.validFrom,
       validTo: validated.validTo,
       billingModel: validated.billingModel,

@@ -10,6 +10,7 @@ import {
 
 export type ContractFormValues = {
   clientId: string;
+  reference: string;
   validFrom: string;
   validTo: string;
   billingModel: string;
@@ -34,6 +35,7 @@ export type ContractFormAction = (
 
 export const EMPTY_CONTRACT_FORM_VALUES: ContractFormValues = {
   clientId: "",
+  reference: "",
   validFrom: "",
   validTo: "",
   billingModel: "",
@@ -47,6 +49,7 @@ export const EMPTY_CONTRACT_FORM_VALUES: ContractFormValues = {
 
 export const CONTRACT_FIELD_ERROR_MESSAGES: Record<ContractInputField, string> = {
   clientId: "Select an active client.",
+  reference: "Enter a reference with at most 120 characters.",
   validFrom: "Enter a valid start date.",
   validTo: "Enter a valid end date.",
   billingModel: "Select hourly or daily billing.",
@@ -73,6 +76,7 @@ export const CONTRACT_CURRENCY_IMMUTABLE_ERROR =
 export function readContractFormValues(formData: FormData): ContractFormValues {
   return {
     clientId: String(formData.get("clientId") ?? ""),
+    reference: String(formData.get("reference") ?? "").trim(),
     validFrom: String(formData.get("validFrom") ?? ""),
     validTo: String(formData.get("validTo") ?? ""),
     billingModel: String(formData.get("billingModel") ?? ""),
@@ -119,6 +123,7 @@ export function toContractFormValues(
 
   return {
     clientId: contract.clientId,
+    reference: contract.reference ?? "",
     validFrom: formatCalendarDate(contract.validFrom),
     validTo: contract.validTo ? formatCalendarDate(contract.validTo) : "",
     billingModel: contract.billingModel,
@@ -149,6 +154,7 @@ export { PAYMENT_TERMS_NOTE_MAX_LENGTH };
 
 function toContractWriteFields(values: ContractFormValues) {
   return {
+    reference: values.reference,
     validFrom: values.validFrom,
     validTo: values.validTo,
     billingModel: values.billingModel,

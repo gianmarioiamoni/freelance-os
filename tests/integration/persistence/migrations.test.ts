@@ -27,6 +27,7 @@ describe("migration-based test schema", () => {
       "20261003192057_add_user_lifecycle_fields",
       "20261004193000_add_admin_action_audit",
       "20261008021638_contract_commitment_model",
+      "20261029180000_add_contract_reference",
     ]);
   });
 
@@ -144,6 +145,20 @@ describe("migration-based test schema", () => {
     expect(indexes.map((row) => row.indexname)).toEqual([
       "WorkspaceMember_pkey",
       "WorkspaceMember_userId_idx",
+    ]);
+  });
+
+  it("adds nullable reference column to Contract table", async () => {
+    const columns = await prisma.$queryRaw<Array<{ column_name: string; is_nullable: string; character_maximum_length: number | null }>>`
+      SELECT column_name, is_nullable, character_maximum_length
+      FROM information_schema.columns
+      WHERE table_schema = 'public'
+        AND table_name = 'Contract'
+        AND column_name = 'reference'
+    `;
+
+    expect(columns).toEqual([
+      { column_name: "reference", is_nullable: "YES", character_maximum_length: null },
     ]);
   });
 });

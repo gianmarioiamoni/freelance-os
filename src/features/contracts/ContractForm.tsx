@@ -72,6 +72,20 @@ export function ContractForm({
         error={fieldError("clientId")}
         isPending={isPending}
       />
+      <Field
+        label="Riferimento"
+        htmlFor="reference"
+        hint="Optional. A readable label to identify this contract (e.g., E-commerce portal development)"
+      >
+        <Input
+          name="reference"
+          type="text"
+          placeholder="Es. Sviluppo portale e-commerce"
+          defaultValue={values.reference}
+          disabled={isPending}
+          maxLength={120}
+        />
+      </Field>
       <Field label="Valid from" htmlFor="validFrom" error={fieldError("validFrom")}>
         <Input
           name="validFrom"

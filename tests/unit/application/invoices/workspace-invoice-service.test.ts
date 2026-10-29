@@ -303,6 +303,7 @@ function contractRecord(): ContractRecord {
     id: "contract-1",
     workspaceId: "workspace-1",
     clientId: "client-1",
+    reference: null,
     validFrom: new Date("2026-01-01"),
     validTo: null,
     billingModel: "HOURLY",

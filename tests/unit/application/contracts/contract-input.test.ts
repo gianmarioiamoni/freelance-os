@@ -46,6 +46,7 @@ describe("parseContractCreateInput", () => {
     // Jan 1 - Jun 30, 2026: 129 working days × 60% × 8h × 60min = 37152 min
     expect(parseContractCreateInput(validCreateInput)).toEqual({
       clientId: "client-1",
+      reference: null,
       validFrom: calendarDate("2026-01-01"),
       validTo: calendarDate("2026-07-01"),
       billingModel: "HOURLY",

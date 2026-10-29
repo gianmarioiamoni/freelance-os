@@ -18,6 +18,7 @@ export function createContractRepository(db: PrismaExecutor): ContractRepository
             data: {
               workspaceId,
               clientId: input.clientId,
+              reference: input.reference ?? null,
               validFrom: input.validFrom,
               validTo: input.validTo ?? null,
               billingModel: input.billingModel,
@@ -92,6 +93,7 @@ export function createContractRepository(db: PrismaExecutor): ContractRepository
         const result = await db.contract.updateMany({
           where: { id: contractId, workspaceId },
           data: {
+            reference: input.reference ?? null,
             validFrom: input.validFrom,
             validTo: input.validTo ?? null,
             billingModel: input.billingModel,

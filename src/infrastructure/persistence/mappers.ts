@@ -80,6 +80,7 @@ export function mapContract(row: Contract): ContractRecord {
     id: row.id,
     workspaceId: row.workspaceId,
     clientId: row.clientId,
+    reference: row.reference,
     validFrom: row.validFrom,
     validTo: row.validTo,
     billingModel: row.billingModel,
