@@ -15,6 +15,10 @@ export type AlertType =
   | "PAYMENT_MISMATCH"
   | "ALLOCATION_WARNING"
   | "ALLOCATION_EXCEEDED";
+
+export type ViewerAccessStatus = "PENDING" | "ACTIVE" | "REVOKED";
+
+export type AnomalyReportStatus = "OPEN" | "ACKNOWLEDGED" | "RESOLVED";
 export type AlertSeverity = "INFO" | "WARNING" | "ERROR";
 
 export type WorkspaceRecord = {
@@ -295,4 +299,83 @@ export type CreateNotificationInput = {
   type: string;
   title: string;
   body: string;
+};
+
+export type TimesheetViewerAccessRecord = {
+  id: string;
+  workspaceId: string;
+  userId: string | null;
+  email: string;
+  status: ViewerAccessStatus;
+  invitedAt: Date;
+  activatedAt: Date | null;
+  revokedAt: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type CreateViewerAccessInput = {
+  userId: string | null;
+  email: string;
+  status: ViewerAccessStatus;
+};
+
+export type TimesheetViewerContractRecord = {
+  viewerAccessId: string;
+  workspaceId: string;
+  contractId: string;
+  displayLabel: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type AuthorizeContractInput = {
+  viewerAccessId: string;
+  contractId: string;
+  displayLabel?: string | null;
+};
+
+export type ViewerInviteTokenRecord = {
+  id: string;
+  workspaceId: string;
+  viewerAccessId: string;
+  tokenHash: string;
+  expiresAt: Date;
+  acceptedAt: Date | null;
+  createdAt: Date;
+};
+
+export type CreateInviteTokenInput = {
+  viewerAccessId: string;
+  tokenHash: string;
+  expiresAt: Date;
+};
+
+export type AnomalyReportRecord = {
+  id: string;
+  workspaceId: string;
+  viewerAccessId: string;
+  timeEntryId: string | null;
+  workDate: Date;
+  message: string;
+  status: AnomalyReportStatus;
+  freelanceNotes: string | null;
+  createdAt: Date;
+  acknowledgedAt: Date | null;
+  resolvedAt: Date | null;
+};
+
+export type CreateAnomalyReportInput = {
+  viewerAccessId: string;
+  timeEntryId?: string | null;
+  workDate: Date;
+  message: string;
+  status: AnomalyReportStatus;
+};
+
+export type UpdateAnomalyReportInput = {
+  status?: AnomalyReportStatus;
+  freelanceNotes?: string | null;
+  acknowledgedAt?: Date | null;
+  resolvedAt?: Date | null;
 };

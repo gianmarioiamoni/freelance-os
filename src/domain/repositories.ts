@@ -3,29 +3,39 @@ import type {
   AddWorkspaceMemberInput,
   AlertRecord,
   AlertType,
+  AnomalyReportRecord,
+  AnomalyReportStatus,
+  AuthorizeContractInput,
   ClientRecord,
   ClientStatus,
   ContractRecord,
   CreateAlertInput,
+  CreateAnomalyReportInput,
   CreateClientInput,
   CreateContractInput,
+  CreateInviteTokenInput,
   CreateInvoiceInput,
   CreateNotificationInput,
   CreatePaymentInput,
+  CreateViewerAccessInput,
+  CreateWorkspaceInput,
   InvoiceRecord,
   InvoiceTrackingFilter,
-  CreateWorkspaceInput,
   NotificationRecord,
   PaymentRecord,
   PutWorkspaceSettingsInput,
   RecordTimeEntryInput,
   TimeEntryRecord,
+  TimesheetViewerAccessRecord,
+  TimesheetViewerContractRecord,
+  UpdateAnomalyReportInput,
   UpdateClientInput,
   UpdateContractInput,
   UpdateInvoiceInput,
   UpdatePaymentInput,
   UpdateTimeEntryInput,
   UpdateWorkspaceInput,
+  ViewerInviteTokenRecord,
   WorkspaceMemberRecord,
   WorkspaceRecord,
   WorkspaceSettingsRecord,
@@ -341,4 +351,94 @@ export type PersistenceRepositories = {
   alerts: AlertRepository;
   notifications: NotificationRepository;
   analytics: AnalyticsRepository;
+  viewerAccess: ViewerAccessRepository;
+  viewerTokens: ViewerInviteTokenRepository;
+  anomalyReports: AnomalyReportRepository;
+};
+
+export type ViewerAccessRepository = {
+  create(
+    workspaceId: string,
+    input: CreateViewerAccessInput,
+  ): Promise<TimesheetViewerAccessRecord>;
+  getById(
+    workspaceId: string,
+    viewerAccessId: string,
+  ): Promise<TimesheetViewerAccessRecord | null>;
+  findByWorkspaceAndEmail(
+    workspaceId: string,
+    email: string,
+  ): Promise<TimesheetViewerAccessRecord | null>;
+  getActiveAccess(
+    workspaceId: string,
+    userId: string,
+  ): Promise<TimesheetViewerAccessRecord | null>;
+  listActiveByUserId(userId: string): Promise<TimesheetViewerAccessRecord[]>;
+  activate(
+    workspaceId: string,
+    viewerAccessId: string,
+    userId: string,
+    activatedAt: Date,
+  ): Promise<TimesheetViewerAccessRecord>;
+  revoke(
+    workspaceId: string,
+    viewerAccessId: string,
+  ): Promise<TimesheetViewerAccessRecord>;
+  authorizeContract(
+    workspaceId: string,
+    input: AuthorizeContractInput,
+  ): Promise<TimesheetViewerContractRecord>;
+  listAuthorizedContracts(
+    workspaceId: string,
+    viewerAccessId: string,
+  ): Promise<TimesheetViewerContractRecord[]>;
+};
+
+export type ViewerInviteTokenRepository = {
+  create(
+    workspaceId: string,
+    input: CreateInviteTokenInput,
+  ): Promise<ViewerInviteTokenRecord>;
+  findByTokenHashForUpdate(
+    tokenHash: string,
+  ): Promise<ViewerInviteTokenRecord | null>;
+  markAccepted(
+    workspaceId: string,
+    tokenId: string,
+    acceptedAt: Date,
+  ): Promise<ViewerInviteTokenRecord>;
+  invalidateAllForViewerAccess(
+    workspaceId: string,
+    viewerAccessId: string,
+  ): Promise<void>;
+};
+
+export type AnomalyReportRepository = {
+  create(
+    workspaceId: string,
+    input: CreateAnomalyReportInput,
+  ): Promise<AnomalyReportRecord>;
+  getById(
+    workspaceId: string,
+    reportId: string,
+  ): Promise<AnomalyReportRecord | null>;
+  listForWorkspace(
+    workspaceId: string,
+    status?: AnomalyReportStatus,
+  ): Promise<AnomalyReportRecord[]>;
+  listForViewerAccess(
+    workspaceId: string,
+    viewerAccessId: string,
+    status?: AnomalyReportStatus,
+  ): Promise<AnomalyReportRecord[]>;
+  countReportsForViewerSince(
+    workspaceId: string,
+    viewerAccessId: string,
+    since: Date,
+  ): Promise<number>;
+  update(
+    workspaceId: string,
+    reportId: string,
+    input: UpdateAnomalyReportInput,
+  ): Promise<AnomalyReportRecord>;
 };

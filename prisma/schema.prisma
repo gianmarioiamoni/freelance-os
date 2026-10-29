@@ -58,6 +58,18 @@ enum AdminActionType {
   DELETE_USER
 }
 
+enum ViewerAccessStatus {
+  PENDING
+  ACTIVE
+  REVOKED
+}
+
+enum AnomalyReportStatus {
+  OPEN
+  ACKNOWLEDGED
+  RESOLVED
+}
+
 model Workspace {
   id        String   @id @default(uuid()) @db.Uuid
   name      String
@@ -66,15 +78,18 @@ model Workspace {
   createdAt DateTime @default(now()) @db.Timestamptz(6)
   updatedAt DateTime @updatedAt @db.Timestamptz(6)
 
-  members       WorkspaceMember[]
-  settings      WorkspaceSettings?
-  clients       Client[]
-  contracts     Contract[]
-  timeEntries   TimeEntry[]
-  invoices      Invoice[]
-  payments      Payment[]
-  alerts        Alert[]
-  notifications Notification[]
+  members            WorkspaceMember[]
+  settings           WorkspaceSettings?
+  clients            Client[]
+  contracts          Contract[]
+  timeEntries        TimeEntry[]
+  invoices           Invoice[]
+  payments           Payment[]
+  alerts             Alert[]
+  notifications      Notification[]
+  viewerAccesses     TimesheetViewerAccess[]
+  viewerInviteTokens ViewerInviteToken[]
+  anomalyReports     AnomalyReport[]
 }
 
 model WorkspaceMember {
@@ -118,34 +133,35 @@ model Client {
 }
 
 model Contract {
-  id                    String          @id @default(uuid()) @db.Uuid
-  workspaceId           String          @db.Uuid
-  clientId              String          @db.Uuid
-  reference             String?
-  validFrom             DateTime        @db.Date
-  validTo               DateTime?       @db.Date
-  billingModel          BillingModel
+  id                   String         @id @default(uuid()) @db.Uuid
+  workspaceId          String         @db.Uuid
+  clientId             String         @db.Uuid
+  reference            String?
+  validFrom            DateTime       @db.Date
+  validTo              DateTime?      @db.Date
+  billingModel         BillingModel
   /// Positive monetary rate. CHECK (rate > 0) is enforced in SQL.
-  rate                  Decimal         @db.Decimal(19, 4)
-  currency              String          @db.Char(3)
+  rate                 Decimal        @db.Decimal(19, 4)
+  currency             String         @db.Char(3)
   /// Contract commitment mode: how the commitment is specified.
-  commitmentMode        CommitmentMode
+  commitmentMode       CommitmentMode
   /// Canonical commitment representation as percentage (0-100+).
   /// CHECK (commitmentPercentage >= 0) is enforced in SQL.
-  commitmentPercentage  Decimal         @db.Decimal(5, 2)
+  commitmentPercentage Decimal        @db.Decimal(5, 2)
   /// Derived total contract budget in minutes. Null for ongoing contracts.
   /// CHECK (allocatedMinutes IS NULL OR allocatedMinutes >= 0) is enforced in SQL.
-  allocatedMinutes      Int?
-  paymentTermsDays      Int?
-  paymentTermsNote      String?         @db.Text
-  createdAt             DateTime        @default(now()) @db.Timestamptz(6)
-  updatedAt             DateTime        @updatedAt @db.Timestamptz(6)
+  allocatedMinutes     Int?
+  paymentTermsDays     Int?
+  paymentTermsNote     String?        @db.Text
+  createdAt            DateTime       @default(now()) @db.Timestamptz(6)
+  updatedAt            DateTime       @updatedAt @db.Timestamptz(6)
 
-  workspace   Workspace   @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
-  client      Client      @relation(fields: [workspaceId, clientId], references: [workspaceId, id], onDelete: Restrict)
-  timeEntries TimeEntry[]
-  invoices    Invoice[]
-  alerts      Alert[]
+  workspace            Workspace                 @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  client               Client                    @relation(fields: [workspaceId, clientId], references: [workspaceId, id], onDelete: Restrict)
+  timeEntries          TimeEntry[]
+  invoices             Invoice[]
+  alerts               Alert[]
+  viewerAuthorizations TimesheetViewerContract[]
 
   @@unique([workspaceId, id])
   @@unique([workspaceId, clientId, id])
@@ -202,23 +218,23 @@ model Payment {
 }
 
 model TimeEntry {
-  id              String   @id @default(uuid()) @db.Uuid
-  workspaceId     String   @db.Uuid
-  userId          String
-  clientId        String   @db.Uuid
-  contractId      String   @db.Uuid
-  workDate        DateTime @db.Date
+  id                   String       @id @default(uuid()) @db.Uuid
+  workspaceId          String       @db.Uuid
+  userId               String
+  clientId             String       @db.Uuid
+  contractId           String       @db.Uuid
+  workDate             DateTime     @db.Date
   /// Positive duration. CHECK (durationMinutes > 0) is enforced in SQL.
-  durationMinutes Int
-  description     String?  @db.Text
-  billable        Boolean
+  durationMinutes      Int
+  description          String?      @db.Text
+  billable             Boolean
   /// Commercial value applicable when the work was recorded (R2-OD-003).
   snapshotBillingModel BillingModel
   /// Positive monetary rate snapshot. CHECK (snapshotRate > 0) is enforced in SQL.
   snapshotRate         Decimal      @db.Decimal(19, 4)
   snapshotCurrency     String       @db.Char(3)
-  createdAt       DateTime @default(now()) @db.Timestamptz(6)
-  updatedAt       DateTime @updatedAt @db.Timestamptz(6)
+  createdAt            DateTime     @default(now()) @db.Timestamptz(6)
+  updatedAt            DateTime     @updatedAt @db.Timestamptz(6)
 
   workspace Workspace       @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
   member    WorkspaceMember @relation(fields: [workspaceId, userId], references: [workspaceId, userId], onDelete: Restrict)
@@ -372,4 +388,91 @@ model AdminAction {
 
   @@index([adminUserId, createdAt])
   @@index([targetUserId])
+}
+
+model TimesheetViewerAccess {
+  id          String             @id @default(uuid()) @db.Uuid
+  workspaceId String             @db.Uuid
+  /// Logical Better Auth User.id - no Prisma FK by design (same as WorkspaceMember)
+  /// NULL when status = PENDING, NOT NULL when status = ACTIVE
+  userId      String?
+  /// Email used for invitation (immutable reference)
+  email       String
+  status      ViewerAccessStatus
+  invitedAt   DateTime           @default(now()) @db.Timestamptz(6)
+  activatedAt DateTime?          @db.Timestamptz(6)
+  revokedAt   DateTime?          @db.Timestamptz(6)
+  createdAt   DateTime           @default(now()) @db.Timestamptz(6)
+  updatedAt   DateTime           @updatedAt @db.Timestamptz(6)
+
+  workspace           Workspace                 @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  authorizedContracts TimesheetViewerContract[]
+  anomalyReports      AnomalyReport[]
+  inviteTokens        ViewerInviteToken[]
+
+  @@unique([workspaceId, id])
+  @@index([workspaceId, status])
+  @@index([userId, status])
+  @@index([email])
+}
+
+model TimesheetViewerContract {
+  viewerAccessId String   @db.Uuid
+  workspaceId    String   @db.Uuid
+  contractId     String   @db.Uuid
+  /// Optional display label defined by freelance (e.g. "Project Alpha", "Q1 2026")
+  displayLabel   String?
+  createdAt      DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt      DateTime @updatedAt @db.Timestamptz(6)
+
+  viewerAccess TimesheetViewerAccess @relation(fields: [workspaceId, viewerAccessId], references: [workspaceId, id], onDelete: Cascade)
+  contract     Contract              @relation(fields: [workspaceId, contractId], references: [workspaceId, id], onDelete: Restrict)
+
+  @@id([viewerAccessId, contractId])
+  @@unique([workspaceId, viewerAccessId, contractId])
+  @@index([workspaceId, contractId])
+}
+
+model ViewerInviteToken {
+  id             String    @id @default(uuid()) @db.Uuid
+  workspaceId    String    @db.Uuid
+  viewerAccessId String    @db.Uuid
+  /// SHA-256 hash of the cryptographically random token (64 chars hex)
+  tokenHash      String    @unique
+  expiresAt      DateTime  @db.Timestamptz(6)
+  acceptedAt     DateTime? @db.Timestamptz(6)
+  createdAt      DateTime  @default(now()) @db.Timestamptz(6)
+
+  workspace    Workspace             @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  viewerAccess TimesheetViewerAccess @relation(fields: [workspaceId, viewerAccessId], references: [workspaceId, id], onDelete: Cascade)
+
+  @@unique([workspaceId, id])
+  @@index([tokenHash, expiresAt])
+  @@index([viewerAccessId])
+}
+
+model AnomalyReport {
+  id             String              @id @default(uuid()) @db.Uuid
+  workspaceId    String              @db.Uuid
+  viewerAccessId String              @db.Uuid
+  /// Optional reference to specific time entry (informative only, no FK)
+  timeEntryId    String?             @db.Uuid
+  /// Work date being reported (always required for context)
+  workDate       DateTime            @db.Date
+  /// Viewer's message describing the anomaly
+  message        String              @db.Text
+  status         AnomalyReportStatus
+  /// Freelance response/notes (nullable until acknowledged/resolved)
+  freelanceNotes String?             @db.Text
+  createdAt      DateTime            @default(now()) @db.Timestamptz(6)
+  acknowledgedAt DateTime?           @db.Timestamptz(6)
+  resolvedAt     DateTime?           @db.Timestamptz(6)
+
+  workspace    Workspace             @relation(fields: [workspaceId], references: [id], onDelete: Restrict)
+  viewerAccess TimesheetViewerAccess @relation(fields: [workspaceId, viewerAccessId], references: [workspaceId, id], onDelete: Restrict)
+
+  @@unique([workspaceId, id])
+  @@index([workspaceId, status, createdAt])
+  @@index([workspaceId, viewerAccessId, status])
+  @@index([workDate])
 }

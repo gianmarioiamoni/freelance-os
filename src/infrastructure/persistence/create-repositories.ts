@@ -4,6 +4,7 @@ import "server-only";
 import type { PersistenceRepositories } from "@/domain/repositories";
 import { createAlertRepository } from "@/infrastructure/persistence/alert-repository";
 import { createAnalyticsRepository } from "@/infrastructure/persistence/analytics-repository";
+import { createAnomalyReportRepository } from "@/infrastructure/persistence/anomaly-report-repository";
 import { createClientRepository } from "@/infrastructure/persistence/client-repository";
 import { createContractRepository } from "@/infrastructure/persistence/contract-repository";
 import { createInvoiceRepository } from "@/infrastructure/persistence/invoice-repository";
@@ -11,6 +12,8 @@ import { createNotificationRepository } from "@/infrastructure/persistence/notif
 import { createPaymentRepository } from "@/infrastructure/persistence/payment-repository";
 import type { PrismaExecutor } from "@/infrastructure/persistence/prisma-executor";
 import { createTimeEntryRepository } from "@/infrastructure/persistence/time-entry-repository";
+import { createViewerAccessRepository } from "@/infrastructure/persistence/viewer-access-repository";
+import { createViewerInviteTokenRepository } from "@/infrastructure/persistence/viewer-invite-token-repository";
 import {
   createWorkspaceMemberRepository,
   createWorkspaceRepository,
@@ -33,6 +36,9 @@ export function createRepositories(
     alerts: createAlertRepository(db),
     notifications: createNotificationRepository(db),
     analytics: createAnalyticsRepository(db),
+    viewerAccess: createViewerAccessRepository(db),
+    viewerTokens: createViewerInviteTokenRepository(db),
+    anomalyReports: createAnomalyReportRepository(db),
   };
 }
 

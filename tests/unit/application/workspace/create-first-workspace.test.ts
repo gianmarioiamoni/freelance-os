@@ -134,6 +134,31 @@ function createMemoryDependencies(
       getContractAllocationFact: unused,
       listContractAllocationFacts: unused,
     },
+    viewerAccess: {
+      create: unused,
+      getById: unused,
+      findByWorkspaceAndEmail: unused,
+      getActiveAccess: unused,
+      listActiveByUserId: unused,
+      activate: unused,
+      revoke: unused,
+      authorizeContract: unused,
+      listAuthorizedContracts: unused,
+    },
+    viewerTokens: {
+      create: unused,
+      findByTokenHashForUpdate: unused,
+      markAccepted: unused,
+      invalidateAllForViewerAccess: unused,
+    },
+    anomalyReports: {
+      create: unused,
+      getById: unused,
+      listForWorkspace: unused,
+      listForViewerAccess: unused,
+      countReportsForViewerSince: unused,
+      update: unused,
+    },
   };
 
   return {

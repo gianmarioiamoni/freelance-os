@@ -1,12 +1,16 @@
 // src/infrastructure/persistence/mappers.ts
 import type {
   Alert,
+  AnomalyReport,
   Client,
   Contract,
   Invoice,
   Notification,
   Payment,
   TimeEntry,
+  TimesheetViewerAccess,
+  TimesheetViewerContract,
+  ViewerInviteToken,
   Workspace,
   WorkspaceMember,
   WorkspaceSettings,
@@ -14,12 +18,16 @@ import type {
 
 import type {
   AlertRecord,
+  AnomalyReportRecord,
   ClientRecord,
   ContractRecord,
   InvoiceRecord,
   NotificationRecord,
   PaymentRecord,
   TimeEntryRecord,
+  TimesheetViewerAccessRecord,
+  TimesheetViewerContractRecord,
+  ViewerInviteTokenRecord,
   WorkspaceMemberRecord,
   WorkspaceRecord,
   WorkspaceSettingsRecord,
@@ -174,5 +182,67 @@ export function mapNotification(row: Notification): NotificationRecord {
     body: row.body,
     readAt: row.readAt,
     createdAt: row.createdAt,
+  };
+}
+
+export function mapViewerAccess(
+  row: TimesheetViewerAccess,
+): TimesheetViewerAccessRecord {
+  return {
+    id: row.id,
+    workspaceId: row.workspaceId,
+    userId: row.userId,
+    email: row.email,
+    status: row.status,
+    invitedAt: row.invitedAt,
+    activatedAt: row.activatedAt,
+    revokedAt: row.revokedAt,
+    createdAt: row.createdAt,
+    updatedAt: row.updatedAt,
+  };
+}
+
+export function mapViewerContract(
+  row: TimesheetViewerContract,
+): TimesheetViewerContractRecord {
+  return {
+    viewerAccessId: row.viewerAccessId,
+    workspaceId: row.workspaceId,
+    contractId: row.contractId,
+    displayLabel: row.displayLabel,
+    createdAt: row.createdAt,
+    updatedAt: row.updatedAt,
+  };
+}
+
+export function mapInviteToken(
+  row: ViewerInviteToken,
+): ViewerInviteTokenRecord {
+  return {
+    id: row.id,
+    workspaceId: row.workspaceId,
+    viewerAccessId: row.viewerAccessId,
+    tokenHash: row.tokenHash,
+    expiresAt: row.expiresAt,
+    acceptedAt: row.acceptedAt,
+    createdAt: row.createdAt,
+  };
+}
+
+export function mapAnomalyReport(
+  row: AnomalyReport,
+): AnomalyReportRecord {
+  return {
+    id: row.id,
+    workspaceId: row.workspaceId,
+    viewerAccessId: row.viewerAccessId,
+    timeEntryId: row.timeEntryId,
+    workDate: row.workDate,
+    message: row.message,
+    status: row.status,
+    freelanceNotes: row.freelanceNotes,
+    createdAt: row.createdAt,
+    acknowledgedAt: row.acknowledgedAt,
+    resolvedAt: row.resolvedAt,
   };
 }
