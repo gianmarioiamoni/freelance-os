@@ -205,8 +205,11 @@ describe("Monthly Timesheet Export Dataset", () => {
       const summarySheet = workbook.Sheets["Summary"];
       const summaryData = XLSX.utils.sheet_to_json(summarySheet, { header: 1 }) as unknown[][];
       
-      // Headers should be: Client, Start, End, Hours
-      expect(summaryData[0]).toEqual(["Client", "Start", "End", "Hours"]);
+      // Row 0: Title
+      expect(summaryData[0][0]).toBe("Monthly Timesheet Summary");
+      
+      // Row 3: Headers should be: Client, Start, End, Hours
+      expect(summaryData[3]).toEqual(["Client", "Start", "End", "Hours"]);
       
       // Verify no financial columns
       const summaryText = JSON.stringify(summaryData).toLowerCase();

@@ -81,20 +81,34 @@ describe("Excel Final Verification", () => {
     expect(workbook.SheetNames.length).toBe(2);
   });
 
-  it("Summary sheet has exactly: Client, Start, End, Hours", () => {
+  it("Summary sheet has title, period, headers and total", () => {
     const buffer = serializeMonthlyTimesheetXlsx(testDataset);
     const workbook = XLSX.read(buffer, { type: "buffer" });
     const sheet = workbook.Sheets["Summary"];
     const data = XLSX.utils.sheet_to_json(sheet, { header: 1 }) as unknown[][];
 
-    // Verify headers
-    expect(data[0]).toEqual(["Client", "Start", "End", "Hours"]);
+    // Verify title (row 0)
+    expect(data[0][0]).toBe("Monthly Timesheet Summary");
     
-    // Verify data row
-    expect(data[1][0]).toBe("ACME Corporation");
-    expect(data[1][1]).toBe("2026-10-01");
-    expect(data[1][2]).toBe("2026-10-31"); // Full month
-    expect(data[1][3]).toBe("16h");
+    // Verify period (row 1)
+    expect(data[1][0]).toContain("01-10-2026");
+    expect(data[1][0]).toContain("31-10-2026");
+    expect(data[1][0]).toContain("—"); // em dash separator
+    
+    // Row 2 should be empty or sparse
+    
+    // Verify headers (row 3)
+    expect(data[3]).toEqual(["Client", "Start", "End", "Hours"]);
+    
+    // Verify data row (row 4)
+    expect(data[4][0]).toBe("ACME Corporation");
+    expect(data[4][1]).toBe("01-10-2026");
+    expect(data[4][2]).toBe("31-10-2026");
+    expect(data[4][3]).toBe("16h");
+    
+    // Verify total row (row 5)
+    expect(data[5][0]).toBe("Total Hours");
+    expect(data[5][3]).toBe("16h");
   });
 
   it("Detail sheet has exactly: Date, Duration (hours), Description", () => {
@@ -176,5 +190,59 @@ describe("Excel Final Verification", () => {
     expect(data[3][1]).toBe("7h");
     // 60 minutes = 1h
     expect(data[4][1]).toBe("1h");
+  });
+
+  it("Summary sheet structure supports professional formatting", () => {
+    const buffer = serializeMonthlyTimesheetXlsx(testDataset);
+    const workbook = XLSX.read(buffer, { type: "buffer" });
+    const sheet = workbook.Sheets["Summary"];
+
+    // Verify all expected cells exist in correct positions
+    expect(sheet["A1"]).toBeDefined(); // Title
+    expect(sheet["A2"]).toBeDefined(); // Period
+    expect(sheet["A4"]).toBeDefined(); // Header: Client
+    expect(sheet["B4"]).toBeDefined(); // Header: Start
+    expect(sheet["C4"]).toBeDefined(); // Header: End
+    expect(sheet["D4"]).toBeDefined(); // Header: Hours
+    expect(sheet["A5"]).toBeDefined(); // Data: Client name
+    expect(sheet["B5"]).toBeDefined(); // Data: Start date
+    expect(sheet["C5"]).toBeDefined(); // Data: End date
+    expect(sheet["D5"]).toBeDefined(); // Data: Hours value
+    expect(sheet["A6"]).toBeDefined(); // Total: Label
+    expect(sheet["D6"]).toBeDefined(); // Total: Value
+
+    // Verify the buffer is a valid Excel file
+    expect(buffer).toBeInstanceOf(Buffer);
+    expect(buffer.length).toBeGreaterThan(0);
+    
+    // Note: The xlsx library (community version 0.18.5) has limitations
+    // in reading styles back from a buffer. Styles are correctly written
+    // to the Excel file (bold fonts, colors, borders, alignment) but
+    // cannot be reliably verified through XLSX.read(). The formatting
+    // is applied at write time and will be visible when opening the file
+    // in Excel, LibreOffice, or Google Sheets.
+  });
+
+  it("Summary sheet handles empty dataset gracefully", () => {
+    const emptyDataset: MonthlyTimesheetExportDataset = {
+      ...testDataset,
+      clientName: "No Client",
+      totalMinutes: 0,
+      billableMinutes: 0,
+      dailyBreakdown: [],
+    };
+
+    const buffer = serializeMonthlyTimesheetXlsx(emptyDataset);
+    const workbook = XLSX.read(buffer, { type: "buffer" });
+    const sheet = workbook.Sheets["Summary"];
+    const data = XLSX.utils.sheet_to_json(sheet, { header: 1 }) as unknown[][];
+
+    // Verify structure is maintained
+    expect(data[0][0]).toBe("Monthly Timesheet Summary");
+    expect(data[3]).toEqual(["Client", "Start", "End", "Hours"]);
+    expect(data[4][0]).toBe("No Client");
+    expect(data[4][3]).toBe("0h");
+    expect(data[5][0]).toBe("Total Hours");
+    expect(data[5][3]).toBe("0h");
   });
 });
