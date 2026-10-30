@@ -146,6 +146,7 @@ function createMemoryDependencies(
       authorizeContract: unused,
       listAuthorizedContracts: unused,
       revokeContractAuthorization: unused,
+      delete: unused,
     },
     viewerTokens: {
       create: unused,

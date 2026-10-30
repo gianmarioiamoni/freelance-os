@@ -127,6 +127,14 @@ export function createViewerAccessRepository(
       );
     },
 
+    async delete(workspaceId: string, viewerAccessId: string) {
+      return withPersistenceErrors(async () => {
+        await db.timesheetViewerAccess.delete({
+          where: { id: viewerAccessId, workspaceId },
+        });
+      });
+    },
+
     async authorizeContract(
       workspaceId: string,
       input: AuthorizeContractInput,

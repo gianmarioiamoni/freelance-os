@@ -3,6 +3,7 @@
 
 import { inviteViewer } from "@/application/timesheet-viewer/invite-viewer";
 import { revokeViewer } from "@/application/timesheet-viewer/revoke-viewer";
+import { deleteViewer } from "@/application/timesheet-viewer/delete-viewer";
 import { authorizeContract } from "@/application/timesheet-viewer/authorize-contract";
 import { revokeContractAccess } from "@/application/timesheet-viewer/revoke-contract-access";
 import { createAnomalyReport } from "@/application/timesheet-viewer/create-anomaly-report";
@@ -70,6 +71,24 @@ export async function revokeViewerAction(
   } catch (error) {
     console.error("Failed to revoke viewer:", error);
     return { success: false, error: "Unable to revoke viewer" };
+  }
+}
+
+export async function deleteViewerAction(
+  viewerAccessId: string,
+): Promise<ActionResult> {
+  try {
+    const context = await getCurrentWorkspaceContext();
+    const repositories = createRepositories();
+
+    await deleteViewer(context, viewerAccessId, repositories);
+
+    revalidatePath("/timesheet-viewer");
+    
+    return { success: true, data: undefined };
+  } catch (error) {
+    console.error("Failed to delete viewer:", error);
+    return { success: false, error: "Unable to delete viewer" };
   }
 }
 

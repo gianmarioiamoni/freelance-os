@@ -10,7 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { revokeViewerAction } from "@/features/timesheet-viewer/timesheet-viewer-actions";
+import { revokeViewerAction, deleteViewerAction } from "@/features/timesheet-viewer/timesheet-viewer-actions";
 import { useState, type JSX } from "react";
 import {
   AlertDialog,
@@ -42,13 +42,22 @@ export function ViewerAccessList({
   onManageContracts,
 }: ViewerAccessListProps): JSX.Element {
   const [revoking, setRevoking] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState<string | null>(null);
   const [confirmRevoke, setConfirmRevoke] = useState<string | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
 
   async function handleRevoke(viewerId: string) {
     setRevoking(viewerId);
     await revokeViewerAction(viewerId);
     setRevoking(null);
     setConfirmRevoke(null);
+  }
+
+  async function handleDelete(viewerId: string) {
+    setDeleting(viewerId);
+    await deleteViewerAction(viewerId);
+    setDeleting(null);
+    setConfirmDelete(null);
   }
 
   if (viewers.length === 0) {
@@ -111,6 +120,14 @@ export function ViewerAccessList({
                       {revoking === viewer.id ? "Revoking…" : "Revoke"}
                     </Button>
                   ) : null}
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    disabled={deleting === viewer.id}
+                    onClick={() => setConfirmDelete(viewer.id)}
+                  >
+                    {deleting === viewer.id ? "Deleting…" : "Delete"}
+                  </Button>
                 </div>
               </TableCell>
             </TableRow>
@@ -136,6 +153,30 @@ export function ViewerAccessList({
               onClick={() => confirmRevoke && handleRevoke(confirmRevoke)}
             >
               Revoke Access
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog
+        open={confirmDelete !== null}
+        onOpenChange={() => setConfirmDelete(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Viewer Permanently</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete this viewer access record and all associated data.
+              This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => confirmDelete && handleDelete(confirmDelete)}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete Permanently
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

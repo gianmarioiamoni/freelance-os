@@ -192,6 +192,13 @@ function createFakeViewerAccessRepository(
       record.revokedAt = new Date();
       return record;
     },
+    async delete(workspaceId, viewerAccessId) {
+      const index = records.findIndex(
+        (r) => r.id === viewerAccessId && r.workspaceId === workspaceId,
+      );
+      if (index === -1) throw new RecordNotFoundError("ViewerAccess", viewerAccessId);
+      records.splice(index, 1);
+    },
     async authorizeContract(workspaceId, input) {
       const contractRecord: TimesheetViewerContractRecord = {
         viewerAccessId: input.viewerAccessId,

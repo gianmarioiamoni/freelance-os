@@ -388,6 +388,7 @@ export type ViewerAccessRepository = {
     workspaceId: string,
     viewerAccessId: string,
   ): Promise<TimesheetViewerAccessRecord>;
+  delete(workspaceId: string, viewerAccessId: string): Promise<void>;
   authorizeContract(
     workspaceId: string,
     input: AuthorizeContractInput,
