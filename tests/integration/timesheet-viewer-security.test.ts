@@ -103,7 +103,7 @@ describe("Timesheet Viewer Security", () => {
       
       const invited = await inviteViewer(
         contextA,
-        { email: "test@example.com", tokenExpiryHours: 72 },
+        { email: "test@example.com", contractIds: [CONTRACT_A_ID], tokenExpiryHours: 72 },
         repos,
       );
 
@@ -120,7 +120,7 @@ describe("Timesheet Viewer Security", () => {
       
       const invited = await inviteViewer(
         contextA,
-        { email: "revoke-test@example.com", tokenExpiryHours: 72 },
+        { email: "revoke-test@example.com", contractIds: [CONTRACT_A_ID], tokenExpiryHours: 72 },
         repos,
       );
 
@@ -134,7 +134,7 @@ describe("Timesheet Viewer Security", () => {
       
       const invited = await inviteViewer(
         contextA,
-        { email: "contract-test@example.com", tokenExpiryHours: 72 },
+        { email: "contract-test@example.com", contractIds: [CONTRACT_A_ID], tokenExpiryHours: 72 },
         repos,
       );
 
@@ -161,7 +161,7 @@ describe("Timesheet Viewer Security", () => {
       
       const invitedA = await inviteViewer(
         contextA,
-        { email: "viewer-a@example.com", tokenExpiryHours: 72 },
+        { email: "viewer-a@example.com", contractIds: [CONTRACT_A_ID], tokenExpiryHours: 72 },
         repos,
       );
 
@@ -188,7 +188,7 @@ describe("Timesheet Viewer Security", () => {
       
       const invited = await inviteViewer(
         contextA,
-        { email: "anomaly-test@example.com", tokenExpiryHours: 72 },
+        { email: "anomaly-test@example.com", contractIds: [CONTRACT_A_ID], tokenExpiryHours: 72 },
         repos,
       );
 
@@ -216,7 +216,7 @@ describe("Timesheet Viewer Security", () => {
       
       const invited = await inviteViewer(
         contextA,
-        { email: "report-test@example.com", tokenExpiryHours: 72 },
+        { email: "report-test@example.com", contractIds: [CONTRACT_A_ID], tokenExpiryHours: 72 },
         repos,
       );
 
@@ -249,7 +249,7 @@ describe("Timesheet Viewer Security", () => {
       
       const invited = await inviteViewer(
         contextA,
-        { email: "ack-test@example.com", tokenExpiryHours: 72 },
+        { email: "ack-test@example.com", contractIds: [CONTRACT_A_ID], tokenExpiryHours: 72 },
         repos,
       );
 
@@ -284,13 +284,13 @@ describe("Timesheet Viewer Security", () => {
       
       const invitedA = await inviteViewer(
         contextA,
-        { email: "list-a@example.com", tokenExpiryHours: 72 },
+        { email: "list-a@example.com", contractIds: [CONTRACT_A_ID], tokenExpiryHours: 72 },
         repos,
       );
 
       const invitedB = await inviteViewer(
         contextB,
-        { email: "list-b@example.com", tokenExpiryHours: 72 },
+        { email: "list-b@example.com", contractIds: [CONTRACT_B_ID], tokenExpiryHours: 72 },
         repos,
       );
 
@@ -308,7 +308,7 @@ describe("Timesheet Viewer Security", () => {
       
       const invited = await inviteViewer(
         contextA,
-        { email: "expired@example.com", tokenExpiryHours: 1 },
+        { email: "expired@example.com", contractIds: [CONTRACT_A_ID], tokenExpiryHours: 1 },
         repos,
       );
 
@@ -330,7 +330,7 @@ describe("Timesheet Viewer Security", () => {
       
       const invited = await inviteViewer(
         contextA,
-        { email: "reuse@example.com", tokenExpiryHours: 72 },
+        { email: "reuse@example.com", contractIds: [CONTRACT_A_ID], tokenExpiryHours: 72 },
         repos,
       );
 
@@ -361,7 +361,7 @@ describe("Timesheet Viewer Security", () => {
       
       const invited = await inviteViewer(
         contextA,
-        { email: "nohash@example.com", tokenExpiryHours: 72 },
+        { email: "nohash@example.com", contractIds: [CONTRACT_A_ID], tokenExpiryHours: 72 },
         repos,
       );
 
@@ -377,7 +377,7 @@ describe("Timesheet Viewer Security", () => {
       
       const invited = await inviteViewer(
         contextA,
-        { email: "pending@example.com", tokenExpiryHours: 72 },
+        { email: "pending@example.com", contractIds: [CONTRACT_A_ID], tokenExpiryHours: 72 },
         repos,
       );
 
@@ -454,7 +454,7 @@ describe("Timesheet Viewer Security", () => {
       
       const invited = await inviteViewer(
         contextA,
-        { email: "status@example.com", tokenExpiryHours: 72 },
+        { email: "status@example.com", contractIds: [CONTRACT_A_ID], tokenExpiryHours: 72 },
         repos,
       );
 
@@ -540,7 +540,7 @@ describe("Timesheet Viewer Security", () => {
       
       const invited = await inviteViewer(
         contextA,
-        { email: "leak@example.com", tokenExpiryHours: 72 },
+        { email: "leak@example.com", contractIds: [CONTRACT_A_ID], tokenExpiryHours: 72 },
         repos,
       );
 
@@ -575,12 +575,14 @@ describe("Timesheet Viewer Security", () => {
       
       const invited = await inviteViewer(
         contextA,
-        { email: "e2e@example.com", tokenExpiryHours: 72 },
+        { email: "e2e@example.com", contractIds: [CONTRACT_A_ID], tokenExpiryHours: 72 },
         repos,
       );
 
       expect(invited.viewerAccess.status).toBe("PENDING");
       expect(invited.plainToken).toBeTruthy();
+      expect(invited.authorizedContracts).toHaveLength(1);
+      expect(invited.authorizedContracts[0].contractId).toBe(CONTRACT_A_ID);
 
       const activated = await activateViewer(
         { plainToken: invited.plainToken, userId: "viewer-e2e" },
@@ -589,18 +591,14 @@ describe("Timesheet Viewer Security", () => {
 
       expect(activated.viewerAccess.status).toBe("ACTIVE");
 
-      const authorized = await authorizeContract(
-        contextA,
-        {
-          viewerAccessId: invited.viewerAccess.id,
-          contractId: CONTRACT_A_ID,
-          displayLabel: "Test Contract",
-        },
-        repos.viewerAccess,
-        repos.contracts,
+      // CONTRACT_A_ID already authorized during invite, verify persistence
+      const authorizedList = await repos.viewerAccess.listAuthorizedContracts(
+        contextA.workspaceId,
+        invited.viewerAccess.id,
       );
-
-      expect(authorized.contractId).toBe(CONTRACT_A_ID);
+      
+      expect(authorizedList).toHaveLength(1);
+      expect(authorizedList[0].contractId).toBe(CONTRACT_A_ID);
 
       const revoked = await revokeViewer(
         contextA,
@@ -617,7 +615,7 @@ describe("Timesheet Viewer Security", () => {
       
       const invited = await inviteViewer(
         contextA,
-        { email: "anomaly-e2e@example.com", tokenExpiryHours: 72 },
+        { email: "anomaly-e2e@example.com", contractIds: [CONTRACT_A_ID], tokenExpiryHours: 72 },
         repos,
       );
 

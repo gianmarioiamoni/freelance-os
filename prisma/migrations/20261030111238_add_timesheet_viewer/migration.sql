@@ -1,0 +1,2 @@
+-- RenameIndex
+ALTER INDEX "TimesheetViewerContract_workspaceId_viewerAccessId_contractId_k" RENAME TO "TimesheetViewerContract_workspaceId_viewerAccessId_contract_key";

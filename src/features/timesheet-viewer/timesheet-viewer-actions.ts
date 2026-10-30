@@ -20,6 +20,7 @@ type ActionResult<T = void> =
 
 export async function inviteViewerAction(
   email: string,
+  contractIds: string[],
   tokenExpiryHours?: number,
 ): Promise<ActionResult<{ viewerAccessId: string }>> {
   try {
@@ -28,7 +29,7 @@ export async function inviteViewerAction(
 
     const result = await inviteViewer(
       context,
-      { email, tokenExpiryHours },
+      { email, contractIds, tokenExpiryHours },
       repositories,
     );
 

@@ -64,6 +64,16 @@ export async function GET(
     const { viewerAccessId } = await params;
 
     const repositories = createRepositories();
+    
+    // Verify viewer exists and belongs to workspace
+    const viewer = await repositories.viewerAccess.getById(
+      context.workspaceId,
+      viewerAccessId,
+    );
+    if (!viewer) {
+      return Response.json({ error: "Viewer not found" }, { status: 404 });
+    }
+
     const contracts = await repositories.viewerAccess.listAuthorizedContracts(
       context.workspaceId,
       viewerAccessId,

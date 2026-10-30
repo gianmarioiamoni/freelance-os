@@ -122,6 +122,20 @@ function anomalyRecord(
   };
 }
 
+function viewerContractRecord(
+  overrides: Partial<TimesheetViewerContractRecord> = {},
+): TimesheetViewerContractRecord {
+  return {
+    viewerAccessId: "550e8400-e29b-41d4-a716-446655440001",
+    workspaceId: context.workspaceId,
+    contractId: "550e8400-e29b-41d4-a716-446655440003",
+    displayLabel: null,
+    createdAt: new Date("2026-10-29T00:00:00.000Z"),
+    updatedAt: new Date("2026-10-29T00:00:00.000Z"),
+    ...overrides,
+  };
+}
+
 function createFakeViewerAccessRepository(
   seed: TimesheetViewerAccessRecord[] = [],
   contractSeed: TimesheetViewerContractRecord[] = [],
@@ -388,22 +402,27 @@ function createFakeAnomalyReportRepository(
 
 describe("inviteViewer", () => {
   it("creates viewer access and token with PENDING status", async () => {
+    const contract = contractRecord();
     const viewerAccess = createFakeViewerAccessRepository();
     const viewerTokens = createFakeViewerTokenRepository();
+    const contracts = createFakeContractRepository([contract]);
     const repositories = {
       viewerAccess,
       viewerTokens,
+      contracts,
     } as unknown as PersistenceRepositories;
 
     const result = await inviteViewer(
       context,
-      { email: "test@example.com", tokenExpiryHours: 48 },
+      { email: "test@example.com", contractIds: [contract.id], tokenExpiryHours: 48 },
       repositories,
     );
 
     expect(result.viewerAccess.email).toBe("test@example.com");
     expect(result.viewerAccess.status).toBe("PENDING");
     expect(result.viewerAccess.userId).toBeNull();
+    expect(result.authorizedContracts).toHaveLength(1);
+    expect(result.authorizedContracts[0].contractId).toBe(contract.id);
     expect(result.token.tokenHash).toBeTruthy();
     expect(result.plainToken).toBeTruthy();
     expect(result.plainToken).not.toBe(result.token.tokenHash);
@@ -723,8 +742,30 @@ describe("revokeContractAccess", () => {
     expect(remaining).toHaveLength(0);
   });
 
-  it("rejects revoking for non-active viewer", async () => {
+  it("allows revoking for PENDING or ACTIVE viewer", async () => {
     const viewer = viewerAccessRecord({ status: "PENDING" });
+    const authorized = viewerContractRecord({
+      viewerAccessId: viewer.id,
+      contractId: "550e8400-e29b-41d4-a716-446655440003",
+    });
+    const viewerAccess = createFakeViewerAccessRepository([viewer], [authorized]);
+
+    await revokeContractAccess(
+      context,
+      viewer.id,
+      "550e8400-e29b-41d4-a716-446655440003",
+      viewerAccess,
+    );
+
+    const remaining = await viewerAccess.listAuthorizedContracts(
+      context.workspaceId,
+      viewer.id,
+    );
+    expect(remaining).toHaveLength(0);
+  });
+
+  it("rejects revoking for revoked viewer", async () => {
+    const viewer = viewerAccessRecord({ status: "REVOKED" });
     const viewerAccess = createFakeViewerAccessRepository([viewer]);
 
     await expect(

@@ -61,3 +61,10 @@ export class AnomalyReportNotFoundError extends Error {
     this.name = "AnomalyReportNotFoundError";
   }
 }
+
+export class ViewerUnauthorizedError extends Error {
+  constructor() {
+    super("Viewer unauthorized for requested resource");
+    this.name = "ViewerUnauthorizedError";
+  }
+}

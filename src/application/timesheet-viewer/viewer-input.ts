@@ -13,11 +13,13 @@ export const TOKEN_EXPIRY_MAX_HOURS = 168; // 7 days
 
 export type InviteViewerInput = {
   email: string;
+  contractIds: string[];
   tokenExpiryHours?: number;
 };
 
 export type ValidatedInviteViewerInput = {
   email: string;
+  contractIds: string[];
   tokenExpiryHours: number;
 };
 
@@ -137,11 +139,27 @@ function parseUuid(value: string | undefined, field: ViewerInputField): string {
   return trimmed;
 }
 
+function parseContractIds(value: string[] | undefined): string[] {
+  if (!Array.isArray(value) || value.length === 0) {
+    throw new InvalidViewerInputError("contractId");
+  }
+
+  const uniqueIds = [...new Set(value)];
+  
+  // Validate each ID
+  for (const id of uniqueIds) {
+    parseUuid(id, "contractId");
+  }
+
+  return uniqueIds;
+}
+
 export function parseInviteViewerInput(
   input: InviteViewerInput,
 ): ValidatedInviteViewerInput {
   return {
     email: parseEmail(input.email),
+    contractIds: parseContractIds(input.contractIds),
     tokenExpiryHours: parseTokenExpiryHours(input.tokenExpiryHours),
   };
 }

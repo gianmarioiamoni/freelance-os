@@ -6,6 +6,7 @@ import {
 import type { WorkspaceContext } from "@/application/workspace/workspace-context";
 import type {
   TimesheetViewerAccessRecord,
+  TimesheetViewerContractRecord,
   ViewerInviteTokenRecord,
 } from "@/domain/persistence-types";
 import type { PersistenceRepositories } from "@/domain/repositories";
@@ -13,6 +14,7 @@ import { createHash, randomBytes } from "crypto";
 
 export type InviteViewerResult = {
   viewerAccess: TimesheetViewerAccessRecord;
+  authorizedContracts: TimesheetViewerContractRecord[];
   token: ViewerInviteTokenRecord;
   plainToken: string; // To be sent via email (NOT stored)
 };
@@ -23,6 +25,17 @@ export async function inviteViewer(
   repositories: PersistenceRepositories,
 ): Promise<InviteViewerResult> {
   const validated = parseInviteViewerInput(input);
+
+  // Verify all contracts exist
+  for (const contractId of validated.contractIds) {
+    const contract = await repositories.contracts.getContract(
+      context.workspaceId,
+      contractId,
+    );
+    if (!contract) {
+      throw new Error(`Contract ${contractId} not found`);
+    }
+  }
 
   // Generate cryptographically random token (32 bytes = 256 bits)
   const plainToken = randomBytes(32).toString("hex");
@@ -41,6 +54,20 @@ export async function inviteViewer(
     },
   );
 
+  // Authorize contracts atomically
+  const authorizedContracts: TimesheetViewerContractRecord[] = [];
+  for (const contractId of validated.contractIds) {
+    const authorized = await repositories.viewerAccess.authorizeContract(
+      context.workspaceId,
+      {
+        viewerAccessId: viewerAccess.id,
+        contractId,
+        displayLabel: null,
+      },
+    );
+    authorizedContracts.push(authorized);
+  }
+
   const token = await repositories.viewerTokens.create(context.workspaceId, {
     viewerAccessId: viewerAccess.id,
     tokenHash,
@@ -57,6 +84,7 @@ export async function inviteViewer(
 
   return {
     viewerAccess,
+    authorizedContracts,
     token,
     plainToken, // Caller must send via email and NOT persist this
   };

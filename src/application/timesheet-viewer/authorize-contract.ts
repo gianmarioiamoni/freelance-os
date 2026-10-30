@@ -29,6 +29,11 @@ export async function authorizeContract(
     throw new ViewerAccessNotFoundError();
   }
 
+  // Can authorize for PENDING or ACTIVE status (not REVOKED)
+  if (viewer.status === "REVOKED") {
+    throw new ViewerAccessNotFoundError();
+  }
+
   // Verify contract exists and belongs to workspace
   const contract = await contracts.getContract(
     context.workspaceId,

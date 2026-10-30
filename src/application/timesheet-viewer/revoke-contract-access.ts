@@ -17,8 +17,8 @@ export async function revokeContractAccess(
     throw new ViewerAccessNotFoundError();
   }
 
-  // Verify viewer is active (can only revoke for active viewers)
-  if (viewer.status !== "ACTIVE") {
+  // Can revoke for PENDING or ACTIVE status (not REVOKED)
+  if (viewer.status === "REVOKED") {
     throw new ViewerAccessNotFoundError();
   }
 

@@ -75,7 +75,14 @@ export function TimesheetViewerPageClient({
         </TabsContent>
 
         <TabsContent value="invite" className="max-w-md">
-          <InviteViewerForm />
+          <InviteViewerForm 
+            availableContracts={contracts.map(c => ({
+              id: c.id,
+              label: c.reference 
+                ? `${c.clientName} - ${c.reference}` 
+                : c.clientName,
+            }))}
+          />
         </TabsContent>
 
         <TabsContent value="reports" className="grid gap-4">
