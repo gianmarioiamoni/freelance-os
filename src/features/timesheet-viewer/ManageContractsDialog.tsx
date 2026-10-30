@@ -96,7 +96,7 @@ export function ManageContractsDialog({
 
         <div className="grid gap-6">
           <div className="grid gap-4">
-            <h3 className="text-sm font-medium">Authorized Contracts</h3>
+            <h3 className="text-sm font-medium">Shared Contracts</h3>
             {authorizedContracts.length === 0 ? (
               <p className="text-sm text-muted-foreground">
                 No contracts authorized yet.

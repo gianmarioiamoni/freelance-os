@@ -25,6 +25,7 @@ export default defineConfig({
       "tests/unit/features/reporting/**/*.test.tsx",
       "tests/unit/features/invoices/**/*.test.tsx",
       "tests/unit/features/ai/**/*.test.tsx",
+      "tests/unit/features/timesheet-viewer/**/*.test.tsx",
     ],
     setupFiles: ["./tests/unit/setup.ts"],
   },

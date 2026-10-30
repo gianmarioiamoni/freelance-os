@@ -124,7 +124,7 @@ export function ViewerAccessList({
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Revoke viewer access?</AlertDialogTitle>
+            <AlertDialogTitle>Access Revocation</AlertDialogTitle>
             <AlertDialogDescription>
               This will permanently revoke access for this viewer. They will no
               longer be able to view any timesheets.

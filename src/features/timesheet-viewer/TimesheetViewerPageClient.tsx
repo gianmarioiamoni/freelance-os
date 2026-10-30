@@ -62,8 +62,8 @@ export function TimesheetViewerPageClient({
     <>
       <Tabs value={activeTab} onValueChange={setActiveTab} className="grid gap-6">
         <TabsList>
-          <TabsTrigger value="viewers">Viewers</TabsTrigger>
-          <TabsTrigger value="invite">Invite New</TabsTrigger>
+          <TabsTrigger value="viewers">Authorized Viewers</TabsTrigger>
+          <TabsTrigger value="invite">Invite Timesheet Viewer</TabsTrigger>
           <TabsTrigger value="reports">Anomaly Reports</TabsTrigger>
         </TabsList>
 
