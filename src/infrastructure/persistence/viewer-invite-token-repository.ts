@@ -35,8 +35,6 @@ export function createViewerInviteTokenRepository(
         >`
           SELECT id, "workspaceId" FROM "ViewerInviteToken"
           WHERE "tokenHash" = ${tokenHash}
-            AND "acceptedAt" IS NULL
-            AND "expiresAt" > NOW()
           FOR UPDATE
         `;
 

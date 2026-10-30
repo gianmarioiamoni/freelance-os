@@ -14,7 +14,8 @@ describe("Prisma CLI configuration", () => {
     expect(packageJson.prisma).toBeUndefined();
 
     const config = readFileSync(path.join(root, "prisma.config.ts"), "utf8");
-    expect(config).toContain('import "dotenv/config"');
+    expect(config).toContain('from "dotenv"');
+    expect(config).toContain('config()');
     expect(config).toContain('from "prisma/config"');
     expect(config).toContain("defineConfig");
     expect(config).toContain('seed: "tsx prisma/seed.ts"');

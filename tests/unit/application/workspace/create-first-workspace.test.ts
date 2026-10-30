@@ -140,10 +140,12 @@ function createMemoryDependencies(
       findByWorkspaceAndEmail: unused,
       getActiveAccess: unused,
       listActiveByUserId: unused,
+      listForWorkspace: unused,
       activate: unused,
       revoke: unused,
       authorizeContract: unused,
       listAuthorizedContracts: unused,
+      revokeContractAuthorization: unused,
     },
     viewerTokens: {
       create: unused,

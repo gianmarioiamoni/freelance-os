@@ -77,6 +77,22 @@ export function createViewerAccessRepository(
       });
     },
 
+    async listForWorkspace(
+      workspaceId: string,
+      status?: "PENDING" | "ACTIVE" | "REVOKED",
+    ) {
+      return withPersistenceErrors(async () => {
+        const rows = await db.timesheetViewerAccess.findMany({
+          where: {
+            workspaceId,
+            ...(status ? { status } : {}),
+          },
+          orderBy: { createdAt: "desc" },
+        });
+        return rows.map(mapViewerAccess);
+      });
+    },
+
     async activate(
       workspaceId: string,
       viewerAccessId: string,
@@ -139,6 +155,24 @@ export function createViewerAccessRepository(
           orderBy: { createdAt: "asc" },
         });
         return rows.map(mapViewerContract);
+      });
+    },
+
+    async revokeContractAuthorization(
+      workspaceId: string,
+      viewerAccessId: string,
+      contractId: string,
+    ) {
+      return withPersistenceErrors(async () => {
+        await db.timesheetViewerContract.delete({
+          where: {
+            viewerAccessId_contractId: {
+              viewerAccessId,
+              contractId,
+            },
+            workspaceId,
+          },
+        });
       });
     },
   };

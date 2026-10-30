@@ -1,6 +1,9 @@
 // prisma.config.ts
-import "dotenv/config";
+import { config } from "dotenv";
 import { defineConfig } from "prisma/config";
+
+// Load .env explicitly before Prisma CLI runs
+config();
 
 export default defineConfig({
   migrations: {

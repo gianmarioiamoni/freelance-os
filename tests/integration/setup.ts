@@ -18,6 +18,10 @@ const { prisma } = await import("@/infrastructure/prisma/client");
 beforeEach(async () => {
   await prisma.$executeRawUnsafe(`
     TRUNCATE TABLE
+      "AnomalyReport",
+      "TimesheetViewerContract",
+      "ViewerInviteToken",
+      "TimesheetViewerAccess",
       "AdminAction",
       "Notification",
       "Alert",

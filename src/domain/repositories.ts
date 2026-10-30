@@ -374,6 +374,10 @@ export type ViewerAccessRepository = {
     userId: string,
   ): Promise<TimesheetViewerAccessRecord | null>;
   listActiveByUserId(userId: string): Promise<TimesheetViewerAccessRecord[]>;
+  listForWorkspace(
+    workspaceId: string,
+    status?: "PENDING" | "ACTIVE" | "REVOKED",
+  ): Promise<TimesheetViewerAccessRecord[]>;
   activate(
     workspaceId: string,
     viewerAccessId: string,
@@ -392,6 +396,11 @@ export type ViewerAccessRepository = {
     workspaceId: string,
     viewerAccessId: string,
   ): Promise<TimesheetViewerContractRecord[]>;
+  revokeContractAuthorization(
+    workspaceId: string,
+    viewerAccessId: string,
+    contractId: string,
+  ): Promise<void>;
 };
 
 export type ViewerInviteTokenRepository = {
