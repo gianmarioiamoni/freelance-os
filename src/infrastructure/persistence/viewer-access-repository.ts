@@ -77,6 +77,19 @@ export function createViewerAccessRepository(
       });
     },
 
+    async listForUser(userId: string, status?: "PENDING" | "ACTIVE" | "REVOKED") {
+      return withPersistenceErrors(async () => {
+        const rows = await db.timesheetViewerAccess.findMany({
+          where: {
+            userId,
+            ...(status ? { status } : {}),
+          },
+          orderBy: { activatedAt: "desc" },
+        });
+        return rows.map(mapViewerAccess);
+      });
+    },
+
     async listForWorkspace(
       workspaceId: string,
       status?: "PENDING" | "ACTIVE" | "REVOKED",

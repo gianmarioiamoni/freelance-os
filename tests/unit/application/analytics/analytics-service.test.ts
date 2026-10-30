@@ -101,7 +101,8 @@ describe("AnalyticsService", () => {
         getMember: vi.fn().mockResolvedValue(mockMembership),
         addMember: vi.fn(),
         listMembers: vi.fn(),
-        listMembershipsByUserId: vi.fn(),
+        listForUser: async () => [], 
+    listMembershipsByUserId: vi.fn(),
       };
 
       const service = new AnalyticsService(mockAnalyticsRepository, mockMembersRepository);
@@ -148,7 +149,8 @@ describe("AnalyticsService", () => {
         getMember: vi.fn().mockResolvedValue(mockMembership),
         addMember: vi.fn(),
         listMembers: vi.fn(),
-        listMembershipsByUserId: vi.fn(),
+        listForUser: async () => [], 
+    listMembershipsByUserId: vi.fn(),
       };
 
       const service = new AnalyticsService(mockAnalyticsRepository, mockMembersRepository);
@@ -182,7 +184,8 @@ describe("AnalyticsService", () => {
         getMember: vi.fn().mockResolvedValue(null),
         addMember: vi.fn(),
         listMembers: vi.fn(),
-        listMembershipsByUserId: vi.fn(),
+        listForUser: async () => [], 
+    listMembershipsByUserId: vi.fn(),
       };
 
       const service = new AnalyticsService(mockAnalyticsRepository, mockMembersRepository);
@@ -211,7 +214,8 @@ describe("AnalyticsService", () => {
         getMember: vi.fn().mockResolvedValue(mockMembership),
         addMember: vi.fn(),
         listMembers: vi.fn(),
-        listMembershipsByUserId: vi.fn(),
+        listForUser: async () => [], 
+    listMembershipsByUserId: vi.fn(),
       };
 
       const service = new AnalyticsService(mockAnalyticsRepository, mockMembersRepository);
@@ -303,7 +307,8 @@ describe("AnalyticsService", () => {
         getMember: vi.fn().mockResolvedValue(mockMembership),
         addMember: vi.fn(),
         listMembers: vi.fn(),
-        listMembershipsByUserId: vi.fn(),
+        listForUser: async () => [], 
+    listMembershipsByUserId: vi.fn(),
       };
 
       const service = new AnalyticsService(mockAnalyticsRepository, mockMembersRepository);
@@ -355,7 +360,8 @@ describe("AnalyticsService", () => {
         getMember: vi.fn().mockResolvedValue(mockMembership),
         addMember: vi.fn(),
         listMembers: vi.fn(),
-        listMembershipsByUserId: vi.fn(),
+        listForUser: async () => [], 
+    listMembershipsByUserId: vi.fn(),
       };
 
       const service = new AnalyticsService(mockAnalyticsRepository, mockMembersRepository);
@@ -384,7 +390,8 @@ describe("AnalyticsService", () => {
         getMember: vi.fn().mockResolvedValue(mockMembership),
         addMember: vi.fn(),
         listMembers: vi.fn(),
-        listMembershipsByUserId: vi.fn(),
+        listForUser: async () => [], 
+    listMembershipsByUserId: vi.fn(),
       };
 
       const service = new AnalyticsService(mockAnalyticsRepository, mockMembersRepository);
@@ -418,7 +425,8 @@ describe("AnalyticsService", () => {
         getMember: vi.fn().mockResolvedValue(mockMembership),
         addMember: vi.fn(),
         listMembers: vi.fn(),
-        listMembershipsByUserId: vi.fn(),
+        listForUser: async () => [], 
+    listMembershipsByUserId: vi.fn(),
       };
 
       const service = new AnalyticsService(mockAnalyticsRepository, mockMembersRepository);
@@ -464,7 +472,8 @@ describe("AnalyticsService", () => {
         getMember: vi.fn().mockResolvedValue(mockMembership),
         addMember: vi.fn(),
         listMembers: vi.fn(),
-        listMembershipsByUserId: vi.fn(),
+        listForUser: async () => [], 
+    listMembershipsByUserId: vi.fn(),
       };
 
       const service = new AnalyticsService(mockAnalyticsRepository, mockMembersRepository);
@@ -507,7 +516,8 @@ describe("AnalyticsService", () => {
         getMember: vi.fn().mockResolvedValue(mockMembership),
         addMember: vi.fn(),
         listMembers: vi.fn(),
-        listMembershipsByUserId: vi.fn(),
+        listForUser: async () => [], 
+    listMembershipsByUserId: vi.fn(),
       };
 
       const service = new AnalyticsService(mockAnalyticsRepository, mockMembersRepository);
@@ -547,7 +557,8 @@ describe("AnalyticsService", () => {
         getMember: vi.fn().mockResolvedValue(mockMembership),
         addMember: vi.fn(),
         listMembers: vi.fn(),
-        listMembershipsByUserId: vi.fn(),
+        listForUser: async () => [], 
+    listMembershipsByUserId: vi.fn(),
       };
 
       const service = new AnalyticsService(mockAnalyticsRepository, mockMembersRepository);

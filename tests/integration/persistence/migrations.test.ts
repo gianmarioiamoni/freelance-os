@@ -28,6 +28,8 @@ describe("migration-based test schema", () => {
       "20261004193000_add_admin_action_audit",
       "20261008021638_contract_commitment_model",
       "20261029180000_add_contract_reference",
+      "20261029210000_add_timesheet_viewer",
+      "20261030111238_add_timesheet_viewer",
     ]);
   });
 

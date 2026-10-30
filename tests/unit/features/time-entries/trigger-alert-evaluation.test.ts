@@ -62,6 +62,7 @@ function makeRepositories(overrides: Partial<{
     addMember: vi.fn().mockResolvedValue(makeMember()),
     getMember: vi.fn().mockResolvedValue(makeMember()),
     listMembers: vi.fn().mockResolvedValue([makeMember()]),
+    listForUser: async () => [], 
     listMembershipsByUserId: vi.fn().mockResolvedValue([]),
     ...overrides.members,
   };

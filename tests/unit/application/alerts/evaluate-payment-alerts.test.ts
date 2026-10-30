@@ -134,6 +134,7 @@ function createRepos(options: {
           },
     ),
     listMembers: vi.fn(),
+    listForUser: async () => [], 
     listMembershipsByUserId: vi.fn(),
   };
   const alerts: AlertRepository = {

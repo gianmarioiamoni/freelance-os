@@ -126,7 +126,8 @@ describe("AnalyticsService.getForecastRevenue", () => {
       getMember: vi.fn().mockResolvedValue(member),
       addMember: vi.fn(),
       listMembers: vi.fn(),
-      listMembershipsByUserId: vi.fn(),
+      listForUser: async () => [], 
+    listMembershipsByUserId: vi.fn(),
     };
   }
 

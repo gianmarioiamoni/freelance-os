@@ -485,7 +485,8 @@ describe("AnalyticsService Accrued Revenue", () => {
           getMember: vi.fn().mockResolvedValue(membership),
           addMember: vi.fn(),
           listMembers: vi.fn(),
-          listMembershipsByUserId: vi.fn(),
+          listForUser: async () => [], 
+    listMembershipsByUserId: vi.fn(),
         },
       );
 
@@ -514,7 +515,8 @@ describe("AnalyticsService Accrued Revenue", () => {
           getMember: vi.fn().mockResolvedValue(null),
           addMember: vi.fn(),
           listMembers: vi.fn(),
-          listMembershipsByUserId: vi.fn(),
+          listForUser: async () => [], 
+    listMembershipsByUserId: vi.fn(),
         } satisfies WorkspaceMemberRepository,
       );
 
@@ -542,7 +544,8 @@ describe("AnalyticsService Accrued Revenue", () => {
           getMember: vi.fn().mockResolvedValue(membership),
           addMember: vi.fn(),
           listMembers: vi.fn(),
-          listMembershipsByUserId: vi.fn(),
+          listForUser: async () => [], 
+    listMembershipsByUserId: vi.fn(),
         },
       );
 
@@ -569,7 +572,8 @@ describe("AnalyticsService Accrued Revenue", () => {
           getMember: vi.fn().mockResolvedValue(membership),
           addMember: vi.fn(),
           listMembers: vi.fn(),
-          listMembershipsByUserId: vi.fn(),
+          listForUser: async () => [], 
+    listMembershipsByUserId: vi.fn(),
         },
       );
       const filter = { clientId: "client-1", contractId: "contract-1" };

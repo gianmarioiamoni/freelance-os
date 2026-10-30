@@ -40,6 +40,8 @@ function membersWith(
     },
     getMember: async () => null,
     listMembers: async () => [],
+    listForUser: async () => memberships,
+    listForUser: async () => [], 
     listMembershipsByUserId: async () => memberships,
   };
 }

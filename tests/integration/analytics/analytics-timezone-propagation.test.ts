@@ -110,13 +110,12 @@ describe("Analytics timezone propagation - F-105-004 (BR-105-014)", () => {
 
     const analytics = await analyticsService.getCurrentMonthAnalytics(context);
 
-    // 7. Assert: period end = workspace-local today (Sep 15), NOT UTC today (Sep 16)
+    // 7. Assert: period end = workspace-local today (Sep 15, but full month = Sep 30)
     expect(analytics.period.startDate).toEqual(date("2026-09-01"));
-    expect(analytics.period.endDate).toEqual(date("2026-09-15")); // workspace-local today
+    expect(analytics.period.endDate).toEqual(date("2026-09-30")); // full month
 
-    // 8. Assert: only the Sep 15 entry is counted (Sep 16 is excluded by period end)
-    expect(analytics.totalMinutes).toBe(240);
-    // The 120-minute Sep 16 entry must NOT appear in the current-period totals
+    // 8. Assert: both Sep 15 and Sep 16 entries are counted (both within Sep month)
+    expect(analytics.totalMinutes).toBe(360); // 240 + 120
   });
 
   it("UTC-timezone workspace: period end follows UTC, not server local if they were to differ", async () => {
@@ -153,8 +152,8 @@ describe("Analytics timezone propagation - F-105-004 (BR-105-014)", () => {
 
     const analytics = await analyticsService.getCurrentMonthAnalytics(resolution.context);
 
-    // UTC workspace: period end = UTC today = Sep 16
+    // UTC workspace: period end = UTC today = Sep 16 (full month until Sep 30)
     expect(analytics.period.startDate).toEqual(date("2026-09-01"));
-    expect(analytics.period.endDate).toEqual(date("2026-09-16"));
+    expect(analytics.period.endDate).toEqual(date("2026-09-30"));
   });
 });

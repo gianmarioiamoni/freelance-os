@@ -67,6 +67,7 @@ export type WorkspaceMemberRepository = {
     userId: string,
   ): Promise<WorkspaceMemberRecord | null>;
   listMembers(workspaceId: string): Promise<WorkspaceMemberRecord[]>;
+  listForUser(userId: string): Promise<WorkspaceMemberRecord[]>;
   listMembershipsByUserId(userId: string): Promise<WorkspaceMemberRecord[]>;
 };
 
@@ -374,6 +375,10 @@ export type ViewerAccessRepository = {
     userId: string,
   ): Promise<TimesheetViewerAccessRecord | null>;
   listActiveByUserId(userId: string): Promise<TimesheetViewerAccessRecord[]>;
+  listForUser(
+    userId: string,
+    status?: "PENDING" | "ACTIVE" | "REVOKED",
+  ): Promise<TimesheetViewerAccessRecord[]>;
   listForWorkspace(
     workspaceId: string,
     status?: "PENDING" | "ACTIVE" | "REVOKED",

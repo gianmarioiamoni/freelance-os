@@ -115,6 +115,7 @@ function repos(options: {
     ),
     addMember: vi.fn(),
     listMembers: vi.fn(),
+    listForUser: async () => [], 
     listMembershipsByUserId: vi.fn(),
   };
 

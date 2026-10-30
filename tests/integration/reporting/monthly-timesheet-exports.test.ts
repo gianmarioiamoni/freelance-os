@@ -193,16 +193,13 @@ describe("Monthly Timesheet Export Validation", () => {
 
     // Parse workbook to verify structure
     const workbook = XLSX.read(buffer, { type: "buffer" });
-    expect(workbook.SheetNames).toEqual(["Summary", "Daily", "Entries"]);
+    expect(workbook.SheetNames).toEqual(["Summary", "Detail"]);
 
     const summarySheet = workbook.Sheets["Summary"];
     expect(summarySheet).toBeTruthy();
 
-    const dailySheet = workbook.Sheets["Daily"];
-    expect(dailySheet).toBeTruthy();
-
-    const entriesSheet = workbook.Sheets["Entries"];
-    expect(entriesSheet).toBeTruthy();
+    const detailSheet = workbook.Sheets["Detail"];
+    expect(detailSheet).toBeTruthy();
 
     // Verify UI data consistency
     expect(report.totalMinutes).toBe(300);

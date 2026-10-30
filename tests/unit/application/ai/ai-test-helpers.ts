@@ -40,6 +40,7 @@ export function membersLookingUp(
     },
     getMember: async (workspaceId, userId) => lookup(workspaceId, userId),
     listMembers: async () => [],
+    listForUser: async () => [],
     listMembershipsByUserId: async () => [],
   };
 }

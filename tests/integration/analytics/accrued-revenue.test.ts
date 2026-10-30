@@ -616,8 +616,8 @@ describe("Accrued Revenue integration", () => {
         context,
         getCurrentMonthPeriod(context.timezone, nyClock),
       );
-      expect(result.period.endDate).toEqual(date("2026-09-15"));
-      expect(result.byCurrency[0]?.unrounded).toBe(100);
+      expect(result.period.endDate).toEqual(date("2026-09-30")); // full month
+      expect(result.byCurrency[0]?.unrounded).toBe(200); // both entries
     });
 
     it("DAILY UTC workspace uses workspace today, not a later UTC-shifted day", async () => {

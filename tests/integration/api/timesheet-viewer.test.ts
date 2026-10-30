@@ -74,7 +74,7 @@ describe("Timesheet Viewer API Integration", () => {
 
     const result = await inviteViewer(
       context,
-      { email: "api-test@example.com", tokenExpiryHours: 72 },
+      { email: "api-test@example.com", contractIds: [TEST_CONTRACT_ID], tokenExpiryHours: 72 },
       repositories,
     );
 
@@ -104,7 +104,7 @@ describe("Timesheet Viewer API Integration", () => {
 
     await inviteViewer(
       context,
-      { email: "list-test@example.com", tokenExpiryHours: 72 },
+      { email: "list-test@example.com", contractIds: [TEST_CONTRACT_ID], tokenExpiryHours: 72 },
       repositories,
     );
 
@@ -138,7 +138,7 @@ describe("Timesheet Viewer API Integration", () => {
 
     const invited = await inviteViewer(
       context,
-      { email: "revoke-test@example.com", tokenExpiryHours: 72 },
+      { email: "revoke-test@example.com", contractIds: [TEST_CONTRACT_ID], tokenExpiryHours: 72 },
       repositories,
     );
 
@@ -182,7 +182,7 @@ describe("Timesheet Viewer API Integration", () => {
 
     const invited = await inviteViewer(
       context,
-      { email: "authorize-test@example.com", tokenExpiryHours: 72 },
+      { email: "authorize-test@example.com", contractIds: [TEST_CONTRACT_ID], tokenExpiryHours: 72 },
       repositories,
     );
 
@@ -191,19 +191,14 @@ describe("Timesheet Viewer API Integration", () => {
       { runInTransaction },
     );
 
-    const authorized = await authorizeContract(
-      context,
-      {
-        viewerAccessId: invited.viewerAccess.id,
-        contractId: TEST_CONTRACT_ID,
-        displayLabel: "Test Contract",
-      },
-      repositories.viewerAccess,
-      repositories.contracts,
+    // Contracts are authorized during invite; fetch and verify
+    const authorizedContracts = await repositories.viewerAccess.listAuthorizedContracts(
+      TEST_WORKSPACE_ID,
+      invited.viewerAccess.id,
     );
 
-    expect(authorized.contractId).toBe(TEST_CONTRACT_ID);
-    expect(authorized.displayLabel).toBe("Test Contract");
+    expect(authorizedContracts).toHaveLength(1);
+    expect(authorizedContracts[0].contractId).toBe(TEST_CONTRACT_ID);
   });
 
   it("creates anomaly report via application service", async () => {
@@ -230,7 +225,7 @@ describe("Timesheet Viewer API Integration", () => {
 
     const invited = await inviteViewer(
       context,
-      { email: "anomaly-test@example.com", tokenExpiryHours: 72 },
+      { email: "anomaly-test@example.com", contractIds: [TEST_CONTRACT_ID], tokenExpiryHours: 72 },
       repositories,
     );
 
@@ -281,7 +276,7 @@ describe("Timesheet Viewer API Integration", () => {
 
     const invited = await inviteViewer(
       context,
-      { email: "ack-test@example.com", tokenExpiryHours: 72 },
+      { email: "ack-test@example.com", contractIds: [TEST_CONTRACT_ID], tokenExpiryHours: 72 },
       repositories,
     );
 

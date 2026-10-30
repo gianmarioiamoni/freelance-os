@@ -147,6 +147,7 @@ function makeMockMembers(isMember = true): WorkspaceMemberRepository {
     addMember: vi.fn(),
     getMember: vi.fn().mockResolvedValue(isMember ? makeMembership() : null),
     listMembers: vi.fn().mockResolvedValue([makeMembership()]),
+    listForUser: async () => [], 
     listMembershipsByUserId: vi.fn().mockResolvedValue([]),
   };
 }

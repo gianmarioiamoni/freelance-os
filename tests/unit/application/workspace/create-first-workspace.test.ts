@@ -50,6 +50,9 @@ function createMemoryDependencies(
       },
       getMember: unused,
       listMembers: unused,
+      async listForUser(userId) {
+        return members.filter((row) => row.userId === userId);
+      },
       async listMembershipsByUserId(userId) {
         return members.filter((row) => row.userId === userId);
       },

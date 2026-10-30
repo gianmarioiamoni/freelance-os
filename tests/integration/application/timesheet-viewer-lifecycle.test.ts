@@ -82,7 +82,7 @@ describe("Viewer Lifecycle Integration", () => {
     // 1. Invite viewer
     const inviteResult = await inviteViewer(
       context,
-      { email: "viewer@example.com", tokenExpiryHours: 72 },
+      { email: "viewer@example.com", contractIds: [TEST_CONTRACT_ID], tokenExpiryHours: 72 },
       repositories,
     );
 
@@ -100,30 +100,16 @@ describe("Viewer Lifecycle Integration", () => {
     expect(activateResult.viewerAccess.userId).toBe("viewer-user-123");
     expect(activateResult.token.acceptedAt).toBeTruthy();
 
-    // 3. Authorize contract
-    const contractAuth = await authorizeContract(
-      context,
-      {
-        viewerAccessId: inviteResult.viewerAccess.id,
-        contractId: TEST_CONTRACT_ID,
-        displayLabel: "Q1 Project",
-      },
-      repositories.viewerAccess,
-      repositories.contracts,
-    );
-
-    expect(contractAuth.contractId).toBe(TEST_CONTRACT_ID);
-    expect(contractAuth.displayLabel).toBe("Q1 Project");
-
-    // 4. List authorized contracts
+    // Authorized contracts already exist from invite; list them
     const authorizedContracts =
       await repositories.viewerAccess.listAuthorizedContracts(
         TEST_WORKSPACE_ID,
         inviteResult.viewerAccess.id,
       );
     expect(authorizedContracts).toHaveLength(1);
+    expect(authorizedContracts[0].contractId).toBe(TEST_CONTRACT_ID);
 
-    // 5. Revoke contract access
+    // Revoke contract access
     await revokeContractAccess(
       context,
       inviteResult.viewerAccess.id,
@@ -137,7 +123,7 @@ describe("Viewer Lifecycle Integration", () => {
     );
     expect(afterRevoke).toHaveLength(0);
 
-    // 6. Revoke viewer access
+    // Revoke viewer access
     const revokedViewer = await revokeViewer(
       context,
       inviteResult.viewerAccess.id,
@@ -154,7 +140,7 @@ describe("Viewer Lifecycle Integration", () => {
     // Create viewer with valid token
     const inviteResult = await inviteViewer(
       context,
-      { email: "expired@example.com", tokenExpiryHours: 1 },
+      { email: "expired@example.com", contractIds: [TEST_CONTRACT_ID], tokenExpiryHours: 1 },
       repositories,
     );
 
@@ -178,7 +164,7 @@ describe("Viewer Lifecycle Integration", () => {
     // Setup active viewer
     const inviteResult = await inviteViewer(
       context,
-      { email: "reporter@example.com", tokenExpiryHours: 72 },
+      { email: "reporter@example.com", contractIds: [TEST_CONTRACT_ID], tokenExpiryHours: 72 },
       repositories,
     );
 
