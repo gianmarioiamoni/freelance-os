@@ -36,6 +36,7 @@
   "dependencies": {
     "@better-auth/prisma-adapter": "1.7.4",
     "@prisma/client": "6.19.3",
+    "@radix-ui/react-select": "^2.4.1",
     "@tailwindcss/postcss": "4.3.3",
     "better-auth": "1.7.4",
     "class-variance-authority": "0.7.1",
