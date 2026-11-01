@@ -2,8 +2,6 @@
 import type {
   AuthorizeContractInput,
   CreateViewerAccessInput,
-  TimesheetViewerAccessRecord,
-  TimesheetViewerContractRecord,
 } from "@/domain/persistence-types";
 import type { ViewerAccessRepository } from "@/domain/repositories";
 import { withPersistenceErrors } from "@/infrastructure/persistence/map-prisma-error";

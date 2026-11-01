@@ -1,6 +1,5 @@
 // src/infrastructure/persistence/anomaly-report-repository.ts
 import type {
-  AnomalyReportRecord,
   AnomalyReportStatus,
   CreateAnomalyReportInput,
   UpdateAnomalyReportInput,

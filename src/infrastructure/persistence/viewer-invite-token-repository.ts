@@ -1,7 +1,6 @@
 // src/infrastructure/persistence/viewer-invite-token-repository.ts
 import type {
   CreateInviteTokenInput,
-  ViewerInviteTokenRecord,
 } from "@/domain/persistence-types";
 import type { ViewerInviteTokenRepository } from "@/domain/repositories";
 import { withPersistenceErrors } from "@/infrastructure/persistence/map-prisma-error";
