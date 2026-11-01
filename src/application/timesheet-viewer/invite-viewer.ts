@@ -10,6 +10,7 @@ import type {
   ViewerInviteTokenRecord,
 } from "@/domain/persistence-types";
 import type { PersistenceRepositories } from "@/domain/repositories";
+import { deliverProductionViewerInviteEmail } from "@/infrastructure/email/resend-viewer-invite";
 import { createHash, randomBytes } from "crypto";
 
 export type InviteViewerResult = {
@@ -17,6 +18,7 @@ export type InviteViewerResult = {
   authorizedContracts: TimesheetViewerContractRecord[];
   token: ViewerInviteTokenRecord;
   plainToken: string; // To be sent via email (NOT stored)
+  emailDelivered: "sent" | "skipped";
 };
 
 export async function inviteViewer(
@@ -74,18 +76,23 @@ export async function inviteViewer(
     expiresAt,
   });
 
-  // TODO: Integration point for email service
-  // await emailService.sendViewerInvite({
-  //   to: validated.email,
-  //   token: plainToken,
-  //   workspaceName: context.workspaceName,
-  //   expiresAt,
-  // });
+  // Generate invitation URL
+  const baseUrl = process.env.BETTER_AUTH_URL || "http://localhost:3000";
+  const inviteUrl = `${baseUrl}/viewer-activate?token=${plainToken}`;
+
+  // Send invitation email via Resend
+  const emailDelivered = await deliverProductionViewerInviteEmail({
+    email: validated.email,
+    inviteUrl,
+    workspaceName: undefined, // TODO: Add workspace name to context if needed
+    expiresAt,
+  });
 
   return {
     viewerAccess,
     authorizedContracts,
     token,
     plainToken, // Caller must send via email and NOT persist this
+    emailDelivered,
   };
 }

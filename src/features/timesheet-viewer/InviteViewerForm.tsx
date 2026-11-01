@@ -68,12 +68,9 @@ export function InviteViewerForm({
       {success ? (
         <Alert>
           <AlertTitle>Invitation sent</AlertTitle>
-          <AlertDescription className="grid gap-2">
+          <AlertDescription>
             <p className="text-sm">
-              Viewer invited successfully. An email with the invitation link will be sent.
-            </p>
-            <p className="text-xs text-muted-foreground">
-              TODO: Email integration - token is generated but email service is not yet implemented.
+              Viewer invited successfully. An invitation email has been sent with an activation link.
             </p>
           </AlertDescription>
         </Alert>

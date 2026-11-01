@@ -22,7 +22,7 @@ export async function inviteViewerAction(
   email: string,
   contractIds: string[],
   tokenExpiryHours?: number,
-): Promise<ActionResult<{ viewerAccessId: string }>> {
+): Promise<ActionResult<{ viewerAccessId: string; emailSent: boolean }>> {
   try {
     const context = await getCurrentWorkspaceContext();
     const repositories = createRepositories();
@@ -34,7 +34,13 @@ export async function inviteViewerAction(
     );
 
     // NOTE: plainToken is NOT returned to client for security.
-    // Email integration will handle token delivery (see Application Service TODO).
+
+    if (result.emailDelivered === "skipped") {
+      return {
+        success: false,
+        error: "Viewer created but invitation email could not be sent. Please check email configuration.",
+      };
+    }
 
     revalidatePath("/timesheet-viewer");
     
@@ -42,6 +48,7 @@ export async function inviteViewerAction(
       success: true,
       data: {
         viewerAccessId: result.viewerAccess.id,
+        emailSent: result.emailDelivered === "sent",
       },
     };
   } catch (error) {

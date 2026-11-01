@@ -115,12 +115,17 @@ export function ManageContractsDialog({
                       <div>
                         <p className="text-sm font-medium">
                           {auth.displayLabel ||
-                            contract?.reference ||
-                            "Unnamed Contract"}
+                            (contract?.reference
+                              ? `${contract.clientName} - ${contract.reference}`
+                              : contract?.clientName || "Unknown")}
                         </p>
-                        <p className="text-xs text-muted-foreground">
-                          {contract?.clientName}
-                        </p>
+                        {auth.displayLabel && (
+                          <p className="text-xs text-muted-foreground">
+                            {contract?.reference
+                              ? `${contract.clientName} - ${contract.reference}`
+                              : contract?.clientName}
+                          </p>
+                        )}
                       </div>
                       <Button
                         size="sm"
