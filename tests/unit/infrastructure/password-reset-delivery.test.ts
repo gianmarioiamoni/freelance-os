@@ -16,9 +16,10 @@ describe("password reset email delivery source", () => {
     expect(deliverySource).toMatch(/console\.info\(DEVELOPMENT_DELIVERY_MESSAGE\)/);
     expect(deliverySource).toMatch(/deliverProductionPasswordResetEmail/);
     expect(deliverySource).toMatch(
-      /from ["']@\/infrastructure\/email\/smtp-password-reset["']/,
+      /from ["']@\/infrastructure\/email\/resend-password-reset["']/,
     );
-    expect(deliverySource).not.toMatch(/resend/i);
+    expect(deliverySource).not.toMatch(/smtp/i);
+    expect(deliverySource).not.toMatch(/nodemailer/i);
     expect(deliverySource).not.toMatch(/console\.\w+\([^)]*data\.(url|token)/);
     expect(deliverySource).not.toMatch(/console\.\w+\([^)]*message\.(url|token)/);
     expect(deliverySource).not.toMatch(/console\.\w+\([^)]*password/i);

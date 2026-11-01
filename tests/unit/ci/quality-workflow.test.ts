@@ -32,6 +32,7 @@ describe("CI quality workflow", () => {
     expect(workflow).not.toMatch(/GOOGLE_CLIENT_SECRET:/);
     expect(workflow).not.toMatch(/EMAIL_PROVIDER/);
     expect(workflow).not.toMatch(/RESEND_API_KEY/);
+    expect(workflow).not.toMatch(/EMAIL_FROM/);
     expect(workflow).not.toMatch(/AUTH_EMAIL_FROM/);
     expect(workflow).not.toMatch(/SMTP_/);
   });
