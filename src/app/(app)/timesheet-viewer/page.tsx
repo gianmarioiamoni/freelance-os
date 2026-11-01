@@ -11,6 +11,8 @@ import { getCurrentWorkspaceContext } from "@/infrastructure/workspace/current-w
 import { createRepositories } from "@/infrastructure/persistence/create-repositories";
 import type { JSX } from "react";
 
+export const dynamic = "force-dynamic";
+
 export default async function TimesheetViewerPage(): Promise<JSX.Element> {
   let context, viewers, reports, contracts;
 

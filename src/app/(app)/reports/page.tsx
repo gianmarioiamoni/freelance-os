@@ -4,20 +4,11 @@ import { listClients } from "@/application/clients/list-clients";
 import { listContracts } from "@/application/contracts/list-contracts";
 import { WorkspaceInvoiceService } from "@/application/invoices/workspace-invoice-service";
 import { ReportingService } from "@/application/reporting/reporting-service";
-import { EmptyState } from "@/components/states/EmptyState";
 import { ErrorState } from "@/components/states/ErrorState";
-import { Button } from "@/components/ui/button";
 import { createRepositories } from "@/infrastructure/persistence/create-repositories";
 import { getCurrentWorkspaceContext } from "@/infrastructure/workspace/current-workspace";
-import { AnnualInvoiceReport } from "@/features/reporting/AnnualInvoiceReport";
-import { AnnualOverviewTable } from "@/features/reporting/AnnualOverviewTable";
-import { ContractReportTable } from "@/features/reporting/ContractReportTable";
-import { HoursByClientTable } from "@/features/reporting/HoursByClientTable";
-import { MonthlyTimesheetTable } from "@/features/reporting/MonthlyTimesheetTable";
 import { PeriodSelector } from "@/features/reporting/PeriodSelector";
-import { ReportEntityFilters } from "@/features/reporting/ReportEntityFilters";
 import { toReportFilterOptions } from "@/features/reporting/report-filter-options";
-import { RevenueSummary } from "@/features/reporting/RevenueSummary";
 import { ReportsPageClient } from "@/features/reporting/ReportsPageClient";
 import {
   getReportingCalendarYear,
@@ -26,7 +17,6 @@ import {
   toReportingPeriodKind,
   PERIOD_LABELS,
 } from "@/features/reporting/reporting-types";
-import Link from "next/link";
 import type { JSX } from "react";
 
 type ReportsPageProps = {

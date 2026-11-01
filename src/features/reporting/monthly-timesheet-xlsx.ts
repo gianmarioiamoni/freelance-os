@@ -4,10 +4,7 @@ import "server-only";
 import * as XLSX from "xlsx";
 
 import type { MonthlyTimesheetExportDataset } from "@/features/reporting/monthly-timesheet-export";
-import {
-  formatTimesheetDate,
-  formatTimesheetHours,
-} from "@/features/reporting/monthly-timesheet-export";
+import { formatTimesheetHours } from "@/features/reporting/monthly-timesheet-export";
 
 type CellScalar = string | number | boolean | null;
 
@@ -74,7 +71,6 @@ function buildSummarySheet(
   ]);
   
   // Add total row
-  const totalRow = data.length + 1; // 1-indexed
   data.push(["Total Hours", null, null, formatTimesheetHours(dataset.totalMinutes)]);
   
   const sheet = XLSX.utils.aoa_to_sheet(data);
