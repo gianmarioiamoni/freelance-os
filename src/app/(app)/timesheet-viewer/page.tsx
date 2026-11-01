@@ -48,10 +48,25 @@ export default async function TimesheetViewerPage(): Promise<JSX.Element> {
         context.workspaceId,
         contract.clientId,
       );
+      
+      // Create unique label for contracts
+      let label: string;
+      if (contract.reference) {
+        label = contract.reference;
+      } else {
+        // If no reference, use validFrom date to distinguish contracts
+        const dateStr = contract.validFrom.toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "short",
+        });
+        label = `Contract from ${dateStr}`;
+      }
+      
       return {
         id: contract.id,
         reference: contract.reference,
         clientName: client?.companyName || "Unknown Client",
+        label,
       };
     }),
   );

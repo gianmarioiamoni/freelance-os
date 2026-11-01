@@ -33,6 +33,7 @@ type Contract = {
   id: string;
   reference: string | null;
   clientName: string;
+  label: string;
 };
 
 type AuthorizedContract = {
@@ -78,9 +79,7 @@ export function TimesheetViewerPageClient({
           <InviteViewerForm 
             availableContracts={contracts.map(c => ({
               id: c.id,
-              label: c.reference 
-                ? `${c.clientName} - ${c.reference}` 
-                : c.clientName,
+              label: `${c.clientName} - ${c.label}`,
             }))}
           />
         </TabsContent>
