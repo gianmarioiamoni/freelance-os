@@ -1,6 +1,7 @@
 // src/app/(viewer-portal)/viewer-access-selector/page.tsx
-import { SIGN_IN_PATH } from "@/application/auth/route-access";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 import { getServerAuthSession } from "@/infrastructure/auth/session";
 import { createRepositories } from "@/infrastructure/persistence/create-repositories";
 import { redirect } from "next/navigation";
@@ -11,7 +12,7 @@ export default async function ViewerAccessSelectorPage(): Promise<JSX.Element> {
   const session = await getServerAuthSession();
 
   if (!session) {
-    redirect(SIGN_IN_PATH);
+    redirect("/viewer-login");
   }
 
   const repositories = createRepositories();
@@ -26,11 +27,22 @@ export default async function ViewerAccessSelectorPage(): Promise<JSX.Element> {
       <div className="flex items-center justify-center min-h-[400px]">
         <Card className="w-full max-w-md">
           <CardHeader>
-            <CardTitle>No Active Viewer Access</CardTitle>
+            <CardTitle>No Active Access</CardTitle>
             <CardDescription>
-              You do not have any active viewer access.
+              You don&apos;t have any active timesheet viewer access.
             </CardDescription>
           </CardHeader>
+          <CardContent>
+            <Alert className="mb-4">
+              <AlertTitle>No Timesheet Access Found</AlertTitle>
+              <AlertDescription>
+                Please contact the workspace owner for an invitation.
+              </AlertDescription>
+            </Alert>
+            <Link href="/viewer-login">
+              <Button variant="outline" className="w-full">Back to Sign In</Button>
+            </Link>
+          </CardContent>
         </Card>
       </div>
     );
@@ -49,7 +61,7 @@ export default async function ViewerAccessSelectorPage(): Promise<JSX.Element> {
         <CardHeader>
           <CardTitle>Select Viewer Access</CardTitle>
           <CardDescription>
-            You have access to multiple workspaces. Select one to continue.
+            You have access to multiple timesheets. Select one to view.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -62,7 +74,7 @@ export default async function ViewerAccessSelectorPage(): Promise<JSX.Element> {
               >
                 <div className="font-medium">{access.email}</div>
                 <div className="text-sm text-muted-foreground">
-                  Workspace ID: {access.workspaceId}
+                  Activated: {access.activatedAt ? new Date(access.activatedAt).toLocaleDateString() : "N/A"}
                 </div>
               </Link>
             ))}

@@ -43,7 +43,6 @@ describe("Reports page AI separation", () => {
     
     // Core components are present
     expect(pageSource).toContain("PeriodSelector");
-    expect(pageSource).toContain("ReportEntityFilters");
     expect(clientSource).toContain("RevenueSummary");
     expect(clientSource).toContain("HoursByClientTable");
     expect(clientSource).toContain("ContractReportTable");

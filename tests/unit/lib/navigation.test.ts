@@ -18,14 +18,14 @@ describe("buildNavigationItems - Invoices", () => {
     );
   });
 
-  it("places Invoices after Reports and before AI Assistant", () => {
+  it("places Invoices after Reports and before Timesheet Viewer", () => {
     const hrefs = buildNavigationItems(0, false).map((item) => item.href);
     const reportsIndex = hrefs.indexOf("/reports");
     const invoicesIndex = hrefs.indexOf("/invoices");
-    const assistantIndex = hrefs.indexOf("/assistant");
+    const timesheetViewerIndex = hrefs.indexOf("/timesheet-viewer");
 
     expect(invoicesIndex).toBe(reportsIndex + 1);
-    expect(assistantIndex).toBe(invoicesIndex + 1);
+    expect(timesheetViewerIndex).toBe(invoicesIndex + 1);
   });
 });
 
@@ -42,13 +42,13 @@ describe("buildNavigationItems - AI Assistant", () => {
     );
   });
 
-  it("places AI Assistant after Invoices and before Alerts", () => {
+  it("places AI Assistant after Timesheet Viewer and before Alerts", () => {
     const hrefs = buildNavigationItems(0, false).map((item) => item.href);
-    const invoicesIndex = hrefs.indexOf("/invoices");
+    const timesheetViewerIndex = hrefs.indexOf("/timesheet-viewer");
     const assistantIndex = hrefs.indexOf("/assistant");
     const alertsIndex = hrefs.indexOf("/alerts");
 
-    expect(assistantIndex).toBe(invoicesIndex + 1);
+    expect(assistantIndex).toBe(timesheetViewerIndex + 1);
     expect(alertsIndex).toBe(assistantIndex + 1);
   });
 });

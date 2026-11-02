@@ -3,64 +3,64 @@
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
-import { useState, useEffect, type JSX } from "react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useState, type JSX } from "react";
 
 type ViewerActivateFormProps = {
   token?: string;
+  email?: string;
   error?: string;
 };
 
 export function ViewerActivateForm({
   token,
+  email: initialEmail,
   error: initialError,
 }: ViewerActivateFormProps): JSX.Element {
-  const router = useRouter();
-  const [isActivating, setIsActivating] = useState(false);
+  const [email, setEmail] = useState(initialEmail || "");
+  const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState<string | null>(initialError || null);
   const [success, setSuccess] = useState(false);
 
-  useEffect(() => {
-    // Auto-activate if token is present and user is already authenticated
-    if (token && !isActivating && !error && !success) {
-      handleActivate();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  async function handleSendMagicLink(e: React.FormEvent) {
+    e.preventDefault();
 
-  async function handleActivate() {
     if (!token) {
       setError("No activation token provided");
       return;
     }
 
-    setIsActivating(true);
+    if (!email.trim()) {
+      setError("Email is required");
+      return;
+    }
+
+    setIsSending(true);
     setError(null);
 
     try {
-      const response = await fetch("/api/viewer-portal/activate", {
+      const response = await fetch("/api/viewer-portal/request-magic-link", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token }),
+        body: JSON.stringify({
+          email: email.trim(),
+          viewerInviteToken: token,
+        }),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        setError(data.error || "Activation failed");
-        setIsActivating(false);
+        setError(data.error || "Failed to send sign-in link");
+        setIsSending(false);
         return;
       }
 
       setSuccess(true);
-      
-      // Redirect to viewer dashboard after successful activation
-      setTimeout(() => {
-        router.push("/viewer-dashboard");
-      }, 2000);
     } catch {
-      setError("Unable to activate viewer access. Please try again.");
-      setIsActivating(false);
+      setError("Unable to send sign-in link. Please try again.");
+      setIsSending(false);
     }
   }
 
@@ -84,36 +84,43 @@ export function ViewerActivateForm({
 
       {error && (
         <Alert variant="destructive" className="mb-4">
-          <AlertTitle>Activation Failed</AlertTitle>
+          <AlertTitle>Error</AlertTitle>
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
 
       {success ? (
         <Alert className="mb-4">
-          <AlertTitle>Activation Successful</AlertTitle>
+          <AlertTitle>Check Your Email</AlertTitle>
           <AlertDescription>
-            Your viewer access has been activated. Redirecting to dashboard...
+            A sign-in link has been sent to {email}. Click the link in the email
+            to access your timesheet dashboard.
           </AlertDescription>
         </Alert>
       ) : (
-        <>
+        <form onSubmit={handleSendMagicLink}>
           <p className="text-sm text-muted-foreground mb-6">
-            {isActivating
-              ? "Activating your timesheet viewer access..."
-              : "Click below to activate your timesheet viewer access."}
+            Enter your email address to receive a secure sign-in link. No
+            password required.
           </p>
 
-          {!isActivating && (
-            <Button
-              onClick={handleActivate}
-              disabled={isActivating}
-              className="w-full"
-            >
-              Activate Access
-            </Button>
-          )}
-        </>
+          <div className="mb-6">
+            <Label htmlFor="email">Email Address</Label>
+            <Input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="your@email.com"
+              disabled={isSending}
+              required
+            />
+          </div>
+
+          <Button type="submit" disabled={isSending} className="w-full">
+            {isSending ? "Sending..." : "Send Sign-In Link"}
+          </Button>
+        </form>
       )}
     </div>
   );

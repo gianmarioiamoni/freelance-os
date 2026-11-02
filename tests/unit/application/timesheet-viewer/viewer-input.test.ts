@@ -13,15 +13,18 @@ describe("parseInviteViewerInput", () => {
   it("accepts valid email with default expiry", () => {
     const result = parseInviteViewerInput({
       email: "viewer@example.com",
+      contractIds: ["123e4567-e89b-12d3-a456-426614174000"],
     });
 
     expect(result.email).toBe("viewer@example.com");
     expect(result.tokenExpiryHours).toBe(72);
+    expect(result.contractIds).toHaveLength(1);
   });
 
   it("normalizes email to lowercase", () => {
     const result = parseInviteViewerInput({
       email: "Viewer@Example.COM",
+      contractIds: ["123e4567-e89b-12d3-a456-426614174000"],
     });
 
     expect(result.email).toBe("viewer@example.com");
@@ -30,6 +33,7 @@ describe("parseInviteViewerInput", () => {
   it("accepts custom token expiry hours", () => {
     const result = parseInviteViewerInput({
       email: "viewer@example.com",
+      contractIds: ["123e4567-e89b-12d3-a456-426614174000"],
       tokenExpiryHours: 24,
     });
 

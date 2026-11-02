@@ -5,6 +5,7 @@ import type { JSX } from "react";
 type ViewerActivatePageProps = {
   searchParams: Promise<{
     token?: string;
+    email?: string;
     error?: string;
   }>;
 };
@@ -14,5 +15,11 @@ export default async function ViewerActivatePage({
 }: ViewerActivatePageProps): Promise<JSX.Element> {
   const params = await searchParams;
 
-  return <ViewerActivateForm token={params.token} error={params.error} />;
+  return (
+    <ViewerActivateForm
+      token={params.token}
+      email={params.email}
+      error={params.error}
+    />
+  );
 }
