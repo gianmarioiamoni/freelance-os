@@ -1,18 +1,17 @@
 // src/app/(viewer-portal)/viewer-dashboard/page.tsx
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { SIGN_IN_PATH } from "@/application/auth/route-access";
 import { AnalyticsService } from "@/application/analytics/analytics-service";
 import { ViewerMetricCard } from "@/components/viewer-portal/ViewerMetricCard";
-import { SimpleDailyBars } from "@/components/viewer-portal/SimpleDailyBars";
 import { AnomaliesAlert } from "@/components/viewer-portal/AnomaliesAlert";
 import { PeriodSelector } from "@/components/viewer-portal/PeriodSelector";
+import { ViewerDashboardTabs } from "@/components/viewer-portal/ViewerDashboardTabs";
 import { getViewerDashboard } from "@/application/timesheet-viewer/get-viewer-dashboard";
 import { getViewerTimeEntries } from "@/application/timesheet-viewer/get-viewer-time-entries";
+import { getViewerAnomalies } from "@/application/timesheet-viewer/get-viewer-anomalies";
 import { requireViewerAccess } from "@/application/timesheet-viewer/viewer-access-guard";
 import { getServerAuthSession } from "@/infrastructure/auth/session";
 import { createRepositories } from "@/infrastructure/persistence/create-repositories";
 import { redirect } from "next/navigation";
-import { ViewerTimeEntriesTableWrapper } from "@/components/viewer-portal/ViewerTimeEntriesTableWrapper";
 import type { JSX } from "react";
 
 type ViewerDashboardPageProps = {
@@ -79,7 +78,7 @@ export default async function ViewerDashboardPage({
       session.user.email,
     );
 
-    const [dashboardData, timeEntries] = await Promise.all([
+    const [dashboardData, timeEntries, anomalies] = await Promise.all([
       getViewerDashboard(
         workspaceId,
         viewerAccessId,
@@ -93,6 +92,16 @@ export default async function ViewerDashboardPage({
         month,
         year,
         repositories,
+      ),
+      getViewerAnomalies(
+        workspaceId,
+        viewerAccessId,
+        {
+          viewerAccess: repositories.viewerAccess,
+          anomalyReports: repositories.anomalyReports,
+          timeEntries: repositories.timeEntries,
+          contracts: repositories.contracts,
+        },
       ),
     ]);
 
@@ -143,31 +152,12 @@ export default async function ViewerDashboardPage({
           />
         </div>
 
-        <Card>
-          <CardHeader>
-            <h2 className="font-heading text-base leading-snug font-medium">
-              Daily Activity
-            </h2>
-          </CardHeader>
-          <CardContent>
-            <SimpleDailyBars dailyData={dashboardData.dailyBreakdown} />
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <h2 className="font-heading text-base leading-snug font-medium">
-              Registrazioni Timesheet
-            </h2>
-          </CardHeader>
-          <CardContent>
-            <ViewerTimeEntriesTableWrapper
-              entries={timeEntries}
-              viewerAccessId={viewerAccessId}
-              workspaceId={workspaceId}
-            />
-          </CardContent>
-        </Card>
+        <ViewerDashboardTabs
+          timeEntries={timeEntries}
+          anomalies={anomalies}
+          viewerAccessId={viewerAccessId}
+          workspaceId={workspaceId}
+        />
       </div>
     );
   } catch (error) {

@@ -6,6 +6,7 @@ import { Resend } from "resend";
 export type AnomalyNotificationPayload = {
   freelancerEmail: string;
   workspaceName: string;
+  workspaceId: string;
   viewerEmail: string;
   workDate: Date;
   engagement: string;
@@ -73,6 +74,9 @@ function anomalyNotificationText(data: AnomalyNotificationPayload): string {
     day: "numeric",
   });
 
+  const baseUrl = process.env.BETTER_AUTH_URL || process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const consoleUrl = `${baseUrl}/timesheet-viewer`;
+
   const lines: string[] = [
     `Nuova segnalazione anomalia - ${data.workspaceName}`,
     "",
@@ -92,7 +96,10 @@ function anomalyNotificationText(data: AnomalyNotificationPayload): string {
     "ANOMALIA SEGNALATA:",
     data.anomalyMessage,
     "",
-    "Accedi alla console di gestione Timesheet Viewer per visualizzare e gestire questa segnalazione.",
+    "GESTISCI QUESTA SEGNALAZIONE:",
+    consoleUrl,
+    "",
+    "Accedi alla console Timesheet Viewer per prendere in carico o risolvere questa anomalia.",
     "",
     "---",
     "FreelanceOS - Timesheet Management",

@@ -124,6 +124,7 @@ export async function reportTimeEntryAnomaly(
     await deliverAnomalyNotificationEmail({
       freelancerEmail: ownerUser.email,
       workspaceName,
+      workspaceId: context.workspaceId,
       viewerEmail: viewer.email,
       workDate: timeEntry.workDate,
       engagement: engagementName,

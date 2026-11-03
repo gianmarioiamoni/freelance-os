@@ -13,6 +13,7 @@ export type ViewerTimeEntryDisplay = {
   id: string;
   workDate: Date;
   engagement: string;
+  durationMinutes: number;
   description: string | null;
 };
 
@@ -89,6 +90,7 @@ export async function getViewerTimeEntries(
       id: entry.id,
       workDate: entry.workDate,
       engagement: contractsMap.get(entry.contractId) || "Unknown",
+      durationMinutes: entry.durationMinutes,
       description: entry.description,
     }))
     .sort((a, b) => b.workDate.getTime() - a.workDate.getTime());

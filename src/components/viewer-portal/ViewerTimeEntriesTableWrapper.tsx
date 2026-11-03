@@ -8,6 +8,7 @@ type TimeEntryDisplay = {
   id: string;
   workDate: Date;
   engagement: string;
+  durationMinutes: number;
   description: string | null;
 };
 

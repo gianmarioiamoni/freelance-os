@@ -26,6 +26,7 @@ type TimeEntryDisplay = {
   id: string;
   workDate: Date;
   engagement: string;
+  durationMinutes: number;
   description: string | null;
 };
 
@@ -106,33 +107,38 @@ export function ViewerTimeEntriesTable({
             <TableRow>
               <TableHead className="w-[120px]">Data</TableHead>
               <TableHead>Impegno</TableHead>
+              <TableHead className="w-[100px]">Ore</TableHead>
               <TableHead className="min-w-[200px]">Descrizione</TableHead>
               <TableHead className="w-[140px]">Azione</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {entries.map((entry) => (
-              <TableRow key={entry.id}>
-                <TableCell>
-                  {new Date(entry.workDate).toLocaleDateString("it-IT")}
-                </TableCell>
-                <TableCell className="font-medium">{entry.engagement}</TableCell>
-                <TableCell className="max-w-md">
-                  {entry.description || <span className="text-muted-foreground italic">Nessuna descrizione</span>}
-                </TableCell>
-                <TableCell>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => openDialog(entry)}
-                    className="flex items-center gap-2"
-                  >
-                    <AlertTriangle className="h-4 w-4" />
-                    Segnala anomalia
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
+            {entries.map((entry) => {
+              const hours = (entry.durationMinutes / 60).toFixed(2);
+              return (
+                <TableRow key={entry.id}>
+                  <TableCell>
+                    {new Date(entry.workDate).toLocaleDateString("it-IT")}
+                  </TableCell>
+                  <TableCell className="font-medium">{entry.engagement}</TableCell>
+                  <TableCell className="text-right font-mono">{hours}h</TableCell>
+                  <TableCell className="max-w-md">
+                    {entry.description || <span className="text-muted-foreground italic">Nessuna descrizione</span>}
+                  </TableCell>
+                  <TableCell>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => openDialog(entry)}
+                      className="flex items-center gap-2"
+                    >
+                      <AlertTriangle className="h-4 w-4" />
+                      Segnala anomalia
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
           </TableBody>
         </Table>
       </div>

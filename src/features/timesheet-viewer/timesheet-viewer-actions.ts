@@ -201,7 +201,13 @@ export async function acknowledgeAnomalyAction(
       context,
       reportId,
       { freelanceNotes },
-      repositories.anomalyReports,
+      {
+        anomalyReports: repositories.anomalyReports,
+        viewerAccess: repositories.viewerAccess,
+        timeEntries: repositories.timeEntries,
+        contracts: repositories.contracts,
+        workspaces: repositories.workspaces,
+      },
     );
 
     revalidatePath("/timesheet-viewer");
@@ -225,7 +231,13 @@ export async function resolveAnomalyAction(
       context,
       reportId,
       { freelanceNotes },
-      repositories.anomalyReports,
+      {
+        anomalyReports: repositories.anomalyReports,
+        viewerAccess: repositories.viewerAccess,
+        timeEntries: repositories.timeEntries,
+        contracts: repositories.contracts,
+        workspaces: repositories.workspaces,
+      },
     );
 
     revalidatePath("/timesheet-viewer");

@@ -667,12 +667,22 @@ describe("acknowledgeAnomaly", () => {
   it("acknowledges open anomaly report", async () => {
     const anomaly = anomalyRecord({ status: "OPEN" });
     const anomalyReports = createFakeAnomalyReportRepository([anomaly]);
+    const viewerAccess = createFakeViewerAccessRepository();
+    const timeEntries = createFakeTimeEntryRepository();
+    const contracts = createFakeContractRepository();
+    const workspaces = createFakeWorkspaceRepository();
 
     const result = await acknowledgeAnomaly(
       context,
       anomaly.id,
       { freelanceNotes: "Looking into this" },
-      anomalyReports,
+      {
+        anomalyReports,
+        viewerAccess,
+        timeEntries,
+        contracts,
+        workspaces,
+      },
     );
 
     expect(result.status).toBe("ACKNOWLEDGED");
@@ -683,13 +693,23 @@ describe("acknowledgeAnomaly", () => {
   it("rejects acknowledging non-open report", async () => {
     const anomaly = anomalyRecord({ status: "RESOLVED" });
     const anomalyReports = createFakeAnomalyReportRepository([anomaly]);
+    const viewerAccess = createFakeViewerAccessRepository();
+    const timeEntries = createFakeTimeEntryRepository();
+    const contracts = createFakeContractRepository();
+    const workspaces = createFakeWorkspaceRepository();
 
     await expect(
       acknowledgeAnomaly(
         context,
         anomaly.id,
         { freelanceNotes: "Too late" },
-        anomalyReports,
+        {
+          anomalyReports,
+          viewerAccess,
+          timeEntries,
+          contracts,
+          workspaces,
+        },
       ),
     ).rejects.toThrow("Anomaly report must be OPEN to acknowledge");
   });
@@ -699,12 +719,22 @@ describe("resolveAnomaly", () => {
   it("resolves anomaly report", async () => {
     const anomaly = anomalyRecord({ status: "ACKNOWLEDGED" });
     const anomalyReports = createFakeAnomalyReportRepository([anomaly]);
+    const viewerAccess = createFakeViewerAccessRepository();
+    const timeEntries = createFakeTimeEntryRepository();
+    const contracts = createFakeContractRepository();
+    const workspaces = createFakeWorkspaceRepository();
 
     const result = await resolveAnomaly(
       context,
       anomaly.id,
       { freelanceNotes: "Fixed the entry" },
-      anomalyReports,
+      {
+        anomalyReports,
+        viewerAccess,
+        timeEntries,
+        contracts,
+        workspaces,
+      },
     );
 
     expect(result.status).toBe("RESOLVED");
@@ -715,13 +745,23 @@ describe("resolveAnomaly", () => {
   it("rejects resolving already resolved report", async () => {
     const anomaly = anomalyRecord({ status: "RESOLVED" });
     const anomalyReports = createFakeAnomalyReportRepository([anomaly]);
+    const viewerAccess = createFakeViewerAccessRepository();
+    const timeEntries = createFakeTimeEntryRepository();
+    const contracts = createFakeContractRepository();
+    const workspaces = createFakeWorkspaceRepository();
 
     await expect(
       resolveAnomaly(
         context,
         anomaly.id,
         { freelanceNotes: "Already done" },
-        anomalyReports,
+        {
+          anomalyReports,
+          viewerAccess,
+          timeEntries,
+          contracts,
+          workspaces,
+        },
       ),
     ).rejects.toThrow("Anomaly report already resolved");
   });

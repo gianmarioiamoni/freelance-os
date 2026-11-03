@@ -20,7 +20,13 @@ export async function POST(
       context,
       reportId,
       body,
-      repositories.anomalyReports,
+      {
+        anomalyReports: repositories.anomalyReports,
+        viewerAccess: repositories.viewerAccess,
+        timeEntries: repositories.timeEntries,
+        contracts: repositories.contracts,
+        workspaces: repositories.workspaces,
+      },
     );
 
     return Response.json({
