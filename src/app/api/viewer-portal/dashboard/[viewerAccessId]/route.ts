@@ -55,6 +55,7 @@ export async function GET(
       workspaceId,
       viewerAccessId,
       repositories.viewerAccess,
+      session.user.email,
     );
 
     const dashboardData = await getViewerDashboard(

@@ -7,6 +7,7 @@ export async function requireViewerAccess(
   workspaceId: string,
   viewerAccessId: string,
   viewerAccessRepo: ViewerAccessRepository,
+  sessionEmail?: string,
 ): Promise<void> {
   const viewerAccess = await viewerAccessRepo.getById(
     workspaceId,
@@ -17,7 +18,17 @@ export async function requireViewerAccess(
     throw new ViewerAccessNotFoundError();
   }
 
-  if (viewerAccess.userId !== sessionUserId) {
-    throw new ViewerUnauthorizedError();
+  // Check userId match first
+  if (viewerAccess.userId === sessionUserId) {
+    return;
   }
+
+  // Fallback: check if email matches (for userId mismatch scenarios)
+  if (sessionEmail && viewerAccess.email.toLowerCase() === sessionEmail.toLowerCase()) {
+    // Email matches but userId doesn't - allow access
+    // Note: In a future enhancement, we could update the userId in the record here
+    return;
+  }
+
+  throw new ViewerUnauthorizedError();
 }

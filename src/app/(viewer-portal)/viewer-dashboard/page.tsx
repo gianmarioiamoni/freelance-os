@@ -74,6 +74,7 @@ export default async function ViewerDashboardPage({
       workspaceId,
       viewerAccessId,
       repositories.viewerAccess,
+      session.user.email,
     );
 
     const dashboardData = await getViewerDashboard(
