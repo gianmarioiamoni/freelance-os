@@ -6,6 +6,7 @@ import { ViewerAccessList } from "@/features/timesheet-viewer/ViewerAccessList";
 import { AnomalyReportsList } from "@/features/timesheet-viewer/AnomalyReportsList";
 import { ManageContractsDialog } from "@/features/timesheet-viewer/ManageContractsDialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
 import { useState, type JSX } from "react";
 
 type ViewerAccess = {
@@ -59,6 +60,7 @@ export function TimesheetViewerPageClient({
   const [activeTab, setActiveTab] = useState<string>("viewers");
 
   const selectedViewer = viewers.find((v) => v.id === manageViewerId);
+  const openAnomaliesCount = reports.filter((r) => r.status === "OPEN").length;
 
   return (
     <>
@@ -66,7 +68,17 @@ export function TimesheetViewerPageClient({
         <TabsList>
           <TabsTrigger value="viewers">Authorized Viewers</TabsTrigger>
           <TabsTrigger value="invite">Invite Timesheet Viewer</TabsTrigger>
-          <TabsTrigger value="reports">Anomaly Reports</TabsTrigger>
+          <TabsTrigger value="reports" className="flex items-center gap-2">
+            Anomaly Reports
+            {openAnomaliesCount > 0 && (
+              <Badge
+                variant="destructive"
+                className="ml-1 flex h-5 min-w-5 items-center justify-center rounded-full px-1 text-[0.65rem]"
+              >
+                {openAnomaliesCount > 99 ? "99+" : openAnomaliesCount}
+              </Badge>
+            )}
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="viewers" className="grid gap-4">

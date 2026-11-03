@@ -23,6 +23,7 @@ export type NavigationItem = {
 
 export function buildNavigationItems(
   unreadAlertCount: number,
+  unreadAnomalyCount: number,
   isAdmin: boolean = false,
 ): NavigationItem[] {
   const items: NavigationItem[] = [
@@ -32,7 +33,12 @@ export function buildNavigationItems(
     { href: "/time-tracking", label: "Time Tracking", icon: Clock },
     { href: "/reports", label: "Reports", icon: BarChart3 },
     { href: "/invoices", label: "Invoices", icon: Receipt },
-    { href: "/timesheet-viewer", label: "Timesheet Viewer", icon: Users },
+    {
+      href: "/timesheet-viewer",
+      label: "Timesheet Viewer",
+      icon: Users,
+      badge: unreadAnomalyCount > 0 ? unreadAnomalyCount : undefined,
+    },
     { href: "/assistant", label: "AI Assistant", icon: Sparkles },
     {
       href: "/alerts",

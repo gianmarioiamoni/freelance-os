@@ -16,6 +16,7 @@ type ViewerAnomaly = {
   id: string;
   workDate: Date;
   engagement: string;
+  durationMinutes: number;
   message: string;
   status: "OPEN" | "ACKNOWLEDGED" | "RESOLVED";
   freelanceNotes: string | null;
@@ -70,36 +71,39 @@ export function ViewerAnomaliesList({
         <TableHeader>
           <TableRow>
             <TableHead className="w-[120px]">Data Registrazione</TableHead>
-            <TableHead>Impegno</TableHead>
+            <TableHead className="w-[100px]">Ore</TableHead>
             <TableHead>Tua Segnalazione</TableHead>
             <TableHead className="w-[140px]">Stato</TableHead>
             <TableHead>Segnalata il</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {anomalies.map((anomaly) => (
-            <TableRow key={anomaly.id}>
-              <TableCell>
-                {new Date(anomaly.workDate).toLocaleDateString("it-IT")}
-              </TableCell>
-              <TableCell className="font-medium">{anomaly.engagement}</TableCell>
-              <TableCell>
-                <div className="space-y-1">
-                  <div className="line-clamp-2 text-sm">{anomaly.message}</div>
-                  {anomaly.freelanceNotes && (
-                    <div className="text-xs text-muted-foreground border-l-2 pl-2 mt-2">
-                      <span className="font-semibold">Note Freelancer: </span>
-                      {anomaly.freelanceNotes}
-                    </div>
-                  )}
-                </div>
-              </TableCell>
-              <TableCell>{getStatusBadge(anomaly.status)}</TableCell>
-              <TableCell className="text-sm text-muted-foreground">
-                {new Date(anomaly.createdAt).toLocaleDateString("it-IT")}
-              </TableCell>
-            </TableRow>
-          ))}
+          {anomalies.map((anomaly) => {
+            const hours = (anomaly.durationMinutes / 60).toFixed(2);
+            return (
+              <TableRow key={anomaly.id}>
+                <TableCell>
+                  {new Date(anomaly.workDate).toLocaleDateString("it-IT")}
+                </TableCell>
+                <TableCell className="text-right font-mono">{hours}h</TableCell>
+                <TableCell>
+                  <div className="space-y-1">
+                    <div className="line-clamp-2 text-sm">{anomaly.message}</div>
+                    {anomaly.freelanceNotes && (
+                      <div className="text-xs text-muted-foreground border-l-2 pl-2 mt-2">
+                        <span className="font-semibold">Note Freelancer: </span>
+                        {anomaly.freelanceNotes}
+                      </div>
+                    )}
+                  </div>
+                </TableCell>
+                <TableCell>{getStatusBadge(anomaly.status)}</TableCell>
+                <TableCell className="text-sm text-muted-foreground">
+                  {new Date(anomaly.createdAt).toLocaleDateString("it-IT")}
+                </TableCell>
+              </TableRow>
+            );
+          })}
         </TableBody>
       </Table>
     </div>

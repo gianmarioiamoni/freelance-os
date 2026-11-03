@@ -19,6 +19,7 @@ type ViewerAnomaly = {
   id: string;
   workDate: Date;
   engagement: string;
+  durationMinutes: number;
   message: string;
   status: "OPEN" | "ACKNOWLEDGED" | "RESOLVED";
   freelanceNotes: string | null;

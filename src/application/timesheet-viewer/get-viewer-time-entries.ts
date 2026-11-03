@@ -84,7 +84,7 @@ export async function getViewerTimeEntries(
     }
   }
 
-  // 7. Transform to display format
+  // 7. Transform to display format and sort ascending by workDate (oldest first)
   return filteredEntries
     .map((entry) => ({
       id: entry.id,
@@ -93,5 +93,5 @@ export async function getViewerTimeEntries(
       durationMinutes: entry.durationMinutes,
       description: entry.description,
     }))
-    .sort((a, b) => b.workDate.getTime() - a.workDate.getTime());
+    .sort((a, b) => a.workDate.getTime() - b.workDate.getTime());
 }

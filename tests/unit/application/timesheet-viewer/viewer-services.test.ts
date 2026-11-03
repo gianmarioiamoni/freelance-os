@@ -341,6 +341,14 @@ function createFakeContractRepository(
   };
 }
 
+function createFakeTimeEntryRepository() {
+  return {} as any;
+}
+
+function createFakeWorkspaceRepository() {
+  return {} as any;
+}
+
 function createFakeAnomalyReportRepository(
   seed: AnomalyReportRecord[] = [],
 ): AnomalyReportRepository {

@@ -106,7 +106,6 @@ export function ViewerTimeEntriesTable({
           <TableHeader>
             <TableRow>
               <TableHead className="w-[120px]">Data</TableHead>
-              <TableHead>Impegno</TableHead>
               <TableHead className="w-[100px]">Ore</TableHead>
               <TableHead className="min-w-[200px]">Descrizione</TableHead>
               <TableHead className="w-[140px]">Azione</TableHead>
@@ -120,7 +119,6 @@ export function ViewerTimeEntriesTable({
                   <TableCell>
                     {new Date(entry.workDate).toLocaleDateString("it-IT")}
                   </TableCell>
-                  <TableCell className="font-medium">{entry.engagement}</TableCell>
                   <TableCell className="text-right font-mono">{hours}h</TableCell>
                   <TableCell className="max-w-md">
                     {entry.description || <span className="text-muted-foreground italic">Nessuna descrizione</span>}

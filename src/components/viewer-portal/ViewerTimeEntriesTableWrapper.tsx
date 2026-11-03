@@ -2,6 +2,7 @@
 "use client";
 
 import { ViewerTimeEntriesTable } from "@/components/viewer-portal/ViewerTimeEntriesTable";
+import { useRouter } from "next/navigation";
 import type { JSX } from "react";
 
 type TimeEntryDisplay = {
@@ -23,6 +24,8 @@ export function ViewerTimeEntriesTableWrapper({
   viewerAccessId,
   workspaceId,
 }: ViewerTimeEntriesTableWrapperProps): JSX.Element {
+  const router = useRouter();
+
   async function handleReportAnomaly(
     timeEntryId: string,
     workDate: Date,
@@ -45,6 +48,9 @@ export function ViewerTimeEntriesTableWrapper({
       const error = await response.json();
       throw new Error(error.error || "Failed to report anomaly");
     }
+
+    // Refresh the page to show the new anomaly
+    router.refresh();
   }
 
   return (

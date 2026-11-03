@@ -9,6 +9,7 @@ import { loadUnreadNotificationCount } from "@/features/notifications/load-notif
 import { getServerAuthSession } from "@/infrastructure/auth/session";
 import { createRepositories } from "@/infrastructure/persistence/create-repositories";
 import { getCurrentWorkspaceContext } from "@/infrastructure/workspace/current-workspace";
+import { getUnreadAnomalyCount } from "@/application/timesheet-viewer/get-unread-anomaly-count";
 import { redirect } from "next/navigation";
 import type { JSX, ReactNode } from "react";
 
@@ -44,6 +45,11 @@ export default async function AppLayout({
   }
 
   const unreadAlertCount = await loadUnreadNotificationCount();
+  const unreadAnomalyCount = await getUnreadAnomalyCount(
+    context.workspaceId,
+    context.userId,
+    { anomalyReports: repositories.anomalyReports },
+  );
   const isAdmin = await isAuthenticatedUserAdmin();
 
   return (
@@ -54,6 +60,7 @@ export default async function AppLayout({
         session.user.email,
       )}
       unreadAlertCount={unreadAlertCount}
+      unreadAnomalyCount={unreadAnomalyCount}
       isAdmin={isAdmin}
     >
       {children}

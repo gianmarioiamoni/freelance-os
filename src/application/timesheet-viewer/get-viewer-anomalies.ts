@@ -11,6 +11,7 @@ export type ViewerAnomalyDisplay = {
   id: string;
   workDate: Date;
   engagement: string;
+  durationMinutes: number;
   message: string;
   status: "OPEN" | "ACKNOWLEDGED" | "RESOLVED";
   freelanceNotes: string | null;
@@ -46,11 +47,12 @@ export async function getViewerAnomalies(
     viewerAccessId,
   );
 
-  // 3. Enrich with engagement names
+  // 3. Enrich with engagement names and duration
   const enrichedReports: ViewerAnomalyDisplay[] = [];
 
   for (const report of reports) {
     let engagement = "Unknown";
+    let durationMinutes = 0;
 
     if (report.timeEntryId) {
       try {
@@ -60,6 +62,7 @@ export async function getViewerAnomalies(
         );
 
         if (timeEntry) {
+          durationMinutes = timeEntry.durationMinutes;
           const contract = await repositories.contracts.getContract(
             workspaceId,
             timeEntry.contractId,
@@ -78,6 +81,7 @@ export async function getViewerAnomalies(
       id: report.id,
       workDate: report.workDate,
       engagement,
+      durationMinutes,
       message: report.message,
       status: report.status,
       freelanceNotes: report.freelanceNotes,
@@ -87,8 +91,8 @@ export async function getViewerAnomalies(
     });
   }
 
-  // 4. Sort by creation date (most recent first)
+  // 4. Sort by work date ascending (oldest first)
   return enrichedReports.sort(
-    (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
+    (a, b) => a.workDate.getTime() - b.workDate.getTime(),
   );
 }

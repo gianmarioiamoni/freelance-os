@@ -17,11 +17,13 @@ import type { JSX } from "react";
 
 type MobileNavProps = {
   unreadAlertCount: number;
+  unreadAnomalyCount: number;
   isAdmin: boolean;
 };
 
 export function MobileNav({
   unreadAlertCount,
+  unreadAnomalyCount,
   isAdmin,
 }: MobileNavProps): JSX.Element {
   const [isOpen, setIsOpen] = useState(false);
@@ -62,6 +64,7 @@ export function MobileNav({
           <AppNav
             onNavigate={() => setIsOpen(false)}
             unreadAlertCount={unreadAlertCount}
+            unreadAnomalyCount={unreadAnomalyCount}
             isAdmin={isAdmin}
           />
         </nav>

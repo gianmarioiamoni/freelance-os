@@ -9,6 +9,7 @@ type AppHeaderProps = {
   accountLabel: string;
   workspaceName: string;
   unreadAlertCount: number;
+  unreadAnomalyCount: number;
   isAdmin: boolean;
 };
 
@@ -16,12 +17,17 @@ export function AppHeader({
   accountLabel,
   workspaceName,
   unreadAlertCount,
+  unreadAnomalyCount,
   isAdmin,
 }: AppHeaderProps): JSX.Element {
   return (
     <header className="sticky top-0 z-40 border-b bg-background">
       <div className="flex h-14 items-center gap-3 px-4">
-        <MobileNav unreadAlertCount={unreadAlertCount} isAdmin={isAdmin} />
+        <MobileNav
+          unreadAlertCount={unreadAlertCount}
+          unreadAnomalyCount={unreadAnomalyCount}
+          isAdmin={isAdmin}
+        />
         <Wordmark href={DEFAULT_AUTHENTICATED_PATH} />
         <p className="min-w-0 truncate text-sm text-muted-foreground">
           {workspaceName}
