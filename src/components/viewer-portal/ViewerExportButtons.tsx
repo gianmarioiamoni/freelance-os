@@ -82,45 +82,59 @@ export function ViewerExportButtons({
   async function exportToPDF(
     data: Array<{ data: string; ore: string; descrizione: string }>,
   ) {
-    const pdfMake = await import("pdfmake/build/pdfmake");
-    const pdfFonts = await import("pdfmake/build/vfs_fonts");
-    
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (pdfMake as any).vfs = (pdfFonts as any).pdfMake.vfs;
+    try {
+      const pdfMake = await import("pdfmake/build/pdfmake");
+      const pdfFonts = await import("pdfmake/build/vfs_fonts");
+      
+      // Setup fonts
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const pdfMakeInstance = pdfMake as any;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const pdfFontsInstance = pdfFonts as any;
+      
+      if (pdfMakeInstance.default) {
+        pdfMakeInstance.default.vfs = pdfFontsInstance.default?.pdfMake?.vfs || pdfFontsInstance.pdfMake?.vfs;
+      } else {
+        pdfMakeInstance.vfs = pdfFontsInstance.default?.pdfMake?.vfs || pdfFontsInstance.pdfMake?.vfs;
+      }
 
-    const docDefinition = {
-      content: [
-        { text: "Timesheet Report", style: "header" },
-        { text: `Generato il: ${new Date().toLocaleDateString("it-IT")}`, style: "subheader" },
-        {
-          table: {
-            headerRows: 1,
-            widths: ["auto", "auto", "*"],
-            body: [
-              ["Data", "Ore", "Descrizione"],
-              ...data.map((row) => [row.data, row.ore, row.descrizione]),
-            ],
+      const docDefinition = {
+        content: [
+          { text: "Timesheet Report", style: "header" },
+          { text: `Generato il: ${new Date().toLocaleDateString("it-IT")}`, style: "subheader" },
+          {
+            table: {
+              headerRows: 1,
+              widths: ["auto", "auto", "*"],
+              body: [
+                ["Data", "Ore", "Descrizione"],
+                ...data.map((row) => [row.data, row.ore, row.descrizione]),
+              ],
+            },
+            layout: "lightHorizontalLines",
           },
-          layout: "lightHorizontalLines",
+        ],
+        styles: {
+          header: {
+            fontSize: 18,
+            bold: true,
+            margin: [0, 0, 0, 10],
+          },
+          subheader: {
+            fontSize: 12,
+            margin: [0, 0, 0, 20],
+          },
         },
-      ],
-      styles: {
-        header: {
-          fontSize: 18,
-          bold: true,
-          margin: [0, 0, 0, 10] as [number, number, number, number],
-        },
-        subheader: {
-          fontSize: 12,
-          margin: [0, 0, 0, 20] as [number, number, number, number],
-        },
-      },
-    };
+      };
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (pdfMake as any).createPdf(docDefinition).download(
-      `timesheet_${new Date().toISOString().split("T")[0]}.pdf`,
-    );
+      const createPdf = pdfMakeInstance.default?.createPdf || pdfMakeInstance.createPdf;
+      createPdf(docDefinition).download(
+        `timesheet_${new Date().toISOString().split("T")[0]}.pdf`,
+      );
+    } catch (error) {
+      console.error("PDF export error:", error);
+      throw error;
+    }
   }
 
   if (entries.length === 0) {
