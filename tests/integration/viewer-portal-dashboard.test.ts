@@ -219,7 +219,7 @@ describe("Viewer Portal Dashboard Integration", () => {
       repositories,
     );
 
-    let dashboard = await getViewerDashboard(
+    const dashboard = await getViewerDashboard(
       { workspaceId: ctx.workspace.id },
       inviteResult.viewerAccess.id,
       10,

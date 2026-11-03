@@ -17,10 +17,19 @@ export default async function ViewerAccessSelectorPage(): Promise<JSX.Element> {
 
   const repositories = createRepositories();
 
-  const viewerAccesses = await repositories.viewerAccess.listForUser(
+  // Try to find viewer access by userId first, then by email as fallback
+  let viewerAccesses = await repositories.viewerAccess.listForUser(
     session.user.id,
     "ACTIVE",
   );
+
+  // Fallback: if no access found by userId, try by email
+  if (viewerAccesses.length === 0 && session.user.email) {
+    const accessByEmail = await repositories.viewerAccess.findActiveByEmail(
+      session.user.email,
+    );
+    viewerAccesses = accessByEmail;
+  }
 
   if (viewerAccesses.length === 0) {
     return (
