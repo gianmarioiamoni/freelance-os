@@ -104,7 +104,7 @@ export function SignInForm(): JSX.Element {
                     : "text-muted-foreground hover:text-foreground"
                 }`}
               >
-                Password
+                Freelancer
               </button>
               <button
                 type="button"
@@ -118,7 +118,7 @@ export function SignInForm(): JSX.Element {
                     : "text-muted-foreground hover:text-foreground"
                 }`}
               >
-                Magic Link
+                Report Viewer
               </button>
             </div>
 

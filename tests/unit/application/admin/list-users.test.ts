@@ -17,7 +17,7 @@ describe("listUsers", () => {
     });
   });
 
-  it("should list all users with admin flag", async () => {
+  it("should list only freelancer users with admin flag", async () => {
     const mockUsers = [
       {
         id: mockAdminUserId,
@@ -37,6 +37,11 @@ describe("listUsers", () => {
       },
     ];
 
+    vi.spyOn(prisma.workspaceMember, "findMany").mockResolvedValue([
+      { userId: mockAdminUserId, workspaceId: "ws-1", role: "OWNER", createdAt: new Date() },
+      { userId: "user-456", workspaceId: "ws-1", role: "MEMBER", createdAt: new Date() },
+    ]);
+
     vi.spyOn(prisma.user, "findMany").mockResolvedValue(
       mockUsers.map((u) => ({
         ...u,
@@ -54,11 +59,17 @@ describe("listUsers", () => {
   });
 
   it("should order users by creation date descending", async () => {
+    vi.spyOn(prisma.workspaceMember, "findMany").mockResolvedValue([]);
     vi.spyOn(prisma.user, "findMany").mockResolvedValue([]);
 
     await listUsers();
 
     expect(prisma.user.findMany).toHaveBeenCalledWith({
+      where: {
+        id: {
+          in: [],
+        },
+      },
       select: {
         id: true,
         name: true,
@@ -74,6 +85,7 @@ describe("listUsers", () => {
   });
 
   it("should require admin authorization", async () => {
+    vi.spyOn(prisma.workspaceMember, "findMany").mockResolvedValue([]);
     vi.spyOn(prisma.user, "findMany").mockResolvedValue([]);
 
     await listUsers();
@@ -85,12 +97,71 @@ describe("listUsers", () => {
     const { UnauthorizedAdminAccessError } = await import(
       "@/application/admin/admin-errors"
     );
-    const findMany = vi.spyOn(prisma.user, "findMany");
+    const userFindMany = vi.spyOn(prisma.user, "findMany");
+    const workspaceMemberFindMany = vi.spyOn(prisma.workspaceMember, "findMany");
     vi.mocked(adminAuth.requireAdminAuthorization).mockRejectedValue(
       new UnauthorizedAdminAccessError(),
     );
 
     await expect(listUsers()).rejects.toThrow(UnauthorizedAdminAccessError);
-    expect(findMany).not.toHaveBeenCalled();
+    expect(workspaceMemberFindMany).not.toHaveBeenCalled();
+    expect(userFindMany).not.toHaveBeenCalled();
+  });
+
+  it("should exclude viewer-only users", async () => {
+    const freelancerId = "freelancer-123";
+    const viewerOnlyId = "viewer-only-456";
+
+    vi.spyOn(prisma.workspaceMember, "findMany").mockResolvedValue([
+      { userId: freelancerId, workspaceId: "ws-1", role: "MEMBER", createdAt: new Date() },
+    ]);
+
+    vi.spyOn(prisma.user, "findMany").mockResolvedValue([
+      {
+        id: freelancerId,
+        name: "Freelancer User",
+        email: "freelancer@example.com",
+        createdAt: new Date("2024-01-01"),
+        disabledAt: null,
+        deletedAt: null,
+        emailVerified: false,
+        image: null,
+        updatedAt: new Date(),
+      },
+    ]);
+
+    const result = await listUsers();
+
+    expect(result).toHaveLength(1);
+    expect(result[0].id).toBe(freelancerId);
+    expect(result[0].email).toBe("freelancer@example.com");
+  });
+
+  it("should include users with both freelancer and viewer roles", async () => {
+    const dualRoleUserId = "dual-789";
+
+    vi.spyOn(prisma.workspaceMember, "findMany").mockResolvedValue([
+      { userId: dualRoleUserId, workspaceId: "ws-1", role: "MEMBER", createdAt: new Date() },
+    ]);
+
+    vi.spyOn(prisma.user, "findMany").mockResolvedValue([
+      {
+        id: dualRoleUserId,
+        name: "Dual Role User",
+        email: "dual@example.com",
+        createdAt: new Date("2024-01-01"),
+        disabledAt: null,
+        deletedAt: null,
+        emailVerified: false,
+        image: null,
+        updatedAt: new Date(),
+      },
+    ]);
+
+    const result = await listUsers();
+
+    expect(result).toHaveLength(1);
+    expect(result[0].id).toBe(dualRoleUserId);
+    expect(result[0].email).toBe("dual@example.com");
   });
 });

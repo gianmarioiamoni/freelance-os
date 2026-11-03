@@ -34,6 +34,22 @@ describe("Admin UI authorization and mutations", () => {
         email: `${targetUserId}@example.com`,
       },
     });
+
+    const workspace = await prisma.workspace.create({
+      data: {
+        name: "Test Workspace",
+        timezone: "UTC",
+        currency: "EUR",
+      },
+    });
+
+    await prisma.workspaceMember.create({
+      data: {
+        workspaceId: workspace.id,
+        userId: targetUserId,
+        role: "MEMBER",
+      },
+    });
   });
 
   afterEach(async () => {

@@ -18,7 +18,23 @@ export type AdminUserListItem = {
 export async function listUsers(): Promise<AdminUserListItem[]> {
   const admin = await requireAdminAuthorization();
 
+  const workspaceMemberUserIds = await prisma.workspaceMember.findMany({
+    select: {
+      userId: true,
+    },
+    distinct: ["userId"],
+  });
+
+  const freelancerUserIds = new Set(
+    workspaceMemberUserIds.map((member) => member.userId),
+  );
+
   const users = await prisma.user.findMany({
+    where: {
+      id: {
+        in: Array.from(freelancerUserIds),
+      },
+    },
     select: {
       id: true,
       name: true,
