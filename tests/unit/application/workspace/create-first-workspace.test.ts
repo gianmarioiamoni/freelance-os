@@ -143,6 +143,8 @@ function createMemoryDependencies(
       findByWorkspaceAndEmail: unused,
       getActiveAccess: unused,
       listActiveByUserId: unused,
+      findActiveByEmail: unused,
+      listForUser: unused,
       listForWorkspace: unused,
       activate: unused,
       revoke: unused,

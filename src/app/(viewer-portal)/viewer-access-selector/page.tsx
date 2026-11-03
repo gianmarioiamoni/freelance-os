@@ -12,7 +12,7 @@ export default async function ViewerAccessSelectorPage(): Promise<JSX.Element> {
   const session = await getServerAuthSession();
 
   if (!session) {
-    redirect("/viewer-login");
+    redirect("/sign-in");
   }
 
   const repositories = createRepositories();
@@ -39,7 +39,7 @@ export default async function ViewerAccessSelectorPage(): Promise<JSX.Element> {
                 Please contact the workspace owner for an invitation.
               </AlertDescription>
             </Alert>
-            <Link href="/viewer-login">
+            <Link href="/sign-in">
               <Button variant="outline" className="w-full">Back to Sign In</Button>
             </Link>
           </CardContent>

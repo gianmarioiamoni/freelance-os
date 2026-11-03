@@ -375,6 +375,7 @@ export type ViewerAccessRepository = {
     userId: string,
   ): Promise<TimesheetViewerAccessRecord | null>;
   listActiveByUserId(userId: string): Promise<TimesheetViewerAccessRecord[]>;
+  findActiveByEmail(email: string): Promise<TimesheetViewerAccessRecord[]>;
   listForUser(
     userId: string,
     status?: "PENDING" | "ACTIVE" | "REVOKED",

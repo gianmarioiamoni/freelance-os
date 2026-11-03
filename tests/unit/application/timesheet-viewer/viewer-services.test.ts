@@ -182,6 +182,14 @@ function createFakeViewerAccessRepository(
     async listActiveByUserId(userId) {
       return records.filter((r) => r.userId === userId && r.status === "ACTIVE");
     },
+    async findActiveByEmail(email) {
+      return records.filter((r) => r.email.toLowerCase() === email.toLowerCase() && r.status === "ACTIVE");
+    },
+    async listForUser(userId, status) {
+      return records.filter(
+        (r) => r.userId === userId && (!status || r.status === status)
+      );
+    },
     async listForWorkspace(workspaceId, status) {
       return records.filter(
         (r) => r.workspaceId === workspaceId && (!status || r.status === status)

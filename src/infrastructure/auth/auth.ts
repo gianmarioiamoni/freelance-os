@@ -14,6 +14,13 @@ import { prisma } from "@/infrastructure/prisma/client";
 const google = getGoogleSocialProvider();
 const rateLimit = getBetterAuthRateLimitOptions();
 
+function shouldEnableMagicLink(
+  env: Record<string, string | undefined> = process.env,
+): boolean {
+  const flag = env.ENABLE_MAGIC_LINK?.toLowerCase();
+  return flag !== "false" && flag !== "0";
+}
+
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: "postgresql",
@@ -29,12 +36,14 @@ export const auth = betterAuth({
         google,
       }
     : {},
-  plugins: [
-    magicLink({
-      sendMagicLink: sendMagicLinkEmail,
-      expiresIn: 60 * 5, // 5 minutes
-    }),
-  ],
+  plugins: shouldEnableMagicLink()
+    ? [
+        magicLink({
+          sendMagicLink: sendMagicLinkEmail,
+          expiresIn: 60 * 5, // 5 minutes
+        }),
+      ]
+    : [],
   secret: process.env.BETTER_AUTH_SECRET,
   baseURL: process.env.BETTER_AUTH_URL,
   ...(rateLimit ? { rateLimit } : {}),

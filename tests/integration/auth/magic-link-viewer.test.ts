@@ -126,8 +126,31 @@ describe("magic link viewer authentication", () => {
     expect(captured).toHaveLength(0);
   });
 
-  it("sends magic link for viewer login", async () => {
+  it("sends magic link for active viewer login", async () => {
     const email = uniqueEmail("viewer-login");
+    const workspaceId = crypto.randomUUID();
+    const userId = crypto.randomUUID();
+
+    // Create workspace
+    await prisma.workspace.create({
+      data: {
+        id: workspaceId,
+        name: "Test Workspace",
+        timezone: "UTC",
+        currency: "USD",
+      },
+    });
+
+    // Create ACTIVE viewer access
+    await prisma.timesheetViewerAccess.create({
+      data: {
+        workspaceId,
+        email: email.toLowerCase(),
+        status: "ACTIVE",
+        userId,
+        activatedAt: new Date(),
+      },
+    });
 
     const response = await fetch("http://localhost:3000/api/viewer-portal/login", {
       method: "POST",
@@ -144,5 +167,62 @@ describe("magic link viewer authentication", () => {
     expect(captured[0]?.recipientEmail).toBe(email.toLowerCase());
     expect(captured[0]?.metadata?.type).toBe("viewer-login");
     expect(captured[0]?.url).toContain("/viewer-access-selector");
+  });
+
+  it("returns generic success for unauthorized viewer login", async () => {
+    const email = uniqueEmail("viewer-unauthorized");
+
+    const response = await fetch("http://localhost:3000/api/viewer-portal/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    });
+
+    expect(response.status).toBe(200);
+    const data = await response.json();
+    expect(data.success).toBe(true);
+    expect(data.message).toContain("If a timesheet viewer account exists");
+
+    // No email should be sent for unauthorized viewers
+    const captured = getCapturedMagicLinkEmails();
+    expect(captured).toHaveLength(0);
+  });
+
+  it("does not send magic link for pending viewer login", async () => {
+    const email = uniqueEmail("viewer-pending");
+    const workspaceId = crypto.randomUUID();
+
+    await prisma.workspace.create({
+      data: {
+        id: workspaceId,
+        name: "Test Workspace",
+        timezone: "UTC",
+        currency: "USD",
+      },
+    });
+
+    // Create PENDING viewer access (not yet activated)
+    await prisma.timesheetViewerAccess.create({
+      data: {
+        workspaceId,
+        email: email.toLowerCase(),
+        status: "PENDING",
+        userId: null,
+      },
+    });
+
+    const response = await fetch("http://localhost:3000/api/viewer-portal/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    });
+
+    expect(response.status).toBe(200);
+    const data = await response.json();
+    expect(data.success).toBe(true);
+
+    // No email should be sent for pending viewers
+    const captured = getCapturedMagicLinkEmails();
+    expect(captured).toHaveLength(0);
   });
 });

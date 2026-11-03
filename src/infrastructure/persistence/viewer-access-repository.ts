@@ -75,6 +75,19 @@ export function createViewerAccessRepository(
       });
     },
 
+    async findActiveByEmail(email: string) {
+      return withPersistenceErrors(async () => {
+        const rows = await db.timesheetViewerAccess.findMany({
+          where: {
+            email: email.toLowerCase(),
+            status: "ACTIVE",
+          },
+          orderBy: { activatedAt: "desc" },
+        });
+        return rows.map(mapViewerAccess);
+      });
+    },
+
     async listForUser(userId: string, status?: "PENDING" | "ACTIVE" | "REVOKED") {
       return withPersistenceErrors(async () => {
         const rows = await db.timesheetViewerAccess.findMany({
