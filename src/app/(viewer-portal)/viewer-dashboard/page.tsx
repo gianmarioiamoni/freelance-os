@@ -7,10 +7,12 @@ import { SimpleDailyBars } from "@/components/viewer-portal/SimpleDailyBars";
 import { AnomaliesAlert } from "@/components/viewer-portal/AnomaliesAlert";
 import { PeriodSelector } from "@/components/viewer-portal/PeriodSelector";
 import { getViewerDashboard } from "@/application/timesheet-viewer/get-viewer-dashboard";
+import { getViewerTimeEntries } from "@/application/timesheet-viewer/get-viewer-time-entries";
 import { requireViewerAccess } from "@/application/timesheet-viewer/viewer-access-guard";
 import { getServerAuthSession } from "@/infrastructure/auth/session";
 import { createRepositories } from "@/infrastructure/persistence/create-repositories";
 import { redirect } from "next/navigation";
+import { ViewerTimeEntriesTableWrapper } from "@/components/viewer-portal/ViewerTimeEntriesTableWrapper";
 import type { JSX } from "react";
 
 type ViewerDashboardPageProps = {
@@ -77,13 +79,22 @@ export default async function ViewerDashboardPage({
       session.user.email,
     );
 
-    const dashboardData = await getViewerDashboard(
-      workspaceId,
-      viewerAccessId,
-      month,
-      year,
-      repositories,
-    );
+    const [dashboardData, timeEntries] = await Promise.all([
+      getViewerDashboard(
+        workspaceId,
+        viewerAccessId,
+        month,
+        year,
+        repositories,
+      ),
+      getViewerTimeEntries(
+        workspaceId,
+        viewerAccessId,
+        month,
+        year,
+        repositories,
+      ),
+    ]);
 
     const totalHours = AnalyticsService.formatDuration(
       dashboardData.metrics.totalMinutes,
@@ -143,13 +154,20 @@ export default async function ViewerDashboardPage({
           </CardContent>
         </Card>
 
-        {dashboardData.metrics.totalMinutes === 0 && (
-          <div className="text-center py-12">
-            <p className="text-muted-foreground">
-              No time entries for this period
-            </p>
-          </div>
-        )}
+        <Card>
+          <CardHeader>
+            <h2 className="font-heading text-base leading-snug font-medium">
+              Registrazioni Timesheet
+            </h2>
+          </CardHeader>
+          <CardContent>
+            <ViewerTimeEntriesTableWrapper
+              entries={timeEntries}
+              viewerAccessId={viewerAccessId}
+              workspaceId={workspaceId}
+            />
+          </CardContent>
+        </Card>
       </div>
     );
   } catch (error) {

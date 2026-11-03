@@ -20,6 +20,7 @@ type ViewerAccess = {
 type AnomalyReport = {
   id: string;
   viewerAccessId: string;
+  timeEntryId: string | null;
   workDate: Date;
   message: string;
   status: string;
