@@ -112,5 +112,13 @@ export function createAnomalyReportRepository(
         ),
       );
     },
+
+    async delete(workspaceId: string, reportId: string) {
+      return withPersistenceErrors(async () => {
+        await db.anomalyReport.delete({
+          where: { id: reportId, workspaceId },
+        });
+      });
+    },
   };
 }

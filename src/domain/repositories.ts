@@ -457,4 +457,5 @@ export type AnomalyReportRepository = {
     reportId: string,
     input: UpdateAnomalyReportInput,
   ): Promise<AnomalyReportRecord>;
+  delete(workspaceId: string, reportId: string): Promise<void>;
 };

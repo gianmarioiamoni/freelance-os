@@ -24,6 +24,8 @@ import {
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 type AnomalyReport = {
   id: string;
@@ -45,10 +47,12 @@ type AnomalyReportsListProps = {
 export function AnomalyReportsList({
   reports,
 }: AnomalyReportsListProps): JSX.Element {
+  const router = useRouter();
   const [selectedReport, setSelectedReport] = useState<string | null>(null);
   const [notes, setNotes] = useState("");
   const [action, setAction] = useState<"acknowledge" | "resolve" | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isDeletingAll, setIsDeletingAll] = useState(false);
 
   function openDialog(
     reportId: string,
@@ -81,6 +85,60 @@ export function AnomalyReportsList({
     closeDialog();
   }
 
+  async function handleDelete(reportId: string) {
+    if (!confirm("Sei sicuro di voler eliminare questa anomalia risolta?")) {
+      return;
+    }
+
+    setIsProcessing(true);
+    try {
+      const response = await fetch(`/api/timesheet-viewer/anomalies/${reportId}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to delete anomaly");
+      }
+
+      router.refresh();
+    } catch (error) {
+      console.error("Error deleting anomaly:", error);
+      alert("Errore durante l'eliminazione dell'anomalia");
+    } finally {
+      setIsProcessing(false);
+    }
+  }
+
+  async function handleDeleteAllResolved() {
+    const resolvedReports = reports.filter((r) => r.status === "RESOLVED");
+    
+    if (resolvedReports.length === 0) {
+      alert("Non ci sono anomalie risolte da eliminare");
+      return;
+    }
+
+    if (!confirm(`Sei sicuro di voler eliminare tutte le ${resolvedReports.length} anomalie risolte?`)) {
+      return;
+    }
+
+    setIsDeletingAll(true);
+    try {
+      const deletePromises = resolvedReports.map((report) =>
+        fetch(`/api/timesheet-viewer/anomalies/${report.id}`, {
+          method: "DELETE",
+        })
+      );
+
+      await Promise.all(deletePromises);
+      router.refresh();
+    } catch (error) {
+      console.error("Error deleting anomalies:", error);
+      alert("Errore durante l'eliminazione delle anomalie");
+    } finally {
+      setIsDeletingAll(false);
+    }
+  }
+
   if (reports.length === 0) {
     return (
       <div className="text-sm text-muted-foreground">
@@ -89,8 +147,24 @@ export function AnomalyReportsList({
     );
   }
 
+  const resolvedCount = reports.filter((r) => r.status === "RESOLVED").length;
+
   return (
     <>
+      {resolvedCount > 0 && (
+        <div className="flex justify-end mb-4">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleDeleteAllResolved}
+            disabled={isDeletingAll}
+            className="flex items-center gap-2"
+          >
+            <Trash2 className="h-4 w-4" />
+            {isDeletingAll ? "Eliminazione..." : `Elimina tutte le risolte (${resolvedCount})`}
+          </Button>
+        </div>
+      )}
       <Table>
         <TableHeader>
           <TableRow>
@@ -152,7 +226,18 @@ export function AnomalyReportsList({
                     >
                       Risolvi
                     </Button>
-                  ) : null}
+                  ) : (
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      onClick={() => handleDelete(report.id)}
+                      disabled={isProcessing}
+                      className="flex items-center gap-2"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                      Elimina
+                    </Button>
+                  )}
                 </div>
               </TableCell>
             </TableRow>

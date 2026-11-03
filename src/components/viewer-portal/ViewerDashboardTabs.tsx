@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ViewerTimeEntriesTableWrapper } from "@/components/viewer-portal/ViewerTimeEntriesTableWrapper";
 import { ViewerAnomaliesList } from "@/components/viewer-portal/ViewerAnomaliesList";
+import { ViewerExportButtons } from "@/components/viewer-portal/ViewerExportButtons";
 import { useState, type JSX } from "react";
 
 type TimeEntryDisplay = {
@@ -61,9 +62,12 @@ export function ViewerDashboardTabs({
       <TabsContent value="timesheet" className="mt-4">
         <Card>
           <CardHeader>
-            <h2 className="font-heading text-base leading-snug font-medium">
-              Registrazioni del Periodo
-            </h2>
+            <div className="flex items-center justify-between">
+              <h2 className="font-heading text-base leading-snug font-medium">
+                Registrazioni del Periodo
+              </h2>
+              <ViewerExportButtons entries={timeEntries} />
+            </div>
           </CardHeader>
           <CardContent>
             <ViewerTimeEntriesTableWrapper

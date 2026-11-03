@@ -413,6 +413,13 @@ function createFakeAnomalyReportRepository(
 
       return record;
     },
+    async delete(workspaceId, reportId) {
+      const index = records.findIndex(
+        (r) => r.id === reportId && r.workspaceId === workspaceId,
+      );
+      if (index === -1) throw new RecordNotFoundError("AnomalyReport", reportId);
+      records.splice(index, 1);
+    },
   };
 }
 
