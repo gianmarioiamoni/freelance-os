@@ -75,6 +75,11 @@ export default async function MagicCallbackPage({
       `/viewer-dashboard?workspaceId=${result.viewerAccess.workspaceId}&viewerAccessId=${result.viewerAccess.id}`,
     );
   } catch (error) {
+    // Re-throw Next.js redirect errors
+    if (error instanceof Error && error.message.includes("NEXT_REDIRECT")) {
+      throw error;
+    }
+
     if (error instanceof ViewerTokenNotFoundError) {
       return <ErrorState message="Invalid activation token" />;
     }
