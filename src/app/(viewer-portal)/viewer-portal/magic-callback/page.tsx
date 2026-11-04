@@ -1,4 +1,5 @@
 // src/app/(viewer-portal)/viewer-portal/magic-callback/page.tsx
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import type { JSX } from "react";
 
@@ -33,7 +34,9 @@ export default async function MagicCallbackPage({
 
   try {
     // Verify session
-    const session = await auth.api.getSession();
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
 
     if (!session?.user?.id || !session.user.email) {
       return <ErrorState message="Authentication required" />;
