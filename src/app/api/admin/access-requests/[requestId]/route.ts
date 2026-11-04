@@ -5,6 +5,10 @@ import {
 } from "@/application/admin/admin-errors";
 import { requireAdminAuthorization } from "@/application/admin/admin-authorization";
 import { reviewAccessRequest } from "@/infrastructure/access-request/repository";
+import {
+  sendAccessApprovedEmail,
+  sendAccessRejectedEmail,
+} from "@/infrastructure/email/access-request-notifications";
 import { NextResponse, type NextRequest } from "next/server";
 
 type RouteContext = {
@@ -50,7 +54,12 @@ export async function PATCH(
       reviewedBy: admin.userId,
     });
 
-    // TODO: Send email notification to user
+    // Send email notification to user
+    if (approved) {
+      await sendAccessApprovedEmail(result);
+    } else {
+      await sendAccessRejectedEmail(result);
+    }
 
     return NextResponse.json({ success: true, request: result });
   } catch (error) {

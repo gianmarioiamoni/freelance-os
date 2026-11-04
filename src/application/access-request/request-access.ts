@@ -9,6 +9,10 @@ import {
   createAccessRequest,
   findAccessRequestByEmail,
 } from "@/infrastructure/access-request/repository";
+import {
+  notifyAdminNewAccessRequest,
+  sendAccessRequestConfirmationEmail,
+} from "@/infrastructure/email/access-request-notifications";
 
 type RequestAccessResult =
   | { success: true; request: AccessRequestRecord }
@@ -43,8 +47,14 @@ export async function requestAccess(
 
   const request = await createAccessRequest(input);
 
-  // TODO: Send notification to admin
-  // TODO: Send confirmation email to user
+  // Send confirmation email to user
+  await sendAccessRequestConfirmationEmail(request);
+
+  // Notify admin
+  const adminEmail = process.env.ADMIN_GOOGLE_EMAIL;
+  if (adminEmail) {
+    await notifyAdminNewAccessRequest(request, adminEmail);
+  }
 
   return { success: true, request };
 }
