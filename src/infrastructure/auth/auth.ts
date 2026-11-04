@@ -2,9 +2,11 @@
 import "server-only";
 
 import { betterAuth } from "better-auth";
+import { APIError } from "better-auth/api";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { magicLink } from "better-auth/plugins/magic-link";
 
+import { checkEmailHasAccess } from "@/infrastructure/access-request/repository";
 import { getBetterAuthRateLimitOptions } from "@/infrastructure/auth/e2e-runtime";
 import { getGoogleSocialProvider } from "@/infrastructure/auth/google-provider";
 import { sendPasswordResetEmail } from "@/infrastructure/email/password-reset-delivery";
@@ -45,6 +47,21 @@ export const auth = betterAuth({
         },
       }
     : {},
+  databaseHooks: {
+    user: {
+      create: {
+        before: async (user) => {
+          const hasAccess = await checkEmailHasAccess(user.email);
+          if (!hasAccess) {
+            throw new APIError("BAD_REQUEST", {
+              message:
+                "Access not granted. Please request access at /request-access",
+            });
+          }
+        },
+      },
+    },
+  },
   plugins: shouldEnableMagicLink()
     ? [
         magicLink({

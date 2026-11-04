@@ -4,7 +4,6 @@
 import { DEFAULT_AUTHENTICATED_PATH, LANDING_PATH } from "@/application/auth/route-access";
 import { Button } from "@/components/ui/button";
 import { GoogleSignInButton } from "@/features/auth/GoogleSignInButton";
-import { Wordmark } from "@/features/landing/Wordmark";
 import { authClient } from "@/infrastructure/auth/auth-client";
 import Link from "next/link";
 import { useState, type FormEvent, type JSX } from "react";
@@ -38,7 +37,7 @@ export function SignUpForm({ error }: SignUpFormProps): JSX.Element {
     setIsSubmitting(false);
 
     if (error) {
-      setErrorMessage("Unable to create this account.");
+      setErrorMessage("Unable to create this account. Access may not be granted.");
       return;
     }
 
@@ -47,7 +46,6 @@ export function SignUpForm({ error }: SignUpFormProps): JSX.Element {
 
   return (
     <div className="flex flex-col gap-6">
-      <Wordmark href={LANDING_PATH} />
       <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
         <h1>Sign up</h1>
       <div className="flex flex-col gap-1">
@@ -97,6 +95,12 @@ export function SignUpForm({ error }: SignUpFormProps): JSX.Element {
         Already have an account?{" "}
         <Link className="underline" href="/sign-in">
           Sign in
+        </Link>
+      </p>
+      <p className="text-sm text-muted-foreground">
+        Need access?{" "}
+        <Link className="underline" href="/request-access">
+          Request access
         </Link>
       </p>
       </form>

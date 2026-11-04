@@ -5,7 +5,6 @@ import { DEFAULT_AUTHENTICATED_PATH, LANDING_PATH } from "@/application/auth/rou
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { GoogleSignInButton } from "@/features/auth/GoogleSignInButton";
-import { Wordmark } from "@/features/landing/Wordmark";
 import { authClient } from "@/infrastructure/auth/auth-client";
 import Link from "next/link";
 import { useState, type FormEvent, type JSX } from "react";
@@ -84,7 +83,6 @@ export function SignInForm({ error }: SignInFormProps): JSX.Element {
 
   return (
     <div className="flex flex-col gap-6">
-      <Wordmark href={LANDING_PATH} />
       <div className="flex flex-col gap-4">
         <h1>Sign in</h1>
 
