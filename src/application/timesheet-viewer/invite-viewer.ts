@@ -10,8 +10,9 @@ import type {
   ViewerInviteTokenRecord,
 } from "@/domain/persistence-types";
 import type { PersistenceRepositories } from "@/domain/repositories";
-import { deliverProductionViewerInviteEmail } from "@/infrastructure/email/resend-viewer-invite";
-import { createHash, randomBytes } from "crypto";
+import { auth } from "@/infrastructure/auth/auth";
+import { prisma } from "@/infrastructure/prisma/client";
+import { createHash, randomBytes, randomUUID } from "crypto";
 
 export type InviteViewerResult = {
   viewerAccess: TimesheetViewerAccessRecord;
@@ -76,17 +77,32 @@ export async function inviteViewer(
     expiresAt,
   });
 
-  // Generate invitation URL
-  const baseUrl = process.env.BETTER_AUTH_URL || "http://localhost:3000";
-  const inviteUrl = `${baseUrl}/viewer-activate?token=${plainToken}`;
-
-  // Send invitation email via Resend
-  const emailDelivered = await deliverProductionViewerInviteEmail({
-    email: validated.email,
-    inviteUrl,
-    workspaceName: undefined, // TODO: Add workspace name to context if needed
-    expiresAt,
+  // Store token temporarily for magic link callback
+  const contextId = randomBytes(16).toString("hex");
+  
+  await prisma.verification.create({
+    data: {
+      id: randomUUID(),
+      identifier: `viewer-context:${contextId}`,
+      value: plainToken,
+      expiresAt,
+    },
   });
+
+  // Send magic link via Better Auth
+  const baseUrl = process.env.BETTER_AUTH_URL || "http://localhost:3000";
+  const callbackURL = `${baseUrl}/viewer-portal/magic-callback?ctx=${contextId}`;
+
+  await auth.api.signInMagicLink({
+    body: {
+      email: validated.email,
+      callbackURL,
+      metadata: { type: "viewer-activation" },
+    },
+    headers: new Headers(), // Empty headers for server-side call
+  });
+
+  const emailDelivered = "sent" as const;
 
   return {
     viewerAccess,
