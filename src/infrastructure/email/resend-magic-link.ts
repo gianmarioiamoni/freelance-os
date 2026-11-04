@@ -62,16 +62,31 @@ export async function sendViaResend(
   });
 }
 
-function magicLinkText(url: string, isViewerActivation: boolean): string {
+function magicLinkText(
+  url: string,
+  isViewerActivation: boolean,
+  env: Record<string, string | undefined> = process.env,
+): string {
+  const baseUrl = env.BETTER_AUTH_URL || "http://localhost:3000";
+  const signInUrl = `${baseUrl}/sign-in`;
+
   if (isViewerActivation) {
     return [
-      "Click the link below to access your timesheet viewer dashboard:",
+      "Welcome! You've been invited to view timesheets.",
+      "",
+      "Click the link below to access your dashboard:",
       "",
       url,
       "",
       "This link expires in 5 minutes and can only be used once.",
       "",
-      "If you didn't request this link, you can safely ignore this email.",
+      "---",
+      "",
+      "For future access:",
+      `Go to ${signInUrl} and select the "Report Viewer" tab.`,
+      "You'll receive a sign-in link via email each time.",
+      "",
+      "If you didn't expect this invitation, you can safely ignore this email.",
     ].join("\n");
   }
 
@@ -106,7 +121,7 @@ export async function deliverProductionMagicLinkEmail(
       subject: isViewerActivation
         ? "Access Your Timesheet Dashboard"
         : "Sign in to FreelanceOS",
-      text: magicLinkText(data.url, isViewerActivation),
+      text: magicLinkText(data.url, isViewerActivation, env),
     };
 
     await (send ? send(input) : sendViaResend(input, config));
