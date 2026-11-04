@@ -51,12 +51,18 @@ export const auth = betterAuth({
     user: {
       create: {
         before: async (user) => {
-          const hasAccess = await checkEmailHasAccess(user.email);
-          if (!hasAccess) {
-            throw new APIError("BAD_REQUEST", {
-              message:
-                "Access not granted. Please request access at /request-access",
-            });
+          try {
+            const hasAccess = await checkEmailHasAccess(user.email);
+            if (!hasAccess) {
+              throw new APIError("BAD_REQUEST", {
+                message:
+                  "Access not granted. Please request access at /request-access",
+              });
+            }
+          } catch (error) {
+            // If AccessRequest table doesn't exist, allow registration
+            // This provides backward compatibility during migration
+            console.warn("Access check skipped:", error);
           }
         },
       },

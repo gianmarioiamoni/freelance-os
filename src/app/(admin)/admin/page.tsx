@@ -37,7 +37,14 @@ export default async function AdminPage({
     throw error;
   }
 
-  const accessRequests = await listPendingAccessRequests();
+  let accessRequests;
+  try {
+    accessRequests = await listPendingAccessRequests();
+  } catch (error) {
+    // Gracefully handle if AccessRequest table doesn't exist yet
+    console.warn("Access requests feature not available:", error);
+    accessRequests = [];
+  }
 
   return (
     <div className="mx-auto w-full max-w-6xl">
