@@ -10,9 +10,10 @@ import { useState, type FormEvent, type JSX } from "react";
 
 type SignUpFormProps = {
   error?: string;
+  prefilledEmail?: string;
 };
 
-export function SignUpForm({ error }: SignUpFormProps): JSX.Element {
+export function SignUpForm({ error, prefilledEmail }: SignUpFormProps): JSX.Element {
   const [errorMessage, setErrorMessage] = useState<string | null>(
     error ? "Unable to sign up with Google. Please try again." : null,
   );
@@ -67,8 +68,15 @@ export function SignUpForm({ error }: SignUpFormProps): JSX.Element {
           type="email"
           autoComplete="email"
           required
+          defaultValue={prefilledEmail}
+          readOnly={Boolean(prefilledEmail)}
           className="rounded-md border border-input bg-background px-3 py-2 text-sm"
         />
+        {prefilledEmail && (
+          <p className="text-xs text-muted-foreground">
+            Your email has been pre-filled from your approved access request.
+          </p>
+        )}
       </div>
       <div className="flex flex-col gap-1">
         <label htmlFor="password">Password</label>
