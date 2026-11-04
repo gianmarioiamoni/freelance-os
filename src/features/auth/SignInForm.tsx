@@ -155,7 +155,7 @@ export function SignInForm(): JSX.Element {
                 <Button type="submit" disabled={isSubmitting}>
                   {isSubmitting ? "Signing in…" : "Sign in"}
                 </Button>
-                <GoogleSignInButton disabled={isSubmitting} onError={setErrorMessage} />
+                <GoogleSignInButton disabled={isSubmitting} onError={setErrorMessage} mode="sign-in" />
                 <p className="text-sm text-muted-foreground">
                   <Link className="underline" href="/forgot-password">
                     Forgot password?

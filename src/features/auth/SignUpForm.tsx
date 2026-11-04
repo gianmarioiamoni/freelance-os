@@ -86,7 +86,7 @@ export function SignUpForm(): JSX.Element {
       <Button type="submit" disabled={isSubmitting}>
         {isSubmitting ? "Creating account…" : "Create account"}
       </Button>
-      <GoogleSignInButton disabled={isSubmitting} onError={setErrorMessage} />
+      <GoogleSignInButton disabled={isSubmitting} onError={setErrorMessage} mode="sign-up" />
       <p className="text-sm text-muted-foreground">
         Already have an account?{" "}
         <Link className="underline" href="/sign-in">

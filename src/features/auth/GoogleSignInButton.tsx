@@ -9,11 +9,13 @@ import { useState, type JSX } from "react";
 type GoogleSignInButtonProps = {
   onError: (message: string) => void;
   disabled?: boolean;
+  mode?: "sign-in" | "sign-up";
 };
 
 export function GoogleSignInButton({
   onError,
   disabled = false,
+  mode = "sign-in",
 }: GoogleSignInButtonProps): JSX.Element {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -23,12 +25,21 @@ export function GoogleSignInButton({
     const { error } = await authClient.signIn.social({
       provider: "google",
       callbackURL: DEFAULT_AUTHENTICATED_PATH,
+      fetchOptions: {
+        body: {
+          requestSignUp: mode === "sign-up",
+        },
+      },
     });
 
     setIsSubmitting(false);
 
     if (error) {
-      onError("Google sign-in is unavailable.");
+      const message =
+        mode === "sign-in"
+          ? "Please sign up first before using Google sign-in."
+          : "Google sign-up is unavailable.";
+      onError(message);
     }
   }
 

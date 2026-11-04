@@ -84,4 +84,17 @@ describe("Google OAuth authentication", () => {
     const session = await auth.api.getSession({ headers });
     expect(session?.user.id).toBe(userId);
   });
+
+  it("prevents Google sign-up for unregistered users", async () => {
+    const result = await auth.api.signInSocial({
+      body: {
+        provider: "google",
+        callbackURL: "/dashboard",
+        disableRedirect: true,
+      },
+    });
+
+    expect(result.redirect).toBe(false);
+    expect(result.url).toEqual(expect.stringContaining(GOOGLE_AUTHORIZE_ORIGIN));
+  });
 });

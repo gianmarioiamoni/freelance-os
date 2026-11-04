@@ -31,9 +31,18 @@ export const auth = betterAuth({
     sendResetPassword: sendPasswordResetEmail,
     revokeSessionsOnPasswordReset: true,
   },
+  account: {
+    accountLinking: {
+      enabled: true,
+      trustedProviders: ["google"],
+    },
+  },
   socialProviders: google
     ? {
-        google,
+        google: {
+          ...google,
+          disableImplicitSignUp: true,
+        },
       }
     : {},
   plugins: shouldEnableMagicLink()
