@@ -19,7 +19,7 @@ type SignInFormProps = {
 export function SignInForm({ error }: SignInFormProps): JSX.Element {
   const [authMode, setAuthMode] = useState<AuthMode>("password");
   const [errorMessage, setErrorMessage] = useState<string | null>(
-    error === "SIGNUP_DISABLED"
+    error === "signup_disabled"
       ? "Please sign up first before using Google sign-in."
       : null,
   );
