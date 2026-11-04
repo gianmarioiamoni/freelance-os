@@ -2,6 +2,15 @@
 import { SignUpForm } from "@/features/auth/SignUpForm";
 import type { JSX } from "react";
 
-export default function SignUpPage(): JSX.Element {
-  return <SignUpForm />;
+type SignUpPageProps = {
+  searchParams: Promise<{
+    error?: string;
+  }>;
+};
+
+export default async function SignUpPage({
+  searchParams,
+}: SignUpPageProps): Promise<JSX.Element> {
+  const params = await searchParams;
+  return <SignUpForm error={params.error} />;
 }

@@ -12,9 +12,17 @@ import { useState, type FormEvent, type JSX } from "react";
 
 type AuthMode = "password" | "magicLink";
 
-export function SignInForm(): JSX.Element {
+type SignInFormProps = {
+  error?: string;
+};
+
+export function SignInForm({ error }: SignInFormProps): JSX.Element {
   const [authMode, setAuthMode] = useState<AuthMode>("password");
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(
+    error === "SIGNUP_DISABLED"
+      ? "Please sign up first before using Google sign-in."
+      : null,
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [magicLinkSent, setMagicLinkSent] = useState(false);
   const [magicLinkEmail, setMagicLinkEmail] = useState("");

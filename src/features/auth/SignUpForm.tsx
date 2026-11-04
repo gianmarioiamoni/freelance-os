@@ -9,8 +9,14 @@ import { authClient } from "@/infrastructure/auth/auth-client";
 import Link from "next/link";
 import { useState, type FormEvent, type JSX } from "react";
 
-export function SignUpForm(): JSX.Element {
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+type SignUpFormProps = {
+  error?: string;
+};
+
+export function SignUpForm({ error }: SignUpFormProps): JSX.Element {
+  const [errorMessage, setErrorMessage] = useState<string | null>(
+    error ? "Unable to sign up with Google. Please try again." : null,
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>): Promise<void> {
