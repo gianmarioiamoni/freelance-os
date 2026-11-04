@@ -198,8 +198,8 @@ export function SignInForm({ error }: SignInFormProps): JSX.Element {
 
             <p className="text-sm text-muted-foreground">
               Need an account?{" "}
-              <Link className="underline" href="/sign-up">
-                Sign up
+              <Link className="underline" href="/request-access">
+                Request access
               </Link>
             </p>
           </>

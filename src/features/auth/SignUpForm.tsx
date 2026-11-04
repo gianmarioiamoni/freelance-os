@@ -11,9 +11,14 @@ import { useState, type FormEvent, type JSX } from "react";
 type SignUpFormProps = {
   error?: string;
   prefilledEmail?: string;
+  showRequestAccessLink?: boolean;
 };
 
-export function SignUpForm({ error, prefilledEmail }: SignUpFormProps): JSX.Element {
+export function SignUpForm({ 
+  error, 
+  prefilledEmail,
+  showRequestAccessLink = true,
+}: SignUpFormProps): JSX.Element {
   const [errorMessage, setErrorMessage] = useState<string | null>(
     error ? "Unable to sign up with Google. Please try again." : null,
   );
@@ -105,12 +110,14 @@ export function SignUpForm({ error, prefilledEmail }: SignUpFormProps): JSX.Elem
           Sign in
         </Link>
       </p>
-      <p className="text-sm text-muted-foreground">
-        Need access?{" "}
-        <Link className="underline" href="/request-access">
-          Request access
-        </Link>
-      </p>
+      {showRequestAccessLink && (
+        <p className="text-sm text-muted-foreground">
+          Need access?{" "}
+          <Link className="underline" href="/request-access">
+            Request access
+          </Link>
+        </p>
+      )}
       </form>
     </div>
   );

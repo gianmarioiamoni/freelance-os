@@ -37,13 +37,12 @@ export default async function AdminPage({
     throw error;
   }
 
-  let accessRequests;
+  let accessRequests: Awaited<ReturnType<typeof listPendingAccessRequests>> = [];
   try {
     accessRequests = await listPendingAccessRequests();
   } catch (error) {
     // Gracefully handle if AccessRequest table doesn't exist yet
     console.warn("Access requests feature not available:", error);
-    accessRequests = [];
   }
 
   return (

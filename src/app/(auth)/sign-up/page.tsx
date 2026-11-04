@@ -29,5 +29,11 @@ export default async function SignUpPage({
     }
   }
 
-  return <SignUpForm error={params.error} prefilledEmail={validatedEmail} />;
+  return (
+    <SignUpForm 
+      error={params.error} 
+      prefilledEmail={validatedEmail}
+      showRequestAccessLink={!validatedEmail}
+    />
+  );
 }
